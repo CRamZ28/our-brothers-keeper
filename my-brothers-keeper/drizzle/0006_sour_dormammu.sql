@@ -1,0 +1,1 @@
+ALTER TABLE `notification_prefs` ADD `urgentNeedsAlerts` boolean DEFAULT true NOT NULL;

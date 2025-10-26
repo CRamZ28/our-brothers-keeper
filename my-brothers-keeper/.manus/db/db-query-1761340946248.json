@@ -1,0 +1,138 @@
+{
+  "query": "DESCRIBE needs;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 9FzFmuyG4dE8SVH.2c4f2d6c138c --database mWNB7i3BRjnUvgEmxYhYNw --execute DESCRIBE needs;",
+  "rows": [
+    {
+      "Field": "id",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "PRI",
+      "Default": "NULL",
+      "Extra": "auto_increment"
+    },
+    {
+      "Field": "householdId",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "title",
+      "Type": "varchar(255)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "details",
+      "Type": "text",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "category",
+      "Type": "enum('meals','rides','errands','childcare','household','other')",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "priority",
+      "Type": "enum('low','normal','urgent')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "normal",
+      "Extra": ""
+    },
+    {
+      "Field": "dueAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "MUL",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "recurrence",
+      "Type": "varchar(255)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "createdBy",
+      "Type": "int(11)",
+      "Null": "NO",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "visibilityScope",
+      "Type": "enum('private','all_supporters','group','role')",
+      "Null": "NO",
+      "Key": "",
+      "Default": "all_supporters",
+      "Extra": ""
+    },
+    {
+      "Field": "visibilityGroupId",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "status",
+      "Type": "enum('open','claimed','completed','cancelled')",
+      "Null": "NO",
+      "Key": "MUL",
+      "Default": "open",
+      "Extra": ""
+    },
+    {
+      "Field": "createdAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": ""
+    },
+    {
+      "Field": "updatedAt",
+      "Type": "timestamp",
+      "Null": "NO",
+      "Key": "",
+      "Default": "CURRENT_TIMESTAMP",
+      "Extra": "DEFAULT_GENERATED on update CURRENT_TIMESTAMP"
+    },
+    {
+      "Field": "capacity",
+      "Type": "int(11)",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    },
+    {
+      "Field": "completedAt",
+      "Type": "timestamp",
+      "Null": "YES",
+      "Key": "",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nid\tint(11)\tNO\tPRI\tNULL\tauto_increment\nhouseholdId\tint(11)\tNO\tMUL\tNULL\t\ntitle\tvarchar(255)\tNO\t\tNULL\t\ndetails\ttext\tYES\t\tNULL\t\ncategory\tenum('meals','rides','errands','childcare','household','other')\tNO\tMUL\tNULL\t\npriority\tenum('low','normal','urgent')\tNO\t\tnormal\t\ndueAt\ttimestamp\tYES\tMUL\tNULL\t\nrecurrence\tvarchar(255)\tYES\t\tNULL\t\ncreatedBy\tint(11)\tNO\t\tNULL\t\nvisibilityScope\tenum('private','all_supporters','group','role')\tNO\t\tall_supporters\t\nvisibilityGroupId\tint(11)\tYES\t\tNULL\t\nstatus\tenum('open','claimed','completed','cancelled')\tNO\tMUL\topen\t\ncreatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\t\nupdatedAt\ttimestamp\tNO\t\tCURRENT_TIMESTAMP\tDEFAULT_GENERATED on update CURRENT_TIMESTAMP\ncapacity\tint(11)\tYES\t\tNULL\t\ncompletedAt\ttimestamp\tYES\t\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 106
+}
