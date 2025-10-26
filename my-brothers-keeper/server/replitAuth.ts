@@ -90,6 +90,23 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
+  // Helper to determine which domain to use based on hostname
+  const getDomainForHost = (hostname: string) => {
+    const domains = process.env.REPLIT_DOMAINS!.split(",");
+    // In development/localhost, use the first domain
+    if (hostname.includes("localhost") || hostname.includes("127.0.0.1")) {
+      return domains[0];
+    }
+    // Find matching domain
+    for (const domain of domains) {
+      if (hostname.endsWith(domain)) {
+        return domain;
+      }
+    }
+    // Default to first domain
+    return domains[0];
+  };
+
   for (const domain of process.env.REPLIT_DOMAINS!.split(",")) {
     const strategy = new Strategy(
       {
@@ -107,14 +124,16 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    const domain = getDomainForHost(req.hostname);
+    passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
       scope: ["openid", "email", "profile", "offline_access"],
     })(req, res, next);
   });
 
   app.get("/api/callback", (req, res, next) => {
-    passport.authenticate(`replitauth:${req.hostname}`, {
+    const domain = getDomainForHost(req.hostname);
+    passport.authenticate(`replitauth:${domain}`, {
       successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
     })(req, res, next);
