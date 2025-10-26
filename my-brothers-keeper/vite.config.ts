@@ -83,8 +83,13 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    host: true,
+    host: "0.0.0.0",
+    port: 5000,
+    strictPort: true,
     allowedHosts: [
+      ".replit.dev",
+      ".replit.app",
+      ".repl.co",
       ".manuspre.computer",
       ".manus.computer",
       ".manus-asia.computer",
