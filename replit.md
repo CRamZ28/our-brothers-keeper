@@ -1,7 +1,7 @@
-# My Brother's Keeper - Replit Project Documentation
+# Our Brother's Keeper - Replit Project Documentation
 
 ## Overview
-My Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one. The application features a needs board, shared calendar, messaging, and update tracking to help coordinate support during difficult times.
+Our Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one. The application features a needs board, shared calendar, messaging, and update tracking to help coordinate support during difficult times.
 
 **Current Status**: Successfully imported and running on Replit
 **Last Updated**: October 26, 2025
@@ -42,7 +42,7 @@ The project requires several environment variables configured in `my-brothers-ke
 - `OAUTH_SERVER_URL`: Backend OAuth server URL
 
 **Optional Variables:**
-- `VITE_APP_TITLE`: Application title (defaults to "My Brother's Keeper")
+- `VITE_APP_TITLE`: Application title (defaults to "Our Brother's Keeper")
 - `VITE_APP_LOGO`: Application logo URL
 - `BUILT_IN_FORGE_API_URL`: Forge API endpoint (for image generation, etc.)
 - `BUILT_IN_FORGE_API_KEY`: Forge API key

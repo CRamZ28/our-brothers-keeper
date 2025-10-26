@@ -17,8 +17,8 @@ const plugins = [
     registerType: "autoUpdate",
     includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
     manifest: {
-      name: "My Brother's Keeper",
-      short_name: "MBK",
+      name: "Our Brother's Keeper",
+      short_name: "OBK",
       description: "A compassionate platform to coordinate support for families during difficult times",
       theme_color: "#0d9488",
       background_color: "#ffffff",
