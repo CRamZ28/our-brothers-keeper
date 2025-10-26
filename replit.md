@@ -3,7 +3,7 @@
 ## Overview
 Our Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one. The application features a needs board, shared calendar, messaging, and update tracking to help coordinate support during difficult times.
 
-**Current Status**: Successfully imported and running on Replit
+**Current Status**: ✅ Fully operational on Replit with PostgreSQL and Replit Auth
 **Last Updated**: October 26, 2025
 
 ## Project Architecture
@@ -11,7 +11,9 @@ Our Brother's Keeper is a compassionate platform that helps families and communi
 ### Technology Stack
 - **Frontend**: React 19 with Vite 7, TypeScript, Tailwind CSS
 - **Backend**: Express.js with tRPC for type-safe API
-- **Database**: MySQL (using Drizzle ORM)
+- **Database**: PostgreSQL (using Drizzle ORM)
+- **Authentication**: Replit Auth (OpenID Connect with Passport.js)
+- **Session Store**: PostgreSQL (connect-pg-simple)
 - **Package Manager**: pnpm
 - **Runtime**: Node.js 20
 
@@ -23,6 +25,7 @@ my-brothers-keeper/
 │   └── src/             # React components, pages, and hooks
 ├── server/              # Backend Express server
 │   ├── _core/           # Core server functionality (auth, context, etc.)
+│   ├── replitAuth.ts    # Replit Auth configuration
 │   └── *Router.ts       # tRPC routers for different features
 ├── shared/              # Shared types and constants
 ├── drizzle/             # Database schema and migrations
@@ -32,14 +35,12 @@ my-brothers-keeper/
 ## Development Setup
 
 ### Environment Variables
-The project requires several environment variables configured in `my-brothers-keeper/.env`:
+The project requires these environment variables configured in `my-brothers-keeper/.env`:
 
 **Required Variables:**
-- `DATABASE_URL`: MySQL database connection string
-- `JWT_SECRET`: Secret key for JWT token signing
-- `VITE_APP_ID`: Application identifier
-- `VITE_OAUTH_PORTAL_URL`: OAuth server URL
-- `OAUTH_SERVER_URL`: Backend OAuth server URL
+- `DATABASE_URL`: PostgreSQL database connection string (provided by Replit)
+- `SESSION_SECRET`: Secret key for session signing
+- `REPLIT_DOMAINS`: Comma-separated list of Replit domains for auth
 
 **Optional Variables:**
 - `VITE_APP_TITLE`: Application title (defaults to "Our Brother's Keeper")
@@ -58,50 +59,108 @@ The server:
 - Serves Vite dev server in development mode
 - Serves static files from `dist/public` in production mode
 - Provides tRPC API endpoints at `/api/trpc`
+- Exposes Replit Auth endpoints: `/api/login`, `/api/logout`, `/api/auth/user`
 
-## Replit-Specific Configuration
+## Authentication System
 
-### Recent Changes (October 26, 2025)
-1. **Vite Configuration** (`vite.config.ts`):
-   - Added Replit domains to `allowedHosts`: `.replit.dev`, `.replit.app`, `.repl.co`
-   - Configured server to bind to `0.0.0.0:5000`
-   - Set `strictPort: true` to ensure port 5000 is used
+### Replit Auth Integration
+The application uses Replit's built-in authentication system (OpenID Connect) which provides:
+- **Multiple login options**: Google, GitHub, X (Twitter), Apple, and email/password
+- **Automatic user management**: Users are created/updated automatically on login
+- **Secure session handling**: PostgreSQL-backed sessions with automatic refresh
+- **Multi-domain support**: Works across all Replit domains (.replit.dev, .replit.app, .repl.co)
 
-2. **Server Configuration** (`server/_core/index.ts`):
-   - Updated to bind to `0.0.0.0` for external access
-   - Fixed port to 5000 for Replit compatibility
-   - Removed dynamic port selection for predictable deployment
+### Auth Flow
+1. User clicks "Sign In" → redirected to `/api/login`
+2. Replit Auth handles login via OpenID Connect
+3. User profile synced to database (email, name, avatar from Replit profile)
+4. Session stored in PostgreSQL
+5. Frontend checks auth status via `/api/auth/user`
 
-3. **Environment Variables**:
-   - Added all required Vite environment variables
-   - Configured OAuth URLs for local development
+### Auth Endpoints
+- `GET /api/login` - Initiate login flow
+- `GET /api/logout` - Log out and clear session
+- `GET /api/auth/user` - Get current user info (used by frontend)
+- `GET /api/auth/callback` - OAuth callback (internal)
 
 ## Database Configuration
 
-### Current Setup
-The project is configured to use MySQL via Drizzle ORM. The schema includes tables for:
-- Users and authentication
-- Households (primary organizational unit)
-- Groups and group members
-- Invites
-- Events and RSVPs
-- Needs and need claims
-- Messages and announcements
-- Audit logs and notification preferences
+### PostgreSQL Schema
+The database uses Drizzle ORM with PostgreSQL and includes 19 tables:
+- **users**: User profiles (string-based IDs from Replit Auth)
+- **households**: Primary organizational unit for families
+- **groups**: Support groups within households
+- **group_members**: Membership in groups
+- **invites**: Pending user invitations
+- **events**: Calendar events
+- **event_rsvps**: Event responses
+- **needs**: Support needs (meals, rides, etc.)
+- **need_claims**: Claims on needs
+- **messages**: Private messages
+- **announcements**: Public announcements
+- **updates**: Family updates
+- **sessions**: Express session storage (managed by connect-pg-simple)
+- **admin_groups**: Admin group definitions
+- **admin_group_members**: Admin group membership
+- **admin_messages**: Admin messaging
+- **admin_message_recipients**: Admin message routing
+- **notification_prefs**: User notification preferences
+- **audit_logs**: Audit trail
 
-### Database Migration
-**Important**: The project currently requires a MySQL database. The `DATABASE_URL` in the `.env` file needs to be updated with a valid MySQL connection string.
+### Key Schema Changes (October 26, 2025 Migration)
+1. **Database Engine**: Migrated from MySQL to PostgreSQL
+2. **User IDs**: Changed from integer to varchar (string) to support Replit Auth's OpenID `sub` claims
+3. **Index Naming**: All 44 indices renamed to be globally unique (PostgreSQL requirement)
+4. **Enums**: Converted to PostgreSQL pgEnum types
+5. **Syntax**: Updated all operations to use PostgreSQL syntax (.returning(), onConflictDoUpdate)
 
-To run migrations:
+### Running Migrations
+To apply schema changes:
 ```bash
 cd my-brothers-keeper
 pnpm run db:push
 ```
 
+## Design & UI
+
+### Glassmorphism Theme
+The application features a modern glassmorphism design with:
+- **Gradient backgrounds**: Teal → Blue → Purple color scheme
+- **Frosted glass effects**: Backdrop blur on cards and navigation
+- **Animated orbs**: Subtle background animations for visual interest
+- **Hover animations**: Interactive feedback on buttons and cards
+- **Color-coded icons**: Teal backgrounds for feature cards
+- **Enhanced typography**: Modern font styles with better hierarchy
+
+## Replit-Specific Configuration
+
+### Recent Changes (October 26, 2025)
+1. **Authentication Migration**:
+   - Removed custom OAuth system
+   - Integrated Replit Auth (OpenID Connect)
+   - Added session management with PostgreSQL storage
+   - Updated all frontend auth flows to use `/api/login` and `/api/logout`
+
+2. **Database Migration**:
+   - Converted entire schema from MySQL to PostgreSQL
+   - Updated all 44 index names to be globally unique
+   - Changed user ID type from integer to varchar (string)
+   - Updated all database operations to PostgreSQL syntax
+
+3. **Vite Configuration** (`vite.config.ts`):
+   - Added Replit domains to `allowedHosts`: `.replit.dev`, `.replit.app`, `.repl.co`
+   - Configured server to bind to `0.0.0.0:5000`
+   - Set `strictPort: true` to ensure port 5000 is used
+
+4. **Server Configuration** (`server/_core/index.ts`):
+   - Updated to bind to `0.0.0.0` for external access
+   - Fixed port to 5000 for Replit compatibility
+   - Integrated Replit Auth middleware
+
 ## Deployment
 
 ### Deployment Configuration
-- **Type**: VM deployment (stateful application)
+- **Type**: VM deployment (stateful application with sessions)
 - **Build Command**: `cd my-brothers-keeper && pnpm run build`
 - **Run Command**: `cd my-brothers-keeper && pnpm run start`
 
@@ -117,14 +176,10 @@ The production server serves static files from `dist/public` and runs the tRPC A
 - PWA service worker registration fails in development mode (expected behavior)
 - Some Vite environment variables show warnings if not set (optional features)
 
-### Database Requirement
-The application requires a MySQL database to be fully functional. Currently, the database connection is configured but not connected. Users will need to:
-1. Set up a MySQL database
-2. Update the `DATABASE_URL` in `.env`
-3. Run database migrations with `pnpm run db:push`
-
-### OAuth Configuration
-The OAuth configuration is set up for local development. For production deployment, the OAuth URLs need to be updated to match the deployed environment.
+### Important Notes
+- The application is now fully integrated with Replit Auth - no external OAuth setup required
+- All user data is stored in Replit's managed PostgreSQL database
+- Sessions are persisted in PostgreSQL for reliability across deployments
 
 ## Project Features
 
@@ -135,10 +190,12 @@ The OAuth configuration is set up for local development. For production deployme
 4. **Updates**: Share updates about the family's situation
 5. **User Management**: Invite system for supporters with role-based access
 
-### Authentication
-- OAuth-based authentication system
-- JWT-based session management
+### Authentication & Security
+- Replit Auth with OpenID Connect (Google, GitHub, X, Apple, email/password)
+- PostgreSQL-backed session management with auto-refresh
 - Role-based access control (admin, supporter, user, primary)
+- Secure session signing with SESSION_SECRET
 
 ## User Preferences
-None recorded yet.
+- **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
+- **Authentication**: Replit Auth (chosen over custom OAuth)
