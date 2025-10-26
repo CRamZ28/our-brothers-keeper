@@ -108,7 +108,7 @@ export const appRouter = router({
         if (input.setupRole === "primary") {
           // User is setting up for themselves - make them Primary
           await db.upsertUser({
-            openId: ctx.user.openId,
+            id: ctx.user.id,
             role: "primary",
             householdId,
             status: "active",
@@ -116,7 +116,7 @@ export const appRouter = router({
         } else {
           // Admin is setting up for someone else - make current user Admin
           await db.upsertUser({
-            openId: ctx.user.openId,
+            id: ctx.user.id,
             role: "admin",
             householdId,
             status: "active",

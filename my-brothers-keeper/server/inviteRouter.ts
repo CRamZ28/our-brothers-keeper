@@ -202,7 +202,7 @@ export const inviteRouter = router({
 
       // Update user with household and role, set status to pending
       await db.upsertUser({
-        openId: ctx.user.openId,
+        id: ctx.user.id,
         householdId: invite.householdId,
         role: invite.invitedRole,
         status: "pending", // Requires approval
