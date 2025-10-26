@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
+import { APP_LOGO, APP_TITLE } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Heart, Calendar, Users, MessageCircle } from "lucide-react";
 import { Link } from "wouter";
@@ -43,7 +43,7 @@ export default function Home() {
                 <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">{APP_TITLE}</span>
               </div>
               <Button 
-                onClick={() => (window.location.href = getLoginUrl())}
+                onClick={() => (window.location.href = "/api/login")}
                 className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
               >
                 Sign In
@@ -71,7 +71,7 @@ export default function Home() {
               <div className="flex justify-center">
                 <Button
                   size="lg"
-                  onClick={() => (window.location.href = getLoginUrl())}
+                  onClick={() => (window.location.href = "/api/login")}
                   className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700"
                 >
                   Get Started

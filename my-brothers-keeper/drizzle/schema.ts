@@ -22,7 +22,7 @@ export const sessions = pgTable(
     sess: jsonb("sess").notNull(),
     expire: timestamp("expire").notNull(),
   },
-  (table) => [index("IDX_session_expire").on(table.expire)],
+  (table) => [index("sessions_expire_idx").on(table.expire)],
 );
 
 // Define PostgreSQL enums
@@ -65,9 +65,9 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   lastSignedIn: timestamp("last_signed_in").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  statusIdx: index("status_idx").on(table.status),
-  emailIdx: index("email_idx").on(table.email),
+  householdIdx: index("users_household_idx").on(table.householdId),
+  statusIdx: index("users_status_idx").on(table.status),
+  emailIdx: index("users_email_idx").on(table.email),
 }));
 
 export type User = typeof users.$inferSelect;
@@ -87,7 +87,7 @@ export const households = pgTable("households", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  primaryUserIdx: index("primary_user_idx").on(table.primaryUserId),
+  primaryUserIdx: index("households_primary_user_idx").on(table.primaryUserId),
 }));
 
 export type Household = typeof households.$inferSelect;
@@ -103,7 +103,7 @@ export const groups = pgTable("groups", {
   description: text("description"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
+  householdIdx: index("groups_household_idx").on(table.householdId),
 }));
 
 export type Group = typeof groups.$inferSelect;
@@ -118,8 +118,8 @@ export const groupMembers = pgTable("group_members", {
   userId: varchar("user_id").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
-  groupUserIdx: uniqueIndex("group_user_idx").on(table.groupId, table.userId),
-  userIdx: index("user_idx").on(table.userId),
+  groupUserIdx: uniqueIndex("group_members_group_user_idx").on(table.groupId, table.userId),
+  userIdx: index("group_members_user_idx").on(table.userId),
 }));
 
 export type GroupMember = typeof groupMembers.$inferSelect;
@@ -140,9 +140,9 @@ export const invites = pgTable("invites", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   expiresAt: timestamp("expires_at").notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  tokenIdx: index("token_idx").on(table.token),
-  statusIdx: index("status_idx").on(table.status),
+  householdIdx: index("invites_household_idx").on(table.householdId),
+  tokenIdx: index("invites_token_idx").on(table.token),
+  statusIdx: index("invites_status_idx").on(table.status),
 }));
 
 export type Invite = typeof invites.$inferSelect;
@@ -168,9 +168,9 @@ export const events = pgTable("events", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  startAtIdx: index("start_at_idx").on(table.startAt),
-  visibilityIdx: index("visibility_idx").on(table.visibilityScope),
+  householdIdx: index("events_household_idx").on(table.householdId),
+  startAtIdx: index("events_start_at_idx").on(table.startAt),
+  visibilityIdx: index("events_visibility_idx").on(table.visibilityScope),
 }));
 
 export type Event = typeof events.$inferSelect;
@@ -186,8 +186,8 @@ export const eventRsvps = pgTable("event_rsvps", {
   status: rsvpStatusEnum("status").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  eventUserIdx: uniqueIndex("event_user_idx").on(table.eventId, table.userId),
-  userIdx: index("user_idx").on(table.userId),
+  eventUserIdx: uniqueIndex("event_rsvps_event_user_idx").on(table.eventId, table.userId),
+  userIdx: index("event_rsvps_user_idx").on(table.userId),
 }));
 
 export type EventRsvp = typeof eventRsvps.$inferSelect;
@@ -214,10 +214,10 @@ export const needs = pgTable("needs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  statusIdx: index("status_idx").on(table.status),
-  categoryIdx: index("category_idx").on(table.category),
-  dueAtIdx: index("due_at_idx").on(table.dueAt),
+  householdIdx: index("needs_household_idx").on(table.householdId),
+  statusIdx: index("needs_status_idx").on(table.status),
+  categoryIdx: index("needs_category_idx").on(table.category),
+  dueAtIdx: index("needs_due_at_idx").on(table.dueAt),
 }));
 
 export type Need = typeof needs.$inferSelect;
@@ -236,9 +236,9 @@ export const needClaims = pgTable("need_claims", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  needIdx: index("need_idx").on(table.needId),
-  userIdx: index("user_idx").on(table.userId),
-  statusIdx: index("status_idx").on(table.status),
+  needIdx: index("need_claims_need_idx").on(table.needId),
+  userIdx: index("need_claims_user_idx").on(table.userId),
+  statusIdx: index("need_claims_status_idx").on(table.status),
 }));
 
 export type NeedClaim = typeof needClaims.$inferSelect;
@@ -257,9 +257,9 @@ export const messages = pgTable("messages", {
   visibilityGroupId: integer("visibility_group_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  threadIdx: index("thread_idx").on(table.threadId),
-  createdAtIdx: index("created_at_idx").on(table.createdAt),
+  householdIdx: index("messages_household_idx").on(table.householdId),
+  threadIdx: index("messages_thread_idx").on(table.threadId),
+  createdAtIdx: index("messages_created_at_idx").on(table.createdAt),
 }));
 
 export type Message = typeof messages.$inferSelect;
@@ -280,9 +280,9 @@ export const announcements = pgTable("announcements", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  pinnedIdx: index("pinned_idx").on(table.pinned),
-  createdAtIdx: index("created_at_idx").on(table.createdAt),
+  householdIdx: index("announcements_household_idx").on(table.householdId),
+  pinnedIdx: index("announcements_pinned_idx").on(table.pinned),
+  createdAtIdx: index("announcements_created_at_idx").on(table.createdAt),
 }));
 
 export type Announcement = typeof announcements.$inferSelect;
@@ -302,9 +302,9 @@ export const updates = pgTable("updates", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  authorIdx: index("author_idx").on(table.authorId),
-  createdAtIdx: index("created_at_idx").on(table.createdAt),
+  householdIdx: index("updates_household_idx").on(table.householdId),
+  authorIdx: index("updates_author_idx").on(table.authorId),
+  createdAtIdx: index("updates_created_at_idx").on(table.createdAt),
 }));
 
 export type Update = typeof updates.$inferSelect;
@@ -325,7 +325,7 @@ export const notificationPrefs = pgTable("notification_prefs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  userIdx: index("user_idx").on(table.userId),
+  userIdx: index("notification_prefs_user_idx").on(table.userId),
 }));
 
 export type NotificationPref = typeof notificationPrefs.$inferSelect;
@@ -345,8 +345,8 @@ export const adminMessages = pgTable("admin_messages", {
   includedPrimary: boolean("included_primary").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  senderIdx: index("sender_idx").on(table.senderId),
+  householdIdx: index("admin_messages_household_idx").on(table.householdId),
+  senderIdx: index("admin_messages_sender_idx").on(table.senderId),
 }));
 
 export type AdminMessage = typeof adminMessages.$inferSelect;
@@ -362,8 +362,8 @@ export const adminMessageRecipients = pgTable("admin_message_recipients", {
   readAt: timestamp("read_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
-  messageIdx: index("message_idx").on(table.messageId),
-  userIdx: index("user_idx").on(table.userId),
+  messageIdx: index("admin_message_recipients_message_idx").on(table.messageId),
+  userIdx: index("admin_message_recipients_user_idx").on(table.userId),
 }));
 
 export type AdminMessageRecipient = typeof adminMessageRecipients.$inferSelect;
@@ -381,7 +381,7 @@ export const adminGroups = pgTable("admin_groups", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
+  householdIdx: index("admin_groups_household_idx").on(table.householdId),
 }));
 
 export type AdminGroup = typeof adminGroups.$inferSelect;
@@ -396,9 +396,9 @@ export const adminGroupMembers = pgTable("admin_group_members", {
   userId: varchar("user_id").notNull(),
   addedAt: timestamp("added_at").defaultNow().notNull(),
 }, (table) => ({
-  groupIdx: index("group_idx").on(table.groupId),
-  userIdx: index("user_idx").on(table.userId),
-  groupUserIdx: uniqueIndex("group_user_idx").on(table.groupId, table.userId),
+  groupIdx: index("admin_group_members_group_idx").on(table.groupId),
+  userIdx: index("admin_group_members_user_idx").on(table.userId),
+  groupUserIdx: uniqueIndex("admin_group_members_group_user_idx").on(table.groupId, table.userId),
 }));
 
 export type AdminGroupMember = typeof adminGroupMembers.$inferSelect;
@@ -417,9 +417,9 @@ export const auditLogs = pgTable("audit_logs", {
   metadata: jsonb("metadata").$type<Record<string, unknown> | null>(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
-  householdIdx: index("household_idx").on(table.householdId),
-  actorIdx: index("actor_idx").on(table.actorUserId),
-  createdAtIdx: index("created_at_idx").on(table.createdAt),
+  householdIdx: index("audit_logs_household_idx").on(table.householdId),
+  actorIdx: index("audit_logs_actor_idx").on(table.actorUserId),
+  createdAtIdx: index("audit_logs_created_at_idx").on(table.createdAt),
 }));
 
 export type AuditLog = typeof auditLogs.$inferSelect;

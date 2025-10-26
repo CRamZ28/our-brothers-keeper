@@ -10,13 +10,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/express-session": "^1.18.2",
     "@types/memoizee": "^0.4.12",
     "@types/passport": "^1.0.17",
+    "@types/pg": "^8.15.5",
     "connect-pg-simple": "^10.0.0",
     "express-session": "^1.18.2",
     "memoizee": "^0.4.17",
     "openid-client": "^6.8.1",
-    "passport": "^0.7.0"
+    "passport": "^0.7.0",
+    "pg": "^8.16.3"
   }
 }

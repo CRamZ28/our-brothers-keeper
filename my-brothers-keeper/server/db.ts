@@ -1,7 +1,9 @@
 import { and, eq, inArray, desc } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/mysql2";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
 import {
   InsertUser,
+  UpsertUser,
   users,
   households,
   InsertHousehold,
@@ -40,13 +42,19 @@ import {
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
+const { Pool } = pg;
+
 let _db: ReturnType<typeof drizzle> | null = null;
+let _pool: pg.Pool | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      _pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+      });
+      _db = drizzle(_pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -60,8 +68,8 @@ export async function getDb() {
 // ============================================================================
 
 export async function upsertUser(user: InsertUser): Promise<void> {
-  if (!user.openId) {
-    throw new Error("User openId is required for upsert");
+  if (!user.id) {
+    throw new Error("User id is required for upsert");
   }
 
   const db = await getDb();
@@ -72,7 +80,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
 
   try {
     const values: InsertUser = {
-      openId: user.openId,
+      id: user.id,
     };
     const updateSet: Record<string, unknown> = {};
 
@@ -96,7 +104,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     if (user.role !== undefined) {
       values.role = user.role;
       updateSet.role = user.role;
-    } else if (user.openId === ENV.ownerId) {
+    } else if (user.id === ENV.ownerId) {
       values.role = "admin";
       updateSet.role = "admin";
     }
@@ -117,7 +125,8 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.lastSignedIn = new Date();
     }
 
-    await db.insert(users).values(values).onDuplicateKeyUpdate({
+    await db.insert(users).values(values).onConflictDoUpdate({
+      target: users.id,
       set: updateSet,
     });
   } catch (error) {
@@ -126,19 +135,19 @@ export async function upsertUser(user: InsertUser): Promise<void> {
   }
 }
 
-export async function getUser(openId: string) {
+export async function getUser(id: string) {
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot get user: database not available");
     return undefined;
   }
 
-  const result = await db.select().from(users).where(eq(users.openId, openId)).limit(1);
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
 
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function getUserById(id: number) {
+export async function getUserById(id: string) {
   const db = await getDb();
   if (!db) return undefined;
 
@@ -153,7 +162,7 @@ export async function getUsersByHousehold(householdId: number) {
   return await db.select().from(users).where(eq(users.householdId, householdId));
 }
 
-export async function updateUserStatus(userId: number, status: "active" | "pending" | "blocked") {
+export async function updateUserStatus(userId: string, status: "active" | "pending" | "blocked") {
   const db = await getDb();
   if (!db) return;
 
@@ -168,8 +177,8 @@ export async function createHousehold(household: InsertHousehold) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(households).values(household);
-  return result[0].insertId;
+  const result = await db.insert(households).values(household).returning({ id: households.id });
+  return result[0].id;
 }
 
 export async function getHousehold(id: number) {
@@ -195,8 +204,8 @@ export async function createGroup(group: InsertGroup) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(groups).values(group);
-  return result[0].insertId;
+  const result = await db.insert(groups).values(group).returning({ id: groups.id });
+  return result[0].id;
 }
 
 export async function getGroupsByHousehold(householdId: number) {
@@ -206,14 +215,14 @@ export async function getGroupsByHousehold(householdId: number) {
   return await db.select().from(groups).where(eq(groups.householdId, householdId));
 }
 
-export async function addUserToGroup(groupId: number, userId: number) {
+export async function addUserToGroup(groupId: number, userId: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   await db.insert(groupMembers).values({ groupId, userId });
 }
 
-export async function removeUserFromGroup(groupId: number, userId: number) {
+export async function removeUserFromGroup(groupId: number, userId: string) {
   const db = await getDb();
   if (!db) return;
 
@@ -222,7 +231,7 @@ export async function removeUserFromGroup(groupId: number, userId: number) {
   );
 }
 
-export async function getUserGroups(userId: number, householdId: number) {
+export async function getUserGroups(userId: string, householdId: number) {
   const db = await getDb();
   if (!db) return [];
 
@@ -243,8 +252,8 @@ export async function createInvite(invite: InsertInvite) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(invites).values(invite);
-  return result[0].insertId;
+  const result = await db.insert(invites).values(invite).returning({ id: invites.id });
+  return result[0].id;
 }
 
 export async function getInviteByToken(token: string) {
@@ -301,8 +310,8 @@ export async function createEvent(event: InsertEvent) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(events).values(event);
-  return result[0].insertId;
+  const result = await db.insert(events).values(event).returning({ id: events.id });
+  return result[0].id;
 }
 
 export async function getEventsByHousehold(householdId: number) {
@@ -367,8 +376,8 @@ export async function createNeed(need: InsertNeed) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(needs).values(need);
-  return result[0].insertId;
+  const result = await db.insert(needs).values(need).returning({ id: needs.id });
+  return result[0].id;
 }
 
 export async function getNeedsByHousehold(householdId: number) {
@@ -450,8 +459,8 @@ export async function createNeedClaim(claim: InsertNeedClaim) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(needClaims).values(claim);
-  return result[0].insertId;
+  const result = await db.insert(needClaims).values(claim).returning({ id: needClaims.id });
+  return result[0].id;
 }
 
 export async function getClaimsByNeed(needId: number) {
@@ -487,8 +496,8 @@ export async function createAnnouncement(announcement: InsertAnnouncement) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(announcements).values(announcement);
-  return result[0].insertId;
+  const result = await db.insert(announcements).values(announcement).returning({ id: announcements.id });
+  return result[0].id;
 }
 
 export async function getAnnouncementsByHousehold(householdId: number) {
@@ -543,7 +552,7 @@ export async function getAuditLogsByHousehold(householdId: number, limit = 100) 
 // NOTIFICATION PREFERENCES
 // ============================================================================
 
-export async function getOrCreateNotificationPrefs(userId: number) {
+export async function getOrCreateNotificationPrefs(userId: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -569,7 +578,7 @@ export async function getOrCreateNotificationPrefs(userId: number) {
   return created[0];
 }
 
-export async function getNotificationPrefs(userId: number) {
+export async function getNotificationPrefs(userId: string) {
   const db = await getDb();
   if (!db) return null;
 
@@ -582,14 +591,14 @@ export async function getNotificationPrefs(userId: number) {
   return result.length > 0 ? result[0] : null;
 }
 
-export async function updateNotificationPrefs(userId: number, data: Partial<InsertNotificationPref>) {
+export async function updateNotificationPrefs(userId: string, data: Partial<InsertNotificationPref>) {
   const db = await getDb();
   if (!db) return;
 
   await db.update(notificationPrefs).set(data).where(eq(notificationPrefs.userId, userId));
 }
 
-export async function upsertNotificationPrefs(userId: number, data: Partial<InsertNotificationPref>) {
+export async function upsertNotificationPrefs(userId: string, data: Partial<InsertNotificationPref>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -635,8 +644,8 @@ export async function upsertRsvp(rsvp: InsertEventRsvp) {
     return existing[0].id;
   } else {
     // Create new RSVP
-    const result = await db.insert(eventRsvps).values(rsvp);
-    return result[0].insertId;
+    const result = await db.insert(eventRsvps).values(rsvp).returning({ id: eventRsvps.id });
+    return result[0].id;
   }
 }
 
@@ -654,7 +663,7 @@ export async function getRsvpsByEvent(eventId: number) {
     .where(eq(eventRsvps.eventId, eventId));
 }
 
-export async function getUserRsvp(eventId: number, userId: number) {
+export async function getUserRsvp(eventId: number, userId: string) {
   const db = await getDb();
   if (!db) return undefined;
 
@@ -707,8 +716,8 @@ export async function createAdminMessage(message: InsertAdminMessage) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(adminMessages).values(message);
-  return result[0].insertId;
+  const result = await db.insert(adminMessages).values(message).returning({ id: adminMessages.id });
+  return result[0].id;
 }
 
 export async function createAdminMessageRecipient(recipient: InsertAdminMessageRecipient) {
@@ -737,8 +746,8 @@ export async function createAdminGroup(group: InsertAdminGroup) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(adminGroups).values(group);
-  return result[0].insertId;
+  const result = await db.insert(adminGroups).values(group).returning({ id: adminGroups.id });
+  return result[0].id;
 }
 
 export async function addAdminGroupMember(member: InsertAdminGroupMember) {
@@ -812,8 +821,8 @@ export async function createUpdate(update: InsertUpdate) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(updates).values(update);
-  return result[0].insertId;
+  const result = await db.insert(updates).values(update).returning({ id: updates.id });
+  return result[0].id;
 }
 
 export async function getUpdatesByHousehold(householdId: number) {

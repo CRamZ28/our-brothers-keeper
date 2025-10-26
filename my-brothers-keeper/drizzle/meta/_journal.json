@@ -1,54 +1,12 @@
 {
   "version": "7",
-  "dialect": "mysql",
+  "dialect": "postgresql",
   "entries": [
     {
       "idx": 0,
-      "version": "5",
-      "when": 1761198657108,
-      "tag": "0000_spotty_terrax",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1761198732890,
-      "tag": "0001_pretty_supreme_intelligence",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1761231259152,
-      "tag": "0002_pale_wiccan",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1761269361039,
-      "tag": "0003_magical_slipstream",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "5",
-      "when": 1761270133587,
-      "tag": "0004_odd_namora",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "5",
-      "when": 1761330591179,
-      "tag": "0005_heavy_gamora",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "5",
-      "when": 1761340472682,
-      "tag": "0006_sour_dormammu",
+      "version": "7",
+      "when": 1761513579267,
+      "tag": "0000_fair_valeria_richards",
       "breakpoints": true
     }
   ]
