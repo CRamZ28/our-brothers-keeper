@@ -4,7 +4,7 @@
 Our Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one. The application features a needs board, shared calendar, messaging, and update tracking to help coordinate support during difficult times.
 
 **Current Status**: ✅ Fully operational on Replit with PostgreSQL and Replit Auth
-**Last Updated**: October 26, 2025
+**Last Updated**: October 26, 2025 (Added group filtering for needs + custom logo)
 
 ## Project Architecture
 
@@ -44,9 +44,14 @@ The project requires these environment variables configured in `my-brothers-keep
 
 **Optional Variables:**
 - `VITE_APP_TITLE`: Application title (defaults to "Our Brother's Keeper")
-- `VITE_APP_LOGO`: Application logo URL
+- `VITE_APP_LOGO`: Application logo URL (currently set to `/obk-logo.png` - custom wooden cross logo)
 - `BUILT_IN_FORGE_API_URL`: Forge API endpoint (for image generation, etc.)
 - `BUILT_IN_FORGE_API_KEY`: Forge API key
+
+**Twilio SMS Notifications (Pending Setup):**
+- `TWILIO_ACCOUNT_SID`: Twilio account identifier (not yet configured)
+- `TWILIO_AUTH_TOKEN`: Twilio authentication token (not yet configured)
+- `TWILIO_PHONE_NUMBER`: Twilio phone number for sending SMS (not yet configured)
 
 ### Development Server
 The development server runs on port 5000 and serves both the frontend (via Vite) and backend (Express).
@@ -185,10 +190,14 @@ The production server serves static files from `dist/public` and runs the tRPC A
 
 ### Core Functionality
 1. **Needs Board**: Coordinate and track support needs (meals, rides, errands)
+   - Group-based visibility: Restrict needs to specific groups (e.g., "Immediate Family" for picking up kids from school)
+   - Visibility options: All Supporters, Specific Group, By Role, or Private
+   - Priority levels and due dates for better organization
 2. **Shared Calendar**: Keep everyone informed about important events
 3. **Messages**: Private communication between supporters and household
 4. **Updates**: Share updates about the family's situation
 5. **User Management**: Invite system for supporters with role-based access
+6. **Groups**: Organize supporters into groups (Immediate Family, Close Friends, etc.) for targeted needs and communications
 
 ### Authentication & Security
 - Replit Auth with OpenID Connect (Google, GitHub, X, Apple, email/password)
@@ -198,4 +207,28 @@ The production server serves static files from `dist/public` and runs the tRPC A
 
 ## User Preferences
 - **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
+- **Logo**: Custom wooden cross with "OBK" in teal (stored at `client/public/obk-logo.png`)
+
+## Recent Updates (October 26, 2025)
+
+### Group Filtering for Needs
+- Added visibility scope controls to needs creation form
+- Users can now restrict needs to specific groups (e.g., "Immediate Family" for sensitive requests like picking up kids from school)
+- Visibility options include:
+  - **All Supporters**: Everyone can see and claim the need
+  - **Specific Group**: Only members of selected group can see (e.g., Immediate Family, Close Friends)
+  - **By Role**: Only Admin/Primary can see
+  - **Private**: Only Primary can see
+- Group selection dropdown appears when "Specific Group" is selected
+- Form validates that a group is selected when using group visibility
+
+### Custom Logo Integration
+- Added custom OBK logo (wooden cross design) to `client/public/obk-logo.png`
+- Updated `.env` file to reference the logo: `VITE_APP_LOGO=/obk-logo.png`
+- Logo appears throughout the application in navigation and branding
+
+### Twilio SMS Notifications (Planned)
+- User declined Replit Twilio integration
+- Manual Twilio setup will be required when credentials are provided
+- Will enable SMS notifications for urgent needs, event reminders, and important announcements
 - **Authentication**: Replit Auth (chosen over custom OAuth)

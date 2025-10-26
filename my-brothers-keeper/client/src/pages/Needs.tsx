@@ -64,6 +64,7 @@ const priorityColors: Record<string, string> = {
 export default function Needs() {
   const { user } = useAuth();
   const { data: needs, refetch: refetchNeeds } = trpc.needs.list.useQuery();
+  const { data: groups } = trpc.group.list.useQuery();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -74,6 +75,10 @@ export default function Needs() {
   const [priority, setPriority] = useState<"low" | "normal" | "urgent">("normal");
   const [dueDate, setDueDate] = useState("");
   const [capacity, setCapacity] = useState<string>("");
+  const [visibilityScope, setVisibilityScope] = useState<
+    "private" | "all_supporters" | "group" | "role"
+  >("all_supporters");
+  const [visibilityGroupId, setVisibilityGroupId] = useState<string>("");
 
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
@@ -124,11 +129,18 @@ export default function Needs() {
     setPriority("normal");
     setDueDate("");
     setCapacity("");
+    setVisibilityScope("all_supporters");
+    setVisibilityGroupId("");
   };
 
   const handleCreateNeed = () => {
     if (!title.trim()) {
       toast.error("Please enter a title");
+      return;
+    }
+
+    if (visibilityScope === "group" && !visibilityGroupId) {
+      toast.error("Please select a group");
       return;
     }
 
@@ -139,6 +151,8 @@ export default function Needs() {
       priority,
       dueAt: dueDate ? new Date(dueDate) : undefined,
       capacity: capacity ? parseInt(capacity) : undefined,
+      visibilityScope,
+      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
     });
   };
 
@@ -232,6 +246,40 @@ export default function Needs() {
                       </SelectContent>
                     </Select>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="visibility">Who Can See This</Label>
+                    <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all_supporters">All Supporters</SelectItem>
+                        <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
+                        <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
+                        <SelectItem value="private">Private (Primary only)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Control who can see and respond to this need
+                    </p>
+                  </div>
+                  {visibilityScope === "group" && (
+                    <div className="space-y-2">
+                      <Label htmlFor="group">Select Group</Label>
+                      <Select value={visibilityGroupId} onValueChange={setVisibilityGroupId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choose a group..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {groups?.map((group: { id: number; name: string }) => (
+                            <SelectItem key={group.id} value={group.id.toString()}>
+                              {group.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="dueDate">Due Date (optional)</Label>
                     <Input
