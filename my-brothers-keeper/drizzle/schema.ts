@@ -1,53 +1,91 @@
+import { sql } from "drizzle-orm";
 import {
   boolean,
-  int,
-  mysqlEnum,
-  mysqlTable,
+  serial,
+  pgEnum,
+  pgTable,
   text,
   timestamp,
   varchar,
-  json,
+  jsonb,
   index,
   uniqueIndex,
-} from "drizzle-orm/mysql-core";
+  integer,
+} from "drizzle-orm/pg-core";
+
+// Replit Auth: Session storage table
+// Reference: blueprint:javascript_log_in_with_replit
+export const sessions = pgTable(
+  "sessions",
+  {
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
+  },
+  (table) => [index("IDX_session_expire").on(table.expire)],
+);
+
+// Define PostgreSQL enums
+export const userRoleEnum = pgEnum("user_role", ["primary", "admin", "supporter", "user"]);
+export const userStatusEnum = pgEnum("user_status", ["active", "pending", "blocked"]);
+export const invitedRoleEnum = pgEnum("invited_role", ["admin", "supporter"]);
+export const inviteStatusEnum = pgEnum("invite_status", ["sent", "accepted", "revoked", "expired"]);
+export const visibilityScopeEnum = pgEnum("visibility_scope", ["private", "all_supporters", "group", "role"]);
+export const minRoleEnum = pgEnum("min_role", ["supporter", "admin", "primary"]);
+export const rsvpStatusEnum = pgEnum("rsvp_status", ["going", "maybe", "declined"]);
+export const needCategoryEnum = pgEnum("need_category", ["meals", "rides", "errands", "childcare", "household", "other"]);
+export const priorityEnum = pgEnum("priority", ["low", "normal", "urgent"]);
+export const needStatusEnum = pgEnum("need_status", ["open", "claimed", "completed", "cancelled"]);
+export const claimStatusEnum = pgEnum("claim_status", ["claimed", "completed", "released"]);
+export const updateTypeEnum = pgEnum("update_type", ["general", "gratitude", "memory", "milestone"]);
+export const digestFrequencyEnum = pgEnum("digest_frequency", ["immediate", "daily", "weekly"]);
+export const recipientTypeEnum = pgEnum("recipient_type", ["individual", "group", "all"]);
 
 /**
  * Core user table backing auth flow.
- * Extended with role and household support for My Brother's Keeper.
+ * Modified for Replit Auth integration - uses varchar ID from OpenID Connect
+ * Extended with role and household support for Our Brother's Keeper.
  */
-export const users = mysqlTable("users", {
-  id: int("id").autoincrement().primaryKey(),
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  name: text("name"),
+export const users = pgTable("users", {
+  // Replit Auth: Using varchar for OpenID Connect sub claim
+  id: varchar("id").primaryKey(),
+  // Replit Auth fields
   email: varchar("email", { length: 320 }),
+  firstName: varchar("first_name", { length: 255 }),
+  lastName: varchar("last_name", { length: 255 }),
+  profileImageUrl: varchar("profile_image_url", { length: 500 }),
+  // App-specific fields
+  name: text("name"),
   phone: varchar("phone", { length: 20 }),
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["primary", "admin", "supporter", "user"]).default("user").notNull(),
-  householdId: int("householdId"),
-  status: mysqlEnum("status", ["active", "pending", "blocked"]).default("pending").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  loginMethod: varchar("login_method", { length: 64 }),
+  role: userRoleEnum("role").default("user").notNull(),
+  householdId: integer("household_id"),
+  status: userStatusEnum("status").default("pending").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  lastSignedIn: timestamp("last_signed_in").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   statusIdx: index("status_idx").on(table.status),
+  emailIdx: index("email_idx").on(table.email),
 }));
 
 export type User = typeof users.$inferSelect;
+export type UpsertUser = typeof users.$inferInsert;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
  * Households - the core organizational unit
  */
-export const households = mysqlTable("households", {
-  id: int("id").autoincrement().primaryKey(),
+export const households = pgTable("households", {
+  id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
-  primaryUserId: int("primaryUserId").notNull(),
-  quietMode: boolean("quietMode").default(false).notNull(),
+  primaryUserId: varchar("primary_user_id").notNull(),
+  quietMode: boolean("quiet_mode").default(false).notNull(),
   timezone: varchar("timezone", { length: 64 }).default("America/Chicago").notNull(),
-  delegateAdminApprovals: boolean("delegateAdminApprovals").default(false).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  delegateAdminApprovals: boolean("delegate_admin_approvals").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   primaryUserIdx: index("primary_user_idx").on(table.primaryUserId),
 }));
@@ -58,12 +96,12 @@ export type InsertHousehold = typeof households.$inferInsert;
 /**
  * Groups - visibility groups per household (Inner Circle, Immediate Family, etc.)
  */
-export const groups = mysqlTable("groups", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
+export const groups = pgTable("groups", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
 }));
@@ -74,11 +112,11 @@ export type InsertGroup = typeof groups.$inferInsert;
 /**
  * Group Members - junction table for users in groups
  */
-export const groupMembers = mysqlTable("group_members", {
-  id: int("id").autoincrement().primaryKey(),
-  groupId: int("groupId").notNull(),
-  userId: int("userId").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+export const groupMembers = pgTable("group_members", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   groupUserIdx: uniqueIndex("group_user_idx").on(table.groupId, table.userId),
   userIdx: index("user_idx").on(table.userId),
@@ -90,17 +128,17 @@ export type InsertGroupMember = typeof groupMembers.$inferInsert;
 /**
  * Invites - for inviting supporters to join a household
  */
-export const invites = mysqlTable("invites", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
-  invitedEmail: varchar("invitedEmail", { length: 320 }),
-  invitedPhone: varchar("invitedPhone", { length: 20 }),
-  invitedRole: mysqlEnum("invitedRole", ["admin", "supporter"]).notNull(),
-  inviterUserId: int("inviterUserId").notNull(),
-  status: mysqlEnum("status", ["sent", "accepted", "revoked", "expired"]).default("sent").notNull(),
+export const invites = pgTable("invites", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  invitedEmail: varchar("invited_email", { length: 320 }),
+  invitedPhone: varchar("invited_phone", { length: 20 }),
+  invitedRole: invitedRoleEnum("invited_role").notNull(),
+  inviterUserId: varchar("inviter_user_id").notNull(),
+  status: inviteStatusEnum("status").default("sent").notNull(),
   token: varchar("token", { length: 64 }).notNull().unique(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  expiresAt: timestamp("expiresAt").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   tokenIdx: index("token_idx").on(table.token),
@@ -113,22 +151,22 @@ export type InsertInvite = typeof invites.$inferInsert;
 /**
  * Events - calendar events for the household
  */
-export const events = mysqlTable("events", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
+export const events = pgTable("events", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  startAt: timestamp("startAt").notNull(),
-  endAt: timestamp("endAt"),
+  startAt: timestamp("start_at").notNull(),
+  endAt: timestamp("end_at"),
   location: varchar("location", { length: 500 }),
-  createdBy: int("createdBy").notNull(),
-  googleCalendarEvtId: varchar("googleCalendarEvtId", { length: 255 }),
-  visibilityScope: mysqlEnum("visibilityScope", ["private", "all_supporters", "group", "role"]).default("all_supporters").notNull(),
-  visibilityGroupId: int("visibilityGroupId"),
-  minRole: mysqlEnum("minRole", ["supporter", "admin", "primary"]),
-  capacity: int("capacity"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdBy: varchar("created_by").notNull(),
+  googleCalendarEvtId: varchar("google_calendar_evt_id", { length: 255 }),
+  visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
+  visibilityGroupId: integer("visibility_group_id"),
+  minRole: minRoleEnum("min_role"),
+  capacity: integer("capacity"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   startAtIdx: index("start_at_idx").on(table.startAt),
@@ -141,12 +179,12 @@ export type InsertEvent = typeof events.$inferInsert;
 /**
  * Event RSVPs - track who's attending events
  */
-export const eventRsvps = mysqlTable("event_rsvps", {
-  id: int("id").autoincrement().primaryKey(),
-  eventId: int("eventId").notNull(),
-  userId: int("userId").notNull(),
-  status: mysqlEnum("status", ["going", "maybe", "declined"]).notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+export const eventRsvps = pgTable("event_rsvps", {
+  id: serial("id").primaryKey(),
+  eventId: integer("event_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  status: rsvpStatusEnum("status").notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   eventUserIdx: uniqueIndex("event_user_idx").on(table.eventId, table.userId),
   userIdx: index("user_idx").on(table.userId),
@@ -158,23 +196,23 @@ export type InsertEventRsvp = typeof eventRsvps.$inferInsert;
 /**
  * Needs - help board items (meals, rides, errands, etc.)
  */
-export const needs = mysqlTable("needs", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
+export const needs = pgTable("needs", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   details: text("details"),
-  category: mysqlEnum("category", ["meals", "rides", "errands", "childcare", "household", "other"]).notNull(),
-  priority: mysqlEnum("priority", ["low", "normal", "urgent"]).default("normal").notNull(),
-  dueAt: timestamp("dueAt"),
-  recurrence: varchar("recurrence", { length: 255 }), // iCal RRULE format
-  createdBy: int("createdBy").notNull(),
-  visibilityScope: mysqlEnum("visibilityScope", ["private", "all_supporters", "group", "role"]).default("all_supporters").notNull(),
-  visibilityGroupId: int("visibilityGroupId"),
-  status: mysqlEnum("status", ["open", "claimed", "completed", "cancelled"]).default("open").notNull(),
-  capacity: int("capacity"),
-  completedAt: timestamp("completedAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  category: needCategoryEnum("category").notNull(),
+  priority: priorityEnum("priority").default("normal").notNull(),
+  dueAt: timestamp("due_at"),
+  recurrence: varchar("recurrence", { length: 255 }),
+  createdBy: varchar("created_by").notNull(),
+  visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
+  visibilityGroupId: integer("visibility_group_id"),
+  status: needStatusEnum("status").default("open").notNull(),
+  capacity: integer("capacity"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   statusIdx: index("status_idx").on(table.status),
@@ -188,15 +226,15 @@ export type InsertNeed = typeof needs.$inferInsert;
 /**
  * Need Claims - track who claimed which needs
  */
-export const needClaims = mysqlTable("need_claims", {
-  id: int("id").autoincrement().primaryKey(),
-  needId: int("needId").notNull(),
-  userId: int("userId").notNull(),
-  status: mysqlEnum("status", ["claimed", "completed", "released"]).default("claimed").notNull(),
+export const needClaims = pgTable("need_claims", {
+  id: serial("id").primaryKey(),
+  needId: integer("need_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  status: claimStatusEnum("status").default("claimed").notNull(),
   note: text("note"),
-  completedAt: timestamp("completedAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   needIdx: index("need_idx").on(table.needId),
   userIdx: index("user_idx").on(table.userId),
@@ -209,15 +247,15 @@ export type InsertNeedClaim = typeof needClaims.$inferInsert;
 /**
  * Messages - DM/group/broadcast messaging
  */
-export const messages = mysqlTable("messages", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
-  threadId: varchar("threadId", { length: 64 }),
-  senderUserId: int("senderUserId").notNull(),
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  threadId: varchar("thread_id", { length: 64 }),
+  senderUserId: varchar("sender_user_id").notNull(),
   body: text("body").notNull(),
-  visibilityScope: mysqlEnum("visibilityScope", ["private", "all_supporters", "group", "role"]).default("all_supporters").notNull(),
-  visibilityGroupId: int("visibilityGroupId"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
+  visibilityGroupId: integer("visibility_group_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   threadIdx: index("thread_idx").on(table.threadId),
@@ -230,17 +268,17 @@ export type InsertMessage = typeof messages.$inferInsert;
 /**
  * Announcements - broadcast messages from Primary/Admin
  */
-export const announcements = mysqlTable("announcements", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
+export const announcements = pgTable("announcements", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   body: text("body").notNull(),
   pinned: boolean("pinned").default(false).notNull(),
-  createdBy: int("createdBy").notNull(),
-  visibilityScope: mysqlEnum("visibilityScope", ["private", "all_supporters", "group", "role"]).default("all_supporters").notNull(),
-  visibilityGroupId: int("visibilityGroupId"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdBy: varchar("created_by").notNull(),
+  visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
+  visibilityGroupId: integer("visibility_group_id"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   pinnedIdx: index("pinned_idx").on(table.pinned),
@@ -253,16 +291,16 @@ export type InsertAnnouncement = typeof announcements.$inferInsert;
 /**
  * Updates - personal updates from Primary with photos
  */
-export const updates = mysqlTable("updates", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
-  authorId: int("authorId").notNull(),
-  type: mysqlEnum("type", ["general", "gratitude", "memory", "milestone"]).default("general").notNull(),
+export const updates = pgTable("updates", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  authorId: varchar("author_id").notNull(),
+  type: updateTypeEnum("type").default("general").notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   body: text("body").notNull(),
-  photoUrls: json("photoUrls").$type<string[] | null>(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  photoUrls: jsonb("photo_urls").$type<string[] | null>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   authorIdx: index("author_idx").on(table.authorId),
@@ -275,17 +313,17 @@ export type InsertUpdate = typeof updates.$inferInsert;
 /**
  * Notification Preferences - per-user notification settings
  */
-export const notificationPrefs = mysqlTable("notification_prefs", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull().unique(),
-  channelEmail: boolean("channelEmail").default(true).notNull(),
-  channelSms: boolean("channelSms").default(false).notNull(),
-  channelPush: boolean("channelPush").default(true).notNull(),
-  digestFrequency: mysqlEnum("digestFrequency", ["immediate", "daily", "weekly"]).default("daily").notNull(),
-  urgentNeedsAlerts: boolean("urgentNeedsAlerts").default(true).notNull(),
-  quietHours: json("quietHours").$type<{ start: string; end: string } | null>(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+export const notificationPrefs = pgTable("notification_prefs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull().unique(),
+  channelEmail: boolean("channel_email").default(true).notNull(),
+  channelSms: boolean("channel_sms").default(false).notNull(),
+  channelPush: boolean("channel_push").default(true).notNull(),
+  digestFrequency: digestFrequencyEnum("digest_frequency").default("daily").notNull(),
+  urgentNeedsAlerts: boolean("urgent_needs_alerts").default(true).notNull(),
+  quietHours: jsonb("quiet_hours").$type<{ start: string; end: string } | null>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   userIdx: index("user_idx").on(table.userId),
 }));
@@ -296,16 +334,16 @@ export type InsertNotificationPref = typeof notificationPrefs.$inferInsert;
 /**
  * Admin Messages - messages sent by admins to supporters
  */
-export const adminMessages = mysqlTable("admin_messages", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
-  senderId: int("senderId").notNull(),
+export const adminMessages = pgTable("admin_messages", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  senderId: varchar("sender_id").notNull(),
   subject: varchar("subject", { length: 255 }).notNull(),
   body: text("body").notNull(),
-  recipientType: mysqlEnum("recipientType", ["individual", "group", "all"]).notNull(),
-  recipientGroupId: int("recipientGroupId"),
-  includedPrimary: boolean("includedPrimary").default(false).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  recipientType: recipientTypeEnum("recipient_type").notNull(),
+  recipientGroupId: integer("recipient_group_id"),
+  includedPrimary: boolean("included_primary").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   senderIdx: index("sender_idx").on(table.senderId),
@@ -317,12 +355,12 @@ export type InsertAdminMessage = typeof adminMessages.$inferInsert;
 /**
  * Admin Message Recipients - tracks who received each admin message
  */
-export const adminMessageRecipients = mysqlTable("admin_message_recipients", {
-  id: int("id").autoincrement().primaryKey(),
-  messageId: int("messageId").notNull(),
-  userId: int("userId").notNull(),
-  readAt: timestamp("readAt"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+export const adminMessageRecipients = pgTable("admin_message_recipients", {
+  id: serial("id").primaryKey(),
+  messageId: integer("message_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   messageIdx: index("message_idx").on(table.messageId),
   userIdx: index("user_idx").on(table.userId),
@@ -334,14 +372,14 @@ export type InsertAdminMessageRecipient = typeof adminMessageRecipients.$inferIn
 /**
  * Admin Groups - custom groups created by admins for targeted communication
  */
-export const adminGroups = mysqlTable("admin_groups", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
-  createdBy: int("createdBy").notNull(),
+export const adminGroups = pgTable("admin_groups", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  createdBy: varchar("created_by").notNull(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
 }));
@@ -352,11 +390,11 @@ export type InsertAdminGroup = typeof adminGroups.$inferInsert;
 /**
  * Admin Group Members - members of admin-created groups
  */
-export const adminGroupMembers = mysqlTable("admin_group_members", {
-  id: int("id").autoincrement().primaryKey(),
-  groupId: int("groupId").notNull(),
-  userId: int("userId").notNull(),
-  addedAt: timestamp("addedAt").defaultNow().notNull(),
+export const adminGroupMembers = pgTable("admin_group_members", {
+  id: serial("id").primaryKey(),
+  groupId: integer("group_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  addedAt: timestamp("added_at").defaultNow().notNull(),
 }, (table) => ({
   groupIdx: index("group_idx").on(table.groupId),
   userIdx: index("user_idx").on(table.userId),
@@ -369,15 +407,15 @@ export type InsertAdminGroupMember = typeof adminGroupMembers.$inferInsert;
 /**
  * Audit Logs - track all important actions for transparency
  */
-export const auditLogs = mysqlTable("audit_logs", {
-  id: int("id").autoincrement().primaryKey(),
-  householdId: int("householdId").notNull(),
-  actorUserId: int("actorUserId").notNull(),
+export const auditLogs = pgTable("audit_logs", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  actorUserId: varchar("actor_user_id").notNull(),
   action: varchar("action", { length: 255 }).notNull(),
-  targetType: varchar("targetType", { length: 64 }).notNull(),
-  targetId: int("targetId").notNull(),
-  metadata: json("metadata").$type<Record<string, unknown> | null>(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  targetType: varchar("target_type", { length: 64 }).notNull(),
+  targetId: integer("target_id").notNull(),
+  metadata: jsonb("metadata").$type<Record<string, unknown> | null>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("household_idx").on(table.householdId),
   actorIdx: index("actor_idx").on(table.actorUserId),
@@ -386,4 +424,3 @@ export const auditLogs = mysqlTable("audit_logs", {
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;
-
