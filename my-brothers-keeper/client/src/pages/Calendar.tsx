@@ -29,7 +29,9 @@ import {
   ChevronLeft,
   ChevronRight,
   MapPin,
+  Pencil,
   Plus,
+  Trash2,
   Users,
   X,
   List,
@@ -61,6 +63,8 @@ export default function Calendar() {
   const [eventDetailOpen, setEventDetailOpen] = useState(false);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingEventId, setEditingEventId] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
@@ -89,6 +93,29 @@ export default function Calendar() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update RSVP");
+    },
+  });
+
+  const updateEventMutation = trpc.events.update.useMutation({
+    onSuccess: () => {
+      toast.success("Event updated successfully!");
+      setEditDialogOpen(false);
+      setEditingEventId(null);
+      resetCreateForm();
+      refetchEvents();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update event");
+    },
+  });
+
+  const deleteEventMutation = trpc.events.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Event deleted successfully!");
+      refetchEvents();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete event");
     },
   });
 
@@ -124,6 +151,59 @@ export default function Calendar() {
       endAt,
       capacity: capacity ? parseInt(capacity) : undefined,
     });
+  };
+
+  const handleUpdateEvent = () => {
+    if (!editingEventId) return;
+    if (!title.trim()) {
+      toast.error("Please enter a title");
+      return;
+    }
+    if (!startDate) {
+      toast.error("Please select a start date");
+      return;
+    }
+
+    const startAt = new Date(`${startDate}T${startTime || "00:00"}`);
+    const endAt = endDate ? new Date(`${endDate}T${endTime || "23:59"}`) : undefined;
+
+    updateEventMutation.mutate({
+      id: editingEventId,
+      title,
+      description,
+      location,
+      startAt,
+      endAt,
+      capacity: capacity ? parseInt(capacity) : undefined,
+    });
+  };
+
+  const handleDeleteEvent = (eventId: number) => {
+    if (confirm("Are you sure you want to delete this event?")) {
+      deleteEventMutation.mutate({ id: eventId });
+      setEventDetailOpen(false);
+    }
+  };
+
+  const openEditDialog = (event: any) => {
+    setEditingEventId(event.id);
+    setTitle(event.title);
+    setDescription(event.description || "");
+    setLocation(event.location || "");
+    const start = new Date(event.startAt);
+    setStartDate(start.toISOString().split("T")[0]);
+    setStartTime(start.toTimeString().slice(0, 5));
+    if (event.endAt) {
+      const end = new Date(event.endAt);
+      setEndDate(end.toISOString().split("T")[0]);
+      setEndTime(end.toTimeString().slice(0, 5));
+    } else {
+      setEndDate("");
+      setEndTime("");
+    }
+    setCapacity(event.capacity?.toString() || "");
+    setEditDialogOpen(true);
+    setEventDetailOpen(false);
   };
 
   const handleRsvp = (eventId: number, status: "going" | "declined" | "maybe") => {
@@ -606,6 +686,27 @@ export default function Calendar() {
                   </div>
                 )}
                 <DialogFooter className="flex-col sm:flex-row gap-2">
+                  {(user && (event.createdById === user.id || isPrimaryOrAdmin)) && (
+                    <div className="flex gap-2 mr-auto">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => openEditDialog(event)}
+                      >
+                        <Pencil className="w-4 h-4 mr-2" />
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDeleteEvent(event.id)}
+                        disabled={deleteEventMutation.isPending}
+                      >
+                        <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                        Delete
+                      </Button>
+                    </div>
+                  )}
                   <Button
                     variant="default"
                     onClick={() => {

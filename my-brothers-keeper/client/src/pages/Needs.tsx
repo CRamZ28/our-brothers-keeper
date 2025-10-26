@@ -38,8 +38,10 @@ import {
   Check,
   Heart,
   Home,
+  Pencil,
   Plus,
   ShoppingCart,
+  Trash2,
   Truck,
   Utensils,
 } from "lucide-react";
@@ -67,6 +69,8 @@ export default function Needs() {
   const { data: groups } = trpc.group.list.useQuery();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingNeedId, setEditingNeedId] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const [details, setDetails] = useState("");
   const [category, setCategory] = useState<
@@ -122,6 +126,29 @@ export default function Needs() {
     },
   });
 
+  const updateNeedMutation = trpc.needs.update.useMutation({
+    onSuccess: () => {
+      toast.success("Need updated successfully!");
+      setEditDialogOpen(false);
+      setEditingNeedId(null);
+      resetCreateForm();
+      refetchNeeds();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update need");
+    },
+  });
+
+  const deleteNeedMutation = trpc.needs.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Need deleted successfully!");
+      refetchNeeds();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete need");
+    },
+  });
+
   const resetCreateForm = () => {
     setTitle("");
     setDetails("");
@@ -154,6 +181,50 @@ export default function Needs() {
       visibilityScope,
       visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
     });
+  };
+
+  const handleUpdateNeed = () => {
+    if (!editingNeedId) return;
+    if (!title.trim()) {
+      toast.error("Please enter a title");
+      return;
+    }
+
+    if (visibilityScope === "group" && !visibilityGroupId) {
+      toast.error("Please select a group");
+      return;
+    }
+
+    updateNeedMutation.mutate({
+      id: editingNeedId,
+      title,
+      details,
+      category,
+      priority,
+      dueAt: dueDate ? new Date(dueDate) : undefined,
+      capacity: capacity ? parseInt(capacity) : undefined,
+      visibilityScope,
+      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+    });
+  };
+
+  const handleDeleteNeed = (needId: number) => {
+    if (confirm("Are you sure you want to delete this need?")) {
+      deleteNeedMutation.mutate({ id: needId });
+    }
+  };
+
+  const openEditDialog = (need: any) => {
+    setEditingNeedId(need.id);
+    setTitle(need.title);
+    setDetails(need.details || "");
+    setCategory(need.category);
+    setPriority(need.priority);
+    setDueDate(need.dueAt ? new Date(need.dueAt).toISOString().split("T")[0] : "");
+    setCapacity(need.capacity?.toString() || "");
+    setVisibilityScope(need.visibilityScope || "all_supporters");
+    setVisibilityGroupId(need.visibilityGroupId?.toString() || "");
+    setEditDialogOpen(true);
   };
 
   const handleClaimNeed = () => {
@@ -335,6 +406,141 @@ export default function Needs() {
           </p>
         </div>
 
+        {/* Edit Need Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Need</DialogTitle>
+              <DialogDescription>
+                Update the details for this need.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-title">Title *</Label>
+                <Input
+                  id="edit-title"
+                  placeholder="e.g., Meal for Tuesday dinner"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-category">Category</Label>
+                <Select value={category} onValueChange={(v) => setCategory(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="meals">Meals</SelectItem>
+                    <SelectItem value="rides">Rides</SelectItem>
+                    <SelectItem value="errands">Errands</SelectItem>
+                    <SelectItem value="childcare">Childcare</SelectItem>
+                    <SelectItem value="household">Household</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-priority">Priority</Label>
+                <Select value={priority} onValueChange={(v) => setPriority(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="normal">Normal</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-visibility">Who Can See This</Label>
+                <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all_supporters">All Supporters</SelectItem>
+                    <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
+                    <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
+                    <SelectItem value="private">Private (Primary only)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Control who can see and respond to this need
+                </p>
+              </div>
+              {visibilityScope === "group" && (
+                <div className="space-y-2">
+                  <Label htmlFor="edit-group">Select Group</Label>
+                  <Select value={visibilityGroupId} onValueChange={setVisibilityGroupId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a group..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groups?.map((group: { id: number; name: string }) => (
+                        <SelectItem key={group.id} value={group.id.toString()}>
+                          {group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="space-y-2">
+                <Label htmlFor="edit-dueDate">Due Date (optional)</Label>
+                <Input
+                  id="edit-dueDate"
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-capacity">Capacity (optional)</Label>
+                <Input
+                  id="edit-capacity"
+                  type="number"
+                  min="1"
+                  placeholder="Leave empty for unlimited"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Set how many people can claim this (e.g., "1" for grocery run, "3" for moving help). Leave empty for unlimited.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-details">Details (optional)</Label>
+                <Textarea
+                  id="edit-details"
+                  placeholder="Add any specific instructions or preferences..."
+                  value={details}
+                  onChange={(e) => setDetails(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEditDialogOpen(false);
+                  setEditingNeedId(null);
+                  resetCreateForm();
+                }}
+                disabled={updateNeedMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateNeed} disabled={updateNeedMutation.isPending}>
+                {updateNeedMutation.isPending ? "Updating..." : "Update Need"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Claim Dialog */}
         <Dialog open={claimDialogOpen} onOpenChange={setClaimDialogOpen}>
           <DialogContent>
@@ -427,6 +633,26 @@ export default function Needs() {
                               </div>
                             </div>
                           </div>
+                          {(user && (need.createdById === user.id || isPrimaryOrAdmin)) && (
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openEditDialog(need)}
+                                disabled={deleteNeedMutation.isPending}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteNeed(need.id)}
+                                disabled={deleteNeedMutation.isPending}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </CardHeader>
                       {(need.details || need.dueAt) && (
@@ -478,27 +704,49 @@ export default function Needs() {
                   return (
                     <Card key={need.id}>
                       <CardHeader>
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
-                            <Icon className="w-5 h-5 text-green-600" />
-                          </div>
-                          <div className="flex-1">
-                            <CardTitle className="text-lg">{need.title}</CardTitle>
-                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                                Claimed
-                              </Badge>
-                              <span className="text-sm text-muted-foreground">
-                                by <span className="font-medium text-foreground">{need.claimedByName || "Someone"}</span>
-                              </span>
-                              {need.dueAt && (
-                                <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
-                                  {new Date(need.dueAt).toLocaleDateString()}
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-3 flex-1">
+                            <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                              <Icon className="w-5 h-5 text-green-600" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <CardTitle className="text-lg">{need.title}</CardTitle>
+                              <div className="flex flex-wrap items-center gap-2 mt-2">
+                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                  Claimed
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  by <span className="font-medium text-foreground">{need.claimedByName || "Someone"}</span>
                                 </span>
-                              )}
+                                {need.dueAt && (
+                                  <span className="text-sm text-muted-foreground flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    {new Date(need.dueAt).toLocaleDateString()}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </div>
+                          {(user && (need.createdById === user.id || isPrimaryOrAdmin)) && (
+                            <div className="flex gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => openEditDialog(need)}
+                                disabled={deleteNeedMutation.isPending}
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDeleteNeed(need.id)}
+                                disabled={deleteNeedMutation.isPending}
+                              >
+                                <Trash2 className="w-4 h-4 text-destructive" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </CardHeader>
                       {need.details && (
