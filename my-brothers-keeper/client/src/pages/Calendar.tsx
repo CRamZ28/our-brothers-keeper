@@ -238,15 +238,24 @@ export default function Calendar() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
-            <p className="text-muted-foreground mt-2">
-              Coordinate gatherings, memorials, and support activities
-            </p>
-          </div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
+        
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+        
+        <div className="relative p-8 space-y-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Calendar</h1>
+              <p className="text-muted-foreground mt-2">
+                Coordinate gatherings, memorials, and support activities
+              </p>
+            </div>
           <div className="flex items-center gap-3">
             {/* View Toggle */}
             <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
@@ -389,7 +398,7 @@ export default function Calendar() {
         {view === "calendar" && (
           <div className="space-y-4">
             {/* Month Navigation */}
-            <Card>
+            <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Button variant="outline" size="sm" onClick={previousMonth}>
@@ -480,7 +489,7 @@ export default function Calendar() {
 
             <TabsContent value="upcoming" className="space-y-4">
               {upcomingEvents.length === 0 ? (
-                <Card>
+                <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <CalendarIcon className="w-12 h-12 text-muted-foreground mb-4" />
                     <p className="text-muted-foreground text-center">
@@ -498,7 +507,7 @@ export default function Calendar() {
                       format(addMonths(new Date(), 0).setDate(new Date().getDate() + 1), "yyyy-MM-dd");
 
                     return (
-                      <Card key={event.id} className={isTodayEvent ? "border-primary" : ""}>
+                      <Card key={event.id} className={`backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 ${isTodayEvent ? "border-primary border-2" : ""}`}>
                         <CardHeader>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
