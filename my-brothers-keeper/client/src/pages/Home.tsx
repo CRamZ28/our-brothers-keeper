@@ -29,15 +29,15 @@ export default function Home() {
         {/* Gradient Background with organic shapes */}
         <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
         
-        {/* Subtle animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-30 animate-blob" />
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-30 animate-blob animation-delay-2000" />
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-30 animate-blob animation-delay-4000" />
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
 
         <div className="relative z-10">
           {/* Header with glassmorphism */}
           <header className="container py-6">
-            <div className="flex items-center justify-between backdrop-blur-sm bg-white/30 dark:bg-gray-900/30 rounded-2xl px-6 py-4 border border-white/20 shadow-lg">
+            <div className="flex items-center justify-between backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
               <div className="flex items-center gap-3">
                 {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="w-10 h-10 rounded-lg shadow-md" />}
                 <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">{APP_TITLE}</span>
@@ -81,7 +81,7 @@ export default function Home() {
               {/* Features Grid with Glassmorphism */}
               <div className="grid md:grid-cols-2 gap-6 mt-20 text-left">
                 {/* Feature 1: Needs Board */}
-                <div className="group backdrop-blur-lg bg-white/40 dark:bg-gray-900/40 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/60 dark:hover:bg-gray-900/60 cursor-pointer">
+                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                   <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <Heart className="w-7 h-7 text-white" />
                   </div>
@@ -93,7 +93,7 @@ export default function Home() {
                 </div>
 
                 {/* Feature 2: Shared Calendar */}
-                <div className="group backdrop-blur-lg bg-white/40 dark:bg-gray-900/40 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/60 dark:hover:bg-gray-900/60 cursor-pointer">
+                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                   <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <Calendar className="w-7 h-7 text-white" />
                   </div>
@@ -105,7 +105,7 @@ export default function Home() {
                 </div>
 
                 {/* Feature 3: Privacy First */}
-                <div className="group backdrop-blur-lg bg-white/40 dark:bg-gray-900/40 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/60 dark:hover:bg-gray-900/60 cursor-pointer">
+                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                   <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <Users className="w-7 h-7 text-white" />
                   </div>
@@ -117,7 +117,7 @@ export default function Home() {
                 </div>
 
                 {/* Feature 4: Gentle Reminders */}
-                <div className="group backdrop-blur-lg bg-white/40 dark:bg-gray-900/40 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:bg-white/60 dark:hover:bg-gray-900/60 cursor-pointer">
+                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                   <div className="bg-gradient-to-br from-pink-500 to-pink-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <MessageCircle className="w-7 h-7 text-white" />
                   </div>
@@ -132,7 +132,7 @@ export default function Home() {
           </main>
 
           {/* Footer */}
-          <footer className="container py-6 backdrop-blur-sm bg-white/20 dark:bg-gray-900/20 border-t border-white/20">
+          <footer className="container py-6 backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border-t border-white/20">
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
               Built with compassion for families in their time of need.
             </p>
