@@ -178,10 +178,19 @@ export default function Updates() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 space-y-6">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
+        
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+        
+        <div className="relative p-8 space-y-6">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
             <h1 className="text-3xl font-bold tracking-tight">Updates</h1>
             <p className="text-muted-foreground mt-2">
               Share how you're doing with your support network
@@ -338,7 +347,7 @@ export default function Updates() {
         {/* Updates Feed */}
         <div className="space-y-4">
           {!updates || updates.length === 0 ? (
-            <Card>
+            <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
               <CardContent className="p-12 text-center">
                 <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-semibold mb-2">No updates yet</h3>
@@ -362,7 +371,7 @@ export default function Updates() {
               const isAuthor = user?.id === update.authorId;
 
               return (
-                <Card key={update.id}>
+                <Card key={update.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
                   <CardHeader>
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3 flex-1">
@@ -428,6 +437,7 @@ export default function Updates() {
               );
             })
           )}
+        </div>
         </div>
       </div>
     </DashboardLayout>

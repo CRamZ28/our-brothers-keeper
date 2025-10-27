@@ -4,7 +4,7 @@
 Our Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one. The application features a needs board, shared calendar, messaging, and update tracking to help coordinate support during difficult times.
 
 **Current Status**: ✅ Fully operational on Replit with PostgreSQL and Replit Auth
-**Last Updated**: October 26, 2025 (Added group filtering for needs + custom logo)
+**Last Updated**: October 27, 2025 (Added glassmorphism UI design to all dashboard pages + edit/delete functionality)
 
 ## Project Architecture
 
@@ -128,14 +128,30 @@ pnpm run db:push
 
 ## Design & UI
 
-### Glassmorphism Theme
-The application features a modern glassmorphism design with:
-- **Gradient backgrounds**: Teal → Blue → Purple color scheme
-- **Frosted glass effects**: Backdrop blur on cards and navigation
-- **Animated orbs**: Subtle background animations for visual interest
-- **Hover animations**: Interactive feedback on buttons and cards
-- **Color-coded icons**: Teal backgrounds for feature cards
-- **Enhanced typography**: Modern font styles with better hierarchy
+### Glassmorphism Theme (October 27, 2025)
+The application features a comprehensive modern glassmorphism design across all pages:
+
+**Visual Elements:**
+- **Gradient backgrounds**: Organic teal → blue → purple color flow throughout the application
+- **Animated gradient orbs**: Three floating, pulsing gradient orbs (teal, purple, blue) that create depth and movement
+- **Frosted glass cards**: Semi-transparent cards with backdrop-blur effects for a modern, layered look
+- **Enhanced shadows**: Elevated shadow effects that respond to user interaction
+- **Smooth transitions**: Hover effects that scale cards and increase shadow depth
+- **Professional depth**: Layered effects create visual hierarchy and polish
+
+**Pages with Glassmorphism:**
+- Landing/Home page: Original design with gradient hero section
+- Needs Board: Gradient background with frosted glass need cards
+- Calendar: Gradient background with glass-effect event cards and navigation
+- Messages/Announcements: Gradient background with glass announcement cards
+- Updates: Gradient background with glass update cards and photo galleries
+
+**Design System:**
+- Color palette: Teal-500/600, Blue-500/600, Purple-500/600 for gradients
+- Transparency: Cards use 60% white opacity (40% dark mode) with backdrop-blur
+- Borders: Subtle white/20 opacity borders for definition
+- Hover states: Scale to 102% with enhanced shadows
+- Animation: Blob animations at 7s, 9s, and 11s intervals for organic movement
 
 ## Replit-Specific Configuration
 
@@ -209,9 +225,32 @@ The production server serves static files from `dist/public` and runs the tRPC A
 - **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
 - **Logo**: Custom wooden cross with "OBK" in teal (stored at `client/public/obk-logo.png`)
 
-## Recent Updates (October 26, 2025)
+## Recent Updates
 
-### Group Filtering for Needs
+### October 27, 2025 - Glassmorphism UI & Edit/Delete Features
+**UI Transformation:**
+- Applied comprehensive glassmorphism design to all dashboard pages (Needs, Calendar, Messages, Updates)
+- Added gradient backgrounds (teal → blue → purple) with animated orbs to create depth and movement
+- Upgraded all cards to frosted glass effects with backdrop-blur and semi-transparency
+- Enhanced hover interactions with scale animations and shadow elevation
+- Created consistent visual language across the entire application
+
+**Edit/Delete Functionality:**
+- **Needs**: Full edit and delete capabilities with permission controls
+  - Edit button opens dialog with all need fields pre-filled
+  - Delete button with confirmation dialog
+  - Permissions: Content creator OR admin/primary can edit/delete
+  - Edit/delete buttons visible on need cards in all tabs
+  
+- **Events/Calendar**: Full edit and delete capabilities
+  - Edit button opens dialog with all event fields pre-filled (including optional end date/time)
+  - Delete button with confirmation in event detail view
+  - Permissions: Event creator OR admin/primary can edit/delete
+  - State management clears optional fields when not present (prevents stale data)
+
+### October 26, 2025 - Group Filtering & Custom Logo
+
+**Group Filtering for Needs:**
 - Added visibility scope controls to needs creation form
 - Users can now restrict needs to specific groups (e.g., "Immediate Family" for sensitive requests like picking up kids from school)
 - Visibility options include:
@@ -222,13 +261,12 @@ The production server serves static files from `dist/public` and runs the tRPC A
 - Group selection dropdown appears when "Specific Group" is selected
 - Form validates that a group is selected when using group visibility
 
-### Custom Logo Integration
+**Custom Logo Integration:**
 - Added custom OBK logo (wooden cross design) to `client/public/obk-logo.png`
 - Updated `.env` file to reference the logo: `VITE_APP_LOGO=/obk-logo.png`
 - Logo appears throughout the application in navigation and branding
 
-### Twilio SMS Notifications (Planned)
+**Twilio SMS Notifications (Planned):**
 - User declined Replit Twilio integration
 - Manual Twilio setup will be required when credentials are provided
 - Will enable SMS notifications for urgent needs, event reminders, and important announcements
-- **Authentication**: Replit Auth (chosen over custom OAuth)
