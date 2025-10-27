@@ -629,137 +629,138 @@ export default function Calendar() {
             </TabsContent>
           </Tabs>
         )}
-      </div>
 
-      {/* Event Detail Dialog */}
-      <Dialog open={eventDetailOpen} onOpenChange={setEventDetailOpen}>
-        <DialogContent className="max-w-2xl">
-          {selectedEvent && events && (() => {
-            const event = events.find(e => e.id === selectedEvent);
-            if (!event) return null;
-            
-            const startDate = new Date(event.startAt);
-            const isTodayEvent = isToday(startDate);
-            const isTomorrow =
-              format(startDate, "yyyy-MM-dd") ===
-              format(new Date(Date.now() + 86400000), "yyyy-MM-dd");
+        {/* Event Detail Dialog */}
+        <Dialog open={eventDetailOpen} onOpenChange={setEventDetailOpen}>
+          <DialogContent className="max-w-2xl">
+            {selectedEvent && events && (() => {
+              const event = events.find(e => e.id === selectedEvent);
+              if (!event) return null;
+              
+              const startDate = new Date(event.startAt);
+              const isTodayEvent = isToday(startDate);
+              const isTomorrow =
+                format(startDate, "yyyy-MM-dd") ===
+                format(new Date(Date.now() + 86400000), "yyyy-MM-dd");
 
-            return (
-              <>
-                <DialogHeader>
-                  <DialogTitle className="text-2xl">{event.title}</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-2 pt-2">
-                  <div className="flex items-center gap-2 text-base text-muted-foreground">
-                    <CalendarIcon className="w-5 h-5" />
-                    <span>
-                      {startDate.toLocaleDateString("en-US", {
-                        weekday: "long",
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
-                      {" at "}
-                      {startDate.toLocaleTimeString("en-US", {
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                    {isTodayEvent && (
-                      <Badge variant="default" className="bg-primary ml-2">
-                        Today
-                      </Badge>
-                    )}
-                    {isTomorrow && <Badge variant="secondary" className="ml-2">Tomorrow</Badge>}
-                  </div>
-                  {event.location && (
+              return (
+                <>
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl">{event.title}</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-2 pt-2">
                     <div className="flex items-center gap-2 text-base text-muted-foreground">
-                      <MapPin className="w-5 h-5" />
-                      <span>{event.location}</span>
-                    </div>
-                  )}
-                  {event.capacity && (
-                    <div className="flex items-center gap-2 text-base text-muted-foreground">
-                      <Users className="w-5 h-5" />
+                      <CalendarIcon className="w-5 h-5" />
                       <span>
-                        {event.goingCount || 0} / {event.capacity} spots filled
-                        {event.goingCount >= event.capacity && " (Full)"}
+                        {startDate.toLocaleDateString("en-US", {
+                          weekday: "long",
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                        {" at "}
+                        {startDate.toLocaleTimeString("en-US", {
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
                       </span>
+                      {isTodayEvent && (
+                        <Badge variant="default" className="bg-primary ml-2">
+                          Today
+                        </Badge>
+                      )}
+                      {isTomorrow && <Badge variant="secondary" className="ml-2">Tomorrow</Badge>}
                     </div>
-                  )}
-                </div>
-                {event.description && (
-                  <div className="py-4">
-                    <h4 className="font-semibold mb-2">Description</h4>
-                    <p className="text-sm text-muted-foreground">{event.description}</p>
+                    {event.location && (
+                      <div className="flex items-center gap-2 text-base text-muted-foreground">
+                        <MapPin className="w-5 h-5" />
+                        <span>{event.location}</span>
+                      </div>
+                    )}
+                    {event.capacity && (
+                      <div className="flex items-center gap-2 text-base text-muted-foreground">
+                        <Users className="w-5 h-5" />
+                        <span>
+                          {event.goingCount || 0} / {event.capacity} spots filled
+                          {event.goingCount >= event.capacity && " (Full)"}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
-                <DialogFooter className="flex-col sm:flex-row gap-2">
-                  {(user && (event.createdById === user.id || isPrimaryOrAdmin)) && (
-                    <div className="flex gap-2 mr-auto">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => openEditDialog(event)}
-                      >
-                        <Pencil className="w-4 h-4 mr-2" />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => handleDeleteEvent(event.id)}
-                        disabled={deleteEventMutation.isPending}
-                      >
-                        <Trash2 className="w-4 h-4 mr-2 text-destructive" />
-                        Delete
-                      </Button>
+                  {event.description && (
+                    <div className="py-4">
+                      <h4 className="font-semibold mb-2">Description</h4>
+                      <p className="text-sm text-muted-foreground">{event.description}</p>
                     </div>
                   )}
-                  <Button
-                    variant="default"
-                    onClick={() => {
-                      handleRsvp(event.id, "going");
-                      setEventDetailOpen(false);
-                    }}
-                    disabled={
-                      rsvpMutation.isPending ||
-                      (event.capacity && event.goingCount >= event.capacity)
-                    }
-                    className="w-full sm:w-auto"
-                  >
-                    <Check className="w-4 h-4 mr-2" />
-                    {event.capacity && event.goingCount >= event.capacity ? "Full" : "I'm Going"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      handleRsvp(event.id, "maybe");
-                      setEventDetailOpen(false);
-                    }}
-                    disabled={rsvpMutation.isPending}
-                    className="w-full sm:w-auto"
-                  >
-                    Maybe
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      handleRsvp(event.id, "declined");
-                      setEventDetailOpen(false);
-                    }}
-                    disabled={rsvpMutation.isPending}
-                    className="w-full sm:w-auto"
-                  >
-                    <X className="w-4 h-4 mr-2" />
-                    Can't Go
-                  </Button>
-                </DialogFooter>
-              </>
-            );
-          })()}
-        </DialogContent>
-      </Dialog>
+                  <DialogFooter className="flex-col sm:flex-row gap-2">
+                    {(user && (event.createdById === user.id || isPrimaryOrAdmin)) && (
+                      <div className="flex gap-2 mr-auto">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditDialog(event)}
+                        >
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteEvent(event.id)}
+                          disabled={deleteEventMutation.isPending}
+                        >
+                          <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                          Delete
+                        </Button>
+                      </div>
+                    )}
+                    <Button
+                      variant="default"
+                      onClick={() => {
+                        handleRsvp(event.id, "going");
+                        setEventDetailOpen(false);
+                      }}
+                      disabled={
+                        rsvpMutation.isPending ||
+                        (event.capacity && event.goingCount >= event.capacity)
+                      }
+                      className="w-full sm:w-auto"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      {event.capacity && event.goingCount >= event.capacity ? "Full" : "I'm Going"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleRsvp(event.id, "maybe");
+                        setEventDetailOpen(false);
+                      }}
+                      disabled={rsvpMutation.isPending}
+                      className="w-full sm:w-auto"
+                    >
+                      Maybe
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        handleRsvp(event.id, "declined");
+                        setEventDetailOpen(false);
+                      }}
+                      disabled={rsvpMutation.isPending}
+                      className="w-full sm:w-auto"
+                    >
+                      <X className="w-4 h-4 mr-2" />
+                      Can't Go
+                    </Button>
+                  </DialogFooter>
+                </>
+              );
+            })()}
+          </DialogContent>
+        </Dialog>
+      </div>
+      </div>
     </DashboardLayout>
   );
 }

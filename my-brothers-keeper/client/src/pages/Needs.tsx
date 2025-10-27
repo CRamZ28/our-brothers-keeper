@@ -824,50 +824,51 @@ export default function Needs() {
             )}
           </TabsContent>
         </Tabs>
-      </div>
 
-      {/* Complete Need Dialog */}
-      <Dialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Mark as Completed</DialogTitle>
-            <DialogDescription>
-              Confirm that this need has been fulfilled
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="completion-note" className="mb-2 block">Completion Note (Optional)</Label>
-              <Textarea
-                id="completion-note"
-                placeholder="e.g., Dropped off groceries at 5pm"
-                value={completionNote}
-                onChange={(e) => setCompletionNote(e.target.value)}
-                rows={3}
-                className="mt-2"
-              />
+        {/* Complete Need Dialog */}
+        <Dialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Mark as Completed</DialogTitle>
+              <DialogDescription>
+                Confirm that this need has been fulfilled
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="completion-note" className="mb-2 block">Completion Note (Optional)</Label>
+                <Textarea
+                  id="completion-note"
+                  placeholder="e.g., Dropped off groceries at 5pm"
+                  value={completionNote}
+                  onChange={(e) => setCompletionNote(e.target.value)}
+                  rows={3}
+                  className="mt-2"
+                />
+              </div>
             </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setCompleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (selectedNeedId) {
-                  completeNeedMutation.mutate({
-                    needId: selectedNeedId,
-                    completionNote: completionNote || undefined,
-                  });
-                }
-              }}
-              disabled={completeNeedMutation.isPending}
-            >
-              {completeNeedMutation.isPending ? "Completing..." : "Mark as Completed"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setCompleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (selectedNeedId) {
+                    completeNeedMutation.mutate({
+                      needId: selectedNeedId,
+                      completionNote: completionNote || undefined,
+                    });
+                  }
+                }}
+                disabled={completeNeedMutation.isPending}
+              >
+                {completeNeedMutation.isPending ? "Completing..." : "Mark as Completed"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+      </div>
     </DashboardLayout>
   );
 }
