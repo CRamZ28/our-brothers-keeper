@@ -39,6 +39,10 @@ import {
   InsertAdminGroupMember,
   updates,
   InsertUpdate,
+  mealTrains,
+  InsertMealTrain,
+  mealSignups,
+  InsertMealSignup,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -858,5 +862,90 @@ export async function deleteUpdate(id: number) {
   if (!db) return;
 
   await db.delete(updates).where(eq(updates.id, id));
+}
+
+// ============================================================================
+// MEAL TRAIN MANAGEMENT
+// ============================================================================
+
+export async function getMealTrainByHousehold(householdId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db
+    .select()
+    .from(mealTrains)
+    .where(eq(mealTrains.householdId, householdId))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createMealTrain(mealTrain: InsertMealTrain) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(mealTrains).values(mealTrain).returning({ id: mealTrains.id });
+  return result[0].id;
+}
+
+export async function updateMealTrain(id: number, data: Partial<InsertMealTrain>) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(mealTrains).set({ ...data, updatedAt: new Date() }).where(eq(mealTrains.id, id));
+}
+
+export async function getMealSignupsByMealTrain(mealTrainId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const signups = await db
+    .select()
+    .from(mealSignups)
+    .where(eq(mealSignups.mealTrainId, mealTrainId))
+    .orderBy(mealSignups.deliveryDate);
+
+  const userIds = signups.map((s) => s.userId).filter((id) => id != null);
+  const signupUsers =
+    userIds.length > 0 ? await db.select().from(users).where(inArray(users.id, userIds)) : [];
+
+  return signups.map((signup) => {
+    const user = signupUsers.find((u) => u.id === signup.userId);
+    return {
+      ...signup,
+      userName: user?.name || user?.email || "Unknown",
+      userEmail: user?.email || "",
+    };
+  });
+}
+
+export async function createMealSignup(signup: InsertMealSignup) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(mealSignups).values(signup).returning({ id: mealSignups.id });
+  return result[0].id;
+}
+
+export async function getMealSignup(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(mealSignups).where(eq(mealSignups.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function updateMealSignup(id: number, data: Partial<InsertMealSignup>) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(mealSignups).set({ ...data, updatedAt: new Date() }).where(eq(mealSignups.id, id));
+}
+
+export async function deleteMealSignup(id: number) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.delete(mealSignups).where(eq(mealSignups.id, id));
 }
 

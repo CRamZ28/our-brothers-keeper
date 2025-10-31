@@ -40,6 +40,7 @@ export const claimStatusEnum = pgEnum("claim_status", ["claimed", "completed", "
 export const updateTypeEnum = pgEnum("update_type", ["general", "gratitude", "memory", "milestone"]);
 export const digestFrequencyEnum = pgEnum("digest_frequency", ["immediate", "daily", "weekly"]);
 export const recipientTypeEnum = pgEnum("recipient_type", ["individual", "group", "all"]);
+export const mealSignupStatusEnum = pgEnum("meal_signup_status", ["pending", "confirmed", "completed", "cancelled"]);
 
 /**
  * Core user table backing auth flow.
@@ -424,3 +425,54 @@ export const auditLogs = pgTable("audit_logs", {
 
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;
+
+/**
+ * Meal Trains - Configuration for meal delivery coordination
+ * One meal train per household with settings for location, capacity, preferences
+ */
+export const mealTrains = pgTable("meal_trains", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  location: text("location"),
+  peopleCount: integer("people_count"),
+  favoriteMeals: text("favorite_meals"),
+  allergies: text("allergies"),
+  dislikes: text("dislikes"),
+  specialInstructions: text("special_instructions"),
+  dailyCapacity: integer("daily_capacity").default(1).notNull(),
+  visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
+  visibilityGroupId: integer("visibility_group_id"),
+  addressVisibilityScope: visibilityScopeEnum("address_visibility_scope").default("all_supporters").notNull(),
+  addressVisibilityGroupId: integer("address_visibility_group_id"),
+  enabled: boolean("enabled").default(true).notNull(),
+  createdBy: varchar("created_by").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  householdIdx: index("meal_trains_household_idx").on(table.householdId),
+}));
+
+export type MealTrain = typeof mealTrains.$inferSelect;
+export type InsertMealTrain = typeof mealTrains.$inferInsert;
+
+/**
+ * Meal Signups - Individual meal delivery signups for specific dates
+ */
+export const mealSignups = pgTable("meal_signups", {
+  id: serial("id").primaryKey(),
+  mealTrainId: integer("meal_train_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  deliveryDate: timestamp("delivery_date").notNull(),
+  status: mealSignupStatusEnum("status").default("confirmed").notNull(),
+  notes: text("notes"),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  mealTrainIdx: index("meal_signups_meal_train_idx").on(table.mealTrainId),
+  userIdx: index("meal_signups_user_idx").on(table.userId),
+  deliveryDateIdx: index("meal_signups_delivery_date_idx").on(table.deliveryDate),
+}));
+
+export type MealSignup = typeof mealSignups.$inferSelect;
+export type InsertMealSignup = typeof mealSignups.$inferInsert;

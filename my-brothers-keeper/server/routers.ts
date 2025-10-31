@@ -11,6 +11,7 @@ import { updatesRouter } from "./updatesRouter";
 import { needsRouter } from "./needsRouter";
 import { eventsRouter } from "./eventsRouter";
 import { messagesRouter } from "./messagesRouter";
+import { mealTrainRouter } from "./mealTrainRouter";
 
 // Helper to check if user is Primary or Admin for a household
 async function checkHouseholdAccess(
@@ -44,6 +45,7 @@ export const appRouter = router({
   needs: needsRouter,
   events: eventsRouter,
   messages: messagesRouter,
+  mealTrain: mealTrainRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
