@@ -8,7 +8,33 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Logo**: Custom wooden cross with "OBK" in teal (stored at `client/public/obk-logo.png`)
 
 ## System Architecture
-The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure. Core functionalities include comprehensive meal train management with calendar and list views, privacy controls, and volunteer sign-ups. The UI/UX features a consistent glassmorphism theme across all pages, incorporating gradient backgrounds, animated gradient orbs, frosted glass cards, and enhanced shadow effects for a professional and modern aesthetic. Key features include coordinating support needs, managing a shared calendar, enabling private communication, and sharing family updates. The system supports role-based access control and an invitation system for supporters.
+The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
+
+### Key Features
+- **Meal Train Management**: Full-featured meal coordination with:
+  - Calendar and list views for meal signups
+  - Daily capacity controls (1-10 volunteers per day)
+  - Dual-layer privacy controls (meal train visibility + address visibility)
+  - Dietary preferences (allergies, dislikes, favorite meals)
+  - Special delivery instructions
+  - Volunteer notes and status tracking
+- **Needs Board**: Community support requests with group filtering
+- **Shared Calendar**: Event scheduling and coordination
+- **Messaging**: Private communication between supporters and family
+- **Updates**: Family news and progress sharing
+- **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or private) with centralized enforcement across all meal train operations
+- **Role-Based Access**: Admin, primary, and supporter roles with appropriate permissions
+- **Invitation System**: Secure supporter onboarding
+
+### Security & Privacy Architecture
+The meal train feature uses shared visibility helper functions (`checkMealTrainVisibility` and `checkAddressVisibility`) that enforce consistent privacy controls across all routes:
+- `mealTrain.get`: Returns meal train data only to authorized users
+- `mealTrain.listSignups`: Returns signup data only to authorized users
+- `mealTrain.volunteer`: Allows volunteering only by authorized users
+- `mealTrain.updateSignup`: Allows updates only by the volunteer or admin/primary
+- `mealTrain.cancelSignup`: Allows cancellations only by the volunteer or admin/primary
+
+The UI/UX features a consistent glassmorphism theme across all pages, incorporating gradient backgrounds, animated gradient orbs, frosted glass cards, and enhanced shadow effects for a professional and modern aesthetic.
 
 ## External Dependencies
 - **Database**: PostgreSQL (managed by Replit, accessed via Drizzle ORM)
