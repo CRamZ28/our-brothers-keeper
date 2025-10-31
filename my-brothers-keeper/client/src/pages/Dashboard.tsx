@@ -39,9 +39,18 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 space-y-8">
-        {/* Welcome Header */}
-        <div>
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
+        
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+        
+        <div className="relative p-8 space-y-8">
+          {/* Welcome Header */}
+          <div>
           <h1 className="text-3xl font-bold tracking-tight">
             Welcome back, {user?.name?.split(" ")[0] || "there"}
           </h1>
@@ -52,7 +61,7 @@ export default function Dashboard() {
 
         {/* Pending Approvals Alert */}
         {isPrimaryOrAdmin && pendingUsers.length > 0 && (
-          <Card className="border-primary/50 bg-primary/5">
+          <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-primary/50 shadow-xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="w-5 h-5" />
@@ -73,7 +82,7 @@ export default function Dashboard() {
 
         {/* Quick Stats */}
         <div className="grid md:grid-cols-3 gap-6">
-          <Card>
+          <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Active Supporters</CardTitle>
               <Users className="w-4 h-4 text-muted-foreground" />
@@ -86,7 +95,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Open Needs</CardTitle>
               <Heart className="w-4 h-4 text-muted-foreground" />
@@ -97,7 +106,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Upcoming Events</CardTitle>
               <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -114,7 +123,7 @@ export default function Dashboard() {
           <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             <Link href="/needs">
-              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                 <CardHeader>
                   <Heart className="w-8 h-8 text-primary mb-2" />
                   <CardTitle className="text-base">Needs Board</CardTitle>
@@ -126,7 +135,7 @@ export default function Dashboard() {
             </Link>
 
             <Link href="/calendar">
-              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                 <CardHeader>
                   <Calendar className="w-8 h-8 text-primary mb-2" />
                   <CardTitle className="text-base">Calendar</CardTitle>
@@ -136,7 +145,7 @@ export default function Dashboard() {
             </Link>
 
             <Link href="/messages">
-              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                 <CardHeader>
                   <MessageCircle className="w-8 h-8 text-primary mb-2" />
                   <CardTitle className="text-base">Messages</CardTitle>
@@ -146,7 +155,7 @@ export default function Dashboard() {
             </Link>
 
             <Link href="/people">
-              <Card className="hover:bg-accent/50 transition-colors cursor-pointer">
+              <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
                 <CardHeader>
                   <Users className="w-8 h-8 text-primary mb-2" />
                   <CardTitle className="text-base">People</CardTitle>
@@ -158,7 +167,7 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Activity */}
-        <Card>
+        <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
           <CardHeader>
             <CardTitle>Recent Activity</CardTitle>
             <CardDescription>Stay updated on what's happening</CardDescription>
@@ -228,6 +237,7 @@ export default function Dashboard() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </DashboardLayout>
   );
