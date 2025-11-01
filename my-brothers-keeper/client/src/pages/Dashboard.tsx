@@ -128,47 +128,53 @@ export default function Dashboard() {
 
           {/* Stats Cards - Continuous Vertical Gradient Flow */}
           <div className="grid md:grid-cols-3 gap-4">
-            {/* Card 1 - Start of Gradient (Very Light) */}
-            <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-50 to-teal-200 text-teal-900 shadow-xl">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                    <Users className="w-7 h-7 text-teal-700" />
+            {/* Card 1 - Start of Gradient (Very Light) - Links to People */}
+            <Link href="/people">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-50 to-teal-200 text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                      <Users className="w-7 h-7 text-teal-700" />
+                    </div>
                   </div>
-                </div>
-                <div className="text-5xl font-bold mb-1">{activeUsers.length}</div>
-                <div className="text-sm text-teal-800 font-medium">Active Supporters</div>
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
-              </CardContent>
-            </Card>
+                  <div className="text-5xl font-bold mb-1">{activeUsers.length}</div>
+                  <div className="text-sm text-teal-800 font-medium">Active Supporters</div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
+                </CardContent>
+              </Card>
+            </Link>
 
-            {/* Card 2 - Peak of Gradient (Darkest Teal) */}
-            <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-300 via-teal-500 to-teal-300 text-white shadow-xl">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                    <Heart className="w-7 h-7 text-white" />
+            {/* Card 2 - Peak of Gradient (Darkest Teal) - Links to Needs */}
+            <Link href="/needs">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-300 via-teal-500 to-teal-300 text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                      <Heart className="w-7 h-7 text-white" />
+                    </div>
                   </div>
-                </div>
-                <div className="text-5xl font-bold mb-1">{openNeeds.length}</div>
-                <div className="text-sm text-white/90 font-medium">Open Needs</div>
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-              </CardContent>
-            </Card>
+                  <div className="text-5xl font-bold mb-1">{openNeeds.length}</div>
+                  <div className="text-sm text-white/90 font-medium">Open Needs</div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                </CardContent>
+              </Card>
+            </Link>
 
-            {/* Card 3 - End of Gradient (Back to Light) */}
-            <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-200 to-teal-50 text-teal-900 shadow-xl">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                    <Calendar className="w-7 h-7 text-teal-700" />
+            {/* Card 3 - End of Gradient (Back to Light) - Links to Calendar */}
+            <Link href="/calendar">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-200 to-teal-50 text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                      <Calendar className="w-7 h-7 text-teal-700" />
+                    </div>
                   </div>
-                </div>
-                <div className="text-5xl font-bold mb-1">{upcomingEvents.length}</div>
-                <div className="text-sm text-teal-800 font-medium">Upcoming Events</div>
-                <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
-              </CardContent>
-            </Card>
+                  <div className="text-5xl font-bold mb-1">{upcomingEvents.length}</div>
+                  <div className="text-sm text-teal-800 font-medium">Upcoming Events</div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
+                </CardContent>
+              </Card>
+            </Link>
           </div>
 
           {/* Quick Action Cards - Grid with TEAL gradients */}
