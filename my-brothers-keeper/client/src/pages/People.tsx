@@ -137,11 +137,14 @@ export default function People() {
 
   return (
     <DashboardLayout>
-      <div className="p-8 space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">People</h1>
+      <div className="min-h-screen bg-background noise-texture relative">
+        <div className="radial-glow absolute inset-0 pointer-events-none" />
+        
+        <div className="relative p-8 space-y-8">
+          {/* Header */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1>People</h1>
             <p className="text-muted-foreground mt-2">
               Manage your support network • {activeUsers.length} active members
             </p>
@@ -448,6 +451,7 @@ export default function People() {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
     </DashboardLayout>
   );

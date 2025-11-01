@@ -43,40 +43,41 @@
 }
 
 :root {
-  /* Waiting in Hope inspired palette - vibrant, warm, compassionate */
-  --primary: oklch(0.65 0.15 175);
+  /* Professional neutral palette with teal accent */
+  --primary: oklch(0.55 0.15 180); /* Teal accent */
   --primary-foreground: oklch(0.99 0 0);
-  --sidebar-primary: oklch(0.65 0.15 175);
+  --sidebar-primary: oklch(0.55 0.15 180);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --chart-1: oklch(0.65 0.15 175);
-  --chart-2: oklch(0.68 0.12 200);
-  --chart-3: oklch(0.68 0.14 350);
-  --chart-4: oklch(0.72 0.12 65);
-  --chart-5: oklch(0.62 0.18 180);
-  --radius: 0.65rem;
-  --background: oklch(0.97 0.03 35);
-  --foreground: oklch(0.25 0.02 25);
-  --card: oklch(0.98 0.02 30);
-  --card-foreground: oklch(0.25 0.02 25);
-  --popover: oklch(0.98 0.02 30);
-  --popover-foreground: oklch(0.25 0.02 25);
-  --secondary: oklch(0.88 0.06 350);
-  --secondary-foreground: oklch(0.25 0.02 25);
-  --muted: oklch(0.92 0.04 35);
-  --muted-foreground: oklch(0.48 0.03 25);
-  --accent: oklch(0.68 0.14 350);
+  --chart-1: oklch(0.55 0.15 180);
+  --chart-2: oklch(0.62 0.12 45); /* Sunset orange */
+  --chart-3: oklch(0.48 0.08 180);
+  --chart-4: oklch(0.65 0.10 45);
+  --chart-5: oklch(0.60 0.12 180);
+  --radius: 1rem; /* 16px base */
+  --radius-panel: 1.5rem; /* 24px for larger panels */
+  --background: oklch(0.98 0.002 240); /* Almost white with subtle cool tone */
+  --foreground: oklch(0.20 0.01 240); /* Deep slate */
+  --card: oklch(1 0 0); /* Pure white cards */
+  --card-foreground: oklch(0.20 0.01 240);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.20 0.01 240);
+  --secondary: oklch(0.96 0.005 240); /* Subtle gray */
+  --secondary-foreground: oklch(0.20 0.01 240);
+  --muted: oklch(0.94 0.005 240);
+  --muted-foreground: oklch(0.50 0.01 240); /* Medium gray for labels */
+  --accent: oklch(0.62 0.12 45); /* Sunset orange for CTAs */
   --accent-foreground: oklch(0.99 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.85 0.04 30);
-  --input: oklch(0.85 0.04 30);
-  --ring: oklch(0.65 0.15 175);
-  --sidebar: oklch(0.96 0.04 180);
-  --sidebar-foreground: oklch(0.25 0.02 25);
-  --sidebar-accent: oklch(0.90 0.06 175);
-  --sidebar-accent-foreground: oklch(0.25 0.02 25);
-  --sidebar-border: oklch(0.82 0.06 175);
-  --sidebar-ring: oklch(0.65 0.15 175);
+  --border: oklch(0.90 0.005 240); /* Subtle border */
+  --input: oklch(0.96 0.005 240);
+  --ring: oklch(0.55 0.15 180);
+  --sidebar: oklch(0.99 0.002 240);
+  --sidebar-foreground: oklch(0.20 0.01 240);
+  --sidebar-accent: oklch(0.96 0.005 240);
+  --sidebar-accent-foreground: oklch(0.20 0.01 240);
+  --sidebar-border: oklch(0.92 0.005 240);
+  --sidebar-ring: oklch(0.55 0.15 180);
 }
 
 .dark {
@@ -119,7 +120,10 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-feature-settings: 'cv11', 'ss01';
+    font-variation-settings: normal;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -131,6 +135,20 @@
   input[type="checkbox"]:not(:disabled),
   input[type="radio"]:not(:disabled) {
     @apply cursor-pointer;
+  }
+  
+  /* Typography scale */
+  h1 {
+    @apply text-3xl font-semibold tracking-tight;
+  }
+  h2 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  h3 {
+    @apply text-xl font-semibold;
+  }
+  h4 {
+    @apply text-lg font-medium;
   }
 }
 
@@ -173,31 +191,84 @@
 }
 
 @layer utilities {
-  /* Blob animation for floating gradient orbs */
-  @keyframes blob {
-    0% {
-      transform: translate(0px, 0px) scale(1);
-    }
-    33% {
-      transform: translate(30px, -50px) scale(1.1);
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-    }
-    100% {
-      transform: translate(0px, 0px) scale(1);
-    }
+  /* Subtle noise texture for depth */
+  @keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-5%, -10%); }
+    20% { transform: translate(-15%, 5%); }
+    30% { transform: translate(7%, -25%); }
+    40% { transform: translate(-5%, 25%); }
+    50% { transform: translate(-15%, 10%); }
+    60% { transform: translate(15%, 0%); }
+    70% { transform: translate(0%, 15%); }
+    80% { transform: translate(3%, 35%); }
+    90% { transform: translate(-10%, 10%); }
   }
-
-  .animate-blob {
-    animation: blob 7s infinite;
+  
+  .noise-texture::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.6;
+    pointer-events: none;
+    animation: grain 8s steps(10) infinite;
   }
-
-  .animation-delay-2000 {
-    animation-delay: 2s;
+  
+  /* Subtle radial glow for depth */
+  .radial-glow {
+    background: radial-gradient(circle at 50% 0%, oklch(0.60 0.08 180 / 0.08) 0%, transparent 50%);
   }
-
-  .animation-delay-4000 {
-    animation-delay: 4s;
+  
+  /* Card elevation system */
+  .card-elevated {
+    @apply shadow-sm hover:shadow-md transition-shadow duration-200;
+    border: 1px solid oklch(0.92 0.005 240);
+  }
+  
+  .card-elevated-lg {
+    @apply shadow-md hover:shadow-lg transition-shadow duration-200;
+    border: 1px solid oklch(0.92 0.005 240);
+  }
+  
+  /* Accent bar for cards */
+  .accent-bar-teal::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, oklch(0.55 0.15 180) 0%, oklch(0.60 0.12 180) 100%);
+    border-radius: 1rem 1rem 0 0;
+  }
+  
+  .accent-bar-orange::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, oklch(0.62 0.12 45) 0%, oklch(0.68 0.10 45) 100%);
+    border-radius: 1rem 1rem 0 0;
+  }
+  
+  /* Micro-interactions */
+  .hover-lift {
+    @apply transition-transform duration-200;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Glass effect for modals/popovers only */
+  .glass-effect {
+    @apply backdrop-blur-xl bg-white/95 dark:bg-gray-900/95;
+    box-shadow: 
+      0 0 0 1px oklch(0.92 0.005 240 / 0.5),
+      0 10px 40px oklch(0.20 0.01 240 / 0.1),
+      0 2px 8px oklch(0.20 0.01 240 / 0.05);
   }
 }

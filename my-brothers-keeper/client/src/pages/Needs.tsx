@@ -258,20 +258,14 @@ export default function Needs() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
-        
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      <div className="min-h-screen bg-background noise-texture relative">
+        <div className="radial-glow absolute inset-0 pointer-events-none" />
         
         <div className="relative p-4 md:p-8 space-y-4 md:space-y-6">
           {/* Header */}
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-            <h1 className="text-xl md:text-3xl font-bold tracking-tight">Needs Board</h1>
+            <h1>Needs Board</h1>
             {isPrimaryOrAdmin && (
               <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
                 <DialogTrigger asChild>
@@ -603,7 +597,7 @@ export default function Needs() {
 
           <TabsContent value="open" className="space-y-4">
             {openNeeds.length === 0 ? (
-              <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
+              <Card className="card-elevated-lg">
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <Heart className="w-12 h-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground text-center">
@@ -616,7 +610,7 @@ export default function Needs() {
                 {openNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:bg-white/70 dark:hover:bg-gray-900/70">
+                    <Card key={need.id} className="card-elevated hover-lift accent-bar-teal relative">
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
@@ -711,7 +705,7 @@ export default function Needs() {
                 {claimedNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
+                    <Card key={need.id} className="card-elevated hover-lift">
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
@@ -795,7 +789,7 @@ export default function Needs() {
                 {completedNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="backdrop-blur-lg bg-white/40 dark:bg-gray-900/40 border border-white/20 shadow-lg opacity-75">
+                    <Card key={need.id} className="card-elevated opacity-75">
                       <CardHeader>
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">

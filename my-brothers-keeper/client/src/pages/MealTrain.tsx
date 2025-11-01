@@ -78,17 +78,11 @@ export default function MealTrain() {
   if (!mealTrain || !mealTrain.enabled) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen relative overflow-hidden">
-          {/* Gradient Background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
-          
-          {/* Animated gradient orbs */}
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-          <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+        <div className="min-h-screen bg-background noise-texture relative">
+          <div className="radial-glow absolute inset-0 pointer-events-none" />
           
           <div className="relative p-8">
-            <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl max-w-2xl mx-auto">
+            <Card className="card-elevated-lg max-w-2xl mx-auto">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ChefHat className="w-6 h-6" />
@@ -123,20 +117,14 @@ export default function MealTrain() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 dark:from-teal-950 dark:via-blue-950 dark:to-purple-950" />
-        
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      <div className="min-h-screen bg-background noise-texture relative">
+        <div className="radial-glow absolute inset-0 pointer-events-none" />
         
         <div className="relative p-8 space-y-6">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
+              <h1 className="flex items-center gap-2">
                 <ChefHat className="w-8 h-8" />
                 Meal Calendar
               </h1>
@@ -147,7 +135,6 @@ export default function MealTrain() {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowRecipientInfo(true)}
-                className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20"
               >
                 Recipient Info
               </Button>
@@ -156,14 +143,14 @@ export default function MealTrain() {
                   mealTrain={mealTrain}
                   onSave={() => refetchMealTrain()}
                   trigger={
-                    <Button variant="outline" size="sm" className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20">
+                    <Button variant="outline" size="sm">
                       <Settings className="w-4 h-4 mr-2" />
                       Settings
                     </Button>
                   }
                 />
               )}
-              <div className="flex backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 rounded-md">
+              <div className="flex bg-muted p-1 rounded-md">
                 <Button
                   variant={view === "calendar" ? "default" : "ghost"}
                   size="sm"
@@ -184,7 +171,7 @@ export default function MealTrain() {
 
           {/* Calendar View */}
           {view === "calendar" && (
-            <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
+            <Card className="card-elevated-lg">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Button
@@ -225,9 +212,9 @@ export default function MealTrain() {
                     return (
                       <Card
                         key={format(date, "yyyy-MM-dd")}
-                        className={`backdrop-blur-lg border border-white/20 shadow-md hover:shadow-lg transition-all duration-300 ${
+                        className={`card-elevated ${
                           isPast ? "opacity-50" : ""
-                        } ${capacityInfo.isAvailable && !isPast ? "hover:scale-105 cursor-pointer" : ""}`}
+                        } ${capacityInfo.isAvailable && !isPast ? "hover-lift cursor-pointer" : ""}`}
                         onClick={() => {
                           if (capacityInfo.isAvailable && !isPast) {
                             setSelectedDate(date);
@@ -271,7 +258,7 @@ export default function MealTrain() {
 
           {/* List View */}
           {view === "list" && (
-            <Card className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 border border-white/20 shadow-xl">
+            <Card className="card-elevated-lg">
               <CardHeader>
                 <CardTitle>Meal Signups</CardTitle>
                 <CardDescription>All scheduled meal deliveries</CardDescription>
@@ -285,7 +272,7 @@ export default function MealTrain() {
                   </div>
                 ) : (
                   signups.map((signup) => (
-                    <Card key={signup.id} className="backdrop-blur-lg bg-white/40 dark:bg-gray-800/40 border border-white/20">
+                    <Card key={signup.id} className="card-elevated">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
