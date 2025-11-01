@@ -186,10 +186,10 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Right Column - Stats (Smaller) - Vertical Gradient Flow */}
+            {/* Right Column - Stats (Smaller) - Continuous Vertical Gradient Flow */}
             <div className="md:col-span-4 space-y-4">
-              {/* Top Card - Very Light Teal */}
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-100 to-teal-200 text-teal-900 shadow-xl">
+              {/* Top Card - Start of Gradient (Very Light) */}
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-50 to-teal-200 text-teal-900 shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -202,8 +202,8 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Middle Card - Darkest Teal (Peak of Gradient) */}
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-400 via-teal-500 to-teal-400 text-white shadow-xl">
+              {/* Middle Card - Peak of Gradient (Darkest Teal) */}
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-300 via-teal-500 to-teal-300 text-white shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -216,8 +216,8 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              {/* Bottom Card - Fading Back to Light */}
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-200 to-teal-100 text-teal-900 shadow-xl">
+              {/* Bottom Card - End of Gradient (Back to Light) */}
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-200 to-teal-50 text-teal-900 shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
