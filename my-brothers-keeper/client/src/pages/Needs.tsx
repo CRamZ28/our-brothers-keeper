@@ -92,8 +92,13 @@ export default function Needs() {
   const [claimNote, setClaimNote] = useState("");
   const [completionNote, setCompletionNote] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [calendarViewMode, setCalendarViewMode] = useState<"month" | "week">("month");
+  const [currentDate, setCurrentDate] = useState(new Date());
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [selectedNeedDetails, setSelectedNeedDetails] = useState<any | null>(null);
+  const [dayNeedsDialogOpen, setDayNeedsDialogOpen] = useState(false);
+  const [selectedDayNeeds, setSelectedDayNeeds] = useState<typeof openNeeds>([]);
+  const [selectedDayDate, setSelectedDayDate] = useState<Date | null>(null);
 
   const createNeedMutation = trpc.needs.create.useMutation({
     onSuccess: () => {
@@ -241,6 +246,93 @@ export default function Needs() {
     setDetailsDialogOpen(true);
   };
 
+  const openDayNeedsDialog = (date: Date, needs: typeof openNeeds) => {
+    setSelectedDayDate(date);
+    setSelectedDayNeeds(needs);
+    setDayNeedsDialogOpen(true);
+  };
+
+  // Calendar utility functions
+  const getDateKey = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const isSameDay = (date1: Date, date2: Date) => {
+    return getDateKey(date1) === getDateKey(date2);
+  };
+
+  const getMonthDays = (date: Date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    
+    // First day of month
+    const firstDay = new Date(year, month, 1);
+    const startingDayOfWeek = firstDay.getDay(); // 0 = Sunday
+    
+    // Last day of month
+    const lastDay = new Date(year, month + 1, 0);
+    const daysInMonth = lastDay.getDate();
+    
+    // Generate all days to display (including leading/trailing days)
+    const days: Date[] = [];
+    
+    // Add leading days from previous month
+    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+      const prevDate = new Date(year, month, -i);
+      days.push(prevDate);
+    }
+    
+    // Add days of current month
+    for (let i = 1; i <= daysInMonth; i++) {
+      days.push(new Date(year, month, i));
+    }
+    
+    // Add trailing days from next month to complete the grid (up to 6 weeks)
+    const remainingDays = 42 - days.length; // 6 weeks * 7 days
+    for (let i = 1; i <= remainingDays; i++) {
+      days.push(new Date(year, month + 1, i));
+    }
+    
+    return days;
+  };
+
+  const getWeekDays = (date: Date) => {
+    const days: Date[] = [];
+    const dayOfWeek = date.getDay(); // 0 = Sunday
+    
+    // Start from Sunday of this week
+    const sunday = new Date(date);
+    sunday.setDate(date.getDate() - dayOfWeek);
+    
+    // Add 7 days
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(sunday);
+      day.setDate(sunday.getDate() + i);
+      days.push(day);
+    }
+    
+    return days;
+  };
+
+  const navigateCalendar = (direction: 'prev' | 'next') => {
+    const newDate = new Date(currentDate);
+    if (calendarViewMode === 'month') {
+      // Set to day 1 first to prevent month skipping (e.g., Jan 31 -> Feb would roll to Mar)
+      newDate.setDate(1);
+      newDate.setMonth(currentDate.getMonth() + (direction === 'next' ? 1 : -1));
+    } else {
+      newDate.setDate(currentDate.getDate() + (direction === 'next' ? 7 : -7));
+    }
+    setCurrentDate(newDate);
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
   const handleClaimNeed = () => {
     if (!selectedNeedId) return;
 
@@ -269,6 +361,18 @@ export default function Needs() {
     });
   const claimedNeeds = needs?.filter((n) => n.status === "claimed") || [];
   const completedNeeds = needs?.filter((n) => n.status === "completed") || [];
+
+  // Organize needs by date for calendar view
+  const needsByDate = new Map<string, typeof openNeeds>();
+  openNeeds.filter(n => n.dueAt).forEach(need => {
+    const dateKey = getDateKey(new Date(need.dueAt!));
+    if (!needsByDate.has(dateKey)) {
+      needsByDate.set(dateKey, []);
+    }
+    needsByDate.get(dateKey)!.push(need);
+  });
+
+  const undatedNeeds = openNeeds.filter(n => !n.dueAt);
 
   return (
     <DashboardLayout>
@@ -621,86 +725,149 @@ export default function Needs() {
         {/* Calendar View */}
         {viewMode === "calendar" ? (
           <div className="space-y-4">
-            {openNeeds.filter(n => n.dueAt).length === 0 ? (
-              <Card className="card-elevated-lg">
-                <CardContent className="flex flex-col items-center justify-center py-12">
-                  <CalendarDays className="w-12 h-12 text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground text-center">
-                    No needs with due dates yet
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="grid gap-4">
-                {/* Group needs by date */}
-                {(() => {
-                  const needsByDate = new Map<string, typeof openNeeds>();
-                  openNeeds.filter(n => n.dueAt).forEach(need => {
-                    const dateKey = new Date(need.dueAt!).toDateString();
-                    if (!needsByDate.has(dateKey)) {
-                      needsByDate.set(dateKey, []);
-                    }
-                    needsByDate.get(dateKey)!.push(need);
-                  });
+            {/* Calendar Navigation */}
+            <Card className="card-elevated-lg">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={() => navigateCalendar('prev')}>
+                      ←
+                    </Button>
+                    <h3 className="text-lg font-semibold min-w-[180px] text-center">
+                      {calendarViewMode === 'month' 
+                        ? currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })
+                        : `Week of ${currentDate.toLocaleDateString()}`
+                      }
+                    </h3>
+                    <Button variant="outline" size="sm" onClick={() => navigateCalendar('next')}>
+                      →
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={goToToday}>
+                      Today
+                    </Button>
+                    <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+                      <Button
+                        variant={calendarViewMode === "month" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setCalendarViewMode("month")}
+                      >
+                        Month
+                      </Button>
+                      <Button
+                        variant={calendarViewMode === "week" ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => setCalendarViewMode("week")}
+                      >
+                        Week
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Calendar Grid */}
+                <div className="grid grid-cols-7 gap-1 md:gap-2">
+                  {/* Day Headers */}
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                    <div key={day} className="text-center text-sm font-semibold text-muted-foreground py-2">
+                      {day}
+                    </div>
+                  ))}
                   
-                  return Array.from(needsByDate.entries())
-                    .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
-                    .map(([dateKey, needsForDate]) => {
-                      const date = new Date(dateKey);
+                  {/* Calendar Days */}
+                  {(calendarViewMode === 'month' ? getMonthDays(currentDate) : getWeekDays(currentDate)).map((day, idx) => {
+                    const dateKey = getDateKey(day);
+                    const dayNeeds = needsByDate.get(dateKey) || [];
+                    const isCurrentMonth = day.getMonth() === currentDate.getMonth();
+                    const isToday = isSameDay(day, new Date());
+                    
+                    return (
+                      <div
+                        key={idx}
+                        className={`
+                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border
+                          ${isCurrentMonth ? 'bg-white/50' : 'bg-gray-50/50'}
+                          ${isToday ? 'border-primary border-2' : 'border-gray-200'}
+                          hover:bg-white/70 transition-colors
+                        `}
+                      >
+                        <div className={`text-xs md:text-sm font-semibold mb-1 ${!isCurrentMonth ? 'text-muted-foreground' : ''}`}>
+                          {day.getDate()}
+                        </div>
+                        <div className="space-y-1">
+                          {dayNeeds.slice(0, 2).map(need => {
+                            const Icon = categoryIcons[need.category];
+                            return (
+                              <div
+                                key={need.id}
+                                onClick={() => openDetailsDialog(need)}
+                                className={`
+                                  text-xs p-1 rounded cursor-pointer truncate
+                                  ${priorityColors[need.priority]} 
+                                  hover:shadow-md transition-shadow
+                                `}
+                                title={need.title}
+                              >
+                                <div className="flex items-center gap-1">
+                                  <Icon className="w-3 h-3 shrink-0" />
+                                  <span className="truncate">{need.title}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {dayNeeds.length > 2 && (
+                            <button
+                              onClick={() => openDayNeedsDialog(day, dayNeeds)}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              +{dayNeeds.length - 2} more
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Undated Needs Section */}
+            {undatedNeeds.length > 0 && (
+              <Card className="card-elevated-lg">
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5" />
+                    Needs Without Due Dates ({undatedNeeds.length})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-2 gap-3">
+                    {undatedNeeds.map(need => {
+                      const Icon = categoryIcons[need.category];
                       return (
-                        <div key={dateKey}>
-                          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                            <CalendarDays className="w-5 h-5 text-primary" />
-                            {formatDateWithDayOfWeek(date)}
-                          </h3>
-                          <div className="grid md:grid-cols-2 gap-4 mb-6">
-                            {needsForDate.map(need => {
-                              const Icon = categoryIcons[need.category];
-                              return (
-                                <Card 
-                                  key={need.id} 
-                                  className="card-elevated hover-lift accent-bar-teal relative cursor-pointer"
-                                  onClick={() => openDetailsDialog(need)}
-                                >
-                                  <CardHeader>
-                                    <div className="flex items-start gap-3">
-                                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                                        <Icon className="w-5 h-5 text-primary" />
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <CardTitle className="text-lg">{need.title}</CardTitle>
-                                        <div className="flex items-center gap-2 mt-2">
-                                          <Badge variant="outline" className={priorityColors[need.priority]}>
-                                            {need.priority === "urgent" && (
-                                              <AlertCircle className="w-3 h-3 mr-1" />
-                                            )}
-                                            {need.priority}
-                                          </Badge>
-                                          <Badge variant="secondary">{need.category}</Badge>
-                                          {need.capacity && (
-                                            <Badge variant="outline" className="gap-1">
-                                              {need.claimCount || 0}/{need.capacity}
-                                              {need.claimCount >= need.capacity && " (Filled)"}
-                                            </Badge>
-                                          )}
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </CardHeader>
-                                  {need.details && (
-                                    <CardContent>
-                                      <p className="text-sm text-muted-foreground line-clamp-2">{need.details}</p>
-                                    </CardContent>
-                                  )}
-                                </Card>
-                              );
-                            })}
+                        <div
+                          key={need.id}
+                          onClick={() => openDetailsDialog(need)}
+                          className="flex items-center gap-2 p-3 rounded-lg border border-gray-200 hover:bg-white/70 cursor-pointer transition-colors"
+                        >
+                          <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <Icon className="w-4 h-4 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">{need.title}</p>
+                            <div className="flex items-center gap-1 mt-1">
+                              <Badge variant="outline" className={`${priorityColors[need.priority]} text-xs`}>
+                                {need.priority}
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       );
-                    });
-                })()}
-              </div>
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
         ) : (
@@ -942,6 +1109,68 @@ export default function Needs() {
           </TabsContent>
         </Tabs>
         )}
+
+        {/* Day Needs Dialog (show all needs for a specific day) */}
+        <Dialog open={dayNeedsDialogOpen} onOpenChange={setDayNeedsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-primary" />
+                {selectedDayDate && formatDateWithDayOfWeek(selectedDayDate)}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedDayNeeds.length} need{selectedDayNeeds.length !== 1 ? 's' : ''} on this day
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-4">
+              {selectedDayNeeds.map(need => {
+                const Icon = categoryIcons[need.category];
+                return (
+                  <Card key={need.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                    setDayNeedsDialogOpen(false);
+                    openDetailsDialog(need);
+                  }}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base">{need.title}</CardTitle>
+                          <div className="flex flex-wrap items-center gap-2 mt-2">
+                            <Badge variant="outline" className={priorityColors[need.priority]}>
+                              {need.priority === "urgent" && (
+                                <AlertCircle className="w-3 h-3 mr-1" />
+                              )}
+                              {need.priority}
+                            </Badge>
+                            <Badge variant="secondary" className="text-xs">{need.category}</Badge>
+                            {need.capacity && (
+                              <Badge variant="outline" className="gap-1 text-xs">
+                                {need.claimCount || 0}/{need.capacity}
+                                {need.claimCount >= need.capacity && " (Filled)"}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    {need.details && (
+                      <CardContent className="pt-0">
+                        <p className="text-sm text-muted-foreground line-clamp-2">{need.details}</p>
+                      </CardContent>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDayNeedsDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Need Details Dialog (for Calendar View) */}
         <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
