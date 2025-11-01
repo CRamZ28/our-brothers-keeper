@@ -44,29 +44,29 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      {/* Soft Pastel Gradient Background */}
+      {/* Soft Pastel Gradient Background - TEAL ONLY */}
       <div className="min-h-screen relative overflow-hidden">
-        {/* Pastel Teal/Blue Gradient Background */}
-        <div className="fixed inset-0 bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-100 -z-10" />
-        <div className="fixed inset-0 bg-gradient-to-tr from-transparent via-teal-100/30 to-transparent -z-10" />
+        {/* Pastel Teal Gradient Background */}
+        <div className="fixed inset-0 bg-gradient-to-br from-teal-50 via-white to-teal-100/50 -z-10" />
+        <div className="fixed inset-0 bg-gradient-to-tr from-transparent via-teal-50/30 to-transparent -z-10" />
         
         <div className="relative p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
-          {/* Pending Approvals Alert - Full Width */}
+          {/* Pending Approvals Alert - Full Width with Mauve/Purple Accent */}
           {isPrimaryOrAdmin && pendingUsers.length > 0 && (
-            <Card className="relative border-0 bg-gradient-to-r from-amber-400 to-orange-500 overflow-hidden rounded-3xl shadow-xl">
+            <Card className="relative border-0 bg-gradient-to-r from-purple-200 to-purple-300 overflow-hidden rounded-3xl shadow-xl">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
-                    <Users className="w-7 h-7 text-white" />
+                  <div className="w-14 h-14 rounded-2xl bg-white/40 backdrop-blur-sm flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+                    <Users className="w-7 h-7 text-purple-700" />
                   </div>
                   <div className="flex-1">
-                    <CardTitle className="text-white text-xl">Pending Approvals</CardTitle>
-                    <CardDescription className="text-white/90 text-sm">
+                    <CardTitle className="text-purple-900 text-xl">Pending Approvals</CardTitle>
+                    <CardDescription className="text-purple-800 text-sm">
                       {pendingUsers.length} {pendingUsers.length === 1 ? "person" : "people"} waiting for approval
                     </CardDescription>
                   </div>
                   <Link href="/people">
-                    <Button className="bg-gradient-to-r from-teal-400 via-cyan-400 to-blue-500 hover:from-teal-500 hover:via-cyan-500 hover:to-blue-600 text-white font-bold px-8 py-6 text-lg shadow-2xl border-0">
+                    <Button className="bg-gradient-to-r from-purple-300 to-purple-400 hover:from-purple-400 hover:to-purple-500 text-white font-bold px-8 py-6 text-lg shadow-2xl border-0">
                       Review Now
                       <ArrowRight className="w-5 h-5 ml-2" />
                     </Button>
@@ -80,8 +80,8 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-12 gap-6">
             {/* Left Column - Hero Welcome (Larger) */}
             <div className="md:col-span-8 space-y-6">
-              {/* Hero Welcome Card */}
-              <Card className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-500 via-teal-400 to-cyan-500 border-0 shadow-2xl p-8 text-white">
+              {/* Hero Welcome Card - TEAL GRADIENT */}
+              <Card className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-400 to-teal-500 border-0 shadow-2xl p-8 text-white">
                 <div className="relative z-10">
                   <div className="flex items-start justify-between mb-6">
                     <div>
@@ -116,7 +116,7 @@ export default function Dashboard() {
                       </div>
                       <div className="h-3 bg-white/20 rounded-full overflow-hidden shadow-inner">
                         <div 
-                          className="h-full bg-gradient-to-r from-white to-cyan-200 rounded-full transition-all duration-700 shadow-lg"
+                          className="h-full bg-white rounded-full transition-all duration-700 shadow-lg"
                           style={{ width: `${completionRate}%` }}
                         />
                       </div>
@@ -125,17 +125,17 @@ export default function Dashboard() {
                 </div>
                 
                 {/* 3D Depth Decorative Elements */}
-                <div className="absolute -top-20 -right-20 w-60 h-60 bg-cyan-400/30 rounded-full blur-3xl" />
+                <div className="absolute -top-20 -right-20 w-60 h-60 bg-teal-300/30 rounded-full blur-3xl" />
                 <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-teal-600/30 rounded-full blur-3xl" />
                 <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
               </Card>
 
-              {/* Quick Action Cards - Grid */}
+              {/* Quick Action Cards - Grid with TEAL gradients */}
               <div className="grid grid-cols-2 gap-4">
                 <Link href="/needs">
                   <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                     <CardHeader className="pb-4">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <Heart className="w-8 h-8 text-white" />
                       </div>
                       <CardTitle className="text-lg">Needs Board</CardTitle>
@@ -148,20 +148,20 @@ export default function Dashboard() {
                 <Link href="/meal-train">
                   <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                     <CardHeader className="pb-4">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <ChefHat className="w-8 h-8 text-white" />
                       </div>
                       <CardTitle className="text-lg">Meal Train</CardTitle>
                       <CardDescription>Meal coordination</CardDescription>
                     </CardHeader>
-                    <div className="absolute bottom-0 right-0 w-20 h-20 bg-cyan-100 rounded-tl-full opacity-50" />
+                    <div className="absolute bottom-0 right-0 w-20 h-20 bg-teal-100 rounded-tl-full opacity-50" />
                   </Card>
                 </Link>
 
                 <Link href="/calendar">
                   <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                     <CardHeader className="pb-4">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <Calendar className="w-8 h-8 text-white" />
                       </div>
                       <CardTitle className="text-lg">Calendar</CardTitle>
@@ -174,22 +174,21 @@ export default function Dashboard() {
                 <Link href="/messages">
                   <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                     <CardHeader className="pb-4">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
+                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-300 to-purple-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                         <MessageCircle className="w-8 h-8 text-white" />
                       </div>
                       <CardTitle className="text-lg">Messages</CardTitle>
                       <CardDescription>Stay connected</CardDescription>
                     </CardHeader>
-                    <div className="absolute bottom-0 right-0 w-20 h-20 bg-blue-100 rounded-tl-full opacity-50" />
+                    <div className="absolute bottom-0 right-0 w-20 h-20 bg-purple-100 rounded-tl-full opacity-50" />
                   </Card>
                 </Link>
               </div>
             </div>
 
-            {/* Right Column - Stats (Smaller) */}
+            {/* Right Column - Stats (Smaller) - TEAL gradients */}
             <div className="md:col-span-4 space-y-4">
-              {/* Stats with Teal Gradient - Stacked */}
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-400 to-cyan-500 text-white shadow-xl">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-400 to-teal-500 text-white shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -202,7 +201,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-cyan-500 to-blue-500 text-white shadow-xl">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-500 to-teal-600 text-white shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -215,7 +214,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-blue-500 to-teal-500 text-white shadow-xl">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-purple-300 to-purple-400 text-white shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -234,7 +233,7 @@ export default function Dashboard() {
           <Card className="rounded-3xl border-0 bg-white shadow-lg">
             <CardHeader>
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-cyan-500 flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-lg">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -246,7 +245,7 @@ export default function Dashboard() {
             <CardContent>
               {!recentActivity || recentActivity.length === 0 ? (
                 <div className="text-center py-16 text-muted-foreground">
-                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-teal-100 to-cyan-100 flex items-center justify-center mx-auto mb-4 shadow-inner">
+                  <div className="w-20 h-20 rounded-3xl bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center mx-auto mb-4 shadow-inner">
                     <Sparkles className="w-10 h-10 text-teal-500" />
                   </div>
                   <p className="font-medium text-lg">No recent activity</p>
@@ -262,36 +261,36 @@ export default function Dashboard() {
                       : date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
                     let actionText = "";
-                    let gradientClass = "from-teal-400 to-cyan-500";
+                    let gradientClass = "from-teal-400 to-teal-500";
                     
                     switch (activity.action) {
                       case "need_created":
                         actionText = "posted a new need";
-                        gradientClass = "from-teal-400 to-cyan-500";
+                        gradientClass = "from-teal-400 to-teal-500";
                         break;
                       case "need_claimed":
                         actionText = "claimed a need";
-                        gradientClass = "from-cyan-400 to-blue-500";
+                        gradientClass = "from-teal-500 to-teal-600";
                         break;
                       case "need_completed":
                         actionText = "completed a need";
-                        gradientClass = "from-teal-500 to-emerald-500";
+                        gradientClass = "from-teal-400 to-teal-500";
                         break;
                       case "event_created":
                         actionText = "created an event";
-                        gradientClass = "from-blue-400 to-cyan-500";
+                        gradientClass = "from-teal-400 to-teal-600";
                         break;
                       case "event_rsvp":
                         actionText = "RSVP'd to an event";
-                        gradientClass = "from-cyan-500 to-teal-500";
+                        gradientClass = "from-purple-300 to-purple-400";
                         break;
                       case "announcement_created":
                         actionText = "posted an announcement";
-                        gradientClass = "from-teal-400 to-blue-500";
+                        gradientClass = "from-purple-300 to-purple-400";
                         break;
                       case "user_joined":
                         actionText = "joined the household";
-                        gradientClass = "from-emerald-400 to-teal-500";
+                        gradientClass = "from-teal-500 to-teal-600";
                         break;
                       default:
                         actionText = activity.action.replace(/_/g, " ");
