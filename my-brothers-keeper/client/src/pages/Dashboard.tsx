@@ -186,22 +186,24 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Right Column - Stats (Smaller) - TEAL gradients */}
+            {/* Right Column - Stats (Smaller) - Vertical Gradient Flow */}
             <div className="md:col-span-4 space-y-4">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-400 to-teal-500 text-white shadow-xl">
+              {/* Top Card - Very Light Teal */}
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-100 to-teal-200 text-teal-900 shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                      <Users className="w-7 h-7 text-white" />
+                    <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                      <Users className="w-7 h-7 text-teal-700" />
                     </div>
                   </div>
                   <div className="text-5xl font-bold mb-1">{activeUsers.length}</div>
-                  <div className="text-sm text-white/90 font-medium">Active Supporters</div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                  <div className="text-sm text-teal-800 font-medium">Active Supporters</div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-500 to-teal-600 text-white shadow-xl">
+              {/* Middle Card - Darkest Teal (Peak of Gradient) */}
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-400 via-teal-500 to-teal-400 text-white shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -214,16 +216,17 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-400 to-teal-500 text-white shadow-xl">
+              {/* Bottom Card - Fading Back to Light */}
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-200 to-teal-100 text-teal-900 shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                      <Calendar className="w-7 h-7 text-white" />
+                    <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                      <Calendar className="w-7 h-7 text-teal-700" />
                     </div>
                   </div>
                   <div className="text-5xl font-bold mb-1">{upcomingEvents.length}</div>
-                  <div className="text-sm text-white/90 font-medium">Upcoming Events</div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                  <div className="text-sm text-teal-800 font-medium">Upcoming Events</div>
+                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
                 </CardContent>
               </Card>
             </div>
