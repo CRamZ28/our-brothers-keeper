@@ -46,9 +46,9 @@ export default function Dashboard() {
     <DashboardLayout>
       {/* Soft Pastel Gradient Background - TEAL ONLY */}
       <div className="min-h-screen relative overflow-hidden">
-        {/* Pastel Teal Gradient Background */}
-        <div className="fixed inset-0 bg-gradient-to-br from-teal-50 via-white to-teal-100/50 -z-10" />
-        <div className="fixed inset-0 bg-gradient-to-tr from-transparent via-teal-50/30 to-transparent -z-10" />
+        {/* Pastel Teal Gradient Background - Fade from very light to darker */}
+        <div className="fixed inset-0 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200 -z-10" />
+        <div className="fixed inset-0 bg-gradient-to-tr from-teal-50/50 via-teal-100/30 to-teal-200/50 -z-10" />
         
         <div className="relative p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
           {/* Pending Approvals Alert - Full Width with Mauve/Purple Accent */}
@@ -92,10 +92,10 @@ export default function Dashboard() {
                         Welcome back, {user?.name?.split(" ")[0] || "there"}!
                       </h1>
                       <p className="text-white/90 text-lg flex items-center gap-2">
-                        <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm">
+                        <span className="px-3 py-1 bg-gradient-to-r from-purple-300 to-purple-400 rounded-full text-sm font-semibold text-white shadow-lg">
                           {household.name}
                         </span>
-                        <span className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-sm capitalize">
+                        <span className="px-3 py-1 bg-gradient-to-r from-purple-300 to-purple-400 rounded-full text-sm capitalize font-semibold text-white shadow-lg">
                           {user?.role}
                         </span>
                       </p>
@@ -214,7 +214,7 @@ export default function Dashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-purple-300 to-purple-400 text-white shadow-xl">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-br from-teal-400 to-teal-500 text-white shadow-xl">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
