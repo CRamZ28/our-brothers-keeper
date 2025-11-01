@@ -35,9 +35,11 @@ import {
   AlertCircle,
   Baby,
   Calendar,
+  CalendarDays,
   Check,
   Heart,
   Home,
+  List,
   Pencil,
   Plus,
   ShoppingCart,
@@ -89,6 +91,9 @@ export default function Needs() {
   const [selectedNeedId, setSelectedNeedId] = useState<number | null>(null);
   const [claimNote, setClaimNote] = useState("");
   const [completionNote, setCompletionNote] = useState("");
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [selectedNeedDetails, setSelectedNeedDetails] = useState<any | null>(null);
 
   const createNeedMutation = trpc.needs.create.useMutation({
     onSuccess: () => {
@@ -202,9 +207,6 @@ export default function Needs() {
       category,
       priority,
       dueAt: dueDate ? new Date(dueDate) : undefined,
-      capacity: capacity ? parseInt(capacity) : undefined,
-      visibilityScope,
-      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
     });
   };
 
@@ -225,6 +227,18 @@ export default function Needs() {
     setVisibilityScope(need.visibilityScope || "all_supporters");
     setVisibilityGroupId(need.visibilityGroupId?.toString() || "");
     setEditDialogOpen(true);
+  };
+
+  const formatDateWithDayOfWeek = (date: Date) => {
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = days[date.getDay()];
+    const dateStr = date.toLocaleDateString();
+    return `${dayName}, ${dateStr}`;
+  };
+
+  const openDetailsDialog = (need: any) => {
+    setSelectedNeedDetails(need);
+    setDetailsDialogOpen(true);
   };
 
   const handleClaimNeed = () => {
@@ -266,7 +280,29 @@ export default function Needs() {
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
             <h1>Needs Board</h1>
-            {isPrimaryOrAdmin && (
+            <div className="flex items-center gap-2">
+              {/* View Toggle */}
+              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+                <Button
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("list")}
+                  className={viewMode === "list" ? "" : "hover:bg-white/20"}
+                >
+                  <List className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">List</span>
+                </Button>
+                <Button
+                  variant={viewMode === "calendar" ? "default" : "ghost"}
+                  size="sm"
+                  onClick={() => setViewMode("calendar")}
+                  className={viewMode === "calendar" ? "" : "hover:bg-white/20"}
+                >
+                  <CalendarDays className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">Calendar</span>
+                </Button>
+              </div>
+              {isPrimaryOrAdmin && (
               <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
                 <DialogTrigger asChild>
                   <Button size="sm" className="shrink-0">
@@ -403,11 +439,12 @@ export default function Needs() {
               </DialogContent>
             </Dialog>
           )}
+            </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {openNeeds.length} open need{openNeeds.length !== 1 ? 's' : ''}
+            </p>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {openNeeds.length} open need{openNeeds.length !== 1 ? 's' : ''}
-          </p>
-        </div>
 
         {/* Edit Need Dialog */}
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -581,7 +618,93 @@ export default function Needs() {
           </DialogContent>
         </Dialog>
 
-        {/* Needs Tabs */}
+        {/* Calendar View */}
+        {viewMode === "calendar" ? (
+          <div className="space-y-4">
+            {openNeeds.filter(n => n.dueAt).length === 0 ? (
+              <Card className="card-elevated-lg">
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <CalendarDays className="w-12 h-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground text-center">
+                    No needs with due dates yet
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {/* Group needs by date */}
+                {(() => {
+                  const needsByDate = new Map<string, typeof openNeeds>();
+                  openNeeds.filter(n => n.dueAt).forEach(need => {
+                    const dateKey = new Date(need.dueAt!).toDateString();
+                    if (!needsByDate.has(dateKey)) {
+                      needsByDate.set(dateKey, []);
+                    }
+                    needsByDate.get(dateKey)!.push(need);
+                  });
+                  
+                  return Array.from(needsByDate.entries())
+                    .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+                    .map(([dateKey, needsForDate]) => {
+                      const date = new Date(dateKey);
+                      return (
+                        <div key={dateKey}>
+                          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                            <CalendarDays className="w-5 h-5 text-primary" />
+                            {formatDateWithDayOfWeek(date)}
+                          </h3>
+                          <div className="grid md:grid-cols-2 gap-4 mb-6">
+                            {needsForDate.map(need => {
+                              const Icon = categoryIcons[need.category];
+                              return (
+                                <Card 
+                                  key={need.id} 
+                                  className="card-elevated hover-lift accent-bar-teal relative cursor-pointer"
+                                  onClick={() => openDetailsDialog(need)}
+                                >
+                                  <CardHeader>
+                                    <div className="flex items-start gap-3">
+                                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                        <Icon className="w-5 h-5 text-primary" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <CardTitle className="text-lg">{need.title}</CardTitle>
+                                        <div className="flex items-center gap-2 mt-2">
+                                          <Badge variant="outline" className={priorityColors[need.priority]}>
+                                            {need.priority === "urgent" && (
+                                              <AlertCircle className="w-3 h-3 mr-1" />
+                                            )}
+                                            {need.priority}
+                                          </Badge>
+                                          <Badge variant="secondary">{need.category}</Badge>
+                                          {need.capacity && (
+                                            <Badge variant="outline" className="gap-1">
+                                              {need.claimCount || 0}/{need.capacity}
+                                              {need.claimCount >= need.capacity && " (Filled)"}
+                                            </Badge>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </CardHeader>
+                                  {need.details && (
+                                    <CardContent>
+                                      <p className="text-sm text-muted-foreground line-clamp-2">{need.details}</p>
+                                    </CardContent>
+                                  )}
+                                </Card>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    });
+                })()}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* List View - Needs Tabs */
         <Tabs defaultValue="open" className="space-y-6">
           <TabsList>
             <TabsTrigger value="open">
@@ -666,7 +789,7 @@ export default function Needs() {
                           {need.dueAt && (
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <Calendar className="w-4 h-4" />
-                              Due: {new Date(need.dueAt).toLocaleDateString()}
+                              Due: {formatDateWithDayOfWeek(new Date(need.dueAt))}
                             </div>
                           )}
                         </CardContent>
@@ -818,6 +941,93 @@ export default function Needs() {
             )}
           </TabsContent>
         </Tabs>
+        )}
+
+        {/* Need Details Dialog (for Calendar View) */}
+        <Dialog open={detailsDialogOpen} onOpenChange={setDetailsDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                {selectedNeedDetails && (() => {
+                  const Icon = categoryIcons[selectedNeedDetails.category];
+                  return <Icon className="w-5 h-5 text-primary" />;
+                })()}
+                {selectedNeedDetails?.title}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedNeedDetails?.dueAt && (
+                  <span className="flex items-center gap-2 mt-2">
+                    <Calendar className="w-4 h-4" />
+                    Due: {formatDateWithDayOfWeek(new Date(selectedNeedDetails.dueAt))}
+                  </span>
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {selectedNeedDetails && (
+                <>
+                  <div className="flex flex-wrap gap-2">
+                    <Badge variant="outline" className={priorityColors[selectedNeedDetails.priority]}>
+                      {selectedNeedDetails.priority === "urgent" && (
+                        <AlertCircle className="w-3 h-3 mr-1" />
+                      )}
+                      {selectedNeedDetails.priority}
+                    </Badge>
+                    <Badge variant="secondary">{selectedNeedDetails.category}</Badge>
+                    {selectedNeedDetails.capacity && (
+                      <Badge variant="outline" className="gap-1">
+                        {selectedNeedDetails.claimCount || 0}/{selectedNeedDetails.capacity}
+                        {selectedNeedDetails.claimCount >= selectedNeedDetails.capacity && " (Filled)"}
+                      </Badge>
+                    )}
+                  </div>
+                  {selectedNeedDetails.details && (
+                    <div>
+                      <Label className="text-sm font-semibold">Details</Label>
+                      <p className="text-sm text-muted-foreground mt-1">{selectedNeedDetails.details}</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
+                Close
+              </Button>
+              {selectedNeedDetails && (
+                <>
+                  {user && (selectedNeedDetails.createdById === user.id || isPrimaryOrAdmin) && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setDetailsDialogOpen(false);
+                        openEditDialog(selectedNeedDetails);
+                      }}
+                    >
+                      <Pencil className="w-4 h-4 mr-2" />
+                      Edit
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => {
+                      setDetailsDialogOpen(false);
+                      openClaimDialog(selectedNeedDetails.id);
+                    }}
+                    disabled={
+                      user?.role === "primary" ||
+                      (selectedNeedDetails.capacity && selectedNeedDetails.claimCount >= selectedNeedDetails.capacity)
+                    }
+                  >
+                    <Check className="w-4 h-4 mr-2" />
+                    {selectedNeedDetails.capacity && selectedNeedDetails.claimCount >= selectedNeedDetails.capacity
+                      ? "Filled"
+                      : "I Can Help"}
+                  </Button>
+                </>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Complete Need Dialog */}
         <Dialog open={completeDialogOpen} onOpenChange={setCompleteDialogOpen}>
