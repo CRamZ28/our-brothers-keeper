@@ -30,7 +30,7 @@ export const userRoleEnum = pgEnum("user_role", ["primary", "admin", "supporter"
 export const userStatusEnum = pgEnum("user_status", ["active", "pending", "blocked"]);
 export const invitedRoleEnum = pgEnum("invited_role", ["admin", "supporter"]);
 export const inviteStatusEnum = pgEnum("invite_status", ["sent", "accepted", "revoked", "expired"]);
-export const visibilityScopeEnum = pgEnum("visibility_scope", ["private", "all_supporters", "group", "role"]);
+export const visibilityScopeEnum = pgEnum("visibility_scope", ["private", "all_supporters", "group", "role", "custom"]);
 export const minRoleEnum = pgEnum("min_role", ["supporter", "admin", "primary"]);
 export const rsvpStatusEnum = pgEnum("rsvp_status", ["going", "maybe", "declined"]);
 export const needCategoryEnum = pgEnum("need_category", ["meals", "rides", "errands", "childcare", "household", "other"]);
@@ -164,6 +164,7 @@ export const events = pgTable("events", {
   googleCalendarEvtId: varchar("google_calendar_evt_id", { length: 255 }),
   visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
   visibilityGroupId: integer("visibility_group_id"),
+  customUserIds: jsonb("custom_user_ids").$type<string[]>(),
   minRole: minRoleEnum("min_role"),
   capacity: integer("capacity"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -209,6 +210,7 @@ export const needs = pgTable("needs", {
   createdBy: varchar("created_by").notNull(),
   visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
   visibilityGroupId: integer("visibility_group_id"),
+  customUserIds: jsonb("custom_user_ids").$type<string[]>(),
   status: needStatusEnum("status").default("open").notNull(),
   capacity: integer("capacity"),
   completedAt: timestamp("completed_at"),
@@ -442,8 +444,10 @@ export const mealTrains = pgTable("meal_trains", {
   dailyCapacity: integer("daily_capacity").default(1).notNull(),
   visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
   visibilityGroupId: integer("visibility_group_id"),
+  customUserIds: jsonb("custom_user_ids").$type<string[]>(),
   addressVisibilityScope: visibilityScopeEnum("address_visibility_scope").default("all_supporters").notNull(),
   addressVisibilityGroupId: integer("address_visibility_group_id"),
+  customAddressUserIds: jsonb("custom_address_user_ids").$type<string[]>(),
   enabled: boolean("enabled").default(true).notNull(),
   createdBy: varchar("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),

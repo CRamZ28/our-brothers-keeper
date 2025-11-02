@@ -15,6 +15,13 @@
       "when": 1761935223384,
       "tag": "0001_absent_mockingbird",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1762055885279,
+      "tag": "0002_violet_roughhouse",
+      "breakpoints": true
     }
   ]
 }

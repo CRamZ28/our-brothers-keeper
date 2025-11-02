@@ -2,6 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { UserSelector } from "@/components/UserSelector";
 import {
   Card,
   CardContent,
@@ -83,9 +84,10 @@ export default function Needs() {
   const [dueDate, setDueDate] = useState("");
   const [capacity, setCapacity] = useState<string>("");
   const [visibilityScope, setVisibilityScope] = useState<
-    "private" | "all_supporters" | "group" | "role"
+    "private" | "all_supporters" | "group" | "role" | "custom"
   >("all_supporters");
   const [visibilityGroupId, setVisibilityGroupId] = useState<string>("");
+  const [customUserIds, setCustomUserIds] = useState<string[]>([]);
 
   const [claimDialogOpen, setClaimDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
@@ -170,6 +172,7 @@ export default function Needs() {
     setCapacity("");
     setVisibilityScope("all_supporters");
     setVisibilityGroupId("");
+    setCustomUserIds([]);
   };
 
   const handleCreateNeed = () => {
@@ -183,6 +186,11 @@ export default function Needs() {
       return;
     }
 
+    if (visibilityScope === "custom" && customUserIds.length === 0) {
+      toast.error("Please select at least one person");
+      return;
+    }
+
     createNeedMutation.mutate({
       title,
       details,
@@ -192,6 +200,7 @@ export default function Needs() {
       capacity: capacity ? parseInt(capacity) : undefined,
       visibilityScope,
       visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+      customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
     });
   };
 
@@ -207,6 +216,11 @@ export default function Needs() {
       return;
     }
 
+    if (visibilityScope === "custom" && customUserIds.length === 0) {
+      toast.error("Please select at least one person");
+      return;
+    }
+
     updateNeedMutation.mutate({
       id: editingNeedId,
       title,
@@ -214,6 +228,10 @@ export default function Needs() {
       category,
       priority,
       dueAt: dueDate ? new Date(dueDate) : undefined,
+      capacity: capacity ? parseInt(capacity) : undefined,
+      visibilityScope,
+      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+      customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
     });
   };
 
