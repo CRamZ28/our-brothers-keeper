@@ -23,6 +23,9 @@ export default function MealTrain() {
   const [showRecipientInfo, setShowRecipientInfo] = useState(false);
   const [showVolunteerDialog, setShowVolunteerDialog] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [daySignupsDialogOpen, setDaySignupsDialogOpen] = useState(false);
+  const [selectedDayDate, setSelectedDayDate] = useState<Date | null>(null);
+  const [todayMealsDialogOpen, setTodayMealsDialogOpen] = useState(false);
 
   const { data: mealTrain, refetch: refetchMealTrain } = trpc.mealTrain.get.useQuery();
   const { data: signups = [], refetch: refetchSignups } = trpc.mealTrain.listSignups.useQuery();
@@ -74,6 +77,28 @@ export default function MealTrain() {
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+  const openDaySignupsDialog = (date: Date) => {
+    setSelectedDayDate(date);
+    setDaySignupsDialogOpen(true);
+  };
+
+  const openVolunteerDialogWithDate = (date: Date) => {
+    setSelectedDate(date);
+    setDaySignupsDialogOpen(false);
+    setShowVolunteerDialog(true);
+  };
+
+  const goToToday = () => {
+    setCurrentMonth(new Date());
+    setTodayMealsDialogOpen(true);
+  };
+
+  const getTodaysMeals = () => {
+    const today = new Date();
+    const todayKey = format(today, "yyyy-MM-dd");
+    return signupsByDate[todayKey]?.filter(s => s.status !== "cancelled") || [];
+  };
 
   if (!mealTrain || !mealTrain.enabled) {
     return (
@@ -181,7 +206,12 @@ export default function MealTrain() {
                   >
                     Previous
                   </Button>
-                  <CardTitle>{format(currentMonth, "MMMM yyyy")}</CardTitle>
+                  <div className="flex items-center gap-3">
+                    <CardTitle>{format(currentMonth, "MMMM yyyy")}</CardTitle>
+                    <Button variant="outline" size="sm" onClick={goToToday}>
+                      Today
+                    </Button>
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
@@ -212,15 +242,10 @@ export default function MealTrain() {
                     return (
                       <Card
                         key={format(date, "yyyy-MM-dd")}
-                        className={`card-elevated ${
+                        className={`card-elevated hover-lift cursor-pointer ${
                           isPast ? "opacity-50" : ""
-                        } ${capacityInfo.isAvailable && !isPast ? "hover-lift cursor-pointer" : ""}`}
-                        onClick={() => {
-                          if (capacityInfo.isAvailable && !isPast) {
-                            setSelectedDate(date);
-                            setShowVolunteerDialog(true);
-                          }
-                        }}
+                        }`}
+                        onClick={() => openDaySignupsDialog(date)}
                       >
                         <CardContent className="p-3">
                           <div className="text-sm font-medium mb-2">{format(date, "d")}</div>
@@ -241,9 +266,15 @@ export default function MealTrain() {
                                 </p>
                               ))}
                               {capacityInfo.signups.length > 2 && (
-                                <p className="text-xs text-muted-foreground">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    openDaySignupsDialog(date);
+                                  }}
+                                  className="text-xs text-primary hover:underline"
+                                >
                                   +{capacityInfo.signups.length - 2} more
-                                </p>
+                                </button>
                               )}
                             </div>
                           ) : null}
@@ -301,6 +332,164 @@ export default function MealTrain() {
               </CardContent>
             </Card>
           )}
+
+          {/* Today's Meals Dialog */}
+          <Dialog open={todayMealsDialogOpen} onOpenChange={setTodayMealsDialogOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <ChefHat className="w-5 h-5 text-primary" />
+                  Today's Meal Deliveries
+                </DialogTitle>
+                <DialogDescription>
+                  {getTodaysMeals().length === 0 ? (
+                    "No meal deliveries scheduled for today"
+                  ) : (
+                    `${getTodaysMeals().length} meal${getTodaysMeals().length !== 1 ? 's' : ''} scheduled today`
+                  )}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 py-4">
+                {getTodaysMeals().length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <ChefHat className="w-12 h-12 mx-auto mb-3 text-primary/50" />
+                    <p>No meal deliveries scheduled for today</p>
+                  </div>
+                ) : (
+                  getTodaysMeals().map(signup => (
+                    <Card key={signup.id} className="card-elevated accent-bar-teal">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <ChefHat className="w-5 h-5 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Users className="w-4 h-4 text-muted-foreground" />
+                              <span className="font-semibold">{signup.userName}</span>
+                              <Badge variant={signup.status === "completed" ? "default" : "secondary"}>
+                                {signup.status}
+                              </Badge>
+                            </div>
+                            {signup.notes && (
+                              <p className="text-sm text-muted-foreground">{signup.notes}</p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 mt-4">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setTodayMealsDialogOpen(false);
+                    setShowRecipientInfo(true);
+                  }}
+                >
+                  View Recipient Info
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* Day Signups Dialog */}
+          <Dialog open={daySignupsDialogOpen} onOpenChange={setDaySignupsDialogOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <ChefHat className="w-5 h-5 text-primary" />
+                  {selectedDayDate && format(selectedDayDate, "EEEE, MMMM d, yyyy")}
+                </DialogTitle>
+                <DialogDescription>
+                  {selectedDayDate && (() => {
+                    const capacityInfo = getDateCapacityInfo(selectedDayDate);
+                    const isPast = selectedDayDate < new Date() && !isSameDay(selectedDayDate, new Date());
+                    return capacityInfo.signups.length === 0
+                      ? "No meal deliveries scheduled"
+                      : `${capacityInfo.signups.length} of ${capacityInfo.capacity} spots filled`;
+                  })()}
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 py-4">
+                {selectedDayDate && (() => {
+                  const capacityInfo = getDateCapacityInfo(selectedDayDate);
+                  const isPast = selectedDayDate < new Date() && !isSameDay(selectedDayDate, new Date());
+                  
+                  if (capacityInfo.signups.length === 0) {
+                    return (
+                      <div className="text-center py-8 text-muted-foreground">
+                        <ChefHat className="w-12 h-12 mx-auto mb-3 text-primary/50" />
+                        <p>No meal deliveries scheduled for this day</p>
+                        {capacityInfo.isAvailable && !isPast && (
+                          <Button 
+                            className="mt-4"
+                            onClick={() => openVolunteerDialogWithDate(selectedDayDate)}
+                          >
+                            <Users className="w-4 h-4 mr-2" />
+                            Volunteer for This Day
+                          </Button>
+                        )}
+                      </div>
+                    );
+                  }
+                  
+                  return capacityInfo.signups.map(signup => (
+                    <Card key={signup.id} className="card-elevated accent-bar-teal">
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <ChefHat className="w-5 h-5 text-primary" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-2">
+                              <Users className="w-4 h-4 text-muted-foreground" />
+                              <span className="font-semibold">{signup.userName}</span>
+                              <Badge variant={signup.status === "completed" ? "default" : "secondary"}>
+                                {signup.status}
+                              </Badge>
+                            </div>
+                            {signup.notes && (
+                              <p className="text-sm text-muted-foreground">{signup.notes}</p>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ));
+                })()}
+              </div>
+              <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setDaySignupsDialogOpen(false);
+                      setShowRecipientInfo(true);
+                    }}
+                  >
+                    View Recipient Info
+                  </Button>
+                  {selectedDayDate && (() => {
+                    const capacityInfo = getDateCapacityInfo(selectedDayDate);
+                    const isPast = selectedDayDate < new Date() && !isSameDay(selectedDayDate, new Date());
+                    return capacityInfo.isAvailable && !isPast && (
+                      <Button 
+                        onClick={() => openVolunteerDialogWithDate(selectedDayDate)}
+                      >
+                        <Users className="w-4 h-4 mr-2" />
+                        Volunteer for This Day
+                      </Button>
+                    );
+                  })()}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* Volunteer Dialog */}
           <Dialog open={showVolunteerDialog} onOpenChange={setShowVolunteerDialog}>

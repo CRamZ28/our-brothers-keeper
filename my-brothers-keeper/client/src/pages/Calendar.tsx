@@ -63,6 +63,9 @@ export default function Calendar() {
   const [eventDetailOpen, setEventDetailOpen] = useState(false);
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [dayEventsDialogOpen, setDayEventsDialogOpen] = useState(false);
+  const [selectedDayDate, setSelectedDayDate] = useState<Date | null>(null);
+  const [todayEventsDialogOpen, setTodayEventsDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
   const [title, setTitle] = useState("");
@@ -228,7 +231,27 @@ export default function Calendar() {
 
   const previousMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const nextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
-  const today = () => setCurrentMonth(new Date());
+  const today = () => {
+    setCurrentMonth(new Date());
+    setTodayEventsDialogOpen(true);
+  };
+
+  const openDayEventsDialog = (day: Date) => {
+    setSelectedDayDate(day);
+    setDayEventsDialogOpen(true);
+  };
+
+  const openCreateDialogWithDate = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    setStartDate(dateStr);
+    setDayEventsDialogOpen(false);
+    setCreateDialogOpen(true);
+  };
+
+  const getTodaysEvents = () => {
+    const today = new Date();
+    return events?.filter(event => isSameDay(new Date(event.startAt), today)) || [];
+  };
 
   // List view logic
   const now = new Date();
@@ -433,9 +456,10 @@ export default function Calendar() {
                     return (
                       <div
                         key={idx}
-                        className={`min-h-[100px] p-2 border rounded-lg ${
+                        className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all ${
                           !isCurrentMonth ? "bg-muted/30" : "bg-background"
                         } ${isTodayDate ? "border-primary border-2" : ""}`}
+                        onClick={() => openDayEventsDialog(day)}
                       >
                         <div
                           className={`text-sm font-medium mb-1 ${
@@ -445,12 +469,13 @@ export default function Calendar() {
                           {format(day, "d")}
                         </div>
                         <div className="space-y-1">
-                          {dayEvents.map((event) => (
+                          {dayEvents.slice(0, 2).map((event) => (
                             <div
                               key={event.id}
-                              className="text-xs p-1 bg-primary/10 text-primary rounded truncate cursor-pointer hover:bg-primary/20"
+                              className="text-xs p-1 bg-primary/10 text-primary rounded truncate"
                               title={event.title}
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.stopPropagation();
                                 setSelectedEvent(event.id);
                                 setEventDetailOpen(true);
                               }}
@@ -463,6 +488,17 @@ export default function Calendar() {
                               )}
                             </div>
                           ))}
+                          {dayEvents.length > 2 && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDayEventsDialog(day);
+                              }}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              +{dayEvents.length - 2} more
+                            </button>
+                          )}
                         </div>
                       </div>
                     );
@@ -623,6 +659,173 @@ export default function Calendar() {
             </TabsContent>
           </Tabs>
         )}
+
+        {/* Today's Events Dialog */}
+        <Dialog open={todayEventsDialogOpen} onOpenChange={setTodayEventsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-primary" />
+                Today's Events
+              </DialogTitle>
+              <DialogDescription>
+                {getTodaysEvents().length === 0 ? (
+                  "No events scheduled for today"
+                ) : (
+                  `${getTodaysEvents().length} event${getTodaysEvents().length !== 1 ? 's' : ''} today`
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-4">
+              {getTodaysEvents().length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-primary/50" />
+                  <p>No events scheduled for today. Enjoy your day!</p>
+                </div>
+              ) : (
+                getTodaysEvents().map(event => (
+                  <Card key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                    setTodayEventsDialogOpen(false);
+                    setSelectedEvent(event.id);
+                    setEventDetailOpen(true);
+                  }}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <CalendarIcon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base">{event.title}</CardTitle>
+                          <CardDescription className="mt-2 space-y-1">
+                            <div className="flex items-center gap-2 text-sm">
+                              <CalendarIcon className="w-3.5 h-3.5" />
+                              {format(new Date(event.startAt), "h:mm a")}
+                            </div>
+                            {event.location && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <MapPin className="w-3.5 h-3.5" />
+                                {event.location}
+                              </div>
+                            )}
+                            {event.capacity && (
+                              <Badge variant="outline" className="gap-1 text-xs mt-2">
+                                <Users className="w-3 h-3" />
+                                {event.goingCount || 0}/{event.capacity}
+                                {event.goingCount >= event.capacity && " (Full)"}
+                              </Badge>
+                            )}
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    {event.description && (
+                      <CardContent className="pt-0">
+                        <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+                      </CardContent>
+                    )}
+                  </Card>
+                ))
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setTodayEventsDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Day Events Dialog */}
+        <Dialog open={dayEventsDialogOpen} onOpenChange={setDayEventsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-primary" />
+                {selectedDayDate && format(selectedDayDate, "EEEE, MMMM d, yyyy")}
+              </DialogTitle>
+              <DialogDescription>
+                {selectedDayDate && getEventsForDay(selectedDayDate).length === 0 ? (
+                  "No events on this day"
+                ) : (
+                  selectedDayDate && `${getEventsForDay(selectedDayDate).length} event${getEventsForDay(selectedDayDate).length !== 1 ? 's' : ''} on this day`
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-4">
+              {selectedDayDate && getEventsForDay(selectedDayDate).length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CalendarIcon className="w-12 h-12 mx-auto mb-3 text-primary/50" />
+                  <p>No events scheduled for this day</p>
+                  {isPrimaryOrAdmin && (
+                    <Button 
+                      className="mt-4"
+                      onClick={() => openCreateDialogWithDate(selectedDayDate)}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create Event
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                selectedDayDate && getEventsForDay(selectedDayDate).map(event => (
+                  <Card key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                    setDayEventsDialogOpen(false);
+                    setSelectedEvent(event.id);
+                    setEventDetailOpen(true);
+                  }}>
+                    <CardHeader className="pb-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <CalendarIcon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-base">{event.title}</CardTitle>
+                          <CardDescription className="mt-2 space-y-1">
+                            <div className="flex items-center gap-2 text-sm">
+                              <CalendarIcon className="w-3.5 h-3.5" />
+                              {format(new Date(event.startAt), "h:mm a")}
+                            </div>
+                            {event.location && (
+                              <div className="flex items-center gap-2 text-sm">
+                                <MapPin className="w-3.5 h-3.5" />
+                                {event.location}
+                              </div>
+                            )}
+                            {event.capacity && (
+                              <Badge variant="outline" className="gap-1 text-xs mt-2">
+                                <Users className="w-3 h-3" />
+                                {event.goingCount || 0}/{event.capacity}
+                                {event.goingCount >= event.capacity && " (Full)"}
+                              </Badge>
+                            )}
+                          </CardDescription>
+                        </div>
+                      </div>
+                    </CardHeader>
+                    {event.description && (
+                      <CardContent className="pt-0">
+                        <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
+                      </CardContent>
+                    )}
+                  </Card>
+                ))
+              )}
+            </div>
+            <DialogFooter>
+              {isPrimaryOrAdmin && selectedDayDate && (
+                <Button 
+                  onClick={() => openCreateDialogWithDate(selectedDayDate)}
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Event
+                </Button>
+              )}
+              <Button variant="outline" onClick={() => setDayEventsDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Event Detail Dialog */}
         <Dialog open={eventDetailOpen} onOpenChange={setEventDetailOpen}>
