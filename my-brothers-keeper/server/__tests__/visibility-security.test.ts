@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import * as db from "../db";
 import { checkContentVisibility, filterByVisibility } from "../visibilityHelpers";
 
@@ -211,6 +211,157 @@ describe("Visibility Security Tests", () => {
 
       expect(visible).toHaveLength(1);
       expect(visible[0].id).toBe(1);
+    });
+  });
+
+  describe("Group Visibility - CRITICAL SECURITY", () => {
+    // Mock db.getUserGroups to test group membership logic
+    beforeEach(() => {
+      vi.spyOn(db, "getUserGroups");
+    });
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it("should allow supporters IN the group to see group-restricted content", async () => {
+      // Mock: User is in group 5
+      vi.mocked(db.getUserGroups).mockResolvedValue([
+        { id: 5, name: "Inner Circle", description: null, householdId: 1, createdAt: new Date() },
+        { id: 7, name: "Church Friends", description: null, householdId: 1, createdAt: new Date() },
+      ]);
+
+      const content = {
+        visibilityScope: "group",
+        visibilityGroupId: 5,
+        customUserIds: null,
+      };
+
+      const canView = await checkContentVisibility(
+        "supporter-in-group",
+        "supporter",
+        1,
+        content
+      );
+
+      expect(canView).toBe(true);
+      expect(db.getUserGroups).toHaveBeenCalledWith("supporter-in-group", 1);
+    });
+
+    it("should HIDE group-restricted content from supporters NOT in the group", async () => {
+      // Mock: User is in groups 7 and 8, but NOT in group 5
+      vi.mocked(db.getUserGroups).mockResolvedValue([
+        { id: 7, name: "Church Friends", description: null, householdId: 1, createdAt: new Date() },
+        { id: 8, name: "Work Colleagues", description: null, householdId: 1, createdAt: new Date() },
+      ]);
+
+      const content = {
+        visibilityScope: "group",
+        visibilityGroupId: 5,
+        customUserIds: null,
+      };
+
+      const canView = await checkContentVisibility(
+        "supporter-not-in-group",
+        "supporter",
+        1,
+        content
+      );
+
+      expect(canView).toBe(false);
+      expect(db.getUserGroups).toHaveBeenCalledWith("supporter-not-in-group", 1);
+    });
+
+    it("should filter group-restricted items correctly in lists", async () => {
+      // Mock: User is in group 5, but NOT in group 10
+      vi.mocked(db.getUserGroups).mockResolvedValue([
+        { id: 5, name: "Inner Circle", description: null, householdId: 1, createdAt: new Date() },
+      ]);
+
+      const items = [
+        {
+          id: 1,
+          title: "Public need",
+          visibilityScope: "all_supporters",
+          visibilityGroupId: null,
+          customUserIds: null,
+        },
+        {
+          id: 2,
+          title: "Inner Circle only",
+          visibilityScope: "group",
+          visibilityGroupId: 5, // User IS in this group
+          customUserIds: null,
+        },
+        {
+          id: 3,
+          title: "Family only",
+          visibilityScope: "group",
+          visibilityGroupId: 10, // User NOT in this group
+          customUserIds: null,
+        },
+      ];
+
+      const visible = await filterByVisibility(
+        items,
+        "supporter-123",
+        "supporter",
+        1
+      );
+
+      expect(visible).toHaveLength(2);
+      expect(visible[0].id).toBe(1); // Public
+      expect(visible[1].id).toBe(2); // Group 5 (user is member)
+      // Item 3 (group 10) should be HIDDEN
+      expect(db.getUserGroups).toHaveBeenCalledOnce(); // Called ONCE (performance optimization!)
+    });
+
+    it("should optimize group lookups - only 1 DB call for 100 items", async () => {
+      // Mock: User is in group 5
+      vi.mocked(db.getUserGroups).mockResolvedValue([
+        { id: 5, name: "Inner Circle", description: null, householdId: 1, createdAt: new Date() },
+      ]);
+
+      // Create 100 group-restricted items
+      const items = Array.from({ length: 100 }, (_, i) => ({
+        id: i + 1,
+        visibilityScope: "group",
+        visibilityGroupId: i % 2 === 0 ? 5 : 10, // Half in group 5, half in group 10
+        customUserIds: null,
+      }));
+
+      const visible = await filterByVisibility(
+        items,
+        "supporter-123",
+        "supporter",
+        1
+      );
+
+      // Should see 50 items (those in group 5)
+      expect(visible).toHaveLength(50);
+      
+      // CRITICAL PERFORMANCE TEST: Only 1 DB call, not 100!
+      expect(db.getUserGroups).toHaveBeenCalledOnce();
+    });
+
+    it("should HIDE group content from supporters with no groups", async () => {
+      // Mock: User has no group memberships
+      vi.mocked(db.getUserGroups).mockResolvedValue([]);
+
+      const content = {
+        visibilityScope: "group",
+        visibilityGroupId: 5,
+        customUserIds: null,
+      };
+
+      const canView = await checkContentVisibility(
+        "supporter-no-groups",
+        "supporter",
+        1,
+        content
+      );
+
+      expect(canView).toBe(false);
     });
   });
 
