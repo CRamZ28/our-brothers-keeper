@@ -985,9 +985,9 @@ export default function Calendar() {
                       <p className="text-sm text-muted-foreground">{event.description}</p>
                     </div>
                   )}
-                  <DialogFooter className="flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-3">
+                  <DialogFooter className="flex flex-col sm:flex-row gap-3">
                     {(user && (event.createdById === user.id || isPrimaryOrAdmin)) && (
-                      <div className="flex gap-2 sm:mr-auto">
+                      <div className="flex flex-wrap gap-2 sm:mr-auto">
                         <Button
                           variant="outline"
                           size="sm"
@@ -1007,44 +1007,46 @@ export default function Calendar() {
                         </Button>
                       </div>
                     )}
-                    <Button
-                      variant="default"
-                      onClick={() => {
-                        handleRsvp(event.id, "going");
-                        setEventDetailOpen(false);
-                      }}
-                      disabled={
-                        rsvpMutation.isPending ||
-                        (event.capacity && event.goingCount >= event.capacity)
-                      }
-                      className="whitespace-nowrap shrink"
-                    >
-                      <Check className="w-4 h-4 mr-2" />
-                      {event.capacity && event.goingCount >= event.capacity ? "Full" : "I'm Going"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        handleRsvp(event.id, "maybe");
-                        setEventDetailOpen(false);
-                      }}
-                      disabled={rsvpMutation.isPending}
-                      className="whitespace-nowrap shrink"
-                    >
-                      Maybe
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        handleRsvp(event.id, "declined");
-                        setEventDetailOpen(false);
-                      }}
-                      disabled={rsvpMutation.isPending}
-                      className="whitespace-nowrap shrink"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Can't Go
-                    </Button>
+                    <div className="flex flex-wrap gap-2 sm:ml-auto">
+                      <Button
+                        variant="default"
+                        onClick={() => {
+                          handleRsvp(event.id, "going");
+                          setEventDetailOpen(false);
+                        }}
+                        disabled={
+                          rsvpMutation.isPending ||
+                          (event.capacity && event.goingCount >= event.capacity)
+                        }
+                        className="whitespace-nowrap"
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        {event.capacity && event.goingCount >= event.capacity ? "Full" : "I'm Going"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          handleRsvp(event.id, "maybe");
+                          setEventDetailOpen(false);
+                        }}
+                        disabled={rsvpMutation.isPending}
+                        className="whitespace-nowrap"
+                      >
+                        Maybe
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          handleRsvp(event.id, "declined");
+                          setEventDetailOpen(false);
+                        }}
+                        disabled={rsvpMutation.isPending}
+                        className="whitespace-nowrap"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Can't Go
+                      </Button>
+                    </div>
                   </DialogFooter>
                 </>
               );
