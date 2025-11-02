@@ -96,10 +96,12 @@ export default function Messages() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background noise-texture relative">
-        <div className="radial-glow absolute inset-0 pointer-events-none" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
         
-        <div className="relative p-8 space-y-8">
+        <div className="relative p-8 space-y-8 z-10">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -227,7 +229,7 @@ export default function Messages() {
             <h2 className="text-lg font-semibold">Recent Updates</h2>
           )}
           {regularAnnouncements.length === 0 && pinnedAnnouncements.length === 0 ? (
-            <Card className="card-elevated-lg">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <MessageSquare className="w-12 h-12 text-muted-foreground mb-4" />
                 <p className="text-muted-foreground text-center">

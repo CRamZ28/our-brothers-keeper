@@ -11,6 +11,7 @@ import {
   index,
   uniqueIndex,
   integer,
+  date,
 } from "drizzle-orm/pg-core";
 
 // Replit Auth: Session storage table
@@ -449,6 +450,9 @@ export const mealTrains = pgTable("meal_trains", {
   addressVisibilityGroupId: integer("address_visibility_group_id"),
   customAddressUserIds: jsonb("custom_address_user_ids").$type<string[]>(),
   enabled: boolean("enabled").default(true).notNull(),
+  daysAheadOpen: integer("days_ahead_open").default(30),
+  availabilityStartDate: date("availability_start_date"),
+  availabilityEndDate: date("availability_end_date"),
   createdBy: varchar("created_by").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -480,3 +484,22 @@ export const mealSignups = pgTable("meal_signups", {
 
 export type MealSignup = typeof mealSignups.$inferSelect;
 export type InsertMealSignup = typeof mealSignups.$inferInsert;
+
+/**
+ * Meal Train Days - Individual day configurations for meal train availability
+ */
+export const mealTrainDays = pgTable("meal_train_days", {
+  id: serial("id").primaryKey(),
+  mealTrainId: integer("meal_train_id").notNull(),
+  date: date("date").notNull(),
+  isAvailable: boolean("is_available").default(true).notNull(),
+  capacityOverride: integer("capacity_override"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  mealTrainDateIdx: uniqueIndex("meal_train_days_meal_train_date_idx").on(table.mealTrainId, table.date),
+  mealTrainIdx: index("meal_train_days_meal_train_idx").on(table.mealTrainId),
+  dateIdx: index("meal_train_days_date_idx").on(table.date),
+}));
+
+export type MealTrainDay = typeof mealTrainDays.$inferSelect;
+export type InsertMealTrainDay = typeof mealTrainDays.$inferInsert;

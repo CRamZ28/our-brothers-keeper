@@ -12,17 +12,28 @@ The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) 
 
 ### Key Features
 - **Meal Train Management**: Full-featured meal coordination with:
+  - **Day Scheduling System**: Admin/primary can select specific days for meals with quick options (Select All, Weekdays Only, Weekends Only, Clear All)
+  - **Days Ahead Control**: Limit how far in advance supporters can sign up (configurable 1-365 days)
+  - **Availability Enforcement**: Volunteers cannot sign up for unavailable days
   - Calendar and list views for meal signups
   - Daily capacity controls (1-10 volunteers per day)
+  - Per-day capacity overrides for specific dates
   - Dual-layer privacy controls (meal train visibility + address visibility)
   - Dietary preferences (allergies, dislikes, favorite meals)
   - Special delivery instructions
   - Volunteer notes and status tracking
+- **Group Management**: Full CRUD operations for organizing supporters
+  - Create custom groups (e.g., Inner Circle, Church Friends)
+  - Edit group names and descriptions
+  - Manage group members with user selector interface
+  - Delete groups with usage warnings
+  - Member count tracking
+  - Used for custom visibility controls on needs, events, and meal trains
 - **Needs Board**: Community support requests with group filtering
 - **Shared Calendar**: Event scheduling and coordination
 - **Messaging**: Private communication between supporters and family
 - **Updates**: Family news and progress sharing
-- **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or private) with centralized enforcement across all meal train operations
+- **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) with centralized enforcement across all features
 - **Role-Based Access**: Admin, primary, and supporter roles with appropriate permissions
 - **Invitation System**: Secure supporter onboarding
 
@@ -34,7 +45,26 @@ The meal train feature uses shared visibility helper functions (`checkMealTrainV
 - `mealTrain.updateSignup`: Allows updates only by the volunteer or admin/primary
 - `mealTrain.cancelSignup`: Allows cancellations only by the volunteer or admin/primary
 
-The UI/UX features a consistent glassmorphism theme across all pages, incorporating gradient backgrounds, animated gradient orbs, frosted glass cards, and enhanced shadow effects for a professional and modern aesthetic.
+The UI/UX features a consistent glassmorphism theme across all pages (Dashboard, Needs, Calendar, MealTrain, Messages, Updates, People, Home), incorporating gradient backgrounds (teal → blue → purple), animated gradient orbs, frosted glass cards (`bg-white/90 backdrop-blur-md`), and enhanced shadow effects for a professional and modern aesthetic.
+
+## Database Management
+This project uses Drizzle ORM's **push workflow** for database schema management:
+- Schema changes are defined in `drizzle/schema.ts`
+- Run `npm run db:push` to apply schema changes directly to the database
+- If push encounters warnings, use `npm run db:push --force` to force the update
+- **Never manually write SQL migrations** - the push workflow handles all schema updates
+- Database schema is version-controlled through `drizzle/schema.ts`
+
+Key database tables for new features:
+- `meal_train_days`: Tracks which specific days are available for meal signups
+- `groups` & `group_members`: Support custom visibility groups
+- `meal_trains`: Extended with `days_ahead_open`, `availability_start_date`, `availability_end_date`
+
+## Recent Updates (November 2025)
+- Added meal train day scheduling system with calendar UI
+- Implemented full CRUD for groups on People page
+- Expanded glassmorphism design across all app pages
+- Created comprehensive recommendations document (RECOMMENDATIONS.md)
 
 ## External Dependencies
 - **Database**: PostgreSQL (managed by Replit, accessed via Drizzle ORM)

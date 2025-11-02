@@ -44,16 +44,17 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      {/* Soft Pastel Gradient Background - TEAL ONLY */}
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Pastel Teal Gradient Background - Fade from very light to darker */}
-        <div className="fixed inset-0 bg-gradient-to-br from-teal-50 via-teal-100 to-teal-200 -z-10" />
-        <div className="fixed inset-0 bg-gradient-to-tr from-teal-50/50 via-teal-100/30 to-teal-200/50 -z-10" />
+      {/* Glassmorphism Background with Gradient */}
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-gradient-to-br from-blue-200/20 to-teal-200/20 rounded-full blur-3xl" />
         
-        <div className="relative p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
+        <div className="relative p-4 md:p-8 space-y-6 max-w-7xl mx-auto z-10">
           {/* Pending Approvals Alert - Full Width with Mauve/Purple Accent */}
           {isPrimaryOrAdmin && pendingUsers.length > 0 && (
-            <Card className="relative border-0 bg-gradient-to-r from-purple-200 to-purple-300 overflow-hidden rounded-3xl shadow-xl">
+            <Card className="relative border-0 bg-white/90 backdrop-blur-md overflow-hidden rounded-3xl shadow-xl border border-purple-300/50">
               <CardHeader className="pb-3">
                 <div className="flex items-center gap-3">
                   <div className="w-14 h-14 rounded-2xl bg-white/40 backdrop-blur-sm flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
@@ -77,7 +78,7 @@ export default function Dashboard() {
           )}
 
           {/* Hero Welcome Card - TEAL GRADIENT */}
-          <Card className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-400 to-teal-500 border-0 shadow-2xl p-8 text-white">
+          <Card className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-400 to-teal-500 border-0 shadow-2xl p-8 text-white backdrop-blur-md">
             <div className="relative z-10">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -130,7 +131,7 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-3 gap-4">
             {/* Card 1 - Start of Gradient (Very Light) - Links to People */}
             <Link href="/people">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-50 to-teal-200 text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -146,7 +147,7 @@ export default function Dashboard() {
 
             {/* Card 2 - Peak of Gradient (Darkest Teal) - Links to Needs */}
             <Link href="/needs">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-300 via-teal-500 to-teal-300 text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-400 via-teal-500 to-teal-400 text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer backdrop-blur-md">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -162,7 +163,7 @@ export default function Dashboard() {
 
             {/* Card 3 - End of Gradient (Back to Light) - Links to Calendar */}
             <Link href="/calendar">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-200 to-teal-50 text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
@@ -180,7 +181,7 @@ export default function Dashboard() {
           {/* Quick Action Cards - Grid with TEAL gradients */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <Link href="/needs">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                 <CardHeader className="pb-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <Heart className="w-8 h-8 text-white" />
@@ -193,7 +194,7 @@ export default function Dashboard() {
             </Link>
 
             <Link href="/meal-train">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                 <CardHeader className="pb-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <ChefHat className="w-8 h-8 text-white" />
@@ -206,7 +207,7 @@ export default function Dashboard() {
             </Link>
 
             <Link href="/calendar">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                 <CardHeader className="pb-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <Calendar className="w-8 h-8 text-white" />
@@ -219,7 +220,7 @@ export default function Dashboard() {
             </Link>
 
             <Link href="/messages">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
+              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer group h-full">
                 <CardHeader className="pb-4">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-300 to-purple-400 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform shadow-lg">
                     <MessageCircle className="w-8 h-8 text-white" />
@@ -233,7 +234,7 @@ export default function Dashboard() {
           </div>
 
           {/* Recent Activity - Full Width */}
-          <Card className="rounded-3xl border-0 bg-white shadow-lg">
+          <Card className="rounded-3xl border-0 bg-white/90 backdrop-blur-md shadow-lg">
             <CardHeader>
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-teal-400 to-teal-500 flex items-center justify-center shadow-lg">

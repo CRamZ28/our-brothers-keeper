@@ -178,10 +178,12 @@ export default function Updates() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background noise-texture relative">
-        <div className="radial-glow absolute inset-0 pointer-events-none" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
         
-        <div className="relative p-8 space-y-6">
+        <div className="relative p-8 space-y-6 z-10">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -341,7 +343,7 @@ export default function Updates() {
         {/* Updates Feed */}
         <div className="space-y-4">
           {!updates || updates.length === 0 ? (
-            <Card className="card-elevated-lg">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardContent className="p-12 text-center">
                 <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-semibold mb-2">No updates yet</h3>

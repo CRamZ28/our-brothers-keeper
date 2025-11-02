@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MealTrainDayScheduler } from "@/components/MealTrainDayScheduler";
 import { trpc } from "@/lib/trpc";
 import { Calendar as CalendarIcon, List, MapPin, Users, ChefHat, AlertCircle, Settings, X } from "lucide-react";
 import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
@@ -103,11 +104,13 @@ export default function MealTrain() {
   if (!mealTrain || !mealTrain.enabled) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen bg-background noise-texture relative">
-          <div className="radial-glow absolute inset-0 pointer-events-none" />
+        <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+          {/* Animated gradient orbs */}
+          <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
           
-          <div className="relative p-8">
-            <Card className="card-elevated-lg max-w-2xl mx-auto">
+          <div className="relative p-8 z-10">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md max-w-2xl mx-auto">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ChefHat className="w-6 h-6" />
@@ -142,10 +145,12 @@ export default function MealTrain() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background noise-texture relative">
-        <div className="radial-glow absolute inset-0 pointer-events-none" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
         
-        <div className="relative p-8 space-y-6">
+        <div className="relative p-8 space-y-6 z-10">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -196,7 +201,7 @@ export default function MealTrain() {
 
           {/* Calendar View */}
           {view === "calendar" && (
-            <Card className="card-elevated-lg">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Button
@@ -289,7 +294,7 @@ export default function MealTrain() {
 
           {/* List View */}
           {view === "list" && (
-            <Card className="card-elevated-lg">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardHeader>
                 <CardTitle>Meal Signups</CardTitle>
                 <CardDescription>All scheduled meal deliveries</CardDescription>
@@ -658,8 +663,24 @@ function MealTrainConfigDialog({
     mealTrain?.addressVisibilityScope || "all_supporters"
   );
   const [enabled, setEnabled] = useState(mealTrain?.enabled ?? true);
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [daysAheadOpen, setDaysAheadOpen] = useState(30);
 
   const { data: groups = [] } = trpc.group.list.useQuery();
+  const { data: existingDays = [] } = trpc.mealTrain.getDays.useQuery(
+    { mealTrainId: mealTrain?.id || 0 },
+    { enabled: !!mealTrain?.id }
+  );
+
+  useEffect(() => {
+    if (mealTrain?.id) {
+      setDaysAheadOpen(mealTrain.daysAheadOpen || 30);
+      if (existingDays.length > 0) {
+        const dates = existingDays.map((day: any) => new Date(day.date));
+        setSelectedDates(dates);
+      }
+    }
+  }, [mealTrain, existingDays]);
 
   const upsertMutation = trpc.mealTrain.upsert.useMutation({
     onSuccess: () => {
@@ -679,6 +700,8 @@ function MealTrainConfigDialog({
       specialInstructions,
       addressVisibilityScope: addressVisibility as any,
       enabled,
+      daysAheadOpen,
+      selectedDates: selectedDates.map(d => d.toISOString().split('T')[0]),
     });
   };
 
@@ -794,6 +817,19 @@ function MealTrainConfigDialog({
               onChange={(e) => setSpecialInstructions(e.target.value)}
               placeholder="Leave on front porch if no one is home, ring doorbell, etc."
               rows={3}
+            />
+          </div>
+
+          <div>
+            <Label>Available Days for Meals</Label>
+            <p className="text-sm text-muted-foreground mb-2">
+              Select which days you would like to receive meals
+            </p>
+            <MealTrainDayScheduler
+              selectedDates={selectedDates}
+              onChange={setSelectedDates}
+              daysAheadOpen={daysAheadOpen}
+              onDaysAheadChange={setDaysAheadOpen}
             />
           </div>
 

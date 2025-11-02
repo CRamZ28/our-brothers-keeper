@@ -123,6 +123,13 @@ export const mealTrainRouter = router({
     return await db.getMealSignupsByMealTrain(mealTrain.id);
   }),
 
+  // Get meal train days
+  getDays: protectedProcedure
+    .input(z.object({ mealTrainId: z.number() }))
+    .query(async ({ input }) => {
+      return await db.getMealTrainDays(input.mealTrainId);
+    }),
+
   // Create or update meal train configuration (admin/primary only)
   upsert: protectedProcedure
     .input(
@@ -143,6 +150,10 @@ export const mealTrainRouter = router({
           .default("all_supporters"),
         addressVisibilityGroupId: z.number().optional(),
         enabled: z.boolean().default(true),
+        daysAheadOpen: z.number().min(1).max(365).optional(),
+        availabilityStartDate: z.string().optional(),
+        availabilityEndDate: z.string().optional(),
+        selectedDates: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -161,6 +172,8 @@ export const mealTrainRouter = router({
 
       const existingMealTrain = await db.getMealTrainByHousehold(ctx.user.householdId);
 
+      let mealTrainId: number;
+
       if (existingMealTrain) {
         // Update existing
         await db.updateMealTrain(existingMealTrain.id, {
@@ -176,7 +189,12 @@ export const mealTrainRouter = router({
           addressVisibilityScope: input.addressVisibilityScope,
           addressVisibilityGroupId: input.addressVisibilityGroupId || null,
           enabled: input.enabled,
+          daysAheadOpen: input.daysAheadOpen || null,
+          availabilityStartDate: input.availabilityStartDate || null,
+          availabilityEndDate: input.availabilityEndDate || null,
         });
+
+        mealTrainId = existingMealTrain.id;
 
         await db.createAuditLog({
           householdId: ctx.user.householdId,
@@ -186,11 +204,9 @@ export const mealTrainRouter = router({
           targetId: existingMealTrain.id,
           metadata: input,
         });
-
-        return { mealTrainId: existingMealTrain.id };
       } else {
         // Create new
-        const mealTrainId = await db.createMealTrain({
+        mealTrainId = await db.createMealTrain({
           householdId: ctx.user.householdId,
           location: input.location || null,
           peopleCount: input.peopleCount || null,
@@ -204,6 +220,9 @@ export const mealTrainRouter = router({
           addressVisibilityScope: input.addressVisibilityScope,
           addressVisibilityGroupId: input.addressVisibilityGroupId || null,
           enabled: input.enabled,
+          daysAheadOpen: input.daysAheadOpen || null,
+          availabilityStartDate: input.availabilityStartDate || null,
+          availabilityEndDate: input.availabilityEndDate || null,
           createdBy: ctx.user.id,
         });
 
@@ -215,9 +234,15 @@ export const mealTrainRouter = router({
           targetId: mealTrainId,
           metadata: input,
         });
-
-        return { mealTrainId };
       }
+
+      // Save meal train days if provided
+      if (input.selectedDates && input.selectedDates.length > 0) {
+        const dates = input.selectedDates.map(d => new Date(d));
+        await db.saveMealTrainDays(mealTrainId, dates);
+      }
+
+      return { mealTrainId };
     }),
 
   // Volunteer to deliver a meal on a specific date
@@ -255,6 +280,16 @@ export const mealTrainRouter = router({
 
       if (!mealTrain.enabled) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Meal train is not currently active" });
+      }
+
+      // Check if the specific day is available
+      const dateString = input.deliveryDate.toISOString().split('T')[0];
+      const isAvailable = await db.isMealDayAvailable(mealTrain.id, dateString);
+      if (!isAvailable) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "This day is not available for meal signups",
+        });
       }
 
       // Check capacity for this date

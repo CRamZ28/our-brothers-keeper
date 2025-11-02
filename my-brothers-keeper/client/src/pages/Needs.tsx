@@ -409,10 +409,12 @@ export default function Needs() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background noise-texture relative">
-        <div className="radial-glow absolute inset-0 pointer-events-none" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
         
-        <div className="relative p-4 md:p-8 space-y-4 md:space-y-6">
+        <div className="relative p-4 md:p-8 space-y-4 md:space-y-6 z-10">
           {/* Header */}
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
@@ -785,7 +787,7 @@ export default function Needs() {
         {viewMode === "calendar" ? (
           <div className="space-y-4">
             {/* Calendar Navigation */}
-            <Card className="card-elevated-lg">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
@@ -900,7 +902,7 @@ export default function Needs() {
 
             {/* Undated Needs Section */}
             {undatedNeeds.length > 0 && (
-              <Card className="card-elevated-lg">
+              <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <AlertCircle className="w-5 h-5" />
@@ -953,7 +955,7 @@ export default function Needs() {
 
           <TabsContent value="open" className="space-y-4">
             {openNeeds.length === 0 ? (
-              <Card className="card-elevated-lg">
+              <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <Heart className="w-12 h-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground text-center">

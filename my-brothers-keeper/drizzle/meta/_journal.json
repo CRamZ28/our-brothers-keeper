@@ -22,6 +22,13 @@
       "when": 1762055885279,
       "tag": "0002_violet_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1762058289822,
+      "tag": "0003_thankful_midnight",
+      "breakpoints": true
     }
   ]
 }

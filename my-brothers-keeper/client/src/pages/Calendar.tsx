@@ -307,10 +307,12 @@ export default function Calendar() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-background noise-texture relative">
-        <div className="radial-glow absolute inset-0 pointer-events-none" />
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-teal-200/30 to-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-200/30 to-pink-200/30 rounded-full blur-3xl" />
         
-        <div className="relative p-8 space-y-8">
+        <div className="relative p-8 space-y-8 z-10">
           {/* Header */}
           <div className="flex items-center justify-between">
             <div>
@@ -508,7 +510,7 @@ export default function Calendar() {
         {view === "calendar" && (
           <div className="space-y-4">
             {/* Month Navigation */}
-            <Card className="card-elevated-lg">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Button variant="outline" size="sm" onClick={previousMonth}>
@@ -612,7 +614,7 @@ export default function Calendar() {
 
             <TabsContent value="upcoming" className="space-y-4">
               {upcomingEvents.length === 0 ? (
-                <Card className="card-elevated-lg">
+                <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <CalendarIcon className="w-12 h-12 text-muted-foreground mb-4" />
                     <p className="text-muted-foreground text-center">

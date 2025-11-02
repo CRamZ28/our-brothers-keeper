@@ -43,6 +43,8 @@ import {
   InsertMealTrain,
   mealSignups,
   InsertMealSignup,
+  mealTrainDays,
+  InsertMealTrainDay,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -992,5 +994,57 @@ export async function deleteMealSignup(id: number) {
   if (!db) return;
 
   await db.delete(mealSignups).where(eq(mealSignups.id, id));
+}
+
+// Save meal train days
+export async function saveMealTrainDays(mealTrainId: number, dates: Date[]) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Delete existing days for this meal train
+  await db.delete(mealTrainDays).where(eq(mealTrainDays.mealTrainId, mealTrainId));
+
+  // Insert new days
+  if (dates.length > 0) {
+    await db.insert(mealTrainDays).values(
+      dates.map(date => ({
+        mealTrainId,
+        date: date.toISOString().split('T')[0],
+        isAvailable: true,
+      }))
+    );
+  }
+}
+
+// Get meal train days
+export async function getMealTrainDays(mealTrainId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(mealTrainDays)
+    .where(eq(mealTrainDays.mealTrainId, mealTrainId))
+    .orderBy(mealTrainDays.date);
+}
+
+// Check if a specific day is available
+export async function isMealDayAvailable(mealTrainId: number, date: string) {
+  const db = await getDb();
+  if (!db) return false;
+
+  const result = await db
+    .select()
+    .from(mealTrainDays)
+    .where(
+      and(
+        eq(mealTrainDays.mealTrainId, mealTrainId),
+        eq(mealTrainDays.date, date),
+        eq(mealTrainDays.isAvailable, true)
+      )
+    )
+    .limit(1);
+
+  return result.length > 0;
 }
 
