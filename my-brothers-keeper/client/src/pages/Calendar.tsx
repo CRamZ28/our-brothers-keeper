@@ -1017,7 +1017,7 @@ export default function Calendar() {
                         rsvpMutation.isPending ||
                         (event.capacity && event.goingCount >= event.capacity)
                       }
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto whitespace-nowrap"
                     >
                       <Check className="w-4 h-4 mr-2" />
                       {event.capacity && event.goingCount >= event.capacity ? "Full" : "I'm Going"}
@@ -1029,7 +1029,7 @@ export default function Calendar() {
                         setEventDetailOpen(false);
                       }}
                       disabled={rsvpMutation.isPending}
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto whitespace-nowrap"
                     >
                       Maybe
                     </Button>
@@ -1040,7 +1040,7 @@ export default function Calendar() {
                         setEventDetailOpen(false);
                       }}
                       disabled={rsvpMutation.isPending}
-                      className="w-full sm:w-auto"
+                      className="w-full sm:w-auto whitespace-nowrap"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Can't Go
