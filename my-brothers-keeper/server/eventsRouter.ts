@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import { filterByVisibility } from "./visibilityHelpers";
 
 export const eventsRouter = router({
   // List all events for the household (filtered by visibility)
@@ -12,9 +13,15 @@ export const eventsRouter = router({
 
     const allEvents = await db.getEventsByHousehold(ctx.user.householdId);
 
-    // TODO: Filter by visibility scope based on user's role and groups
-    // For now, return all events
-    return allEvents;
+    // Filter based on visibility scope, groups, and custom user lists
+    const visibleEvents = await filterByVisibility(
+      allEvents,
+      ctx.user.id,
+      ctx.user.role,
+      ctx.user.householdId
+    );
+
+    return visibleEvents;
   }),
 
   // Get a single event with RSVPs
@@ -26,8 +33,21 @@ export const eventsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (event.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
+      }
+
+      // Check visibility - supporter can only see events they're allowed to view
+      const visibleEvents = await filterByVisibility(
+        [event],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleEvents.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
       const rsvps = await db.getRsvpsByEvent(input.id);
@@ -118,8 +138,21 @@ export const eventsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (event.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
+      }
+
+      // Check visibility - supporter can only update events they're allowed to view
+      const visibleEvents = await filterByVisibility(
+        [event],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleEvents.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
       // Check permission
@@ -160,8 +193,21 @@ export const eventsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (event.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
+      }
+
+      // Check visibility - supporter can only delete events they're allowed to view
+      const visibleEvents = await filterByVisibility(
+        [event],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleEvents.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
       // Check permission
@@ -206,8 +252,21 @@ export const eventsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (event.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
+      }
+
+      // Check visibility - supporter can only RSVP to events they're allowed to view
+      const visibleEvents = await filterByVisibility(
+        [event],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleEvents.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
       // Upsert RSVP

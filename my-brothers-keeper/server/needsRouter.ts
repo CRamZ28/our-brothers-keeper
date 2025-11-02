@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import { filterByVisibility } from "./visibilityHelpers";
 
 export const needsRouter = router({
   // List all needs for the household (filtered by visibility)
@@ -12,9 +13,15 @@ export const needsRouter = router({
 
     const allNeeds = await db.getNeedsByHousehold(ctx.user.householdId);
 
-    // TODO: Filter by visibility scope based on user's role and groups
-    // For now, return all needs
-    return allNeeds;
+    // Filter based on visibility scope, groups, and custom user lists
+    const visibleNeeds = await filterByVisibility(
+      allNeeds,
+      ctx.user.id,
+      ctx.user.role,
+      ctx.user.householdId
+    );
+
+    return visibleNeeds;
   }),
 
   // Get a single need with claims
@@ -26,8 +33,21 @@ export const needsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (need.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
+      }
+
+      // Check visibility - supporter can only see needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
       const claims = await db.getClaimsByNeed(input.id);
@@ -120,8 +140,21 @@ export const needsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (need.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
+      }
+
+      // Check visibility - supporter can only update needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
       // Check permission
@@ -162,8 +195,21 @@ export const needsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (need.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
+      }
+
+      // Check visibility - supporter can only delete needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
       // Check permission
@@ -208,8 +254,21 @@ export const needsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (need.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
+      }
+
+      // Check visibility - supporter can only claim needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
       if (need.status !== "open") {
@@ -257,8 +316,21 @@ export const needsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
+      // Check household ownership - return NOT_FOUND to prevent enumeration
       if (need.householdId !== ctx.user.householdId) {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
+      }
+
+      // Check visibility - supporter can only complete needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Need not found" });
       }
 
       // Check permission - claimer, Primary, or Admin can mark as completed
@@ -315,6 +387,29 @@ export const needsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
       }
 
+      // Get the need to check household and visibility
+      const need = await db.getNeed(claim.needId);
+      if (!need) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
+      // CRITICAL: Validate household ownership BEFORE visibility check
+      if (need.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
+      // Check visibility - supporter can only complete claims for needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
       // Update claim status
       await db.updateNeedClaim(input.claimId, { 
         status: "completed",
@@ -347,10 +442,39 @@ export const needsRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
       }
 
+      const claim = await db.getNeedClaim(input.claimId);
+      if (!claim) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
+      // Get the need to check household and visibility
+      const need = await db.getNeed(claim.needId);
+      if (!need) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
+      // CRITICAL: Validate household ownership BEFORE visibility check
+      if (need.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
+      // Check visibility - supporter can only release claims for needs they're allowed to view
+      const visibleNeeds = await filterByVisibility(
+        [need],
+        ctx.user.id,
+        ctx.user.role,
+        ctx.user.householdId
+      );
+
+      if (visibleNeeds.length === 0) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Claim not found" });
+      }
+
       // Update claim status
       await db.updateNeedClaim(input.claimId, { status: "released" });
 
-      // TODO: Get the need and update its status back to open
+      // Get the need and update its status back to open
+      await db.updateNeed(claim.needId, { status: "open" });
 
       await db.createAuditLog({
         householdId: ctx.user.householdId,

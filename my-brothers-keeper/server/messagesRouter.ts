@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import { filterByVisibility } from "./visibilityHelpers";
 
 export const messagesRouter = router({
   // List announcements for the household
@@ -12,9 +13,15 @@ export const messagesRouter = router({
 
     const announcements = await db.getAnnouncementsByHousehold(ctx.user.householdId);
 
-    // TODO: Filter by visibility scope based on user's role and groups
-    // For now, return all announcements
-    return announcements;
+    // Filter based on visibility scope, groups, and custom user lists
+    const visibleAnnouncements = await filterByVisibility(
+      announcements,
+      ctx.user.id,
+      ctx.user.role,
+      ctx.user.householdId
+    );
+
+    return visibleAnnouncements;
   }),
 
   // Create an announcement
