@@ -273,6 +273,15 @@ export default function Needs() {
     setDayNeedsDialogOpen(true);
   };
 
+  const openCreateNeedForDate = (date: Date) => {
+    // Pre-fill the due date with the selected date
+    const dateStr = date.toISOString().split("T")[0];
+    setDueDate(dateStr);
+    // Close the day dialog and open create dialog
+    setDayNeedsDialogOpen(false);
+    setCreateDialogOpen(true);
+  };
+
   // Get needs due today
   const getTodaysNeeds = () => {
     const today = new Date();
@@ -1305,7 +1314,15 @@ export default function Needs() {
                 );
               })}
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex gap-2">
+              <Button 
+                variant="default" 
+                onClick={() => selectedDayDate && openCreateNeedForDate(selectedDayDate)}
+                className="flex-1 sm:flex-initial"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Add Need
+              </Button>
               <Button variant="outline" onClick={() => setDayNeedsDialogOpen(false)}>
                 Close
               </Button>
