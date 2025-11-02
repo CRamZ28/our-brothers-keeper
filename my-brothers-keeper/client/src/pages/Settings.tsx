@@ -71,7 +71,6 @@ export default function Settings() {
     },
   });
 
-  const logoutMutation = trpc.auth.logout.useMutation();
 
   const handleSaveHousehold = () => {
     if (!householdName.trim()) {
@@ -307,14 +306,8 @@ export default function Settings() {
               <Button
                 variant="outline"
                 className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={async () => {
-                  try {
-                    await logoutMutation.mutateAsync();
-                    window.location.href = '/';
-                  } catch (error) {
-                    console.error('Logout failed:', error);
-                    toast.error('Failed to sign out');
-                  }
+                onClick={() => {
+                  window.location.href = '/api/logout';
                 }}
               >
                 <LogOut className="mr-2 h-4 w-4" />
