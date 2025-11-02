@@ -45,9 +45,10 @@ export const needsRouter = router({
         priority: z.enum(["low", "normal", "urgent"]).default("normal"),
         dueAt: z.date().optional(),
         visibilityScope: z
-          .enum(["private", "all_supporters", "group", "role"])
+          .enum(["private", "all_supporters", "group", "role", "custom"])
           .default("all_supporters"),
         visibilityGroupId: z.number().optional(),
+        customUserIds: z.array(z.string()).optional(),
         capacity: z.number().optional(),
       })
     )
@@ -75,6 +76,7 @@ export const needsRouter = router({
         createdBy: ctx.user.id,
         visibilityScope: input.visibilityScope,
         visibilityGroupId: input.visibilityGroupId || null,
+        customUserIds: input.customUserIds || null,
         status: "open",
         capacity: input.capacity || null,
       });
@@ -102,6 +104,10 @@ export const needsRouter = router({
         priority: z.enum(["low", "normal", "urgent"]).optional(),
         dueAt: z.date().optional(),
         status: z.enum(["open", "claimed", "completed", "cancelled"]).optional(),
+        capacity: z.number().optional(),
+        visibilityScope: z.enum(["private", "all_supporters", "group", "role", "custom"]).optional(),
+        visibilityGroupId: z.number().optional(),
+        customUserIds: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

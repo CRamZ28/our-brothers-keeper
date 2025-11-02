@@ -45,9 +45,10 @@ export const eventsRouter = router({
         startAt: z.date(),
         endAt: z.date().optional(),
         visibilityScope: z
-          .enum(["private", "all_supporters", "group", "role"])
+          .enum(["private", "all_supporters", "group", "role", "custom"])
           .default("all_supporters"),
         visibilityGroupId: z.number().optional(),
+        customUserIds: z.array(z.string()).optional(),
         capacity: z.number().optional(),
       })
     )
@@ -75,6 +76,7 @@ export const eventsRouter = router({
         createdBy: ctx.user.id,
         visibilityScope: input.visibilityScope,
         visibilityGroupId: input.visibilityGroupId || null,
+        customUserIds: input.customUserIds || null,
         capacity: input.capacity || null,
       });
 
@@ -100,6 +102,10 @@ export const eventsRouter = router({
         location: z.string().optional(),
         startAt: z.date().optional(),
         endAt: z.date().optional(),
+        capacity: z.number().optional(),
+        visibilityScope: z.enum(["private", "all_supporters", "group", "role", "custom"]).optional(),
+        visibilityGroupId: z.number().optional(),
+        customUserIds: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {

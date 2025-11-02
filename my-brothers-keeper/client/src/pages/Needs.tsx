@@ -251,6 +251,7 @@ export default function Needs() {
     setCapacity(need.capacity?.toString() || "");
     setVisibilityScope(need.visibilityScope || "all_supporters");
     setVisibilityGroupId(need.visibilityGroupId?.toString() || "");
+    setCustomUserIds(need.customUserIds || []);
     setEditDialogOpen(true);
   };
 
@@ -502,6 +503,7 @@ export default function Needs() {
                         <SelectItem value="all_supporters">All Supporters</SelectItem>
                         <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
                         <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
+                        <SelectItem value="custom">Custom Group (Select Individuals)</SelectItem>
                         <SelectItem value="private">Private (Primary only)</SelectItem>
                       </SelectContent>
                     </Select>
@@ -509,6 +511,18 @@ export default function Needs() {
                       Control who can see and respond to this need
                     </p>
                   </div>
+                  {visibilityScope === "custom" && (
+                    <div className="space-y-2">
+                      <Label>Select People</Label>
+                      <UserSelector
+                        selectedUserIds={customUserIds}
+                        onChange={setCustomUserIds}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        Choose specific people who can see this need
+                      </p>
+                    </div>
+                  )}
                   {visibilityScope === "group" && (
                     <div className="space-y-2">
                       <Label htmlFor="group">Select Group</Label>
@@ -640,6 +654,7 @@ export default function Needs() {
                     <SelectItem value="all_supporters">All Supporters</SelectItem>
                     <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
                     <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
+                    <SelectItem value="custom">Custom Group (Select Individuals)</SelectItem>
                     <SelectItem value="private">Private (Primary only)</SelectItem>
                   </SelectContent>
                 </Select>
@@ -647,6 +662,18 @@ export default function Needs() {
                   Control who can see and respond to this need
                 </p>
               </div>
+              {visibilityScope === "custom" && (
+                <div className="space-y-2">
+                  <Label>Select People</Label>
+                  <UserSelector
+                    selectedUserIds={customUserIds}
+                    onChange={setCustomUserIds}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Choose specific people who can see this need
+                  </p>
+                </div>
+              )}
               {visibilityScope === "group" && (
                 <div className="space-y-2">
                   <Label htmlFor="edit-group">Select Group</Label>

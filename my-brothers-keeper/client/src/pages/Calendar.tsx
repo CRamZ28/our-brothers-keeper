@@ -22,6 +22,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { UserSelector } from "@/components/UserSelector";
 import { trpc } from "@/lib/trpc";
 import {
   Calendar as CalendarIcon,
@@ -56,6 +64,7 @@ import {
 export default function Calendar() {
   const { user } = useAuth();
   const { data: events, refetch: refetchEvents } = trpc.events.list.useQuery();
+  const { data: groups } = trpc.group.list.useQuery();
 
   const [view, setView] = useState<"calendar" | "list">("calendar");
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -76,6 +85,11 @@ export default function Calendar() {
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
   const [capacity, setCapacity] = useState<string>("");
+  const [visibilityScope, setVisibilityScope] = useState<
+    "private" | "all_supporters" | "group" | "role" | "custom"
+  >("all_supporters");
+  const [visibilityGroupId, setVisibilityGroupId] = useState<string>("");
+  const [customUserIds, setCustomUserIds] = useState<string[]>([]);
 
   const createEventMutation = trpc.events.create.useMutation({
     onSuccess: () => {
@@ -131,6 +145,9 @@ export default function Calendar() {
     setEndDate("");
     setEndTime("");
     setCapacity("");
+    setVisibilityScope("all_supporters");
+    setVisibilityGroupId("");
+    setCustomUserIds([]);
   };
 
   const handleCreateEvent = () => {
@@ -140,6 +157,16 @@ export default function Calendar() {
     }
     if (!startDate) {
       toast.error("Please select a start date");
+      return;
+    }
+
+    if (visibilityScope === "group" && !visibilityGroupId) {
+      toast.error("Please select a group");
+      return;
+    }
+
+    if (visibilityScope === "custom" && customUserIds.length === 0) {
+      toast.error("Please select at least one person");
       return;
     }
 
@@ -153,6 +180,9 @@ export default function Calendar() {
       startAt,
       endAt,
       capacity: capacity ? parseInt(capacity) : undefined,
+      visibilityScope,
+      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+      customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
     });
   };
 
@@ -167,6 +197,16 @@ export default function Calendar() {
       return;
     }
 
+    if (visibilityScope === "group" && !visibilityGroupId) {
+      toast.error("Please select a group");
+      return;
+    }
+
+    if (visibilityScope === "custom" && customUserIds.length === 0) {
+      toast.error("Please select at least one person");
+      return;
+    }
+
     const startAt = new Date(`${startDate}T${startTime || "00:00"}`);
     const endAt = endDate ? new Date(`${endDate}T${endTime || "23:59"}`) : undefined;
 
@@ -178,6 +218,9 @@ export default function Calendar() {
       startAt,
       endAt,
       capacity: capacity ? parseInt(capacity) : undefined,
+      visibilityScope,
+      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+      customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
     });
   };
 
@@ -205,6 +248,9 @@ export default function Calendar() {
       setEndTime("");
     }
     setCapacity(event.capacity?.toString() || "");
+    setVisibilityScope(event.visibilityScope || "all_supporters");
+    setVisibilityGroupId(event.visibilityGroupId?.toString() || "");
+    setCustomUserIds(event.customUserIds || []);
     setEditDialogOpen(true);
     setEventDetailOpen(false);
   };
@@ -352,6 +398,53 @@ export default function Calendar() {
                         Set a limit for RSVPs (e.g., "Dinner for 6"). Leave empty for open attendance.
                       </p>
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="visibility">Who Can See This</Label>
+                      <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all_supporters">All Supporters</SelectItem>
+                          <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
+                          <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
+                          <SelectItem value="custom">Custom Group (Select Individuals)</SelectItem>
+                          <SelectItem value="private">Private (Primary only)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Control who can view and RSVP to this event
+                      </p>
+                    </div>
+                    {visibilityScope === "custom" && (
+                      <div className="space-y-2">
+                        <Label>Select People</Label>
+                        <UserSelector
+                          selectedUserIds={customUserIds}
+                          onChange={setCustomUserIds}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Choose specific people who can see this event
+                        </p>
+                      </div>
+                    )}
+                    {visibilityScope === "group" && (
+                      <div className="space-y-2">
+                        <Label htmlFor="group">Select Group</Label>
+                        <Select value={visibilityGroupId} onValueChange={setVisibilityGroupId}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose a group..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {groups?.map((group: { id: number; name: string }) => (
+                              <SelectItem key={group.id} value={group.id.toString()}>
+                                {group.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="startDate">Start Date *</Label>
@@ -954,6 +1047,161 @@ export default function Calendar() {
                 </>
               );
             })()}
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Event Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Event</DialogTitle>
+              <DialogDescription>
+                Update event details
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-title">Title *</Label>
+                <Input
+                  id="edit-title"
+                  placeholder="e.g., Memorial Service"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-description">Description (optional)</Label>
+                <Textarea
+                  id="edit-description"
+                  placeholder="Add details about the event..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-location">Location (optional)</Label>
+                <Input
+                  id="edit-location"
+                  placeholder="e.g., Community Church, 123 Main St"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-capacity">Capacity (optional)</Label>
+                <Input
+                  id="edit-capacity"
+                  type="number"
+                  min="1"
+                  placeholder="Leave empty for unlimited"
+                  value={capacity}
+                  onChange={(e) => setCapacity(e.target.value)}
+                />
+                <p className="text-xs text-muted-foreground">
+                  Set a limit for RSVPs (e.g., "Dinner for 6"). Leave empty for open attendance.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-visibility">Who Can See This</Label>
+                <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all_supporters">All Supporters</SelectItem>
+                    <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
+                    <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
+                    <SelectItem value="custom">Custom Group (Select Individuals)</SelectItem>
+                    <SelectItem value="private">Private (Primary only)</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Control who can view and RSVP to this event
+                </p>
+              </div>
+              {visibilityScope === "custom" && (
+                <div className="space-y-2">
+                  <Label>Select People</Label>
+                  <UserSelector
+                    selectedUserIds={customUserIds}
+                    onChange={setCustomUserIds}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Choose specific people who can see this event
+                  </p>
+                </div>
+              )}
+              {visibilityScope === "group" && (
+                <div className="space-y-2">
+                  <Label htmlFor="edit-group">Select Group</Label>
+                  <Select value={visibilityGroupId} onValueChange={setVisibilityGroupId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose a group..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groups?.map((group: { id: number; name: string }) => (
+                        <SelectItem key={group.id} value={group.id.toString()}>
+                          {group.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-startDate">Start Date *</Label>
+                  <Input
+                    id="edit-startDate"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-startTime">Start Time</Label>
+                  <Input
+                    id="edit-startTime"
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-endDate">End Date (optional)</Label>
+                  <Input
+                    id="edit-endDate"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-endTime">End Time</Label>
+                  <Input
+                    id="edit-endTime"
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setEditDialogOpen(false)}
+                disabled={updateEventMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateEvent} disabled={updateEventMutation.isPending}>
+                {updateEventMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>
