@@ -15,7 +15,7 @@ import { mealTrainRouter } from "./mealTrainRouter";
 
 // Helper to check if user is Primary or Admin for a household
 async function checkHouseholdAccess(
-  userId: number,
+  userId: string,
   householdId: number,
   requireRole?: "primary" | "admin"
 ) {
@@ -267,7 +267,7 @@ export const appRouter = router({
     updateStatus: protectedProcedure
       .input(
         z.object({
-          userId: z.number(),
+          userId: z.string(),
           status: z.enum(["active", "pending", "blocked"]),
         })
       )
@@ -300,8 +300,8 @@ export const appRouter = router({
           actorUserId: ctx.user.id,
           action: "user_status_updated",
           targetType: "user",
-          targetId: input.userId,
-          metadata: { status: input.status },
+          targetId: 0, // Placeholder since user IDs are strings
+          metadata: { userId: input.userId, status: input.status },
         });
 
         return { success: true };
@@ -363,7 +363,7 @@ export const appRouter = router({
       .input(
         z.object({
           groupId: z.number(),
-          userId: z.number(),
+          userId: z.string(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -392,7 +392,7 @@ export const appRouter = router({
       .input(
         z.object({
           groupId: z.number(),
-          userId: z.number(),
+          userId: z.string(),
         })
       )
       .mutation(async ({ ctx, input }) => {
@@ -414,6 +414,74 @@ export const appRouter = router({
         });
 
         return { success: true };
+      }),
+
+    // Update group details
+    update: protectedProcedure
+      .input(
+        z.object({
+          groupId: z.number(),
+          name: z.string().min(1).optional(),
+          description: z.string().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        await db.updateGroup(input.groupId, {
+          name: input.name,
+          description: input.description,
+        });
+
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "group_updated",
+          targetType: "group",
+          targetId: input.groupId,
+          metadata: { name: input.name, description: input.description },
+        });
+
+        return { success: true };
+      }),
+
+    // Delete group
+    delete: protectedProcedure
+      .input(z.object({ groupId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        await db.deleteGroup(input.groupId);
+
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "group_deleted",
+          targetType: "group",
+          targetId: input.groupId,
+          metadata: {},
+        });
+
+        return { success: true };
+      }),
+
+    // Get members of a group
+    getMembers: protectedProcedure
+      .input(z.object({ groupId: z.number() }))
+      .query(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          return [];
+        }
+
+        return await db.getGroupMembers(input.groupId);
       }),
   }),
 });

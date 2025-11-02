@@ -28,9 +28,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Check, Mail, MoreVertical, Phone, UserPlus, X } from "lucide-react";
-import { useState } from "react";
+import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus } from "lucide-react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { UserSelector } from "@/components/UserSelector";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,7 +43,7 @@ export default function People() {
   const { user } = useAuth();
   const { data: household } = trpc.household.getMy.useQuery();
   const { data: users, refetch: refetchUsers } = trpc.user.listInHousehold.useQuery();
-  const { data: groups } = trpc.group.list.useQuery();
+  const { data: groups, refetch: refetchGroups } = trpc.group.list.useQuery();
   const { data: pendingInvites, refetch: refetchInvites } = trpc.invite.listPending.useQuery();
 
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
@@ -51,6 +52,16 @@ export default function People() {
   const [inviteRole, setInviteRole] = useState<"admin" | "supporter">("supporter");
   const [inviteRelationship, setInviteRelationship] = useState("");
   const [inviteMessage, setInviteMessage] = useState("");
+
+  // Group management states
+  const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
+  const [editGroupDialogOpen, setEditGroupDialogOpen] = useState(false);
+  const [manageMembersDialogOpen, setManageMembersDialogOpen] = useState(false);
+  const [deleteGroupDialogOpen, setDeleteGroupDialogOpen] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<number | null>(null);
+  const [groupName, setGroupName] = useState("");
+  const [groupDescription, setGroupDescription] = useState("");
+  const [groupMemberIds, setGroupMemberIds] = useState<string[]>([]);
 
   const createInviteMutation = trpc.invite.create.useMutation({
     onSuccess: (data) => {
@@ -96,12 +107,154 @@ export default function People() {
     },
   });
 
+  // Group mutations
+  const createGroupMutation = trpc.group.create.useMutation({
+    onSuccess: () => {
+      toast.success("Group created successfully!");
+      setCreateGroupDialogOpen(false);
+      resetGroupForm();
+      refetchGroups();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to create group");
+    },
+  });
+
+  const updateGroupMutation = trpc.group.update.useMutation({
+    onSuccess: () => {
+      toast.success("Group updated successfully!");
+      setEditGroupDialogOpen(false);
+      resetGroupForm();
+      refetchGroups();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update group");
+    },
+  });
+
+  const deleteGroupMutation = trpc.group.delete.useMutation({
+    onSuccess: () => {
+      toast.success("Group deleted successfully!");
+      setDeleteGroupDialogOpen(false);
+      setSelectedGroupId(null);
+      refetchGroups();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to delete group");
+    },
+  });
+
+  const addMemberMutation = trpc.group.addMember.useMutation({
+    onSuccess: () => {
+      toast.success("Member added to group!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to add member");
+    },
+  });
+
+  const removeMemberMutation = trpc.group.removeMember.useMutation({
+    onSuccess: () => {
+      toast.success("Member removed from group!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to remove member");
+    },
+  });
+
   const resetInviteForm = () => {
     setInviteEmail("");
     setInvitePhone("");
     setInviteRole("supporter");
     setInviteRelationship("");
     setInviteMessage("");
+  };
+
+  const resetGroupForm = () => {
+    setGroupName("");
+    setGroupDescription("");
+    setGroupMemberIds([]);
+    setSelectedGroupId(null);
+  };
+
+  const handleCreateGroup = () => {
+    if (!groupName.trim()) {
+      toast.error("Please enter a group name");
+      return;
+    }
+
+    createGroupMutation.mutate({
+      name: groupName,
+      description: groupDescription,
+    });
+  };
+
+  const openEditGroupDialog = (group: { id: number; name: string; description: string | null }) => {
+    setSelectedGroupId(group.id);
+    setGroupName(group.name);
+    setGroupDescription(group.description || "");
+    setEditGroupDialogOpen(true);
+  };
+
+  const handleUpdateGroup = () => {
+    if (!selectedGroupId) return;
+    if (!groupName.trim()) {
+      toast.error("Please enter a group name");
+      return;
+    }
+
+    updateGroupMutation.mutate({
+      groupId: selectedGroupId,
+      name: groupName,
+      description: groupDescription,
+    });
+  };
+
+  const { data: groupMembers, refetch: refetchGroupMembers } = trpc.group.getMembers.useQuery(
+    { groupId: selectedGroupId! },
+    { enabled: !!selectedGroupId && manageMembersDialogOpen }
+  );
+
+  const openManageMembersDialog = async (groupId: number) => {
+    setSelectedGroupId(groupId);
+    setGroupMemberIds([]);
+    setManageMembersDialogOpen(true);
+  };
+
+  const handleSaveGroupMembers = async () => {
+    if (!selectedGroupId) return;
+
+    const currentMemberIds = (groupMembers || []).map((m: any) => m.id);
+    const newMemberIds = groupMemberIds;
+
+    const toAdd = newMemberIds.filter((id: string) => !currentMemberIds.includes(id));
+    const toRemove = currentMemberIds.filter((id: string) => !newMemberIds.includes(id));
+
+    try {
+      for (const userId of toAdd) {
+        await addMemberMutation.mutateAsync({ groupId: selectedGroupId, userId });
+      }
+      for (const userId of toRemove) {
+        await removeMemberMutation.mutateAsync({ groupId: selectedGroupId, userId });
+      }
+
+      toast.success("Group members updated!");
+      setManageMembersDialogOpen(false);
+      refetchGroupMembers();
+      refetchGroups();
+    } catch (error) {
+      // Errors already handled by individual mutations
+    }
+  };
+
+  const handleDeleteGroup = () => {
+    if (!selectedGroupId) return;
+    deleteGroupMutation.mutate({ groupId: selectedGroupId });
+  };
+
+  const openDeleteGroupDialog = (groupId: number) => {
+    setSelectedGroupId(groupId);
+    setDeleteGroupDialogOpen(true);
   };
 
   const handleSendInvite = () => {
@@ -119,11 +272,11 @@ export default function People() {
     });
   };
 
-  const handleApproveUser = (userId: number) => {
+  const handleApproveUser = (userId: string) => {
     updateUserStatusMutation.mutate({ userId, status: "active" });
   };
 
-  const handleBlockUser = (userId: number) => {
+  const handleBlockUser = (userId: string) => {
     updateUserStatusMutation.mutate({ userId, status: "blocked" });
   };
 
@@ -134,6 +287,13 @@ export default function People() {
   const activeUsers = users?.filter((u) => u.status === "active") || [];
   const pendingUsers = users?.filter((u) => u.status === "pending") || [];
   const blockedUsers = users?.filter((u) => u.status === "blocked") || [];
+
+  // Load existing group members when dialog opens
+  useEffect(() => {
+    if (manageMembersDialogOpen && groupMembers) {
+      setGroupMemberIds(groupMembers.map((m: any) => m.id));
+    }
+  }, [manageMembersDialogOpen, groupMembers]);
 
   return (
     <DashboardLayout>
@@ -433,24 +593,228 @@ export default function People() {
         </Card>
 
         {/* Groups Section */}
-        {groups && groups.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Groups</CardTitle>
-              <CardDescription>Organize your network into visibility groups</CardDescription>
-            </CardHeader>
-            <CardContent>
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Groups</CardTitle>
+                <CardDescription>Organize your network into visibility groups</CardDescription>
+              </div>
+              {isPrimaryOrAdmin && (
+                <Button onClick={() => setCreateGroupDialogOpen(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Group
+                </Button>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent>
+            {groups && groups.length > 0 ? (
               <div className="grid md:grid-cols-3 gap-4">
                 {groups.map((group) => (
-                  <div key={group.id} className="p-4 border rounded-lg">
-                    <h3 className="font-medium">{group.name}</h3>
-                    <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
+                  <div key={group.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors relative group/card">
+                    <div className="pr-8">
+                      <h3 className="font-medium">{group.name}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {group.memberCount || 0} {group.memberCount === 1 ? "member" : "members"}
+                      </p>
+                    </div>
+                    {isPrimaryOrAdmin && (
+                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openManageMembersDialog(group.id)}
+                          title="Manage Members"
+                        >
+                          <Users className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openEditGroupDialog(group)}
+                          title="Edit Group"
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => openDeleteGroupDialog(group.id)}
+                          title="Delete Group"
+                        >
+                          <Trash2 className="w-4 h-4 text-destructive" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No groups yet. Create your first group to organize your support network.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Create Group Dialog */}
+        <Dialog open={createGroupDialogOpen} onOpenChange={setCreateGroupDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create New Group</DialogTitle>
+              <DialogDescription>
+                Create a group to organize your support network
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="group-name">Group Name *</Label>
+                <Input
+                  id="group-name"
+                  placeholder="e.g., Inner Circle, Church Friends"
+                  value={groupName}
+                  onChange={(e) => setGroupName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="group-description">Description (optional)</Label>
+                <Textarea
+                  id="group-description"
+                  placeholder="Brief description of this group..."
+                  value={groupDescription}
+                  onChange={(e) => setGroupDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setCreateGroupDialogOpen(false)}
+                disabled={createGroupMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleCreateGroup} disabled={createGroupMutation.isPending}>
+                {createGroupMutation.isPending ? "Creating..." : "Create Group"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Group Dialog */}
+        <Dialog open={editGroupDialogOpen} onOpenChange={setEditGroupDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Edit Group</DialogTitle>
+              <DialogDescription>
+                Update group name and description
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="edit-group-name">Group Name *</Label>
+                <Input
+                  id="edit-group-name"
+                  placeholder="e.g., Inner Circle, Church Friends"
+                  value={groupName}
+                  onChange={(e) => setGroupName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-group-description">Description (optional)</Label>
+                <Textarea
+                  id="edit-group-description"
+                  placeholder="Brief description of this group..."
+                  value={groupDescription}
+                  onChange={(e) => setGroupDescription(e.target.value)}
+                  rows={3}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setEditGroupDialogOpen(false)}
+                disabled={updateGroupMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleUpdateGroup} disabled={updateGroupMutation.isPending}>
+                {updateGroupMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Manage Members Dialog */}
+        <Dialog open={manageMembersDialogOpen} onOpenChange={setManageMembersDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Manage Group Members</DialogTitle>
+              <DialogDescription>
+                Add or remove people from this group
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <UserSelector
+                selectedUserIds={groupMemberIds}
+                onChange={setGroupMemberIds}
+              />
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setManageMembersDialogOpen(false)}
+                disabled={addMemberMutation.isPending || removeMemberMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleSaveGroupMembers}
+                disabled={addMemberMutation.isPending || removeMemberMutation.isPending}
+              >
+                {addMemberMutation.isPending || removeMemberMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Group Dialog */}
+        <Dialog open={deleteGroupDialogOpen} onOpenChange={setDeleteGroupDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Group?</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete this group? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="py-4">
+              <p className="text-sm text-muted-foreground">
+                This group may be used in visibility settings for needs, events, or meal trains. 
+                Deleting it will not delete those items, but their visibility settings may need to be updated.
+              </p>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setDeleteGroupDialogOpen(false)}
+                disabled={deleteGroupMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteGroup}
+                disabled={deleteGroupMutation.isPending}
+              >
+                {deleteGroupMutation.isPending ? "Deleting..." : "Delete Group"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         </div>
       </div>
     </DashboardLayout>

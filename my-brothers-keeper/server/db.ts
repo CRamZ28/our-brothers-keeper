@@ -1,4 +1,4 @@
-import { and, eq, inArray, desc } from "drizzle-orm";
+import { and, eq, inArray, desc, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import {
@@ -216,7 +216,21 @@ export async function getGroupsByHousehold(householdId: number) {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(groups).where(eq(groups.householdId, householdId));
+  const result = await db
+    .select({
+      id: groups.id,
+      householdId: groups.householdId,
+      name: groups.name,
+      description: groups.description,
+      createdAt: groups.createdAt,
+      memberCount: sql<number>`count(${groupMembers.userId})::int`,
+    })
+    .from(groups)
+    .leftJoin(groupMembers, eq(groups.id, groupMembers.groupId))
+    .where(eq(groups.householdId, householdId))
+    .groupBy(groups.id);
+
+  return result;
 }
 
 export async function addUserToGroup(groupId: number, userId: string) {
@@ -246,6 +260,37 @@ export async function getUserGroups(userId: string, householdId: number) {
     .where(and(eq(groupMembers.userId, userId), eq(groups.householdId, householdId)));
 
   return result.map((r) => r.group);
+}
+
+export async function updateGroup(groupId: number, data: { name?: string; description?: string | null }) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(groups).set(data).where(eq(groups.id, groupId));
+}
+
+export async function deleteGroup(groupId: number) {
+  const db = await getDb();
+  if (!db) return;
+
+  // First delete all group members
+  await db.delete(groupMembers).where(eq(groupMembers.groupId, groupId));
+  
+  // Then delete the group
+  await db.delete(groups).where(eq(groups.id, groupId));
+}
+
+export async function getGroupMembers(groupId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select({ user: users })
+    .from(groupMembers)
+    .innerJoin(users, eq(groupMembers.userId, users.id))
+    .where(eq(groupMembers.groupId, groupId));
+
+  return result.map((r) => r.user);
 }
 
 // ============================================================================
