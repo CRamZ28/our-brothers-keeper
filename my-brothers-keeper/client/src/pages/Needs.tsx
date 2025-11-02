@@ -799,11 +799,12 @@ export default function Needs() {
                     return (
                       <div
                         key={idx}
+                        onClick={() => openDayNeedsDialog(day, dayNeeds)}
                         className={`
-                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border
+                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border cursor-pointer
                           ${isCurrentMonth ? 'bg-white/50' : 'bg-gray-50/50'}
                           ${isToday ? 'border-primary border-2' : 'border-gray-200'}
-                          hover:bg-white/70 transition-colors
+                          hover:bg-white/70 hover-lift transition-all
                         `}
                       >
                         <div className={`text-xs md:text-sm font-semibold mb-1 ${!isCurrentMonth ? 'text-muted-foreground' : ''}`}>
@@ -815,7 +816,10 @@ export default function Needs() {
                             return (
                               <div
                                 key={need.id}
-                                onClick={() => openDetailsDialog(need)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDetailsDialog(need);
+                                }}
                                 className={`
                                   text-xs p-1 rounded cursor-pointer truncate
                                   ${priorityColors[need.priority]} 
@@ -832,7 +836,10 @@ export default function Needs() {
                           })}
                           {dayNeeds.length > 2 && (
                             <button
-                              onClick={() => openDayNeedsDialog(day, dayNeeds)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openDayNeedsDialog(day, dayNeeds);
+                              }}
                               className="text-xs text-primary hover:underline"
                             >
                               +{dayNeeds.length - 2} more
