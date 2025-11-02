@@ -594,35 +594,33 @@ export default function People() {
           </CardContent>
         </Card>
 
-        {/* Groups Section */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Groups</CardTitle>
-                <CardDescription>Organize your network into visibility groups</CardDescription>
-              </div>
-              {isPrimaryOrAdmin && (
+        {/* Groups Section - Only visible to Primary/Admin */}
+        {isPrimaryOrAdmin && (
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Groups</CardTitle>
+                  <CardDescription>Organize your network into visibility groups</CardDescription>
+                </div>
                 <Button onClick={() => setCreateGroupDialogOpen(true)}>
                   <Plus className="w-4 h-4 mr-2" />
                   Create Group
                 </Button>
-              )}
-            </div>
-          </CardHeader>
-          <CardContent>
-            {groups && groups.length > 0 ? (
-              <div className="grid md:grid-cols-3 gap-4">
-                {groups.map((group) => (
-                  <div key={group.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors relative group/card">
-                    <div className="pr-8">
-                      <h3 className="font-medium">{group.name}</h3>
-                      <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {group.memberCount || 0} {group.memberCount === 1 ? "member" : "members"}
-                      </p>
-                    </div>
-                    {isPrimaryOrAdmin && (
+              </div>
+            </CardHeader>
+            <CardContent>
+              {groups && groups.length > 0 ? (
+                <div className="grid md:grid-cols-3 gap-4">
+                  {groups.map((group) => (
+                    <div key={group.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors relative group/card">
+                      <div className="pr-8">
+                        <h3 className="font-medium">{group.name}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          {group.memberCount || 0} {group.memberCount === 1 ? "member" : "members"}
+                        </p>
+                      </div>
                       <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
@@ -649,17 +647,17 @@ export default function People() {
                           <Trash2 className="w-4 h-4 text-destructive" />
                         </Button>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">
-                No groups yet. Create your first group to organize your support network.
-              </p>
-            )}
-          </CardContent>
-        </Card>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No groups yet. Create your first group to organize your support network.
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Create Group Dialog */}
         <Dialog open={createGroupDialogOpen} onOpenChange={setCreateGroupDialogOpen}>
