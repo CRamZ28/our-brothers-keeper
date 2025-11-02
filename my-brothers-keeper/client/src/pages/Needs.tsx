@@ -37,6 +37,7 @@ import {
   Calendar,
   CalendarDays,
   Check,
+  CheckCircle2,
   Heart,
   Home,
   List,
@@ -99,6 +100,7 @@ export default function Needs() {
   const [dayNeedsDialogOpen, setDayNeedsDialogOpen] = useState(false);
   const [selectedDayNeeds, setSelectedDayNeeds] = useState<typeof openNeeds>([]);
   const [selectedDayDate, setSelectedDayDate] = useState<Date | null>(null);
+  const [todayNeedsDialogOpen, setTodayNeedsDialogOpen] = useState(false);
 
   const createNeedMutation = trpc.needs.create.useMutation({
     onSuccess: () => {
@@ -252,6 +254,17 @@ export default function Needs() {
     setDayNeedsDialogOpen(true);
   };
 
+  // Get needs due today
+  const getTodaysNeeds = () => {
+    const today = new Date();
+    const todayKey = getDateKey(today);
+    return openNeeds.filter(need => {
+      if (!need.dueAt) return false;
+      const needKey = getDateKey(new Date(need.dueAt));
+      return needKey === todayKey;
+    });
+  };
+
   // Calendar utility functions
   const getDateKey = (date: Date) => {
     const year = date.getFullYear();
@@ -331,6 +344,7 @@ export default function Needs() {
 
   const goToToday = () => {
     setCurrentDate(new Date());
+    setTodayNeedsDialogOpen(true);
   };
 
   const handleClaimNeed = () => {
@@ -1109,6 +1123,79 @@ export default function Needs() {
           </TabsContent>
         </Tabs>
         )}
+
+        {/* Today's Needs Dialog */}
+        <Dialog open={todayNeedsDialogOpen} onOpenChange={setTodayNeedsDialogOpen}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <CalendarDays className="w-5 h-5 text-primary" />
+                Today's Needs
+              </DialogTitle>
+              <DialogDescription>
+                {getTodaysNeeds().length === 0 ? (
+                  "No needs due today"
+                ) : (
+                  `${getTodaysNeeds().length} need${getTodaysNeeds().length !== 1 ? 's' : ''} due today`
+                )}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-3 py-4">
+              {getTodaysNeeds().length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <CheckCircle2 className="w-12 h-12 mx-auto mb-3 text-primary/50" />
+                  <p>All caught up! No needs due today.</p>
+                </div>
+              ) : (
+                getTodaysNeeds().map(need => {
+                  const Icon = categoryIcons[need.category];
+                  return (
+                    <Card key={need.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                      setTodayNeedsDialogOpen(false);
+                      openDetailsDialog(need);
+                    }}>
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                            <Icon className="w-5 h-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <CardTitle className="text-base">{need.title}</CardTitle>
+                            <div className="flex flex-wrap items-center gap-2 mt-2">
+                              <Badge variant="outline" className={priorityColors[need.priority]}>
+                                {need.priority === "urgent" && (
+                                  <AlertCircle className="w-3 h-3 mr-1" />
+                                )}
+                                {need.priority}
+                              </Badge>
+                              <Badge variant="secondary" className="text-xs">{need.category}</Badge>
+                              {need.capacity && (
+                                <Badge variant="outline" className="gap-1 text-xs">
+                                  {need.claimCount || 0}/{need.capacity}
+                                  {need.claimCount >= need.capacity && " (Filled)"}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      {need.details && (
+                        <CardContent className="pt-0">
+                          <p className="text-sm text-muted-foreground line-clamp-2">{need.details}</p>
+                        </CardContent>
+                      )}
+                    </Card>
+                  );
+                })
+              )}
+            </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setTodayNeedsDialogOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Day Needs Dialog (show all needs for a specific day) */}
         <Dialog open={dayNeedsDialogOpen} onOpenChange={setDayNeedsDialogOpen}>
