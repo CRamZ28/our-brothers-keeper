@@ -211,6 +211,9 @@ export const inviteRouter = router({
       // Mark invite as accepted
       await db.updateInviteStatus(invite.id, "accepted");
 
+      // Note: Notification preferences are auto-created when user first accesses Settings
+      // (handled by notificationRouter.getPreferences endpoint with default values)
+
       // Create audit log
       await db.createAuditLog({
         householdId: invite.householdId,

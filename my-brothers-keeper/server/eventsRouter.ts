@@ -3,6 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { filterByVisibility } from "./visibilityHelpers";
+import { notifyHouseholdMembers } from "./notificationHelpers";
 
 export const eventsRouter = router({
   // List all events for the household (filtered by visibility)
@@ -108,6 +109,30 @@ export const eventsRouter = router({
         targetId: eventId,
         metadata: { title: input.title, startAt: input.startAt.toISOString() },
       });
+
+      // Send notification to household members
+      notifyHouseholdMembers(
+        ctx.user.householdId,
+        "event_created",
+        {
+          title: input.title,
+          description: input.description || "No description provided.",
+          location: input.location || "Location to be determined.",
+          eventDate: input.startAt.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          eventTime: input.startAt.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          }),
+          actionUrl: `${process.env.REPL_HOME || ""}/calendar`,
+        },
+        [ctx.user.id]
+      ).catch(err => console.error("Failed to send event_created notification:", err));
 
       return { eventId };
     }),
@@ -284,6 +309,27 @@ export const eventsRouter = router({
         targetId: input.eventId,
         metadata: { status: input.status, rsvpId },
       });
+
+      // Send notification to primary/admin users only when RSVP is "going"
+      if (input.status === "going") {
+        notifyHouseholdMembers(
+          ctx.user.householdId,
+          "event_rsvp",
+          {
+            title: event.title,
+            volunteerName: ctx.user.name,
+            rsvpStatus: "going",
+            eventDate: event.startAt.toLocaleDateString("en-US", {
+              weekday: "long",
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }),
+            actionUrl: `${process.env.REPL_HOME || ""}/calendar`,
+          },
+          [ctx.user.id]
+        ).catch(err => console.error("Failed to send event_rsvp notification:", err));
+      }
 
       return { rsvpId };
     }),

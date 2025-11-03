@@ -1,29 +1,76 @@
 import { sendBulkNotificationEmails, NotificationType, EmailContext } from './emailService';
-import { getUsersByHousehold, getHousehold } from './db';
+import { getUsersByHousehold, getHousehold, getNotificationPreferencesByUser } from './db';
 
-export async function notifyHouseholdMembers(
+/**
+ * Send notifications to household members who:
+ * 1. Are in the targetUserIds list (pre-filtered by visibility)
+ * 2. Have opted in to this notification type
+ * 3. Are not in the excludeUserIds list (typically the actor)
+ */
+export async function notifyVisibleUsers(
   householdId: number,
+  targetUserIds: string[],
   notificationType: NotificationType,
   baseContext: Omit<EmailContext, 'recipientName' | 'recipientEmail' | 'householdName'>,
   excludeUserIds: string[] = []
 ) {
   try {
-    const [household, members] = await Promise.all([
-      getHousehold(householdId),
-      getUsersByHousehold(householdId),
-    ]);
-
+    const household = await getHousehold(householdId);
     if (!household) {
       console.error(`Household ${householdId} not found for notifications`);
       return;
     }
 
-    const eligibleMembers = members.filter(
-      (member) => !excludeUserIds.includes(member.id) && member.status === 'active'
-    );
+    // Filter out excluded users
+    const eligibleUserIds = targetUserIds.filter(id => !excludeUserIds.includes(id));
+    
+    if (eligibleUserIds.length === 0) {
+      return; // No one to notify
+    }
 
+    // Get user details and preferences
+    const allMembers = await getUsersByHousehold(householdId);
+    const eligibleMembers = allMembers.filter(m => eligibleUserIds.includes(m.id) && m.status === 'active');
+
+    // Filter by notification preferences
+    const notificationTypePreferenceMap: Record<NotificationType, keyof typeof prefs> = {
+      need_created: 'emailNeedCreated',
+      need_claimed: 'emailNeedClaimed',
+      need_completed: 'emailNeedCompleted',
+      event_created: 'emailEventCreated',
+      event_rsvp: 'emailEventRsvp',
+      meal_train_signup: 'emailMealTrainSignup',
+      meal_train_cancelled: 'emailMealTrainCancelled',
+      new_message: 'emailNewMessage',
+      new_announcement: 'emailNewAnnouncement',
+      new_update: 'emailNewUpdate',
+      invite_sent: 'emailEnabled', // invites don't have a specific preference
+    };
+
+    const membersWithOptIn: string[] = [];
+    
+    for (const member of eligibleMembers) {
+      const prefs = await getNotificationPreferencesByUser(member.id, householdId);
+      
+      // If no preferences exist, user hasn't opted in (default is all OFF)
+      if (!prefs || !prefs.emailEnabled) {
+        continue;
+      }
+
+      const prefKey = notificationTypePreferenceMap[notificationType];
+      if (prefs[prefKey]) {
+        membersWithOptIn.push(member.id);
+      }
+    }
+
+    if (membersWithOptIn.length === 0) {
+      console.log(`No users opted in for ${notificationType} notifications`);
+      return;
+    }
+
+    // Send notifications to opted-in users
     await sendBulkNotificationEmails(
-      eligibleMembers.map((m) => m.id),
+      membersWithOptIn,
       householdId,
       notificationType,
       (userId) => ({
@@ -34,33 +81,6 @@ export async function notifyHouseholdMembers(
       })
     );
   } catch (error) {
-    console.error('Error sending household notifications:', error);
-  }
-}
-
-export async function notifySpecificUsers(
-  userIds: string[],
-  householdId: number,
-  notificationType: NotificationType,
-  baseContext: Omit<EmailContext, 'recipientName' | 'recipientEmail' | 'householdName'>
-) {
-  try {
-    const household = await getHousehold(householdId);
-    if (!household) {
-      console.error(`Household ${householdId} not found for notifications`);
-      return;
-    }
-
-    await sendBulkNotificationEmails(
-      userIds,
-      householdId,
-      notificationType,
-      () => ({
-        ...baseContext,
-        householdName: household.name,
-      })
-    );
-  } catch (error) {
-    console.error('Error sending specific user notifications:', error);
+    console.error('Error sending notifications:', error);
   }
 }

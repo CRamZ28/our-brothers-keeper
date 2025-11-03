@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import { notifyHouseholdMembers } from "./notificationHelpers";
 
 export const updatesRouter = router({
   // Create update
@@ -44,6 +45,27 @@ export const updatesRouter = router({
         targetId: updateId,
         metadata: { type: input.type, hasPhotos: (input.photoUrls?.length || 0) > 0 },
       });
+
+      // Send notification to household members
+      const typeLabels: Record<string, string> = {
+        general: "General Update",
+        gratitude: "Gratitude",
+        memory: "Memory",
+        milestone: "Milestone",
+      };
+
+      notifyHouseholdMembers(
+        ctx.user.householdId,
+        "new_update",
+        {
+          title: input.title,
+          updateType: typeLabels[input.type] || input.type,
+          preview: input.body.substring(0, 150) + (input.body.length > 150 ? "..." : ""),
+          hasPhotos: (input.photoUrls?.length || 0) > 0,
+          actionUrl: `${process.env.REPL_HOME || ""}/updates`,
+        },
+        [ctx.user.id]
+      ).catch(err => console.error("Failed to send new_update notification:", err));
 
       return { success: true, updateId };
     }),

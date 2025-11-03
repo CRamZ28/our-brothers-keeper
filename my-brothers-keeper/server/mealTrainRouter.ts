@@ -2,6 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import { notifyHouseholdMembers } from "./notificationHelpers";
 
 // Helper function to check if user can view meal train
 async function checkMealTrainVisibility(
@@ -330,6 +331,24 @@ export const mealTrainRouter = router({
         metadata: { deliveryDate: input.deliveryDate },
       });
 
+      // Send notification to primary/admin users
+      notifyHouseholdMembers(
+        ctx.user.householdId,
+        "meal_train_signup",
+        {
+          volunteerName: ctx.user.name,
+          deliveryDate: input.deliveryDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          notes: input.notes || "No special notes provided.",
+          actionUrl: `${process.env.REPL_HOME || ""}/meal-train`,
+        },
+        [ctx.user.id]
+      ).catch(err => console.error("Failed to send meal_train_signup notification:", err));
+
       return { signupId };
     }),
 
@@ -413,6 +432,23 @@ export const mealTrainRouter = router({
         targetId: input.id,
         metadata: null,
       });
+
+      // Send notification to primary/admin users
+      notifyHouseholdMembers(
+        ctx.user.householdId,
+        "meal_train_cancelled",
+        {
+          volunteerName: ctx.user.name,
+          deliveryDate: signup.deliveryDate.toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          actionUrl: `${process.env.REPL_HOME || ""}/meal-train`,
+        },
+        [ctx.user.id]
+      ).catch(err => console.error("Failed to send meal_train_cancelled notification:", err));
 
       return { success: true };
     }),

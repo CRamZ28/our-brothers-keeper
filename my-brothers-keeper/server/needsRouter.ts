@@ -3,6 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { filterByVisibility } from "./visibilityHelpers";
+import { notifyVisibleUsers } from "./notificationHelpers";
 
 export const needsRouter = router({
   // List all needs for the household (filtered by visibility)
@@ -109,6 +110,44 @@ export const needsRouter = router({
         targetId: needId,
         metadata: { title: input.title, category: input.category },
       });
+
+      // Send notification to household members who can see this need
+      const createdNeed = await db.getNeed(needId);
+      if (createdNeed) {
+        const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+        const visibleToUsers = await filterByVisibility(
+          [createdNeed],
+          allMembers.map(m => m.id).join(','), // Check all members
+          'supporter',
+          ctx.user.householdId
+        );
+        
+        if (visibleToUsers.length > 0) {
+          const categoryLabels: Record<string, string> = {
+            meals: "Meals",
+            rides: "Transportation",
+            errands: "Errands",
+            childcare: "Childcare",
+            household: "Household Tasks",
+            other: "Other Support",
+          };
+
+          const targetUserIds = allMembers.map(m => m.id);
+          
+          notifyVisibleUsers(
+            ctx.user.householdId,
+            targetUserIds,
+            "need_created",
+            {
+              needTitle: input.title,
+              needDescription: input.details || "No additional details provided.",
+              needCategory: categoryLabels[input.category] || input.category,
+              actionUrl: `${process.env.REPL_HOME || ""}/needs`,
+            },
+            [ctx.user.id]
+          ).catch(err => console.error("Failed to send need_created notification:", err));
+        }
+      }
 
       return { needId };
     }),
@@ -295,6 +334,35 @@ export const needsRouter = router({
         metadata: { claimId, note: input.note },
       });
 
+      // Send notification to primary/admin users
+      const household = await db.getHousehold(ctx.user.householdId);
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const adminUserIds = allMembers
+        .filter(m => m.role === "primary" || m.role === "admin")
+        .map(m => m.id);
+
+      const categoryLabels: Record<string, string> = {
+        meals: "Meals",
+        rides: "Transportation",
+        errands: "Errands",
+        childcare: "Childcare",
+        household: "Household Tasks",
+        other: "Other Support",
+      };
+
+      notifyHouseholdMembers(
+        ctx.user.householdId,
+        "need_claimed",
+        {
+          title: need.title,
+          category: categoryLabels[need.category] || need.category,
+          volunteerName: ctx.user.name,
+          note: input.note || "No additional note provided.",
+          actionUrl: `${process.env.REPL_HOME || ""}/needs`,
+        },
+        [ctx.user.id]
+      ).catch(err => console.error("Failed to send need_claimed notification:", err));
+
       return { claimId };
     }),
 
@@ -370,6 +438,28 @@ export const needsRouter = router({
         targetId: input.needId,
         metadata: { completionNote: input.completionNote },
       });
+
+      // Send notification to household members
+      const categoryLabels: Record<string, string> = {
+        meals: "Meals",
+        rides: "Transportation",
+        errands: "Errands",
+        childcare: "Childcare",
+        household: "Household Tasks",
+        other: "Other Support",
+      };
+
+      notifyHouseholdMembers(
+        ctx.user.householdId,
+        "need_completed",
+        {
+          title: need.title,
+          category: categoryLabels[need.category] || need.category,
+          completedBy: ctx.user.name,
+          actionUrl: `${process.env.REPL_HOME || ""}/needs`,
+        },
+        [ctx.user.id]
+      ).catch(err => console.error("Failed to send need_completed notification:", err));
 
       return { success: true };
     }),
