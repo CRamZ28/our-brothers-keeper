@@ -18,7 +18,7 @@ export type NotificationType =
   | 'new_update'
   | 'invite_sent';
 
-interface EmailContext {
+export interface EmailContext {
   recipientName: string;
   recipientEmail: string;
   householdName?: string;

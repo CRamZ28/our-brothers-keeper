@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
-import { notifyHouseholdMembers } from "./notificationHelpers";
+import { notifyVisibleUsers } from "./notificationHelpers";
 
 // Helper function to check if user can view meal train
 async function checkMealTrainVisibility(
@@ -332,22 +332,28 @@ export const mealTrainRouter = router({
       });
 
       // Send notification to primary/admin users
-      notifyHouseholdMembers(
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const adminUserIds = allMembers
+        .filter(m => m.role === "primary" || m.role === "admin")
+        .map(m => m.id);
+
+      notifyVisibleUsers(
         ctx.user.householdId,
+        adminUserIds,
         "meal_train_signup",
         {
           volunteerName: ctx.user.name,
-          deliveryDate: input.deliveryDate.toLocaleDateString("en-US", {
+          mealDate: input.deliveryDate.toLocaleDateString("en-US", {
             weekday: "long",
             year: "numeric",
             month: "long",
             day: "numeric",
           }),
-          notes: input.notes || "No special notes provided.",
+          volunteerNote: input.notes || "No special notes provided.",
           actionUrl: `${process.env.REPL_HOME || ""}/meal-train`,
         },
         [ctx.user.id]
-      ).catch(err => console.error("Failed to send meal_train_signup notification:", err));
+      ).catch((err: Error) => console.error("Failed to send meal_train_signup notification:", err));
 
       return { signupId };
     }),
@@ -434,12 +440,18 @@ export const mealTrainRouter = router({
       });
 
       // Send notification to primary/admin users
-      notifyHouseholdMembers(
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const adminUserIds = allMembers
+        .filter(m => m.role === "primary" || m.role === "admin")
+        .map(m => m.id);
+
+      notifyVisibleUsers(
         ctx.user.householdId,
+        adminUserIds,
         "meal_train_cancelled",
         {
           volunteerName: ctx.user.name,
-          deliveryDate: signup.deliveryDate.toLocaleDateString("en-US", {
+          mealDate: signup.deliveryDate.toLocaleDateString("en-US", {
             weekday: "long",
             year: "numeric",
             month: "long",
@@ -448,7 +460,7 @@ export const mealTrainRouter = router({
           actionUrl: `${process.env.REPL_HOME || ""}/meal-train`,
         },
         [ctx.user.id]
-      ).catch(err => console.error("Failed to send meal_train_cancelled notification:", err));
+      ).catch((err: Error) => console.error("Failed to send meal_train_cancelled notification:", err));
 
       return { success: true };
     }),

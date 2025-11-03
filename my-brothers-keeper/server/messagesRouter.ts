@@ -3,7 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { filterByVisibility } from "./visibilityHelpers";
-import { notifyHouseholdMembers } from "./notificationHelpers";
+import { notifyVisibleUsers } from "./notificationHelpers";
 
 export const messagesRouter = router({
   // List announcements for the household
@@ -71,18 +71,49 @@ export const messagesRouter = router({
         metadata: { title: input.title, pinned: input.pinned },
       });
 
-      // Send notification to household members
-      notifyHouseholdMembers(
-        ctx.user.householdId,
-        "new_announcement",
-        {
-          title: input.title,
-          preview: input.body.substring(0, 150) + (input.body.length > 150 ? "..." : ""),
-          isPinned: input.pinned,
-          actionUrl: `${process.env.REPL_HOME || ""}/messages`,
-        },
-        [ctx.user.id]
-      ).catch(err => console.error("Failed to send new_announcement notification:", err));
+      // Send notification to household members who can see this announcement
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      
+      // Construct announcement object for visibility checking
+      const announcement = {
+        id: announcementId,
+        householdId: ctx.user.householdId,
+        title: input.title,
+        body: input.body,
+        pinned: input.pinned,
+        createdBy: ctx.user.id,
+        visibilityScope: input.visibilityScope,
+        visibilityGroupId: input.visibilityGroupId || null,
+        customUserIds: null,
+        createdAt: new Date(),
+      };
+      
+      // Check visibility for each member individually
+      const targetUserIds: string[] = [];
+      for (const member of allMembers) {
+        const visibleAnnouncements = await filterByVisibility(
+          [announcement],
+          member.id,
+          member.role,
+          ctx.user.householdId
+        );
+        if (visibleAnnouncements.length > 0) {
+          targetUserIds.push(member.id);
+        }
+      }
+      
+      if (targetUserIds.length > 0) {
+        notifyVisibleUsers(
+          ctx.user.householdId,
+          targetUserIds,
+          "new_announcement",
+          {
+            announcementBody: input.body.substring(0, 150) + (input.body.length > 150 ? "..." : ""),
+            actionUrl: `${process.env.REPL_HOME || ""}/messages`,
+          },
+          [ctx.user.id]
+        ).catch((err: Error) => console.error("Failed to send new_announcement notification:", err));
+      }
 
       return { announcementId };
     }),

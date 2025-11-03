@@ -2,7 +2,7 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
-import { notifyHouseholdMembers } from "./notificationHelpers";
+import { notifyVisibleUsers } from "./notificationHelpers";
 
 export const updatesRouter = router({
   // Create update
@@ -46,26 +46,21 @@ export const updatesRouter = router({
         metadata: { type: input.type, hasPhotos: (input.photoUrls?.length || 0) > 0 },
       });
 
-      // Send notification to household members
-      const typeLabels: Record<string, string> = {
-        general: "General Update",
-        gratitude: "Gratitude",
-        memory: "Memory",
-        milestone: "Milestone",
-      };
+      // Send notification to all household members (updates are visible to everyone)
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const targetUserIds = allMembers.map(m => m.id);
 
-      notifyHouseholdMembers(
+      notifyVisibleUsers(
         ctx.user.householdId,
+        targetUserIds,
         "new_update",
         {
-          title: input.title,
-          updateType: typeLabels[input.type] || input.type,
-          preview: input.body.substring(0, 150) + (input.body.length > 150 ? "..." : ""),
-          hasPhotos: (input.photoUrls?.length || 0) > 0,
+          updateTitle: input.title,
+          updateBody: input.body.substring(0, 150) + (input.body.length > 150 ? "..." : ""),
           actionUrl: `${process.env.REPL_HOME || ""}/updates`,
         },
         [ctx.user.id]
-      ).catch(err => console.error("Failed to send new_update notification:", err));
+      ).catch((err: Error) => console.error("Failed to send new_update notification:", err));
 
       return { success: true, updateId };
     }),

@@ -1,5 +1,7 @@
 import { sendBulkNotificationEmails, NotificationType, EmailContext } from './emailService';
-import { getUsersByHousehold, getHousehold, getNotificationPreferencesByUser } from './db';
+import { getUsersByHousehold, getHousehold, getDb } from './db';
+import { notificationPreferences } from '../drizzle/schema';
+import { eq, and } from 'drizzle-orm';
 
 /**
  * Send notifications to household members who:
@@ -28,12 +30,12 @@ export async function notifyVisibleUsers(
       return; // No one to notify
     }
 
-    // Get user details and preferences
+    // Get user details
     const allMembers = await getUsersByHousehold(householdId);
     const eligibleMembers = allMembers.filter(m => eligibleUserIds.includes(m.id) && m.status === 'active');
 
     // Filter by notification preferences
-    const notificationTypePreferenceMap: Record<NotificationType, keyof typeof prefs> = {
+    const notificationTypePreferenceMap: Record<NotificationType, string> = {
       need_created: 'emailNeedCreated',
       need_claimed: 'emailNeedClaimed',
       need_completed: 'emailNeedCompleted',
@@ -48,16 +50,33 @@ export async function notifyVisibleUsers(
     };
 
     const membersWithOptIn: string[] = [];
+    const db = await getDb();
+    
+    if (!db) {
+      console.error('Database not available for notification preferences check');
+      return;
+    }
     
     for (const member of eligibleMembers) {
-      const prefs = await getNotificationPreferencesByUser(member.id, householdId);
+      const prefsResult = await db
+        .select()
+        .from(notificationPreferences)
+        .where(
+          and(
+            eq(notificationPreferences.userId, member.id),
+            eq(notificationPreferences.householdId, householdId)
+          )
+        )
+        .limit(1);
+      
+      const prefs = prefsResult[0];
       
       // If no preferences exist, user hasn't opted in (default is all OFF)
       if (!prefs || !prefs.emailEnabled) {
         continue;
       }
 
-      const prefKey = notificationTypePreferenceMap[notificationType];
+      const prefKey = notificationTypePreferenceMap[notificationType] as keyof typeof prefs;
       if (prefs[prefKey]) {
         membersWithOptIn.push(member.id);
       }

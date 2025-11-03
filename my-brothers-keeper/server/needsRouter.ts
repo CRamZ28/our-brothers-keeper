@@ -115,14 +115,22 @@ export const needsRouter = router({
       const createdNeed = await db.getNeed(needId);
       if (createdNeed) {
         const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
-        const visibleToUsers = await filterByVisibility(
-          [createdNeed],
-          allMembers.map(m => m.id).join(','), // Check all members
-          'supporter',
-          ctx.user.householdId
-        );
         
-        if (visibleToUsers.length > 0) {
+        // Check visibility for each member individually
+        const targetUserIds: string[] = [];
+        for (const member of allMembers) {
+          const visibleNeeds = await filterByVisibility(
+            [createdNeed],
+            member.id,
+            member.role,
+            ctx.user.householdId
+          );
+          if (visibleNeeds.length > 0) {
+            targetUserIds.push(member.id);
+          }
+        }
+        
+        if (targetUserIds.length > 0) {
           const categoryLabels: Record<string, string> = {
             meals: "Meals",
             rides: "Transportation",
@@ -131,8 +139,6 @@ export const needsRouter = router({
             household: "Household Tasks",
             other: "Other Support",
           };
-
-          const targetUserIds = allMembers.map(m => m.id);
           
           notifyVisibleUsers(
             ctx.user.householdId,
@@ -145,7 +151,7 @@ export const needsRouter = router({
               actionUrl: `${process.env.REPL_HOME || ""}/needs`,
             },
             [ctx.user.id]
-          ).catch(err => console.error("Failed to send need_created notification:", err));
+          ).catch((err: Error) => console.error("Failed to send need_created notification:", err));
         }
       }
 
@@ -335,33 +341,22 @@ export const needsRouter = router({
       });
 
       // Send notification to primary/admin users
-      const household = await db.getHousehold(ctx.user.householdId);
       const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
       const adminUserIds = allMembers
         .filter(m => m.role === "primary" || m.role === "admin")
         .map(m => m.id);
 
-      const categoryLabels: Record<string, string> = {
-        meals: "Meals",
-        rides: "Transportation",
-        errands: "Errands",
-        childcare: "Childcare",
-        household: "Household Tasks",
-        other: "Other Support",
-      };
-
-      notifyHouseholdMembers(
+      notifyVisibleUsers(
         ctx.user.householdId,
+        adminUserIds,
         "need_claimed",
         {
-          title: need.title,
-          category: categoryLabels[need.category] || need.category,
-          volunteerName: ctx.user.name,
-          note: input.note || "No additional note provided.",
+          needTitle: need.title,
+          claimerName: ctx.user.name,
           actionUrl: `${process.env.REPL_HOME || ""}/needs`,
         },
         [ctx.user.id]
-      ).catch(err => console.error("Failed to send need_claimed notification:", err));
+      ).catch((err: Error) => console.error("Failed to send need_claimed notification:", err));
 
       return { claimId };
     }),
@@ -439,27 +434,23 @@ export const needsRouter = router({
         metadata: { completionNote: input.completionNote },
       });
 
-      // Send notification to household members
-      const categoryLabels: Record<string, string> = {
-        meals: "Meals",
-        rides: "Transportation",
-        errands: "Errands",
-        childcare: "Childcare",
-        household: "Household Tasks",
-        other: "Other Support",
-      };
+      // Send notification to primary/admin users
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const adminUserIds = allMembers
+        .filter(m => m.role === "primary" || m.role === "admin")
+        .map(m => m.id);
 
-      notifyHouseholdMembers(
+      notifyVisibleUsers(
         ctx.user.householdId,
+        adminUserIds,
         "need_completed",
         {
-          title: need.title,
-          category: categoryLabels[need.category] || need.category,
-          completedBy: ctx.user.name,
+          needTitle: need.title,
+          completerName: ctx.user.name,
           actionUrl: `${process.env.REPL_HOME || ""}/needs`,
         },
         [ctx.user.id]
-      ).catch(err => console.error("Failed to send need_completed notification:", err));
+      ).catch((err: Error) => console.error("Failed to send need_completed notification:", err));
 
       return { success: true };
     }),

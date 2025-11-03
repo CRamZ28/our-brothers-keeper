@@ -3,7 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { filterByVisibility } from "./visibilityHelpers";
-import { notifyHouseholdMembers } from "./notificationHelpers";
+import { notifyVisibleUsers } from "./notificationHelpers";
 
 export const eventsRouter = router({
   // List all events for the household (filtered by visibility)
@@ -110,29 +110,51 @@ export const eventsRouter = router({
         metadata: { title: input.title, startAt: input.startAt.toISOString() },
       });
 
-      // Send notification to household members
-      notifyHouseholdMembers(
-        ctx.user.householdId,
-        "event_created",
-        {
-          title: input.title,
-          description: input.description || "No description provided.",
-          location: input.location || "Location to be determined.",
-          eventDate: input.startAt.toLocaleDateString("en-US", {
-            weekday: "long",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }),
-          eventTime: input.startAt.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true,
-          }),
-          actionUrl: `${process.env.REPL_HOME || ""}/calendar`,
-        },
-        [ctx.user.id]
-      ).catch(err => console.error("Failed to send event_created notification:", err));
+      // Send notification to household members who can see this event
+      const createdEvent = await db.getEvent(eventId);
+      if (createdEvent) {
+        const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+        
+        // Check visibility for each member individually
+        const targetUserIds: string[] = [];
+        for (const member of allMembers) {
+          const visibleEvents = await filterByVisibility(
+            [createdEvent],
+            member.id,
+            member.role,
+            ctx.user.householdId
+          );
+          if (visibleEvents.length > 0) {
+            targetUserIds.push(member.id);
+          }
+        }
+        
+        if (targetUserIds.length > 0) {
+          notifyVisibleUsers(
+            ctx.user.householdId,
+            targetUserIds,
+            "event_created",
+            {
+              eventTitle: input.title,
+              eventDescription: input.description || "No description provided.",
+              eventLocation: input.location || "Location to be determined.",
+              eventDate: input.startAt.toLocaleDateString("en-US", {
+                weekday: "long",
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }),
+              eventTime: input.startAt.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              }),
+              actionUrl: `${process.env.REPL_HOME || ""}/calendar`,
+            },
+            [ctx.user.id]
+          ).catch((err: Error) => console.error("Failed to send event_created notification:", err));
+        }
+      }
 
       return { eventId };
     }),
@@ -312,23 +334,23 @@ export const eventsRouter = router({
 
       // Send notification to primary/admin users only when RSVP is "going"
       if (input.status === "going") {
-        notifyHouseholdMembers(
+        const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+        const adminUserIds = allMembers
+          .filter(m => m.role === "primary" || m.role === "admin")
+          .map(m => m.id);
+
+        notifyVisibleUsers(
           ctx.user.householdId,
+          adminUserIds,
           "event_rsvp",
           {
-            title: event.title,
-            volunteerName: ctx.user.name,
+            eventTitle: event.title,
+            rsvperName: ctx.user.name,
             rsvpStatus: "going",
-            eventDate: event.startAt.toLocaleDateString("en-US", {
-              weekday: "long",
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }),
             actionUrl: `${process.env.REPL_HOME || ""}/calendar`,
           },
           [ctx.user.id]
-        ).catch(err => console.error("Failed to send event_rsvp notification:", err));
+        ).catch((err: Error) => console.error("Failed to send event_rsvp notification:", err));
       }
 
       return { rsvpId };
