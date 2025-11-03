@@ -102,6 +102,7 @@ Key database tables for new features:
 - **Database**: PostgreSQL (managed by Replit, accessed via Drizzle ORM)
 - **Authentication**: Replit Auth (OpenID Connect via Passport.js)
 - **Session Store**: PostgreSQL (using `connect-pg-simple`)
+- **Email Service**: Resend (transactional emails with custom domain `notifications.obkapp.com`)
 - **Frontend Framework**: React
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
@@ -109,4 +110,9 @@ Key database tables for new features:
 - **API Layer**: tRPC
 - **Package Manager**: pnpm
 - **Runtime**: Node.js
-- **SMS Notifications (Planned)**: Twilio (manual setup required)
+
+## Notification System
+- **Email Notifications**: Opt-in system using Resend (all notifications default to OFF)
+- **Notification Types**: 11 event types (needs, events, meal trains, messages, announcements, updates, invites)
+- **User Control**: Settings page allows users to toggle each notification type individually
+- **Database Tables**: `notification_preferences`, `notification_logs`, `push_subscriptions` (future use)
