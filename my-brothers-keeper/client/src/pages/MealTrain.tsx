@@ -659,9 +659,14 @@ function MealTrainConfigDialog({
   const [allergies, setAllergies] = useState(mealTrain?.allergies || "");
   const [dislikes, setDislikes] = useState(mealTrain?.dislikes || "");
   const [specialInstructions, setSpecialInstructions] = useState(mealTrain?.specialInstructions || "");
-  const [addressVisibility, setAddressVisibility] = useState(
+  const [visibilityScope, setVisibilityScope] = useState(
+    mealTrain?.visibilityScope || "all_supporters"
+  );
+  const [visibilityGroupIds, setVisibilityGroupIds] = useState<string[]>([]);
+  const [addressVisibilityScope, setAddressVisibilityScope] = useState(
     mealTrain?.addressVisibilityScope || "all_supporters"
   );
+  const [addressVisibilityGroupIds, setAddressVisibilityGroupIds] = useState<string[]>([]);
   const [enabled, setEnabled] = useState(mealTrain?.enabled ?? true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [daysAheadOpen, setDaysAheadOpen] = useState(30);
@@ -673,14 +678,25 @@ function MealTrainConfigDialog({
   );
 
   useEffect(() => {
-    if (mealTrain?.id) {
-      setDaysAheadOpen(mealTrain.daysAheadOpen || 30);
-      if (existingDays.length > 0) {
-        const dates = existingDays.map((day: any) => new Date(day.date));
-        setSelectedDates(dates);
+    if (open) {
+      if (mealTrain?.id) {
+        setVisibilityScope(mealTrain.visibilityScope || "all_supporters");
+        setAddressVisibilityScope(mealTrain.addressVisibilityScope || "all_supporters");
+        setDaysAheadOpen(mealTrain.daysAheadOpen || 30);
+        setVisibilityGroupIds(mealTrain.visibilityGroupIds?.map((id: number) => id.toString()) || []);
+        setAddressVisibilityGroupIds(mealTrain.addressVisibilityGroupIds?.map((id: number) => id.toString()) || []);
+        if (existingDays.length > 0) {
+          const dates = existingDays.map((day: any) => new Date(day.date));
+          setSelectedDates(dates);
+        }
+      } else {
+        setVisibilityScope("all_supporters");
+        setAddressVisibilityScope("all_supporters");
+        setVisibilityGroupIds([]);
+        setAddressVisibilityGroupIds([]);
       }
     }
-  }, [mealTrain, existingDays]);
+  }, [open, mealTrain, existingDays]);
 
   const upsertMutation = trpc.mealTrain.upsert.useMutation({
     onSuccess: () => {
@@ -690,6 +706,16 @@ function MealTrainConfigDialog({
   });
 
   const handleSave = () => {
+    if (visibilityScope === "group" && visibilityGroupIds.length === 0) {
+      alert("Please select at least one group for visibility");
+      return;
+    }
+
+    if (addressVisibilityScope === "group" && addressVisibilityGroupIds.length === 0) {
+      alert("Please select at least one group for address visibility");
+      return;
+    }
+
     upsertMutation.mutate({
       location,
       peopleCount: peopleCount ? parseInt(peopleCount) : undefined,
@@ -698,7 +724,10 @@ function MealTrainConfigDialog({
       allergies,
       dislikes,
       specialInstructions,
-      addressVisibilityScope: addressVisibility as any,
+      visibilityScope: visibilityScope as any,
+      visibilityGroupIds: visibilityGroupIds.length > 0 ? visibilityGroupIds.map(id => parseInt(id)) : undefined,
+      addressVisibilityScope: addressVisibilityScope as any,
+      addressVisibilityGroupIds: addressVisibilityGroupIds.length > 0 ? addressVisibilityGroupIds.map(id => parseInt(id)) : undefined,
       enabled,
       daysAheadOpen,
       selectedDates: selectedDates.map(d => d.toISOString().split('T')[0]),
@@ -718,6 +747,55 @@ function MealTrainConfigDialog({
 
         <div className="space-y-4">
           <div>
+            <Label htmlFor="visibilityScope">Who Can See This Meal Train</Label>
+            <Select value={visibilityScope} onValueChange={setVisibilityScope}>
+              <SelectTrigger id="visibilityScope">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all_supporters">All Supporters</SelectItem>
+                <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
+                <SelectItem value="role">Admin/Primary Only</SelectItem>
+                <SelectItem value="private">Private</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-1">
+              Control who can see and respond to this meal train
+            </p>
+          </div>
+          {visibilityScope === "group" && (
+            <div className="space-y-2">
+              <Label>Select Groups (you can select multiple)</Label>
+              <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
+                {groups && groups.length > 0 ? (
+                  groups.map((group: { id: number; name: string }) => (
+                    <div key={group.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`visibility-group-${group.id}`}
+                        checked={visibilityGroupIds.includes(group.id.toString())}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setVisibilityGroupIds([...visibilityGroupIds, group.id.toString()]);
+                          } else {
+                            setVisibilityGroupIds(visibilityGroupIds.filter(id => id !== group.id.toString()));
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <label htmlFor={`visibility-group-${group.id}`} className="text-sm cursor-pointer">
+                        {group.name}
+                      </label>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <div>
             <Label htmlFor="location">Drop-Off Location</Label>
             <Textarea
               id="location"
@@ -729,9 +807,9 @@ function MealTrainConfigDialog({
           </div>
 
           <div>
-            <Label htmlFor="addressVisibility">Address Visibility</Label>
-            <Select value={addressVisibility} onValueChange={setAddressVisibility}>
-              <SelectTrigger id="addressVisibility">
+            <Label htmlFor="addressVisibilityScope">Address Visibility</Label>
+            <Select value={addressVisibilityScope} onValueChange={setAddressVisibilityScope}>
+              <SelectTrigger id="addressVisibilityScope">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -745,6 +823,37 @@ function MealTrainConfigDialog({
               Control who can see the delivery address
             </p>
           </div>
+          {addressVisibilityScope === "group" && (
+            <div className="space-y-2">
+              <Label>Select Groups for Address Access (you can select multiple)</Label>
+              <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
+                {groups && groups.length > 0 ? (
+                  groups.map((group: { id: number; name: string }) => (
+                    <div key={group.id} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id={`address-visibility-group-${group.id}`}
+                        checked={addressVisibilityGroupIds.includes(group.id.toString())}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setAddressVisibilityGroupIds([...addressVisibilityGroupIds, group.id.toString()]);
+                          } else {
+                            setAddressVisibilityGroupIds(addressVisibilityGroupIds.filter(id => id !== group.id.toString()));
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <label htmlFor={`address-visibility-group-${group.id}`} className="text-sm cursor-pointer">
+                        {group.name}
+                      </label>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
+                )}
+              </div>
+            </div>
+          )}
 
           <div>
             <Label htmlFor="peopleCount">Number of People to Cook For</Label>

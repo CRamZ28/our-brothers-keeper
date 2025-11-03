@@ -88,7 +88,7 @@ export default function Calendar() {
   const [visibilityScope, setVisibilityScope] = useState<
     "private" | "all_supporters" | "group" | "role" | "custom"
   >("all_supporters");
-  const [visibilityGroupId, setVisibilityGroupId] = useState<string>("");
+  const [visibilityGroupIds, setVisibilityGroupIds] = useState<string[]>([]);
   const [customUserIds, setCustomUserIds] = useState<string[]>([]);
 
   const createEventMutation = trpc.events.create.useMutation({
@@ -146,7 +146,7 @@ export default function Calendar() {
     setEndTime("");
     setCapacity("");
     setVisibilityScope("all_supporters");
-    setVisibilityGroupId("");
+    setVisibilityGroupIds([]);
     setCustomUserIds([]);
   };
 
@@ -160,8 +160,8 @@ export default function Calendar() {
       return;
     }
 
-    if (visibilityScope === "group" && !visibilityGroupId) {
-      toast.error("Please select a group");
+    if (visibilityScope === "group" && visibilityGroupIds.length === 0) {
+      toast.error("Please select at least one group");
       return;
     }
 
@@ -181,7 +181,7 @@ export default function Calendar() {
       endAt,
       capacity: capacity ? parseInt(capacity) : undefined,
       visibilityScope,
-      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+      visibilityGroupIds: visibilityGroupIds.map(id => parseInt(id)),
       customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
     });
   };
@@ -197,8 +197,8 @@ export default function Calendar() {
       return;
     }
 
-    if (visibilityScope === "group" && !visibilityGroupId) {
-      toast.error("Please select a group");
+    if (visibilityScope === "group" && visibilityGroupIds.length === 0) {
+      toast.error("Please select at least one group");
       return;
     }
 
@@ -219,7 +219,7 @@ export default function Calendar() {
       endAt,
       capacity: capacity ? parseInt(capacity) : undefined,
       visibilityScope,
-      visibilityGroupId: visibilityGroupId ? parseInt(visibilityGroupId) : undefined,
+      visibilityGroupIds: visibilityGroupIds.map(id => parseInt(id)),
       customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
     });
   };
@@ -249,7 +249,7 @@ export default function Calendar() {
     }
     setCapacity(event.capacity?.toString() || "");
     setVisibilityScope(event.visibilityScope || "all_supporters");
-    setVisibilityGroupId(event.visibilityGroupId?.toString() || "");
+    setVisibilityGroupIds(event.visibilityGroupIds?.map((id: number) => id.toString()) || []);
     setCustomUserIds(event.customUserIds || []);
     setEditDialogOpen(true);
     setEventDetailOpen(false);
@@ -432,19 +432,33 @@ export default function Calendar() {
                     )}
                     {visibilityScope === "group" && (
                       <div className="space-y-2">
-                        <Label htmlFor="group">Select Group</Label>
-                        <Select value={visibilityGroupId} onValueChange={setVisibilityGroupId}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Choose a group..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {groups?.map((group: { id: number; name: string }) => (
-                              <SelectItem key={group.id} value={group.id.toString()}>
-                                {group.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label>Select Groups (you can select multiple)</Label>
+                        <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
+                          {groups && groups.length > 0 ? (
+                            groups.map((group: { id: number; name: string }) => (
+                              <div key={group.id} className="flex items-center space-x-2">
+                                <input
+                                  type="checkbox"
+                                  id={`group-${group.id}`}
+                                  checked={visibilityGroupIds.includes(group.id.toString())}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setVisibilityGroupIds([...visibilityGroupIds, group.id.toString()]);
+                                    } else {
+                                      setVisibilityGroupIds(visibilityGroupIds.filter(id => id !== group.id.toString()));
+                                    }
+                                  }}
+                                  className="rounded border-gray-300"
+                                />
+                                <label htmlFor={`group-${group.id}`} className="text-sm cursor-pointer">
+                                  {group.name}
+                                </label>
+                              </div>
+                            ))
+                          ) : (
+                            <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
+                          )}
+                        </div>
                       </div>
                     )}
                     <div className="grid grid-cols-2 gap-3">
@@ -1138,19 +1152,33 @@ export default function Calendar() {
               )}
               {visibilityScope === "group" && (
                 <div className="space-y-2">
-                  <Label htmlFor="edit-group">Select Group</Label>
-                  <Select value={visibilityGroupId} onValueChange={setVisibilityGroupId}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose a group..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {groups?.map((group: { id: number; name: string }) => (
-                        <SelectItem key={group.id} value={group.id.toString()}>
-                          {group.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Select Groups (you can select multiple)</Label>
+                  <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
+                    {groups && groups.length > 0 ? (
+                      groups.map((group: { id: number; name: string }) => (
+                        <div key={group.id} className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id={`edit-group-${group.id}`}
+                            checked={visibilityGroupIds.includes(group.id.toString())}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setVisibilityGroupIds([...visibilityGroupIds, group.id.toString()]);
+                              } else {
+                                setVisibilityGroupIds(visibilityGroupIds.filter(id => id !== group.id.toString()));
+                              }
+                            }}
+                            className="rounded border-gray-300"
+                          />
+                          <label htmlFor={`edit-group-${group.id}`} className="text-sm cursor-pointer">
+                            {group.name}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
+                    )}
+                  </div>
                 </div>
               )}
               <div className="grid grid-cols-2 gap-3">
