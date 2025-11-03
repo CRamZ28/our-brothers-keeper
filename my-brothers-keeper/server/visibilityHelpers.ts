@@ -10,7 +10,7 @@ export async function checkContentVisibility(
   householdId: number,
   content: {
     visibilityScope: string;
-    visibilityGroupId?: number | null;
+    visibilityGroupIds?: number[] | null;
     customUserIds?: string[] | null;
   }
 ): Promise<boolean> {
@@ -27,10 +27,11 @@ export async function checkContentVisibility(
   } else if (content.visibilityScope === "role") {
     // Only admin/primary can see (already returned true above)
     return false;
-  } else if (content.visibilityScope === "group" && content.visibilityGroupId) {
-    // Check if user is in the specified group
+  } else if (content.visibilityScope === "group" && content.visibilityGroupIds && content.visibilityGroupIds.length > 0) {
+    // Check if user is in ANY of the specified groups
     const userGroups = await db.getUserGroups(userId, householdId);
-    return userGroups.some((g) => g.id === content.visibilityGroupId);
+    const userGroupIds = userGroups.map((g) => g.id);
+    return content.visibilityGroupIds.some((groupId) => userGroupIds.includes(groupId));
   } else if (content.visibilityScope === "custom" && content.customUserIds) {
     // Check if user is in the custom user list
     return content.customUserIds.includes(userId);
@@ -54,7 +55,7 @@ function checkContentVisibilitySync(
   userGroupIds: number[],
   content: {
     visibilityScope: string;
-    visibilityGroupId?: number | null;
+    visibilityGroupIds?: number[] | null;
     customUserIds?: string[] | null;
   }
 ): boolean {
@@ -71,9 +72,9 @@ function checkContentVisibilitySync(
   } else if (content.visibilityScope === "role") {
     // Only admin/primary can see (already returned true above)
     return false;
-  } else if (content.visibilityScope === "group" && content.visibilityGroupId) {
-    // Check if user is in the specified group using cached group IDs
-    return userGroupIds.includes(content.visibilityGroupId);
+  } else if (content.visibilityScope === "group" && content.visibilityGroupIds && content.visibilityGroupIds.length > 0) {
+    // Check if user is in ANY of the specified groups using cached group IDs
+    return content.visibilityGroupIds.some((groupId) => userGroupIds.includes(groupId));
   } else if (content.visibilityScope === "custom" && content.customUserIds) {
     // Check if user is in the custom user list
     return content.customUserIds.includes(userId);
@@ -95,7 +96,7 @@ function checkContentVisibilitySync(
  */
 export async function filterByVisibility<T extends {
   visibilityScope: string;
-  visibilityGroupId?: number | null;
+  visibilityGroupIds?: number[] | null;
   customUserIds?: string[] | null;
 }>(
   items: T[],
