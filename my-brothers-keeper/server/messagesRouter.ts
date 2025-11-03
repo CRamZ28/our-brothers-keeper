@@ -35,7 +35,7 @@ export const messagesRouter = router({
         visibilityScope: z
           .enum(["private", "all_supporters", "group", "role"])
           .default("all_supporters"),
-        visibilityGroupId: z.number().optional(),
+        visibilityGroupIds: z.array(z.number()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -59,7 +59,7 @@ export const messagesRouter = router({
         pinned: input.pinned,
         createdBy: ctx.user.id,
         visibilityScope: input.visibilityScope,
-        visibilityGroupId: input.visibilityGroupId || null,
+        visibilityGroupIds: input.visibilityGroupIds || null,
       });
 
       await db.createAuditLog({
@@ -83,7 +83,7 @@ export const messagesRouter = router({
         pinned: input.pinned,
         createdBy: ctx.user.id,
         visibilityScope: input.visibilityScope,
-        visibilityGroupId: input.visibilityGroupId || null,
+        visibilityGroupIds: input.visibilityGroupIds || null,
         customUserIds: null,
         createdAt: new Date(),
       };

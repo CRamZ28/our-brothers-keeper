@@ -20,9 +20,10 @@ async function checkMealTrainVisibility(
     return true;
   } else if (mealTrain.visibilityScope === "role") {
     return userRole === "admin" || userRole === "primary";
-  } else if (mealTrain.visibilityScope === "group" && mealTrain.visibilityGroupId) {
+  } else if (mealTrain.visibilityScope === "group" && mealTrain.visibilityGroupIds && mealTrain.visibilityGroupIds.length > 0) {
     const userGroups = await db.getUserGroups(userId, householdId);
-    return userGroups.some((g) => g.id === mealTrain.visibilityGroupId);
+    const userGroupIds = userGroups.map((g) => g.id);
+    return mealTrain.visibilityGroupIds.some((groupId: number) => userGroupIds.includes(groupId));
   } else if (mealTrain.visibilityScope === "private") {
     return false;
   }
@@ -46,9 +47,10 @@ async function checkAddressVisibility(
     return true;
   } else if (mealTrain.addressVisibilityScope === "role") {
     return userRole === "admin" || userRole === "primary";
-  } else if (mealTrain.addressVisibilityScope === "group" && mealTrain.addressVisibilityGroupId) {
+  } else if (mealTrain.addressVisibilityScope === "group" && mealTrain.addressVisibilityGroupIds && mealTrain.addressVisibilityGroupIds.length > 0) {
     const userGroups = await db.getUserGroups(userId, householdId);
-    return userGroups.some((g) => g.id === mealTrain.addressVisibilityGroupId);
+    const userGroupIds = userGroups.map((g) => g.id);
+    return mealTrain.addressVisibilityGroupIds.some((groupId: number) => userGroupIds.includes(groupId));
   } else if (mealTrain.addressVisibilityScope === "private") {
     return false;
   }
@@ -145,11 +147,11 @@ export const mealTrainRouter = router({
         visibilityScope: z
           .enum(["private", "all_supporters", "group", "role"])
           .default("all_supporters"),
-        visibilityGroupId: z.number().optional(),
+        visibilityGroupIds: z.array(z.number()).optional(),
         addressVisibilityScope: z
           .enum(["private", "all_supporters", "group", "role"])
           .default("all_supporters"),
-        addressVisibilityGroupId: z.number().optional(),
+        addressVisibilityGroupIds: z.array(z.number()).optional(),
         enabled: z.boolean().default(true),
         daysAheadOpen: z.number().min(1).max(365).optional(),
         availabilityStartDate: z.string().optional(),
@@ -186,9 +188,9 @@ export const mealTrainRouter = router({
           specialInstructions: input.specialInstructions || null,
           dailyCapacity: input.dailyCapacity,
           visibilityScope: input.visibilityScope,
-          visibilityGroupId: input.visibilityGroupId || null,
+          visibilityGroupIds: input.visibilityGroupIds || null,
           addressVisibilityScope: input.addressVisibilityScope,
-          addressVisibilityGroupId: input.addressVisibilityGroupId || null,
+          addressVisibilityGroupIds: input.addressVisibilityGroupIds || null,
           enabled: input.enabled,
           daysAheadOpen: input.daysAheadOpen || null,
           availabilityStartDate: input.availabilityStartDate || null,
@@ -217,9 +219,9 @@ export const mealTrainRouter = router({
           specialInstructions: input.specialInstructions || null,
           dailyCapacity: input.dailyCapacity,
           visibilityScope: input.visibilityScope,
-          visibilityGroupId: input.visibilityGroupId || null,
+          visibilityGroupIds: input.visibilityGroupIds || null,
           addressVisibilityScope: input.addressVisibilityScope,
-          addressVisibilityGroupId: input.addressVisibilityGroupId || null,
+          addressVisibilityGroupIds: input.addressVisibilityGroupIds || null,
           enabled: input.enabled,
           daysAheadOpen: input.daysAheadOpen || null,
           availabilityStartDate: input.availabilityStartDate || null,

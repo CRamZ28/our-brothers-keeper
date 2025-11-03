@@ -68,7 +68,7 @@ export const eventsRouter = router({
         visibilityScope: z
           .enum(["private", "all_supporters", "group", "role", "custom"])
           .default("all_supporters"),
-        visibilityGroupId: z.number().optional(),
+        visibilityGroupIds: z.array(z.number()).optional(),
         customUserIds: z.array(z.string()).optional(),
         capacity: z.number().optional(),
       })
@@ -96,7 +96,7 @@ export const eventsRouter = router({
         endAt: input.endAt || null,
         createdBy: ctx.user.id,
         visibilityScope: input.visibilityScope,
-        visibilityGroupId: input.visibilityGroupId || null,
+        visibilityGroupIds: input.visibilityGroupIds || null,
         customUserIds: input.customUserIds || null,
         capacity: input.capacity || null,
       });
@@ -171,7 +171,7 @@ export const eventsRouter = router({
         endAt: z.date().optional(),
         capacity: z.number().optional(),
         visibilityScope: z.enum(["private", "all_supporters", "group", "role", "custom"]).optional(),
-        visibilityGroupId: z.number().optional(),
+        visibilityGroupIds: z.array(z.number()).optional(),
         customUserIds: z.array(z.string()).optional(),
       })
     )
