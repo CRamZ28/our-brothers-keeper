@@ -42,6 +42,20 @@ export const updateTypeEnum = pgEnum("update_type", ["general", "gratitude", "me
 export const digestFrequencyEnum = pgEnum("digest_frequency", ["immediate", "daily", "weekly"]);
 export const recipientTypeEnum = pgEnum("recipient_type", ["individual", "group", "all"]);
 export const mealSignupStatusEnum = pgEnum("meal_signup_status", ["pending", "confirmed", "completed", "cancelled"]);
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "need_created",
+  "need_claimed",
+  "need_completed",
+  "event_created",
+  "event_rsvp",
+  "meal_train_signup",
+  "meal_train_cancelled",
+  "new_message",
+  "new_announcement",
+  "new_update",
+  "invite_sent"
+]);
+export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
 
 /**
  * Core user table backing auth flow.
@@ -503,3 +517,93 @@ export const mealTrainDays = pgTable("meal_train_days", {
 
 export type MealTrainDay = typeof mealTrainDays.$inferSelect;
 export type InsertMealTrainDay = typeof mealTrainDays.$inferInsert;
+
+/**
+ * Notification Preferences - User preferences for which notifications to receive
+ */
+export const notificationPreferences = pgTable("notification_preferences", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  householdId: integer("household_id").notNull(),
+  
+  // Email preferences
+  emailEnabled: boolean("email_enabled").default(true).notNull(),
+  emailNeedCreated: boolean("email_need_created").default(true).notNull(),
+  emailNeedClaimed: boolean("email_need_claimed").default(true).notNull(),
+  emailNeedCompleted: boolean("email_need_completed").default(true).notNull(),
+  emailEventCreated: boolean("email_event_created").default(true).notNull(),
+  emailEventRsvp: boolean("email_event_rsvp").default(true).notNull(),
+  emailMealTrainSignup: boolean("email_meal_train_signup").default(true).notNull(),
+  emailMealTrainCancelled: boolean("email_meal_train_cancelled").default(true).notNull(),
+  emailNewMessage: boolean("email_new_message").default(true).notNull(),
+  emailNewAnnouncement: boolean("email_new_announcement").default(true).notNull(),
+  emailNewUpdate: boolean("email_new_update").default(true).notNull(),
+  
+  // Push preferences
+  pushEnabled: boolean("push_enabled").default(true).notNull(),
+  pushNeedCreated: boolean("push_need_created").default(true).notNull(),
+  pushNeedClaimed: boolean("push_need_claimed").default(false).notNull(),
+  pushNeedCompleted: boolean("push_need_completed").default(false).notNull(),
+  pushEventCreated: boolean("push_event_created").default(true).notNull(),
+  pushEventRsvp: boolean("push_event_rsvp").default(false).notNull(),
+  pushMealTrainSignup: boolean("push_meal_train_signup").default(true).notNull(),
+  pushMealTrainCancelled: boolean("push_meal_train_cancelled").default(true).notNull(),
+  pushNewMessage: boolean("push_new_message").default(true).notNull(),
+  pushNewAnnouncement: boolean("push_new_announcement").default(true).notNull(),
+  pushNewUpdate: boolean("push_new_update").default(true).notNull(),
+  
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdx: uniqueIndex("notification_preferences_user_idx").on(table.userId),
+  householdIdx: index("notification_preferences_household_idx").on(table.householdId),
+}));
+
+export type NotificationPreference = typeof notificationPreferences.$inferSelect;
+export type InsertNotificationPreference = typeof notificationPreferences.$inferInsert;
+
+/**
+ * Push Subscriptions - Store browser push notification subscription data
+ */
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  endpoint: text("endpoint").notNull(),
+  p256dhKey: text("p256dh_key").notNull(),
+  authKey: text("auth_key").notNull(),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  lastUsed: timestamp("last_used").defaultNow().notNull(),
+}, (table) => ({
+  userIdx: index("push_subscriptions_user_idx").on(table.userId),
+  endpointIdx: uniqueIndex("push_subscriptions_endpoint_idx").on(table.endpoint),
+}));
+
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+/**
+ * Notification Logs - Track all notifications sent for debugging and analytics
+ */
+export const notificationLogs = pgTable("notification_logs", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  householdId: integer("household_id").notNull(),
+  notificationType: notificationTypeEnum("notification_type").notNull(),
+  channel: notificationChannelEnum("channel").notNull(),
+  subject: text("subject"),
+  body: text("body").notNull(),
+  metadata: jsonb("metadata"),
+  sentAt: timestamp("sent_at").defaultNow().notNull(),
+  delivered: boolean("delivered").default(false).notNull(),
+  deliveredAt: timestamp("delivered_at"),
+  error: text("error"),
+}, (table) => ({
+  userIdx: index("notification_logs_user_idx").on(table.userId),
+  householdIdx: index("notification_logs_household_idx").on(table.householdId),
+  sentAtIdx: index("notification_logs_sent_at_idx").on(table.sentAt),
+  typeIdx: index("notification_logs_type_idx").on(table.notificationType),
+}));
+
+export type NotificationLog = typeof notificationLogs.$inferSelect;
+export type InsertNotificationLog = typeof notificationLogs.$inferInsert;
