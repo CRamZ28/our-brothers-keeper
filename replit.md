@@ -88,6 +88,17 @@ Key database tables for new features:
 - `meal_trains`: Extended with `days_ahead_open`, `availability_start_date`, `availability_end_date`
 
 ## Recent Updates (November 2025)
+- **Enhanced Landing Page (Production-Ready):**
+  - Comprehensive feature showcase explaining all 6 core features with detailed capabilities
+  - "Why OBK?" section highlighting three key value propositions
+  - **Flexible Admin Control** section explaining primary can handle everything themselves or delegate to admins
+  - Email notifications callout and final call-to-action
+  - Improved content hierarchy and user education for new visitors
+- **Media Upload for Announcements:**
+  - Added support for uploading images and videos to announcements/messages
+  - Multi-file upload with preview thumbnails
+  - Automatic image/video detection and display in announcement cards
+  - 50MB file limit with strict MIME validation for security
 - **Security Enhancements (Production-Ready):**
   - Implemented comprehensive visibility filtering with zero information leakage
   - Optimized performance: Group membership caching eliminates N+1 queries (100 items = 1 DB call)

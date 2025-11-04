@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Heart, Calendar, Users, MessageCircle, UtensilsCrossed, Bell, Shield, CheckCircle2 } from "lucide-react";
+import { Heart, Calendar, Users, MessageCircle, UtensilsCrossed, Bell, Shield, CheckCircle2, UserCog, ArrowRight } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
@@ -116,6 +116,54 @@ export default function Home() {
                       Share what you want, with who you want. Create custom groups and control 
                       visibility for every piece of information you share.
                     </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Flexible Control Section */}
+              <div className="backdrop-blur-lg bg-gradient-to-r from-indigo-500/20 to-purple-500/20 dark:from-indigo-600/20 dark:to-purple-600/20 rounded-2xl p-8 md:p-10 border border-white/20 shadow-xl">
+                <div className="max-w-4xl mx-auto">
+                  <div className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="flex-shrink-0">
+                      <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                        <UserCog className="w-12 h-12 text-white" />
+                      </div>
+                    </div>
+                    <div className="flex-1 text-center md:text-left space-y-4">
+                      <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100">
+                        You're in Control—Always
+                      </h2>
+                      <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                        Every family is different. Some people want to manage everything themselves during grief. 
+                        Others need to share the load. <span className="font-semibold text-gray-700 dark:text-gray-300">Our Brother's Keeper adapts to you.</span>
+                      </p>
+                      <div className="grid md:grid-cols-2 gap-4 pt-2">
+                        <div className="flex items-start gap-3">
+                          <ArrowRight className="w-5 h-5 text-indigo-600 mt-1 flex-shrink-0" />
+                          <div>
+                            <h4 className="font-bold text-gray-800 dark:text-gray-100">Handle It Yourself</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              As the primary person, you have complete control over every aspect 
+                              of your support network if you prefer to manage it all.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <ArrowRight className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
+                          <div>
+                            <h4 className="font-bold text-gray-800 dark:text-gray-100">Delegate to Admins</h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              Designate trusted family members or friends as admins to help 
+                              coordinate care, post updates, and manage the community.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-base text-gray-600 dark:text-gray-400 pt-2">
+                        Whatever feels right for your situation, OBK makes it easy. You decide 
+                        how much help you want, and you can change it anytime.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
