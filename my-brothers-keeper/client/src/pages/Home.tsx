@@ -39,7 +39,7 @@ export default function Home() {
           <header className="container py-6">
             <div className="flex items-center justify-between backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
               <div className="flex items-center gap-3">
-                {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="w-10 h-10 rounded-lg shadow-md" />}
+                {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="w-16 h-16 rounded-lg shadow-md" />}
                 <span className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{APP_TITLE}</span>
               </div>
               <Button 
