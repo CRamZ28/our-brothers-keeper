@@ -40,11 +40,12 @@ export default function Home() {
             <div className="flex items-center justify-between backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
               <div className="flex items-center gap-3">
                 {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="w-10 h-10 rounded-lg shadow-md" />}
-                <span className="text-xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">{APP_TITLE}</span>
+                <span className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{APP_TITLE}</span>
               </div>
               <Button 
                 onClick={() => (window.location.href = "/api/login")}
                 className="shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)' }}
               >
                 Sign In
               </Button>
@@ -74,7 +75,8 @@ export default function Home() {
                   <Button
                     size="lg"
                     onClick={() => (window.location.href = "/api/login")}
-                    className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700"
+                    className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+                    style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)' }}
                   >
                     Get Started
                   </Button>
@@ -83,12 +85,12 @@ export default function Home() {
 
               {/* Why OBK Section */}
               <div className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-8 md:p-12 border border-white/20 shadow-xl">
-                <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-8" style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   Why Our Brother's Keeper?
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8">
                   <div className="text-center space-y-3">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #6BC4B8)' }}>
                       <Heart className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Turn Words Into Action</h3>
@@ -98,7 +100,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="text-center space-y-3">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
                       <Calendar className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Sustained Support</h3>
@@ -108,7 +110,7 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="text-center space-y-3">
-                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #B08CA7, #B08CA7)' }}>
                       <Shield className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Privacy & Control</h3>
@@ -121,11 +123,11 @@ export default function Home() {
               </div>
 
               {/* Flexible Control Section */}
-              <div className="backdrop-blur-lg bg-gradient-to-r from-indigo-500/20 to-purple-500/20 dark:from-indigo-600/20 dark:to-purple-600/20 rounded-2xl p-8 md:p-10 border border-white/20 shadow-xl">
+              <div className="backdrop-blur-lg rounded-2xl p-8 md:p-10 border border-white/20 shadow-xl" style={{ background: 'linear-gradient(to right, rgba(107, 196, 184, 0.15), rgba(176, 140, 167, 0.15))' }}>
                 <div className="max-w-4xl mx-auto">
                   <div className="flex flex-col md:flex-row items-center gap-8">
                     <div className="flex-shrink-0">
-                      <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <div className="w-24 h-24 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
                         <UserCog className="w-12 h-12 text-white" />
                       </div>
                     </div>
@@ -139,7 +141,7 @@ export default function Home() {
                       </p>
                       <div className="grid md:grid-cols-2 gap-4 pt-2">
                         <div className="flex items-start gap-3">
-                          <ArrowRight className="w-5 h-5 text-indigo-600 mt-1 flex-shrink-0" />
+                          <ArrowRight className="w-5 h-5 mt-1 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                           <div>
                             <h4 className="font-bold text-gray-800 dark:text-gray-100">Handle It Yourself</h4>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -149,7 +151,7 @@ export default function Home() {
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <ArrowRight className="w-5 h-5 text-purple-600 mt-1 flex-shrink-0" />
+                          <ArrowRight className="w-5 h-5 mt-1 flex-shrink-0" style={{ color: '#B08CA7' }} />
                           <div>
                             <h4 className="font-bold text-gray-800 dark:text-gray-100">Delegate to Admins</h4>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -170,7 +172,7 @@ export default function Home() {
 
               {/* Comprehensive Features Section */}
               <div className="space-y-8">
-                <h2 className="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
+                <h2 className="text-3xl md:text-4xl font-bold text-center" style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                   Everything You Need to Coordinate Care
                 </h2>
                 
@@ -178,7 +180,7 @@ export default function Home() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                   {/* Feature 1: Needs Board */}
                   <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #6BC4B8)' }}>
                       <Heart className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Needs Board</h3>
@@ -188,15 +190,15 @@ export default function Home() {
                     </p>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Claim and complete tasks</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Set custom visibility per need</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Track who's helping with what</span>
                       </li>
                     </ul>
@@ -204,7 +206,7 @@ export default function Home() {
 
                   {/* Feature 2: Shared Calendar */}
                   <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
                       <Calendar className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Shared Calendar</h3>
@@ -214,15 +216,15 @@ export default function Home() {
                     </p>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>RSVP for events</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Control who sees each event</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Add location and details</span>
                       </li>
                     </ul>
@@ -230,7 +232,7 @@ export default function Home() {
 
                   {/* Feature 3: Meal Train */}
                   <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(to bottom right, #B08CA7, #B08CA7)' }}>
                       <UtensilsCrossed className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Meal Train</h3>
@@ -240,15 +242,15 @@ export default function Home() {
                     </p>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Select available days for meals</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Dietary preferences & allergies</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Private delivery instructions</span>
                       </li>
                     </ul>
@@ -256,7 +258,7 @@ export default function Home() {
 
                   {/* Feature 4: Messages & Announcements */}
                   <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #6BC4B8)' }}>
                       <MessageCircle className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Messages & Announcements</h3>
@@ -266,15 +268,15 @@ export default function Home() {
                     </p>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Pin important updates</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Upload photos and videos</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Private or group messaging</span>
                       </li>
                     </ul>
@@ -282,7 +284,7 @@ export default function Home() {
 
                   {/* Feature 5: Updates */}
                   <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <div className="bg-gradient-to-br from-pink-500 to-pink-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(to bottom right, #B08CA7, #B08CA7)' }}>
                       <Bell className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Progress Updates</h3>
@@ -292,15 +294,15 @@ export default function Home() {
                     </p>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Share life updates</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Celebrate small victories</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Keep supporters engaged</span>
                       </li>
                     </ul>
@@ -308,7 +310,7 @@ export default function Home() {
 
                   {/* Feature 6: People & Groups */}
                   <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
-                    <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
                       <Users className="w-7 h-7 text-white" />
                     </div>
                     <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">People & Custom Groups</h3>
@@ -318,15 +320,15 @@ export default function Home() {
                     </p>
                     <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Create unlimited groups</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Invite supporters securely</span>
                       </li>
                       <li className="flex items-start gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#6BC4B8' }} />
                         <span>Manage roles & permissions</span>
                       </li>
                     </ul>
@@ -335,10 +337,10 @@ export default function Home() {
               </div>
 
               {/* Email Notifications Section */}
-              <div className="backdrop-blur-lg bg-gradient-to-r from-teal-500/20 to-blue-500/20 dark:from-teal-600/20 dark:to-blue-600/20 rounded-2xl p-8 border border-white/20 shadow-xl">
+              <div className="backdrop-blur-lg rounded-2xl p-8 border border-white/20 shadow-xl" style={{ background: 'linear-gradient(to right, rgba(107, 196, 184, 0.15), rgba(176, 140, 167, 0.15))' }}>
                 <div className="flex flex-col md:flex-row items-center gap-6">
                   <div className="flex-shrink-0">
-                    <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                    <div className="w-20 h-20 rounded-2xl flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
                       <Bell className="w-10 h-10 text-white" />
                     </div>
                   </div>
@@ -367,7 +369,8 @@ export default function Home() {
                 <Button
                   size="lg"
                   onClick={() => (window.location.href = "/api/login")}
-                  className="text-lg px-12 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700"
+                  className="text-lg px-12 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105"
+                  style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)' }}
                 >
                   Start Your Journey
                 </Button>
