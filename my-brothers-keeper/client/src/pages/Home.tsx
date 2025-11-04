@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Heart, Calendar, Users, MessageCircle } from "lucide-react";
+import { Heart, Calendar, Users, MessageCircle, UtensilsCrossed, Bell, Shield, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Home() {
@@ -52,81 +52,277 @@ export default function Home() {
           </header>
 
           {/* Hero Section */}
-          <main className="flex-1 container flex items-center">
-            <div className="max-w-4xl mx-auto text-center space-y-12 py-20">
-              <div className="space-y-6">
-                {/* Enhanced Quote with better typography */}
-                <p className="text-3xl md:text-4xl lg:text-5xl italic font-light text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
-                  "Carry each other's burdens, and in this way you will fulfill the law of Christ"
-                </p>
-                <p className="text-xl text-gray-600 dark:text-gray-400 font-medium">
-                  — Galatians 6:2
-                </p>
-                <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed pt-4">
-                  A compassionate platform that helps families and communities provide sustained,
-                  meaningful support to those who have lost a loved one.
-                </p>
+          <main className="flex-1 container">
+            <div className="max-w-6xl mx-auto space-y-20 py-12">
+              {/* Hero Content */}
+              <div className="text-center space-y-8">
+                <div className="space-y-6">
+                  {/* Enhanced Quote with better typography */}
+                  <p className="text-3xl md:text-4xl lg:text-5xl italic font-light text-gray-700 dark:text-gray-300 mb-4 leading-relaxed">
+                    "Carry each other's burdens, and in this way you will fulfill the law of Christ"
+                  </p>
+                  <p className="text-xl text-gray-600 dark:text-gray-400 font-medium">
+                    — Galatians 6:2
+                  </p>
+                  <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto leading-relaxed pt-6">
+                    A compassionate platform that helps families and communities provide sustained,
+                    meaningful support to those who have lost a loved one.
+                  </p>
+                </div>
+
+                <div className="flex justify-center">
+                  <Button
+                    size="lg"
+                    onClick={() => (window.location.href = "/api/login")}
+                    className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700"
+                  >
+                    Get Started
+                  </Button>
+                </div>
               </div>
 
-              <div className="flex justify-center">
+              {/* Why OBK Section */}
+              <div className="backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-8 md:p-12 border border-white/20 shadow-xl">
+                <h2 className="text-3xl md:text-4xl font-bold text-center mb-8 bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
+                  Why Our Brother's Keeper?
+                </h2>
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="text-center space-y-3">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Heart className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Turn Words Into Action</h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      When someone says "let me know if you need anything," they mean it. 
+                      We make it easy for them to follow through with specific, helpful actions.
+                    </p>
+                  </div>
+                  <div className="text-center space-y-3">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Calendar className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Sustained Support</h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Grief doesn't end after the funeral. Our platform helps your community 
+                      stay present through the weeks, months, and years ahead.
+                    </p>
+                  </div>
+                  <div className="text-center space-y-3">
+                    <div className="w-16 h-16 mx-auto bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                      <Shield className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Privacy & Control</h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Share what you want, with who you want. Create custom groups and control 
+                      visibility for every piece of information you share.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Comprehensive Features Section */}
+              <div className="space-y-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-center bg-gradient-to-r from-teal-600 to-blue-600 dark:from-teal-400 dark:to-blue-400 bg-clip-text text-transparent">
+                  Everything You Need to Coordinate Care
+                </h2>
+                
+                {/* Features Grid with Glassmorphism */}
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+                  {/* Feature 1: Needs Board */}
+                  <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Heart className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Needs Board</h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                      Post specific needs like grocery shopping, lawn care, childcare, or errands. 
+                      Supporters can claim tasks and mark them complete.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                        <span>Claim and complete tasks</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                        <span>Set custom visibility per need</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                        <span>Track who's helping with what</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 2: Shared Calendar */}
+                  <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Calendar className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Shared Calendar</h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                      Keep everyone informed about important dates, memorial services, court dates, 
+                      and family gatherings. RSVP tracking included.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <span>RSVP for events</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <span>Control who sees each event</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                        <span>Add location and details</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 3: Meal Train */}
+                  <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-br from-orange-500 to-orange-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <UtensilsCrossed className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Meal Train</h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                      Coordinate meal delivery with a powerful scheduling system. Select specific days, 
+                      set dietary preferences, and manage delivery details.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <span>Select available days for meals</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <span>Dietary preferences & allergies</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" />
+                        <span>Private delivery instructions</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 4: Messages & Announcements */}
+                  <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <MessageCircle className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Messages & Announcements</h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                      Share updates with your support network. Pin important announcements and 
+                      attach photos or videos to bring everyone closer.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <span>Pin important updates</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <span>Upload photos and videos</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
+                        <span>Private or group messaging</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 5: Updates */}
+                  <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-br from-pink-500 to-pink-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Bell className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Progress Updates</h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                      Share how you're doing, milestones reached, or just let people know you're thinking of them. 
+                      Your supporters want to stay connected.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
+                        <span>Share life updates</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
+                        <span>Celebrate small victories</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-pink-600 mt-0.5 flex-shrink-0" />
+                        <span>Keep supporters engaged</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Feature 6: People & Groups */}
+                  <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+                    <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                      <Users className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">People & Custom Groups</h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-3">
+                      Organize your support network into custom groups like "Inner Circle," "Church Friends," 
+                      or "Work Colleagues" for targeted sharing.
+                    </p>
+                    <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <span>Create unlimited groups</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <span>Invite supporters securely</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                        <span>Manage roles & permissions</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              {/* Email Notifications Section */}
+              <div className="backdrop-blur-lg bg-gradient-to-r from-teal-500/20 to-blue-500/20 dark:from-teal-600/20 dark:to-blue-600/20 rounded-2xl p-8 border border-white/20 shadow-xl">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                  <div className="flex-shrink-0">
+                    <div className="w-20 h-20 bg-gradient-to-br from-teal-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                      <Bell className="w-10 h-10 text-white" />
+                    </div>
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">
+                      Smart Email Notifications (Optional)
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                      Stay informed without being overwhelmed. All notifications are opt-in and customizable. 
+                      Choose exactly what you want to be notified about—from new needs to upcoming events, 
+                      meal signups, messages, and more. You're always in control.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Final CTA */}
+              <div className="text-center space-y-6 py-8">
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800 dark:text-gray-100">
+                  Ready to Build Your Support Network?
+                </h2>
+                <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+                  Join families who are transforming "let me know if you need anything" 
+                  into lasting, meaningful support.
+                </p>
                 <Button
                   size="lg"
                   onClick={() => (window.location.href = "/api/login")}
-                  className="text-lg px-10 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700"
+                  className="text-lg px-12 py-6 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-105 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700"
                 >
-                  Get Started
+                  Start Your Journey
                 </Button>
-              </div>
-
-              {/* Features Grid with Glassmorphism */}
-              <div className="grid md:grid-cols-2 gap-6 mt-20 text-left">
-                {/* Feature 1: Needs Board */}
-                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
-                  <div className="bg-gradient-to-br from-teal-500 to-teal-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Heart className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Needs Board</h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Transform vague offers of help into concrete actions. Supporters can claim
-                    meals, rides, errands, and more.
-                  </p>
-                </div>
-
-                {/* Feature 2: Shared Calendar */}
-                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Calendar className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Shared Calendar</h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Keep everyone informed about important events and milestones. Support doesn't
-                    fade when the community stays connected.
-                  </p>
-                </div>
-
-                {/* Feature 3: Privacy First */}
-                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <Users className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Privacy First</h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    You control who sees what. Create custom groups and set visibility for every
-                    item you share.
-                  </p>
-                </div>
-
-                {/* Feature 4: Gentle Reminders */}
-                <div className="group backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl p-6 border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-102 cursor-pointer">
-                  <div className="bg-gradient-to-br from-pink-500 to-pink-600 w-14 h-14 rounded-xl flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300">
-                    <MessageCircle className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3 text-gray-800 dark:text-gray-100">Gentle Reminders</h3>
-                  <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                    Automated touchpoints help supporters stay present over time, without
-                    overwhelming anyone.
-                  </p>
-                </div>
               </div>
             </div>
           </main>
