@@ -59,7 +59,7 @@ export default function Home() {
               <div className="text-center space-y-8">
                 <div className="space-y-6">
                   {/* Enhanced Quote with better typography */}
-                  <p className="text-3xl md:text-4xl lg:text-5xl font-normal text-gray-700 dark:text-gray-300 mb-4 leading-relaxed" style={{ fontFamily: 'Allura, cursive' }}>
+                  <p className="text-4xl md:text-5xl lg:text-6xl font-normal text-gray-700 dark:text-gray-300 mb-4 leading-relaxed" style={{ fontFamily: 'Tangerine, cursive' }}>
                     "Carry each other's burdens, and in this way you will fulfill the law of Christ"
                   </p>
                   <p className="text-xl text-gray-600 dark:text-gray-400 font-medium">
