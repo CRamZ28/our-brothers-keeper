@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { MessageSquare, Pin, Plus } from "lucide-react";
+import { Image, MessageSquare, Pin, Plus, Upload, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -36,6 +36,9 @@ export default function Messages() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [pinned, setPinned] = useState(false);
+  const [mediaFiles, setMediaFiles] = useState<File[]>([]);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [mediaUrls, setMediaUrls] = useState<string[]>([]);
 
   const createAnnouncementMutation = trpc.messages.createAnnouncement.useMutation({
     onSuccess: () => {
@@ -63,9 +66,65 @@ export default function Messages() {
     setTitle("");
     setBody("");
     setPinned(false);
+    setMediaFiles([]);
+    setMediaUrls([]);
   };
 
-  const handleCreateAnnouncement = () => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      return isImage || isVideo;
+    });
+
+    if (validFiles.length !== files.length) {
+      toast.error("Only image and video files are allowed");
+    }
+
+    setMediaFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const removeMediaFile = (index: number) => {
+    setMediaFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadMediaFiles = async (): Promise<string[]> => {
+    if (mediaFiles.length === 0) return [];
+
+    setUploadingMedia(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (const file of mediaFiles) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        const data = await response.json();
+        uploadedUrls.push(data.url);
+      }
+
+      setMediaUrls(uploadedUrls);
+      return uploadedUrls;
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload some files');
+      return [];
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
+
+  const handleCreateAnnouncement = async () => {
     if (!title.trim()) {
       toast.error("Please enter a title");
       return;
@@ -75,10 +134,14 @@ export default function Messages() {
       return;
     }
 
+    // Upload media files first if any
+    const uploadedUrls = await uploadMediaFiles();
+
     createAnnouncementMutation.mutate({
       title,
       body,
       pinned,
+      mediaUrls: uploadedUrls.length > 0 ? uploadedUrls : undefined,
     });
   };
 
@@ -145,6 +208,48 @@ export default function Messages() {
                       rows={5}
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label>Photos & Videos</Label>
+                    <div className="space-y-2">
+                      <Input
+                        type="file"
+                        accept="image/*,video/*"
+                        multiple
+                        onChange={handleFileSelect}
+                        className="cursor-pointer"
+                      />
+                      {mediaFiles.length > 0 && (
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {mediaFiles.map((file, index) => (
+                            <div key={index} className="relative group">
+                              <div className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
+                                {file.type.startsWith('image/') ? (
+                                  <img
+                                    src={URL.createObjectURL(file)}
+                                    alt={file.name}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                                    <Upload className="w-8 h-8 text-gray-400" />
+                                    <p className="text-xs text-gray-500 ml-2">{file.name}</p>
+                                  </div>
+                                )}
+                              </div>
+                              <Button
+                                variant="destructive"
+                                size="sm"
+                                className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={() => removeMediaFile(index)}
+                              >
+                                <X className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <div className="flex items-center justify-between p-3 border rounded-lg">
                     <div className="space-y-1">
                       <Label htmlFor="pinned" className="font-medium">
@@ -167,9 +272,9 @@ export default function Messages() {
                   </Button>
                   <Button
                     onClick={handleCreateAnnouncement}
-                    disabled={createAnnouncementMutation.isPending}
+                    disabled={createAnnouncementMutation.isPending || uploadingMedia}
                   >
-                    {createAnnouncementMutation.isPending ? "Posting..." : "Post Announcement"}
+                    {uploadingMedia ? "Uploading..." : createAnnouncementMutation.isPending ? "Posting..." : "Post Announcement"}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -216,6 +321,30 @@ export default function Messages() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm whitespace-pre-wrap">{announcement.body}</p>
+                    {announcement.mediaUrls && announcement.mediaUrls.length > 0 && (
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        {announcement.mediaUrls.map((url: string, index: number) => {
+                          const isVideo = url.includes('.mp4') || url.includes('.mov') || url.includes('.webm');
+                          return (
+                            <div key={index} className="rounded-lg overflow-hidden">
+                              {isVideo ? (
+                                <video
+                                  src={url}
+                                  controls
+                                  className="w-full h-auto"
+                                />
+                              ) : (
+                                <img
+                                  src={url}
+                                  alt={`Attachment ${index + 1}`}
+                                  className="w-full h-auto object-cover"
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -267,6 +396,30 @@ export default function Messages() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-sm whitespace-pre-wrap">{announcement.body}</p>
+                    {announcement.mediaUrls && announcement.mediaUrls.length > 0 && (
+                      <div className="grid grid-cols-2 gap-2 mt-4">
+                        {announcement.mediaUrls.map((url: string, index: number) => {
+                          const isVideo = url.includes('.mp4') || url.includes('.mov') || url.includes('.webm');
+                          return (
+                            <div key={index} className="rounded-lg overflow-hidden">
+                              {isVideo ? (
+                                <video
+                                  src={url}
+                                  controls
+                                  className="w-full h-auto"
+                                />
+                              ) : (
+                                <img
+                                  src={url}
+                                  alt={`Attachment ${index + 1}`}
+                                  className="w-full h-auto object-cover"
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               ))}

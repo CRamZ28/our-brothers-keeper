@@ -295,6 +295,7 @@ export const announcements = pgTable("announcements", {
   createdBy: varchar("created_by").notNull(),
   visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
   visibilityGroupIds: integer("visibility_group_ids").array(),
+  mediaUrls: text("media_urls").array(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({

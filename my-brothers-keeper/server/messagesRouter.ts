@@ -36,6 +36,7 @@ export const messagesRouter = router({
           .enum(["private", "all_supporters", "group", "role"])
           .default("all_supporters"),
         visibilityGroupIds: z.array(z.number()).optional(),
+        mediaUrls: z.array(z.string()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -60,6 +61,7 @@ export const messagesRouter = router({
         createdBy: ctx.user.id,
         visibilityScope: input.visibilityScope,
         visibilityGroupIds: input.visibilityGroupIds || null,
+        mediaUrls: input.mediaUrls || null,
       });
 
       await db.createAuditLog({
