@@ -77,36 +77,58 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* Family-Focused Welcome Section */}
-          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-6 md:p-8">
-            <div className="grid md:grid-cols-2 gap-6 items-start">
-              {/* Left: Family Focus */}
-              <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
-                  {household.name}
-                </h1>
-                <p className="text-gray-600 text-sm md:text-base mb-3">
+          {/* Family Showcase - Centered Hero Section */}
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-8 md:p-12">
+            <div className="max-w-4xl mx-auto">
+              {/* Optional Family Photo */}
+              {household.photoUrl && (
+                <div className="flex justify-center mb-6">
+                  <img 
+                    src={household.photoUrl} 
+                    alt={household.name}
+                    className="w-32 h-32 md:w-40 md:h-40 rounded-2xl object-cover shadow-lg border-4 border-white/60"
+                  />
+                </div>
+              )}
+              
+              {/* Family Name - Large & Centered */}
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+                {household.name}
+              </h1>
+              
+              {/* Optional Description */}
+              {household.description && (
+                <p className="text-center text-gray-600 text-base md:text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
+                  {household.description}
+                </p>
+              )}
+              
+              {/* Mission Subtitle */}
+              {!household.description && (
+                <p className="text-center text-gray-600 text-sm md:text-base mb-6">
                   Your community's rally point for coordinated support
                 </p>
-                <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <span className="text-gray-500">
-                    {user?.name?.split(" ")[0] || "You"}
-                  </span>
-                  <span className="text-gray-400">·</span>
-                  <span className="px-2 py-0.5 bg-[#B08CA7]/10 border border-[#B08CA7]/20 rounded text-gray-700 capitalize">
-                    {user?.role}
-                  </span>
-                  <span className="text-gray-400">·</span>
-                  <span className="text-gray-500">
-                    {getGreeting()}
-                  </span>
-                </div>
+              )}
+              
+              {/* User Context - Subtle and Centered */}
+              <div className="flex flex-wrap items-center justify-center gap-2 text-sm mb-8">
+                <span className="text-gray-500">
+                  {user?.name?.split(" ")[0] || "You"}
+                </span>
+                <span className="text-gray-400">·</span>
+                <span className="px-2 py-0.5 bg-[#B08CA7]/10 border border-[#B08CA7]/20 rounded text-gray-700 capitalize">
+                  {user?.role}
+                </span>
+                <span className="text-gray-400">·</span>
+                <span className="text-gray-500">
+                  {getGreeting()}
+                </span>
               </div>
               
-              {/* Right: Community Progress */}
+              {/* Community Progress - Full Width */}
               {completionRate > 0 && (
-                <div className="bg-white/50 rounded-xl p-4 border border-white/60">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="bg-white/50 rounded-xl p-5 border border-white/60 max-w-2xl mx-auto">
+                  <div className="flex items-center justify-between mb-3">
                     <span className="text-sm font-medium text-gray-600 flex items-center gap-1.5">
                       <TrendingUp className="w-4 h-4 text-[#6BC4B8]" />
                       Community Momentum
