@@ -5,7 +5,8 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 
 ## User Preferences
 - **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
-- **Logo**: Custom wooden cross with "OBK" in teal (stored at `client/public/obk-logo.png`)
+- **Logo**: Professional teal cross held by caring hands (stored at `client/public/obk-logo.png`) - w-16 h-16 size across the app
+- **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
@@ -94,6 +95,11 @@ Key database tables for new features:
   - **Flexible Admin Control** section explaining primary can handle everything themselves or delegate to admins
   - Email notifications callout and final call-to-action
   - Improved content hierarchy and user education for new visitors
+  - **Pinyon Script** font for Galatians 6:2 scripture verse (closest free alternative to Bible Script)
+- **Logo Updates:**
+  - Updated to new professional logo: teal cross held by caring hands
+  - Increased logo size across app from w-10 h-10 to w-16 h-16 for better visibility
+  - Applied consistently in landing page header and dialog components
 - **Media Upload for Announcements:**
   - Added support for uploading images and videos to announcements/messages
   - Multi-file upload with preview thumbnails
