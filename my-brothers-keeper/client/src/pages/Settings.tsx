@@ -112,12 +112,11 @@ export default function Settings() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Gradient orbs */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 -left-4 w-96 h-96 bg-gradient-to-br from-teal-400/30 to-blue-500/30 rounded-full blur-3xl animate-pulse-slow"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-blue-400/30 to-purple-500/30 rounded-full blur-3xl animate-pulse-slow delay-1000"></div>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
 
         <div className="relative p-8 space-y-8">
           {/* Header */}

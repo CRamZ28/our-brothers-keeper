@@ -73,7 +73,7 @@ export default function DashboardLayout({
                 <img
                   src={APP_LOGO}
                   alt={APP_TITLE}
-                  className="h-20 w-20 rounded-xl object-cover shadow"
+                  className="h-16 w-16 rounded-xl object-cover shadow"
                 />
               </div>
             </div>
