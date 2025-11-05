@@ -98,8 +98,14 @@ Key database tables for new features:
   - **Pinyon Script** font for Galatians 6:2 scripture verse (closest free alternative to Bible Script)
 - **Logo Updates:**
   - Updated to new professional logo: teal cross held by caring hands
-  - Increased logo size across app from w-10 h-10 to w-16 h-16 for better visibility
-  - Applied consistently in landing page header and dialog components
+  - Increased logo size across entire app to w-16 h-16 for consistency (including DashboardLayout and all dialogs)
+  - Applied uniformly in landing page header, authenticated views, and dialog components
+- **UI Consistency (Glassmorphism Design):**
+  - Applied landing page glassmorphism design across ALL authenticated pages (Dashboard, Needs, Calendar, MealTrain, Messages, Updates, People, Settings)
+  - Implemented consistent animated gradient orbs with proper animations (`animate-blob` with staggered delays: 0ms, 2000ms, 4000ms)
+  - Standardized gradient backgrounds: `bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50`
+  - Unified orb styling: w-72 h-72, `mix-blend-multiply dark:mix-blend-soft-light`, 20% opacity
+  - Professional, cohesive user experience across entire application
 - **Media Upload for Announcements:**
   - Added support for uploading images and videos to announcements/messages
   - Multi-file upload with preview thumbnails
