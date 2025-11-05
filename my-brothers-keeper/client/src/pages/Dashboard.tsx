@@ -98,8 +98,8 @@ export default function Dashboard() {
                 </div>
               )}
               
-              {/* Family Name - Large & Centered with Enhanced Gradient */}
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4 bg-gradient-to-r from-[#6BC4B8] via-[#5A9FD4] to-[#B08CA7] bg-clip-text text-transparent drop-shadow-sm">
+              {/* Family Name - Large & Centered in Teal */}
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4 text-[#6BC4B8] drop-shadow-sm">
                 {household.name}
               </h1>
               
