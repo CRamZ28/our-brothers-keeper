@@ -77,23 +77,28 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* Welcome Section - Elegant Glassmorphism */}
+          {/* Family-Focused Welcome Section */}
           <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-6 md:p-8">
             <div className="grid md:grid-cols-2 gap-6 items-start">
-              {/* Left: Greeting */}
+              {/* Left: Family Focus */}
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">
-                  {getGreeting()}
-                </p>
-                <h1 className="text-2xl md:text-3xl font-semibold mb-3 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
-                  Welcome back, {user?.name?.split(" ")[0] || "there"}
+                <h1 className="text-3xl md:text-4xl font-bold mb-2 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+                  {household.name}
                 </h1>
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="px-3 py-1 bg-[#6BC4B8]/10 border border-[#6BC4B8]/20 rounded-full text-sm text-gray-700">
-                    {household.name}
+                <p className="text-gray-600 text-sm md:text-base mb-3">
+                  Your community's rally point for coordinated support
+                </p>
+                <div className="flex flex-wrap items-center gap-2 text-sm">
+                  <span className="text-gray-500">
+                    {user?.name?.split(" ")[0] || "You"}
                   </span>
-                  <span className="px-3 py-1 bg-[#B08CA7]/10 border border-[#B08CA7]/20 rounded-full text-sm text-gray-700 capitalize">
+                  <span className="text-gray-400">·</span>
+                  <span className="px-2 py-0.5 bg-[#B08CA7]/10 border border-[#B08CA7]/20 rounded text-gray-700 capitalize">
                     {user?.role}
+                  </span>
+                  <span className="text-gray-400">·</span>
+                  <span className="text-gray-500">
+                    {getGreeting()}
                   </span>
                 </div>
               </div>
@@ -104,7 +109,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium text-gray-600 flex items-center gap-1.5">
                       <TrendingUp className="w-4 h-4 text-[#6BC4B8]" />
-                      Community Progress
+                      Community Momentum
                     </span>
                     <span className="text-lg font-semibold bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
                       {completionRate}%

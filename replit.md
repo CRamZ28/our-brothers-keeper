@@ -89,14 +89,17 @@ Key database tables for new features:
 - `meal_trains`: Extended with `days_ahead_open`, `availability_start_date`, `availability_end_date`
 
 ## Recent Updates (November 2025)
-- **Dashboard Redesign (Elegant Glassmorphism):**
-  - Completely redesigned hero welcome section with frosted glass panel (bg-white/70, backdrop-blur-md)
-  - Replaced bold teal gradient and bright colors with refined, calming aesthetic
+- **Dashboard Redesign (Family-Focused & Elegant):**
+  - **Family-First Messaging**: Main headline is now the family/household name (not individual user)
+  - Mission-focused subtitle: "Your community's rally point for coordinated support"
+  - User context demoted to subtle metadata line (name · role · greeting)
+  - "Community Momentum" replaces "Community Progress" to emphasize collective action
+  - Frosted glass panel design (bg-white/70, backdrop-blur-md) with refined, calming aesthetic
   - Subtle gradient text using brand colors (teal → mauve purple)
-  - Translucent badge chips with soft borders instead of bright purple pills
+  - Translucent badge chips with soft borders
   - Slim progress bar with brand gradient
   - Compact horizontal stat pills (icon + number + label inline)
-  - Subtle hover states matching glassmorphism theme throughout app
+  - Subtle hover states matching glassmorphism theme
 - **Enhanced Landing Page (Production-Ready):**
   - Comprehensive feature showcase explaining all 6 core features with detailed capabilities
   - "Why OBK?" section highlighting three key value propositions
