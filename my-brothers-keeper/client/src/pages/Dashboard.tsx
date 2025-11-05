@@ -77,104 +77,92 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* Hero Welcome Card - TEAL GRADIENT */}
-          <Card className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-400 to-teal-500 border-0 shadow-2xl p-8 text-white backdrop-blur-md">
-            <div className="relative z-10">
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <p className="text-sm font-medium text-white/80 mb-2 uppercase tracking-wide">
-                    {getGreeting()}
-                  </p>
-                  <h1 className="text-4xl md:text-5xl font-bold mb-3 drop-shadow-lg">
-                    Welcome back, {user?.name?.split(" ")[0] || "there"}!
-                  </h1>
-                  <p className="text-white/90 text-lg flex items-center gap-2">
-                    <span className="px-3 py-1 bg-gradient-to-r from-purple-300 to-purple-400 rounded-full text-sm font-semibold text-white shadow-lg">
-                      {household.name}
-                    </span>
-                    <span className="px-3 py-1 bg-gradient-to-r from-purple-300 to-purple-400 rounded-full text-sm capitalize font-semibold text-white shadow-lg">
-                      {user?.role}
-                    </span>
-                  </p>
-                </div>
-                <div className="hidden md:flex w-24 h-24 rounded-3xl bg-white/20 backdrop-blur-sm items-center justify-center shadow-xl transform rotate-6 hover:rotate-0 transition-transform">
-                  <span className="text-5xl">👋</span>
+          {/* Welcome Section - Elegant Glassmorphism */}
+          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-6 md:p-8">
+            <div className="grid md:grid-cols-2 gap-6 items-start">
+              {/* Left: Greeting */}
+              <div>
+                <p className="text-sm font-medium text-gray-500 mb-1">
+                  {getGreeting()}
+                </p>
+                <h1 className="text-2xl md:text-3xl font-semibold mb-3 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+                  Welcome back, {user?.name?.split(" ")[0] || "there"}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="px-3 py-1 bg-[#6BC4B8]/10 border border-[#6BC4B8]/20 rounded-full text-sm text-gray-700">
+                    {household.name}
+                  </span>
+                  <span className="px-3 py-1 bg-[#B08CA7]/10 border border-[#B08CA7]/20 rounded-full text-sm text-gray-700 capitalize">
+                    {user?.role}
+                  </span>
                 </div>
               </div>
               
+              {/* Right: Community Progress */}
               {completionRate > 0 && (
-                <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 shadow-lg">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-base font-semibold flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5" />
+                <div className="bg-white/50 rounded-xl p-4 border border-white/60">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-600 flex items-center gap-1.5">
+                      <TrendingUp className="w-4 h-4 text-[#6BC4B8]" />
                       Community Progress
                     </span>
-                    <span className="text-2xl font-bold">{completionRate}%</span>
+                    <span className="text-lg font-semibold bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+                      {completionRate}%
+                    </span>
                   </div>
-                  <div className="h-3 bg-white/20 rounded-full overflow-hidden shadow-inner">
+                  <div className="h-2 bg-gray-200/50 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-white rounded-full transition-all duration-700 shadow-lg"
+                      className="h-full bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] rounded-full transition-all duration-700"
                       style={{ width: `${completionRate}%` }}
                     />
                   </div>
                 </div>
               )}
             </div>
-            
-            {/* 3D Depth Decorative Elements */}
-            <div className="absolute -top-20 -right-20 w-60 h-60 bg-teal-300/30 rounded-full blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-teal-600/30 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 right-1/4 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
-          </Card>
+          </div>
 
-          {/* Stats Cards - Continuous Vertical Gradient Flow */}
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Card 1 - Start of Gradient (Very Light) - Links to People */}
+          {/* Stats - Compact Pills */}
+          <div className="grid grid-cols-3 gap-3">
             <Link href="/people">
-              <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-md">
-                      <Users className="w-5 h-5 text-teal-700" />
-                    </div>
+              <div className="group bg-white/60 backdrop-blur-sm rounded-xl border border-white/40 p-3 hover:bg-white/80 hover:border-[#6BC4B8]/30 hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center flex-shrink-0">
+                    <Users className="w-4 h-4 text-[#6BC4B8]" />
                   </div>
-                  <div className="text-3xl font-bold mb-1">{activeUsers.length}</div>
-                  <div className="text-xs text-teal-800 font-medium">Active Supporters</div>
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-teal-300/20 rounded-full blur-xl" />
-                </CardContent>
-              </Card>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-800">{activeUsers.length}</div>
+                    <div className="text-xs text-gray-600">Active Supporters</div>
+                  </div>
+                </div>
+              </div>
             </Link>
 
-            {/* Card 2 - Peak of Gradient (Darkest Teal) - Links to Needs */}
             <Link href="/needs">
-              <Card className="relative overflow-hidden rounded-2xl border-0 bg-gradient-to-b from-teal-400 via-teal-500 to-teal-400 text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer backdrop-blur-md">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-md">
-                      <Heart className="w-5 h-5 text-white" />
-                    </div>
+              <div className="group bg-white/60 backdrop-blur-sm rounded-xl border border-white/40 p-3 hover:bg-white/80 hover:border-[#6BC4B8]/30 hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center flex-shrink-0">
+                    <Heart className="w-4 h-4 text-[#6BC4B8]" />
                   </div>
-                  <div className="text-3xl font-bold mb-1">{openNeeds.length}</div>
-                  <div className="text-xs text-white/90 font-medium">Open Needs</div>
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-xl" />
-                </CardContent>
-              </Card>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-800">{openNeeds.length}</div>
+                    <div className="text-xs text-gray-600">Open Needs</div>
+                  </div>
+                </div>
+              </div>
             </Link>
 
-            {/* Card 3 - End of Gradient (Back to Light) - Links to Calendar */}
             <Link href="/calendar">
-              <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-md">
-                      <Calendar className="w-5 h-5 text-teal-700" />
-                    </div>
+              <div className="group bg-white/60 backdrop-blur-sm rounded-xl border border-white/40 p-3 hover:bg-white/80 hover:border-[#6BC4B8]/30 hover:shadow-md transition-all cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center flex-shrink-0">
+                    <Calendar className="w-4 h-4 text-[#6BC4B8]" />
                   </div>
-                  <div className="text-3xl font-bold mb-1">{upcomingEvents.length}</div>
-                  <div className="text-xs text-teal-800 font-medium">Upcoming Events</div>
-                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-teal-300/20 rounded-full blur-xl" />
-                </CardContent>
-              </Card>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-800">{upcomingEvents.length}</div>
+                    <div className="text-xs text-gray-600">Upcoming Events</div>
+                  </div>
+                </div>
+              </div>
             </Link>
           </div>
 
