@@ -90,8 +90,8 @@ export default function Home() {
                 </h2>
                 <div className="grid md:grid-cols-3 gap-8">
                   <div className="text-center space-y-3">
-                    <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #6BC4B8)' }}>
-                      <Heart className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #6BC4B8)' }}>
+                      <Heart className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Turn Words Into Action</h3>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -100,8 +100,8 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="text-center space-y-3">
-                    <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
-                      <Calendar className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #6BC4B8, #B08CA7)' }}>
+                      <Calendar className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Sustained Support</h3>
                     <p className="text-gray-600 dark:text-gray-400">
@@ -110,8 +110,8 @@ export default function Home() {
                     </p>
                   </div>
                   <div className="text-center space-y-3">
-                    <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #B08CA7, #B08CA7)' }}>
-                      <Shield className="w-8 h-8 text-white" />
+                    <div className="w-12 h-12 mx-auto rounded-full flex items-center justify-center shadow-lg" style={{ background: 'linear-gradient(to bottom right, #B08CA7, #B08CA7)' }}>
+                      <Shield className="w-6 h-6 text-white" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">Privacy & Control</h3>
                     <p className="text-gray-600 dark:text-gray-400">
