@@ -172,10 +172,14 @@ function DashboardLayoutContent({
       <div className="relative" ref={sidebarRef}>
         <Sidebar
           collapsible="icon"
-          className="border-r-0"
+          className="border-r-0 bg-gradient-to-b from-[#6BC4B8]/5 via-blue-50/50 to-[#B08CA7]/5 relative overflow-hidden"
           disableTransition={isResizing}
         >
-          <SidebarHeader className="h-16 justify-center">
+          {/* Decorative gradient orbs for sidebar */}
+          <div className="absolute top-20 -left-10 w-32 h-32 bg-gradient-to-br from-[#6BC4B8]/20 to-transparent rounded-full blur-2xl pointer-events-none" />
+          <div className="absolute bottom-40 -right-10 w-32 h-32 bg-gradient-to-br from-[#B08CA7]/20 to-transparent rounded-full blur-2xl pointer-events-none" />
+          
+          <SidebarHeader className="h-16 justify-center relative z-10">
             <div className="flex items-center gap-3 pl-2 group-data-[collapsible=icon]:px-0 transition-all w-full">
               {isCollapsed ? (
                 <div className="relative h-8 w-8 shrink-0 group">
@@ -214,7 +218,7 @@ function DashboardLayoutContent({
             </div>
           </SidebarHeader>
 
-          <SidebarContent className="gap-0">
+          <SidebarContent className="gap-0 relative z-10">
             <SidebarMenu className="px-2 py-1">
               {menuItems
                 .filter(item => !item.adminOnly || user?.role === "admin")
@@ -226,10 +230,14 @@ function DashboardLayoutContent({
                         isActive={isActive}
                         onClick={() => setLocation(item.path)}
                         tooltip={item.label}
-                        className={`h-10 transition-all font-normal`}
+                        className={`h-10 transition-all font-normal ${
+                          isActive 
+                            ? "bg-gradient-to-r from-[#6BC4B8]/20 to-[#B08CA7]/20 hover:from-[#6BC4B8]/30 hover:to-[#B08CA7]/30" 
+                            : "hover:bg-gradient-to-r hover:from-[#6BC4B8]/10 hover:to-blue-100/50"
+                        }`}
                       >
                         <item.icon
-                          className={`h-4 w-4 ${isActive ? "text-primary" : ""}`}
+                          className={`h-4 w-4 ${isActive ? "text-[#6BC4B8]" : ""}`}
                         />
                         <span>{item.label}</span>
                       </SidebarMenuButton>
@@ -239,7 +247,7 @@ function DashboardLayoutContent({
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="p-3">
+          <SidebarFooter className="p-3 relative z-10">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
