@@ -77,22 +77,29 @@ export default function Dashboard() {
             </Card>
           )}
 
-          {/* Family Showcase - Centered Hero Section */}
-          <div className="bg-white/70 backdrop-blur-md rounded-2xl border border-white/40 shadow-lg p-8 md:p-12">
-            <div className="max-w-4xl mx-auto">
+          {/* Family Showcase - Centered Hero Section with Vibrant Gradients */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-[#6BC4B8]/20 via-blue-100/30 to-[#B08CA7]/20 backdrop-blur-md rounded-2xl border border-white/60 shadow-xl p-8 md:p-12">
+            {/* Decorative gradient orbs */}
+            <div className="absolute -top-10 -left-10 w-40 h-40 bg-gradient-to-br from-[#6BC4B8]/30 to-transparent rounded-full blur-2xl" />
+            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-br from-[#B08CA7]/30 to-transparent rounded-full blur-2xl" />
+            
+            <div className="relative max-w-4xl mx-auto">
               {/* Optional Family Photo */}
               {household.photoUrl && (
                 <div className="flex justify-center mb-6">
-                  <img 
-                    src={household.photoUrl} 
-                    alt={household.name}
-                    className="w-32 h-32 md:w-40 md:h-40 rounded-2xl object-cover shadow-lg border-4 border-white/60"
-                  />
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#6BC4B8] to-[#B08CA7] rounded-2xl blur-md opacity-40" />
+                    <img 
+                      src={household.photoUrl} 
+                      alt={household.name}
+                      className="relative w-32 h-32 md:w-40 md:h-40 rounded-2xl object-cover shadow-xl border-4 border-white/80"
+                    />
+                  </div>
                 </div>
               )}
               
-              {/* Family Name - Large & Centered */}
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+              {/* Family Name - Large & Centered with Enhanced Gradient */}
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-center mb-4 bg-gradient-to-r from-[#6BC4B8] via-[#5A9FD4] to-[#B08CA7] bg-clip-text text-transparent drop-shadow-sm">
                 {household.name}
               </h1>
               
