@@ -131,48 +131,48 @@ export default function Dashboard() {
           <div className="grid md:grid-cols-3 gap-4">
             {/* Card 1 - Start of Gradient (Very Light) - Links to People */}
             <Link href="/people">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
-                <CardContent className="p-6">
+              <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                      <Users className="w-7 h-7 text-teal-700" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-md">
+                      <Users className="w-5 h-5 text-teal-700" />
                     </div>
                   </div>
-                  <div className="text-5xl font-bold mb-1">{activeUsers.length}</div>
-                  <div className="text-sm text-teal-800 font-medium">Active Supporters</div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
+                  <div className="text-3xl font-bold mb-1">{activeUsers.length}</div>
+                  <div className="text-xs text-teal-800 font-medium">Active Supporters</div>
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-teal-300/20 rounded-full blur-xl" />
                 </CardContent>
               </Card>
             </Link>
 
             {/* Card 2 - Peak of Gradient (Darkest Teal) - Links to Needs */}
             <Link href="/needs">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-gradient-to-b from-teal-400 via-teal-500 to-teal-400 text-white shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer backdrop-blur-md">
-                <CardContent className="p-6">
+              <Card className="relative overflow-hidden rounded-2xl border-0 bg-gradient-to-b from-teal-400 via-teal-500 to-teal-400 text-white shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer backdrop-blur-md">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                      <Heart className="w-7 h-7 text-white" />
+                    <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-md">
+                      <Heart className="w-5 h-5 text-white" />
                     </div>
                   </div>
-                  <div className="text-5xl font-bold mb-1">{openNeeds.length}</div>
-                  <div className="text-sm text-white/90 font-medium">Open Needs</div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                  <div className="text-3xl font-bold mb-1">{openNeeds.length}</div>
+                  <div className="text-xs text-white/90 font-medium">Open Needs</div>
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-white/10 rounded-full blur-xl" />
                 </CardContent>
               </Card>
             </Link>
 
             {/* Card 3 - End of Gradient (Back to Light) - Links to Calendar */}
             <Link href="/calendar">
-              <Card className="relative overflow-hidden rounded-3xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1 cursor-pointer">
-                <CardContent className="p-6">
+              <Card className="relative overflow-hidden rounded-2xl border-0 bg-white/90 backdrop-blur-md text-teal-900 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 cursor-pointer">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                      <Calendar className="w-7 h-7 text-teal-700" />
+                    <div className="w-10 h-10 rounded-xl bg-teal-200/60 backdrop-blur-sm flex items-center justify-center shadow-md">
+                      <Calendar className="w-5 h-5 text-teal-700" />
                     </div>
                   </div>
-                  <div className="text-5xl font-bold mb-1">{upcomingEvents.length}</div>
-                  <div className="text-sm text-teal-800 font-medium">Upcoming Events</div>
-                  <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-teal-300/20 rounded-full blur-2xl" />
+                  <div className="text-3xl font-bold mb-1">{upcomingEvents.length}</div>
+                  <div className="text-xs text-teal-800 font-medium">Upcoming Events</div>
+                  <div className="absolute -bottom-6 -right-6 w-24 h-24 bg-teal-300/20 rounded-full blur-xl" />
                 </CardContent>
               </Card>
             </Link>
