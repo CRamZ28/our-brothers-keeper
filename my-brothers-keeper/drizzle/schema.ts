@@ -96,6 +96,8 @@ export type InsertUser = typeof users.$inferInsert;
 export const households = pgTable("households", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
+  photoUrl: text("photo_url"),
+  description: text("description"),
   primaryUserId: varchar("primary_user_id").notNull(),
   quietMode: boolean("quiet_mode").default(false).notNull(),
   timezone: varchar("timezone", { length: 64 }).default("America/Chicago").notNull(),
