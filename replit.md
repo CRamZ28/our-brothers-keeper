@@ -34,6 +34,19 @@ The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) 
 - **Shared Calendar**: Event scheduling and coordination
 - **Messaging**: Private communication between supporters and family
 - **Updates**: Family news and progress sharing
+- **Memory Wall**: Community collage of memories, stories, encouragement, prayers, and pictures
+  - Color-coded cards by type (memory: blue, story: purple, encouragement: teal, prayer: rose, picture: amber)
+  - Filter functionality to view specific types or all entries
+  - Support for single and multiple image uploads
+  - Beautiful responsive collage layout using CSS columns
+  - Anyone can post; author, admin, or primary can delete
+- **Gift Registry**: Wishlist management with three-stage tracking
+  - Organized into three sections: Needed, Purchased, Received
+  - Priority levels (urgent, normal, low) for items
+  - Optional fields: price, product URL, image, special notes
+  - Track purchaser information
+  - Admin/primary manage registry; supporters can mark items purchased
+  - Family marks items as received
 - **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) with centralized enforcement across all features
 - **Role-Based Access**: Admin, primary, and supporter roles with appropriate permissions
 - **Invitation System**: Secure supporter onboarding
@@ -87,6 +100,8 @@ Key database tables for new features:
 - `meal_train_days`: Tracks which specific days are available for meal signups
 - `groups` & `group_members`: Support custom visibility groups
 - `meal_trains`: Extended with `days_ahead_open`, `availability_start_date`, `availability_end_date`
+- `memory_wall`: Stores memories, stories, encouragement, prayers, and pictures
+- `gift_registry`: Tracks wishlist items with status (needed/purchased/received)
 
 ## Recent Updates (November 2025)
 - **Dashboard Redesign (Family-Focused & Elegant):**
@@ -127,6 +142,18 @@ Key database tables for new features:
   - Optimized performance: Group membership caching eliminates N+1 queries (100 items = 1 DB call)
   - Added 17 automated security tests with full group visibility coverage
   - Created CONTRIBUTING.md with Five-Step Security Pattern documentation
+- **Memory Wall Feature (New):**
+  - Community collage of memories, stories, encouragement, prayers, and pictures
+  - Color-coded cards by type with filter functionality
+  - Support for image uploads (single and multiple)
+  - Beautiful responsive collage layout using CSS columns
+  - Anyone can post; author, admin, or primary can delete
+- **Gift Registry Feature (New):**
+  - Wishlist management with three-stage tracking (needed/purchased/received)
+  - Priority levels (urgent, normal, low) for items
+  - Optional fields: price, product URL, image, special notes
+  - Supporters can mark items as purchased; family marks as received
+  - Admin/primary manage the registry
 - Added meal train day scheduling system with calendar UI
 - Implemented full CRUD for groups on People page
 - Expanded glassmorphism design across all app pages
