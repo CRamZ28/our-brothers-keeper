@@ -60,15 +60,6 @@ const typeConfig = {
     iconBgColor: "bg-pink-200",
     textColor: "text-pink-700",
   },
-  picture: {
-    label: "Picture",
-    icon: Image,
-    color: "#8B5CF6", // Vibrant purple
-    bgColor: "bg-purple-100",
-    borderColor: "border-purple-400",
-    iconBgColor: "bg-purple-200",
-    textColor: "text-purple-700",
-  },
 };
 
 // Seeded random number generator for consistent placement
@@ -189,25 +180,13 @@ export default function MemoryWall() {
 
   const handleSubmit = async () => {
     try {
-      if (selectedType === "picture") {
-        if (imageFiles.length === 0) {
-          toast.error("Please add at least one image");
-          return;
-        }
-      } else {
-        if (!content.trim()) {
-          toast.error("Please enter some content");
-          return;
-        }
+      if (!content.trim() && imageFiles.length === 0) {
+        toast.error("Please enter some content or add at least one image");
+        return;
       }
 
       // Upload images first if any
       const uploadedUrls = await uploadImageFiles();
-
-      if (selectedType === "picture" && uploadedUrls.length === 0) {
-        toast.error("Failed to upload images");
-        return;
-      }
 
       await createMutation.mutateAsync({
         type: selectedType,
@@ -285,22 +264,20 @@ export default function MemoryWall() {
                     </Select>
                   </div>
 
-                  {selectedType !== "picture" && (
-                    <div>
-                      <label className="text-sm font-medium mb-2 block">Content</label>
-                      <Textarea
-                        value={content}
-                        onChange={(e) => setContent(e.target.value)}
-                        placeholder={`Share your ${typeConfig[selectedType].label.toLowerCase()}...`}
-                        rows={6}
-                        className="resize-none"
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Content</label>
+                    <Textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      placeholder={`Share your ${typeConfig[selectedType].label.toLowerCase()}...`}
+                      rows={6}
+                      className="resize-none"
+                    />
+                  </div>
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      Images {selectedType === "picture" ? "(Required)" : "(Optional)"}
+                      Images (Optional)
                     </label>
                     <input
                       type="file"

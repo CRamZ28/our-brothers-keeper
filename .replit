@@ -34,10 +34,6 @@ outputType = "webview"
 localPort = 5000
 externalPort = 80
 
-[[ports]]
-localPort = 35963
-externalPort = 3000
-
 [deployment]
 deploymentTarget = "vm"
 run = ["bash", "-c", "cd my-brothers-keeper && pnpm run start"]
