@@ -12,6 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealTrainDayScheduler } from "@/components/MealTrainDayScheduler";
+import { QuestionDialog } from "@/components/QuestionDialog";
 import { trpc } from "@/lib/trpc";
 import { Calendar as CalendarIcon, List, MapPin, Users, ChefHat, AlertCircle, Settings, X } from "lucide-react";
 import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
@@ -432,13 +433,25 @@ export default function MealTrain() {
                         <ChefHat className="w-12 h-12 mx-auto mb-3 text-primary/50" />
                         <p>No meal deliveries scheduled for this day</p>
                         {capacityInfo.isAvailable && !isPast && (
-                          <Button 
-                            className="mt-4"
-                            onClick={() => openVolunteerDialogWithDate(selectedDayDate)}
-                          >
-                            <Users className="w-4 h-4 mr-2" />
-                            Volunteer for This Day
-                          </Button>
+                          <div className="space-y-2 mt-4">
+                            <Button 
+                              className="w-full"
+                              onClick={() => openVolunteerDialogWithDate(selectedDayDate)}
+                            >
+                              <Users className="w-4 h-4 mr-2" />
+                              Volunteer for This Day
+                            </Button>
+                            <QuestionDialog
+                              context="meal_train"
+                              contextId={mealTrain?.id || 0}
+                              defaultSubject="Question about meal train"
+                              trigger={
+                                <Button variant="outline" size="sm" className="w-full">
+                                  Ask a Question
+                                </Button>
+                              }
+                            />
+                          </div>
                         )}
                       </div>
                     );
@@ -470,7 +483,7 @@ export default function MealTrain() {
                 })()}
               </div>
               <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <Button 
                     variant="outline" 
                     size="sm"
@@ -486,6 +499,7 @@ export default function MealTrain() {
                     const isPast = selectedDayDate < new Date() && !isSameDay(selectedDayDate, new Date());
                     return capacityInfo.isAvailable && !isPast && (
                       <Button 
+                        size="sm"
                         onClick={() => openVolunteerDialogWithDate(selectedDayDate)}
                       >
                         <Users className="w-4 h-4 mr-2" />
@@ -494,6 +508,16 @@ export default function MealTrain() {
                     );
                   })()}
                 </div>
+                <QuestionDialog
+                  context="meal_train"
+                  contextId={mealTrain?.id || 0}
+                  defaultSubject="Question about meal train"
+                  trigger={
+                    <Button variant="outline" size="sm" className="w-full">
+                      Ask a Question
+                    </Button>
+                  }
+                />
               </div>
             </DialogContent>
           </Dialog>

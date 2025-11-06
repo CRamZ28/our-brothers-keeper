@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { UserSelector } from "@/components/UserSelector";
+import { QuestionDialog } from "@/components/QuestionDialog";
 import { trpc } from "@/lib/trpc";
 import {
   Calendar as CalendarIcon,
@@ -699,7 +700,7 @@ export default function Calendar() {
                             <p className="text-sm text-muted-foreground">{event.description}</p>
                           </CardContent>
                         )}
-                        <CardContent className="pt-0">
+                        <CardContent className="pt-0 space-y-2">
                           <div className="flex items-center gap-2">
                             <Button
                               size="sm"
@@ -731,6 +732,16 @@ export default function Calendar() {
                               Can't Go
                             </Button>
                           </div>
+                          <QuestionDialog
+                            context="event"
+                            contextId={event.id}
+                            defaultSubject={`Question about: ${event.title}`}
+                            trigger={
+                              <Button variant="outline" size="sm" className="w-full">
+                                Ask a Question
+                              </Button>
+                            }
+                          />
                         </CardContent>
                       </Card>
                     );

@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { QuestionDialog } from "@/components/QuestionDialog";
 import { trpc } from "@/lib/trpc";
 import {
   AlertCircle,
@@ -1067,7 +1068,7 @@ export default function Needs() {
                           )}
                         </CardContent>
                       )}
-                      <CardFooter>
+                      <CardFooter className="flex-col gap-2">
                         <Button
                           className="w-full"
                           onClick={() => openClaimDialog(need.id)}
@@ -1081,6 +1082,16 @@ export default function Needs() {
                             ? "Filled"
                             : "I Can Help"}
                         </Button>
+                        <QuestionDialog
+                          context="need"
+                          contextId={need.id}
+                          defaultSubject={`Question about: ${need.title}`}
+                          trigger={
+                            <Button variant="outline" size="sm" className="w-full">
+                              Ask a Question
+                            </Button>
+                          }
+                        />
                       </CardFooter>
                     </Card>
                   );
