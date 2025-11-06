@@ -45,6 +45,10 @@ import {
   InsertMealSignup,
   mealTrainDays,
   InsertMealTrainDay,
+  memoryWall,
+  InsertMemoryWallEntry,
+  giftRegistry,
+  InsertGiftRegistryItem,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -1046,5 +1050,185 @@ export async function isMealDayAvailable(mealTrainId: number, date: string) {
     .limit(1);
 
   return result.length > 0;
+}
+
+// ============================================================================
+// Memory Wall Functions
+// ============================================================================
+
+// Create memory wall entry
+export async function createMemoryWallEntry(entry: InsertMemoryWallEntry) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  const result = await db.insert(memoryWall).values(entry).returning();
+  return result[0].id;
+}
+
+// Get memory wall entries with optional type filter
+export async function getMemoryWallEntries(householdId: number, type?: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const conditions = [eq(memoryWall.householdId, householdId)];
+  if (type) {
+    conditions.push(eq(memoryWall.type, type));
+  }
+
+  return await db
+    .select({
+      id: memoryWall.id,
+      householdId: memoryWall.householdId,
+      authorId: memoryWall.authorId,
+      type: memoryWall.type,
+      content: memoryWall.content,
+      imageUrl: memoryWall.imageUrl,
+      imageUrls: memoryWall.imageUrls,
+      createdAt: memoryWall.createdAt,
+      updatedAt: memoryWall.updatedAt,
+      authorName: users.name,
+    })
+    .from(memoryWall)
+    .leftJoin(users, eq(memoryWall.authorId, users.id))
+    .where(and(...conditions))
+    .orderBy(desc(memoryWall.createdAt));
+}
+
+// Get single memory wall entry
+export async function getMemoryWallEntry(entryId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(memoryWall)
+    .where(eq(memoryWall.id, entryId))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+// Delete memory wall entry
+export async function deleteMemoryWallEntry(entryId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  await db.delete(memoryWall).where(eq(memoryWall.id, entryId));
+}
+
+// ============================================================================
+// Gift Registry Functions
+// ============================================================================
+
+// Create gift registry item
+export async function createGiftRegistryItem(item: InsertGiftRegistryItem) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  const result = await db.insert(giftRegistry).values(item).returning();
+  return result[0].id;
+}
+
+// Get all gift registry items for household
+export async function getGiftRegistryItems(householdId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select({
+      id: giftRegistry.id,
+      householdId: giftRegistry.householdId,
+      name: giftRegistry.name,
+      description: giftRegistry.description,
+      url: giftRegistry.url,
+      imageUrl: giftRegistry.imageUrl,
+      price: giftRegistry.price,
+      priority: giftRegistry.priority,
+      status: giftRegistry.status,
+      purchasedBy: giftRegistry.purchasedBy,
+      purchasedAt: giftRegistry.purchasedAt,
+      notes: giftRegistry.notes,
+      createdAt: giftRegistry.createdAt,
+      updatedAt: giftRegistry.updatedAt,
+      purchaserName: users.name,
+    })
+    .from(giftRegistry)
+    .leftJoin(users, eq(giftRegistry.purchasedBy, users.id))
+    .where(eq(giftRegistry.householdId, householdId))
+    .orderBy(
+      desc(sql`CASE WHEN ${giftRegistry.priority} = 'urgent' THEN 1 WHEN ${giftRegistry.priority} = 'normal' THEN 2 ELSE 3 END`),
+      giftRegistry.createdAt
+    );
+}
+
+// Get single gift registry item
+export async function getGiftRegistryItem(itemId: number) {
+  const db = await getDb();
+  if (!db) return null;
+
+  const result = await db
+    .select()
+    .from(giftRegistry)
+    .where(eq(giftRegistry.id, itemId))
+    .limit(1);
+
+  return result[0] || null;
+}
+
+// Update gift registry item
+export async function updateGiftRegistryItem(
+  itemId: number,
+  updates: Partial<InsertGiftRegistryItem>
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  // Filter out undefined values
+  const cleanUpdates = Object.fromEntries(
+    Object.entries(updates).filter(([_, v]) => v !== undefined)
+  ) as Partial<InsertGiftRegistryItem>;
+
+  await db
+    .update(giftRegistry)
+    .set({ ...cleanUpdates, updatedAt: new Date() })
+    .where(eq(giftRegistry.id, itemId));
+}
+
+// Mark gift as purchased
+export async function markGiftPurchased(itemId: number, userId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  await db
+    .update(giftRegistry)
+    .set({
+      status: "purchased",
+      purchasedBy: userId,
+      purchasedAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(giftRegistry.id, itemId));
+}
+
+// Mark gift as received
+export async function markGiftReceived(itemId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  await db
+    .update(giftRegistry)
+    .set({
+      status: "received",
+      updatedAt: new Date(),
+    })
+    .where(eq(giftRegistry.id, itemId));
+}
+
+// Delete gift registry item
+export async function deleteGiftRegistryItem(itemId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  await db.delete(giftRegistry).where(eq(giftRegistry.id, itemId));
 }
 
