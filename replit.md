@@ -35,10 +35,12 @@ The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) 
 - **Messaging**: Private communication between supporters and family
 - **Updates**: Family news and progress sharing
 - **Memory Wall**: Community collage of memories, stories, encouragement, prayers, and pictures
-  - Color-coded cards by type (memory: blue, story: purple, encouragement: teal, prayer: rose, picture: amber)
+  - **Unstructured Random Collage**: Cards with random rotations (-3° to 3°), varied card sizes, and different angles
+  - **Vibrant Color Coding**: memory (vibrant teal), story (vibrant blue), encouragement (vibrant amber), prayer (vibrant pink), picture (vibrant purple)
   - Filter functionality to view specific types or all entries
   - Support for single and multiple image uploads
-  - Beautiful responsive collage layout using CSS columns
+  - Beautiful responsive collage layout using CSS columns with dynamic spacing
+  - **No dates displayed** - focuses on timeless memories rather than chronology
   - Anyone can post; author, admin, or primary can delete
 - **Gift Registry**: Wishlist management with three-stage tracking
   - Organized into three sections: Needed, Purchased, Received

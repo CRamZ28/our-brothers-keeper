@@ -27,48 +27,68 @@ const typeConfig = {
   memory: {
     label: "Memory",
     icon: Heart,
-    color: "#6BC4B8", // Teal
-    bgColor: "bg-[#6BC4B8]/5",
-    borderColor: "border-[#6BC4B8]/30",
-    iconBgColor: "bg-[#6BC4B8]/10",
-    textColor: "text-[#6BC4B8]",
+    color: "#14B8A6", // Vibrant teal
+    bgColor: "bg-teal-100",
+    borderColor: "border-teal-400",
+    iconBgColor: "bg-teal-200",
+    textColor: "text-teal-700",
   },
   story: {
     label: "Story",
     icon: BookOpen,
-    color: "#4F9AA8", // Blue-teal
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
-    iconBgColor: "bg-blue-100",
+    color: "#3B82F6", // Vibrant blue
+    bgColor: "bg-blue-100",
+    borderColor: "border-blue-400",
+    iconBgColor: "bg-blue-200",
     textColor: "text-blue-700",
   },
   encouragement: {
     label: "Encouragement",
     icon: Sparkles,
-    color: "#F59E0B", // Amber
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
-    iconBgColor: "bg-amber-100",
-    textColor: "text-amber-700",
+    color: "#F59E0B", // Vibrant amber
+    bgColor: "bg-amber-100",
+    borderColor: "border-amber-400",
+    iconBgColor: "bg-amber-200",
+    textColor: "text-amber-800",
   },
   prayer: {
     label: "Prayer/Verse",
     icon: MessageSquare,
-    color: "#B08CA7", // Mauve
-    bgColor: "bg-[#B08CA7]/5",
-    borderColor: "border-[#B08CA7]/30",
-    iconBgColor: "bg-[#B08CA7]/10",
-    textColor: "text-[#B08CA7]",
+    color: "#EC4899", // Vibrant pink
+    bgColor: "bg-pink-100",
+    borderColor: "border-pink-400",
+    iconBgColor: "bg-pink-200",
+    textColor: "text-pink-700",
   },
   picture: {
     label: "Picture",
     icon: Image,
-    color: "#8B5CF6", // Purple
-    bgColor: "bg-purple-50",
-    borderColor: "border-purple-200",
-    iconBgColor: "bg-purple-100",
+    color: "#8B5CF6", // Vibrant purple
+    bgColor: "bg-purple-100",
+    borderColor: "border-purple-400",
+    iconBgColor: "bg-purple-200",
     textColor: "text-purple-700",
   },
+};
+
+// Random rotation and size variations for collage effect
+const getCardStyle = (index: number) => {
+  const rotations = [-3, -2, -1, 0, 1, 2, 3];
+  const sizes = ['small', 'medium', 'large'];
+  
+  const rotation = rotations[index % rotations.length];
+  const size = sizes[index % sizes.length];
+  
+  const sizeClasses = {
+    small: 'col-span-1',
+    medium: 'col-span-1 sm:col-span-2',
+    large: 'col-span-1 sm:col-span-2 lg:col-span-3',
+  };
+  
+  return {
+    transform: `rotate(${rotation}deg)`,
+    sizeClass: sizeClasses[size as keyof typeof sizeClasses],
+  };
 };
 
 type EntryType = keyof typeof typeConfig;
@@ -342,56 +362,61 @@ export default function MemoryWall() {
               </CardContent>
             </Card>
           ) : (
-            <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
-              {entries.map((entry) => {
+            <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+              {entries.map((entry, index) => {
                 const config = typeConfig[entry.type as EntryType];
                 const Icon = config.icon;
-                const canDelete =
-                  entry.authorId === user?.id || isPrimaryOrAdmin;
+                const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
+                const cardStyle = getCardStyle(index);
 
                 return (
-                  <Card
+                  <div
                     key={entry.id}
-                    className={`break-inside-avoid border ${config.borderColor} ${config.bgColor} hover:shadow-md transition-all`}
+                    className="break-inside-avoid"
+                    style={{ transform: cardStyle.transform }}
                   >
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-8 h-8 rounded-lg ${config.iconBgColor} flex items-center justify-center`}>
-                            <Icon className={`w-4 h-4 ${config.textColor}`} />
-                          </div>
-                          <div>
-                            <div className={`text-xs font-semibold ${config.textColor}`}>
-                              {config.label}
+                    <Card
+                      className={`border-2 ${config.borderColor} ${config.bgColor} hover:shadow-xl transition-all duration-300 hover:scale-105`}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-2">
+                            <div className={`w-10 h-10 rounded-full ${config.iconBgColor} flex items-center justify-center shadow-sm`}>
+                              <Icon className={`w-5 h-5 ${config.textColor}`} />
                             </div>
-                            <div className="text-xs text-gray-500">{entry.authorName}</div>
+                            <div>
+                              <div className={`text-sm font-bold ${config.textColor}`}>
+                                {config.label}
+                              </div>
+                              <div className="text-xs text-gray-600 font-medium">{entry.authorName}</div>
+                            </div>
                           </div>
+                          {canDelete && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(entry.id)}
+                              className="h-7 w-7 p-0 hover:bg-red-100"
+                            >
+                              <X className="w-4 h-4 text-gray-500 hover:text-red-600" />
+                            </Button>
+                          )}
                         </div>
-                        {canDelete && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(entry.id)}
-                            className="h-6 w-6 p-0"
-                          >
-                            <X className="w-4 h-4 text-gray-400 hover:text-red-500" />
-                          </Button>
+
+                        {entry.imageUrl && (
+                          <img
+                            src={entry.imageUrl}
+                            alt="Memory"
+                            className="w-full rounded-lg mb-3 object-cover shadow-md"
+                            style={{ maxHeight: '300px' }}
+                          />
                         )}
-                      </div>
 
-                      {entry.imageUrl && (
-                        <img
-                          src={entry.imageUrl}
-                          alt="Memory"
-                          className="w-full rounded-lg mb-3 object-cover"
-                        />
-                      )}
-
-                      {entry.imageUrls && entry.imageUrls.length > 0 && (
-                        <div className="grid grid-cols-2 gap-2 mb-3">
-                          {entry.imageUrls.map((url, i) => (
-                            <img
-                              key={i}
+                        {entry.imageUrls && entry.imageUrls.length > 0 && (
+                          <div className="grid grid-cols-2 gap-2 mb-3">
+                            {entry.imageUrls.map((url, i) => (
+                              <img
+                                key={i}
                               src={url}
                               alt={`Memory ${i + 1}`}
                               className="w-full rounded-lg object-cover aspect-square"
@@ -405,16 +430,9 @@ export default function MemoryWall() {
                           {entry.content}
                         </p>
                       )}
-
-                      <div className="mt-3 text-xs text-gray-400">
-                        {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </div>
                     </CardContent>
                   </Card>
+                  </div>
                 );
               })}
             </div>
