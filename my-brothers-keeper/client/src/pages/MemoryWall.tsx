@@ -370,6 +370,16 @@ export default function MemoryWall() {
             </Card>
           ) : (
             <div className="relative w-full overflow-auto rounded-xl bg-gradient-to-br from-gray-50 via-white to-gray-50" style={{ minHeight: '150vh' }}>
+              {/* Background Logo */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <img
+                  src="/obk-logo.png"
+                  alt="Our Brother's Keeper"
+                  className="w-96 h-96 md:w-[500px] md:h-[500px] opacity-[0.06] select-none"
+                  style={{ filter: 'grayscale(20%)' }}
+                />
+              </div>
+
               {entries.map((entry, index) => {
                 const config = typeConfig[entry.type as EntryType];
                 const Icon = config.icon;
