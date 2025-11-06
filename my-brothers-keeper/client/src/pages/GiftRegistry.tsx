@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { QuestionDialog } from "@/components/QuestionDialog";
 import { trpc } from "@/lib/trpc";
 import { AlertCircle, CheckCircle2, ExternalLink, Gift, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useState } from "react";
@@ -430,26 +431,38 @@ export default function GiftRegistry() {
                           </div>
                         )}
 
-                        <div className="flex gap-2">
-                          {item.url && (
+                        <div className="space-y-2">
+                          <div className="flex gap-2">
+                            {item.url && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="flex-1"
+                                onClick={() => window.open(item.url!, "_blank")}
+                              >
+                                <ExternalLink className="w-4 h-4 mr-1" />
+                                View
+                              </Button>
+                            )}
                             <Button
-                              variant="outline"
                               size="sm"
-                              className="flex-1"
-                              onClick={() => window.open(item.url!, "_blank")}
+                              className="flex-1 bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
+                              onClick={() => handleMarkPurchased(item.id)}
                             >
-                              <ExternalLink className="w-4 h-4 mr-1" />
-                              View
+                              <ShoppingBag className="w-4 h-4 mr-1" />
+                              Mark Purchased
                             </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            className="flex-1 bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
-                            onClick={() => handleMarkPurchased(item.id)}
-                          >
-                            <ShoppingBag className="w-4 h-4 mr-1" />
-                            Mark Purchased
-                          </Button>
+                          </div>
+                          <QuestionDialog
+                            context="gift_registry"
+                            contextId={item.id}
+                            defaultSubject={`Question about: ${item.name}`}
+                            trigger={
+                              <Button variant="outline" size="sm" className="w-full">
+                                Ask a Question
+                              </Button>
+                            }
+                          />
                         </div>
 
                         {isPrimaryOrAdmin && (
