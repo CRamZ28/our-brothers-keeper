@@ -376,6 +376,13 @@ export default function GiftRegistry() {
             )}
           </div>
 
+          {/* Coming Soon Banner */}
+          <div className="bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-lg p-4">
+            <p className="text-sm text-gray-700">
+              <span className="font-semibold text-[#14B8A6]">Coming Soon:</span> Add items by pasting product links from Amazon, Target, and more – we'll automatically fill in the details for you!
+            </p>
+          </div>
+
           {/* Needed Items */}
           <div>
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">

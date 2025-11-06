@@ -164,6 +164,7 @@ Key database tables for new features:
   - Optional fields: price, product URL, image, special notes
   - Supporters can mark items as purchased; family marks as received
   - Admin/primary manage the registry
+  - **Coming Soon banner**: Teaser for upcoming product link import feature (Amazon, Target, etc.)
 - Added meal train day scheduling system with calendar UI
 - Implemented full CRUD for groups on People page
 - Expanded glassmorphism design across all app pages
