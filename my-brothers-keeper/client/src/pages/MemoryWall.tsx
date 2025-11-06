@@ -318,7 +318,7 @@ export default function MemoryWall() {
                     <Button
                       onClick={handleSubmit}
                       disabled={createMutation.isPending || uploadingImages}
-                      className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
+                      className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white shadow-md font-semibold"
                     >
                       {uploadingImages ? "Uploading..." : createMutation.isPending ? "Adding..." : "Add to Wall"}
                     </Button>

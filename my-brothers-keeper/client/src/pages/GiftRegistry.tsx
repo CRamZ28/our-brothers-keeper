@@ -359,7 +359,7 @@ export default function GiftRegistry() {
                       <Button
                         onClick={handleSubmit}
                         disabled={createMutation.isPending || updateMutation.isPending || uploadingImage}
-                        className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
+                        className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white shadow-md font-semibold"
                       >
                         {uploadingImage 
                           ? "Uploading..."

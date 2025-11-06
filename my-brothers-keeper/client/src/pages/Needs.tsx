@@ -609,7 +609,11 @@ export default function Needs() {
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleCreateNeed} disabled={createNeedMutation.isPending}>
+                  <Button 
+                    onClick={handleCreateNeed} 
+                    disabled={createNeedMutation.isPending}
+                    className="shadow-md font-semibold"
+                  >
                     {createNeedMutation.isPending ? "Creating..." : "Create Need"}
                   </Button>
                 </DialogFooter>
@@ -778,7 +782,11 @@ export default function Needs() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleUpdateNeed} disabled={updateNeedMutation.isPending}>
+              <Button 
+                onClick={handleUpdateNeed} 
+                disabled={updateNeedMutation.isPending}
+                className="shadow-md font-semibold"
+              >
                 {updateNeedMutation.isPending ? "Updating..." : "Update Need"}
               </Button>
             </DialogFooter>
@@ -815,7 +823,11 @@ export default function Needs() {
               >
                 Cancel
               </Button>
-              <Button onClick={handleClaimNeed} disabled={claimNeedMutation.isPending}>
+              <Button 
+                onClick={handleClaimNeed} 
+                disabled={claimNeedMutation.isPending}
+                className="shadow-md font-semibold"
+              >
                 {claimNeedMutation.isPending ? "Claiming..." : "Claim Need"}
               </Button>
             </DialogFooter>

@@ -108,7 +108,7 @@ export function QuestionDialog({
             <Button
               onClick={handleSubmit}
               disabled={sendQuestionMutation.isPending}
-              className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
+              className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white shadow-md font-semibold"
             >
               {sendQuestionMutation.isPending ? "Sending..." : "Send Question"}
             </Button>
