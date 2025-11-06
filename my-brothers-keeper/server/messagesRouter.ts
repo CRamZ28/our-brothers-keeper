@@ -189,5 +189,78 @@ export const messagesRouter = router({
 
       return { success: true };
     }),
+
+  // Send a question to admins/primary
+  sendQuestion: protectedProcedure
+    .input(
+      z.object({
+        subject: z.string().min(1),
+        message: z.string().min(1),
+        context: z.enum(["need", "event", "meal_train", "gift_registry", "general"]).optional(),
+        contextId: z.number().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Get all admins and primary users
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const adminsAndPrimary = allMembers.filter(
+        (member) => member.role === "admin" || member.role === "primary"
+      );
+
+      if (adminsAndPrimary.length === 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "No admins or primary users found",
+        });
+      }
+
+      // Create announcement that's only visible to specific users (admins/primary)
+      const customUserIds = adminsAndPrimary.map((user) => user.id);
+      
+      // Build the title with context information
+      let title = input.subject;
+      if (input.context && input.contextId) {
+        title = `Question about ${input.context} #${input.contextId}: ${input.subject}`;
+      }
+
+      const announcementId = await db.createAnnouncement({
+        householdId: ctx.user.householdId,
+        title,
+        body: `From: ${ctx.user.firstName || "Unknown"} ${ctx.user.lastName || ""}\n\n${input.message}`,
+        pinned: false,
+        createdBy: ctx.user.id,
+        visibilityScope: "custom",
+        visibilityGroupIds: null,
+        customUserIds,
+        mediaUrls: null,
+      });
+
+      await db.createAuditLog({
+        householdId: ctx.user.householdId,
+        actorUserId: ctx.user.id,
+        action: "question_sent",
+        targetType: "announcement",
+        targetId: announcementId,
+        metadata: { context: input.context, contextId: input.contextId },
+      });
+
+      // Send notification to admins and primary
+      notifyVisibleUsers(
+        ctx.user.householdId,
+        customUserIds,
+        "new_message",
+        {
+          announcementBody: input.message.substring(0, 150) + (input.message.length > 150 ? "..." : ""),
+          actionUrl: `${process.env.REPL_HOME || ""}/messages`,
+        },
+        [ctx.user.id]
+      ).catch((err: Error) => console.error("Failed to send question notification:", err));
+
+      return { success: true, announcementId };
+    }),
 });
 
