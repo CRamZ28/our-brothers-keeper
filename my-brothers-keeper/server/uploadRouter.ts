@@ -1,6 +1,8 @@
 import { Router } from "express";
 import multer from "multer";
 import { ObjectStorageService } from "./objectStorage";
+import fs from "fs/promises";
+import path from "path";
 
 const router = Router();
 
@@ -20,6 +22,10 @@ const upload = multer({
   },
 });
 
+// Ensure uploads directory exists
+const uploadsDir = path.join(process.cwd(), "uploads");
+fs.mkdir(uploadsDir, { recursive: true }).catch(console.error);
+
 // Upload endpoint
 router.post("/upload", upload.single("file"), async (req, res) => {
   try {
@@ -27,16 +33,32 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file provided" });
     }
 
-    const objectStorageService = new ObjectStorageService();
-    
-    // Upload to Replit Object Storage
-    const url = await objectStorageService.uploadFile(
-      req.file.buffer,
-      req.file.originalname,
-      req.file.mimetype
-    );
+    // Try object storage first if configured
+    if (process.env.PRIVATE_OBJECT_DIR) {
+      try {
+        const objectStorageService = new ObjectStorageService();
+        const url = await objectStorageService.uploadFile(
+          req.file.buffer,
+          req.file.originalname,
+          req.file.mimetype
+        );
+        return res.json({ url, filename: req.file.originalname });
+      } catch (storageError) {
+        console.warn("Object storage failed, falling back to local storage:", storageError);
+      }
+    }
 
-    res.json({ url, filename: req.file.originalname });
+    // Fallback to local file storage
+    const timestamp = Date.now();
+    const filename = `${timestamp}-${req.file.originalname}`;
+    const filepath = path.join(uploadsDir, filename);
+    
+    await fs.writeFile(filepath, req.file.buffer);
+    
+    // Return URL pointing to our static file endpoint
+    const url = `/uploads/${filename}`;
+    
+    res.json({ url, filename });
   } catch (error) {
     console.error("Upload error:", error);
     res.status(500).json({ error: "Failed to upload file" });

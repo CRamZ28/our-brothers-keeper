@@ -40,6 +40,9 @@ async function startServer() {
   // File upload endpoint
   app.use("/api", uploadRouter);
   
+  // Serve uploaded files
+  app.use("/uploads", express.static("uploads"));
+  
   // tRPC API
   app.use(
     "/api/trpc",
