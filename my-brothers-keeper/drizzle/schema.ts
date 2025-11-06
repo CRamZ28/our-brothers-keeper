@@ -56,6 +56,8 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "invite_sent"
 ]);
 export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
+export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer", "picture"]);
+export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
 
 /**
  * Core user table backing auth flow.
@@ -610,3 +612,52 @@ export const notificationLogs = pgTable("notification_logs", {
 
 export type NotificationLog = typeof notificationLogs.$inferSelect;
 export type InsertNotificationLog = typeof notificationLogs.$inferInsert;
+
+/**
+ * Memory Wall - Collage of memories, stories, encouragement, prayers, and pictures
+ */
+export const memoryWall = pgTable("memory_wall", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  authorId: varchar("author_id").notNull(),
+  type: memoryWallTypeEnum("type").notNull(),
+  content: text("content"), // Text content for memory, story, encouragement, prayer
+  imageUrl: text("image_url"), // For pictures
+  imageUrls: jsonb("image_urls").$type<string[]>(), // Multiple images support
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  householdIdx: index("memory_wall_household_idx").on(table.householdId),
+  typeIdx: index("memory_wall_type_idx").on(table.type),
+  createdAtIdx: index("memory_wall_created_at_idx").on(table.createdAt),
+}));
+
+export type MemoryWallEntry = typeof memoryWall.$inferSelect;
+export type InsertMemoryWallEntry = typeof memoryWall.$inferInsert;
+
+/**
+ * Gift Registry - Wishlist for family to share needed items
+ */
+export const giftRegistry = pgTable("gift_registry", {
+  id: serial("id").primaryKey(),
+  householdId: integer("household_id").notNull(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  url: text("url"), // Link to product page
+  imageUrl: text("image_url"),
+  price: varchar("price", { length: 100 }), // Store as string to handle various currencies/formats
+  priority: priorityEnum("priority").default("normal").notNull(),
+  status: giftStatusEnum("status").default("needed").notNull(),
+  purchasedBy: varchar("purchased_by"), // User ID who purchased
+  purchasedAt: timestamp("purchased_at"),
+  notes: text("notes"), // Special instructions
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  householdIdx: index("gift_registry_household_idx").on(table.householdId),
+  statusIdx: index("gift_registry_status_idx").on(table.status),
+  priorityIdx: index("gift_registry_priority_idx").on(table.priority),
+}));
+
+export type GiftRegistryItem = typeof giftRegistry.$inferSelect;
+export type InsertGiftRegistryItem = typeof giftRegistry.$inferInsert;
