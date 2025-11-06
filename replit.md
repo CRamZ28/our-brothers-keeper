@@ -35,11 +35,17 @@ The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) 
 - **Messaging**: Private communication between supporters and family
 - **Updates**: Family news and progress sharing
 - **Memory Wall**: Community collage of memories, stories, encouragement, prayers, and pictures
-  - **Unstructured Random Collage**: Cards with random rotations (-3° to 3°), varied card sizes, and different angles
+  - **True Vision Board Aesthetic**: Pinterest/scrapbook style with completely overlapping cards at random angles
+  - **Extreme Random Rotations**: -18° to +18° for organic, handmade look
+  - **Absolute Positioning**: Seeded random placement across canvas (5-85% range to avoid edges)
+  - **Varied Sizes**: 5 size tiers (tiny 70%, small 85%, medium 100%, large 120%, extra-large 140%)
+  - **Decorative Tape Elements**: Random semi-transparent yellow tape on ~50% of cards
   - **Vibrant Color Coding**: memory (vibrant teal), story (vibrant blue), encouragement (vibrant amber), prayer (vibrant pink), picture (vibrant purple)
+  - **Deterministic Layout**: Same entry always appears in same position (seeded random based on entry ID)
+  - **Z-index Layering**: Random stacking order with hover boost to bring cards to front
+  - **Scrollable Canvas**: 150vh virtual canvas for expansive collage feeling
   - Filter functionality to view specific types or all entries
   - Support for single and multiple image uploads
-  - Beautiful responsive collage layout using CSS columns with dynamic spacing
   - **No dates displayed** - focuses on timeless memories rather than chronology
   - Anyone can post; author, admin, or primary can delete
 - **Gift Registry**: Wishlist management with three-stage tracking

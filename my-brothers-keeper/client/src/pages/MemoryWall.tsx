@@ -71,23 +71,53 @@ const typeConfig = {
   },
 };
 
-// Random rotation and size variations for collage effect
-const getCardStyle = (index: number) => {
-  const rotations = [-3, -2, -1, 0, 1, 2, 3];
-  const sizes = ['small', 'medium', 'large'];
+// Seeded random number generator for consistent placement
+const seededRandom = (seed: number) => {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+};
+
+// Generate deterministic collage layout for a card
+const getCollageLayout = (entryId: number, index: number) => {
+  const seed = entryId + index * 1000;
   
-  const rotation = rotations[index % rotations.length];
-  const size = sizes[index % sizes.length];
+  // Random position (0-100%)
+  const top = seededRandom(seed) * 80 + 5; // 5-85% to avoid edges
+  const left = seededRandom(seed + 1) * 80 + 5; // 5-85% to avoid edges
   
-  const sizeClasses = {
-    small: 'col-span-1',
-    medium: 'col-span-1 sm:col-span-2',
-    large: 'col-span-1 sm:col-span-2 lg:col-span-3',
-  };
+  // Random rotation (-18° to +18°)
+  const rotation = seededRandom(seed + 2) * 36 - 18;
+  
+  // Random size (multiple tiers) - using vw for responsiveness
+  const sizeRand = seededRandom(seed + 3);
+  let sizeClass = 'w-[280px] max-w-[85vw]'; // Responsive width
+  
+  if (sizeRand < 0.15) {
+    // Tiny (15%)
+    sizeClass = 'w-[200px] max-w-[60vw]';
+  } else if (sizeRand < 0.4) {
+    // Small (25%)
+    sizeClass = 'w-[240px] max-w-[70vw]';
+  } else if (sizeRand < 0.75) {
+    // Medium (35%)
+    sizeClass = 'w-[280px] max-w-[85vw]';
+  } else if (sizeRand < 0.92) {
+    // Large (17%)
+    sizeClass = 'w-[340px] max-w-[90vw]';
+  } else {
+    // Extra large (8%)
+    sizeClass = 'w-[400px] max-w-[95vw]';
+  }
+  
+  // Random z-index for layering (but boost on hover/focus)
+  const zIndex = Math.floor(seededRandom(seed + 4) * 50) + 1;
   
   return {
-    transform: `rotate(${rotation}deg)`,
-    sizeClass: sizeClasses[size as keyof typeof sizeClasses],
+    top: `${top}%`,
+    left: `${left}%`,
+    transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+    sizeClass,
+    zIndex,
   };
 };
 
@@ -350,7 +380,7 @@ export default function MemoryWall() {
             })}
           </div>
 
-          {/* Collage Grid */}
+          {/* Collage Canvas */}
           {!entries || entries.length === 0 ? (
             <Card className="border border-gray-200 bg-white">
               <CardContent className="p-12 text-center">
@@ -362,23 +392,49 @@ export default function MemoryWall() {
               </CardContent>
             </Card>
           ) : (
-            <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-4 space-y-4">
+            <div className="relative w-full overflow-auto rounded-xl bg-gradient-to-br from-gray-50 via-white to-gray-50" style={{ minHeight: '150vh' }}>
               {entries.map((entry, index) => {
                 const config = typeConfig[entry.type as EntryType];
                 const Icon = config.icon;
                 const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
-                const cardStyle = getCardStyle(index);
+                const layout = getCollageLayout(entry.id, index);
 
+                // Add tape decoration randomly
+                const hasTape = seededRandom(entry.id + 999) > 0.5;
+                const tapeRotation = seededRandom(entry.id + 888) * 10 - 5;
+                
                 return (
-                  <div
+                  <Card
                     key={entry.id}
-                    className="break-inside-avoid"
-                    style={{ transform: cardStyle.transform }}
+                    tabIndex={0}
+                    className={`absolute border-2 ${config.borderColor} ${config.bgColor} ${layout.sizeClass} transition-all duration-300 hover:shadow-2xl focus:shadow-2xl cursor-pointer group shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${config.color.replace('#', '')}`}
+                    style={{
+                      top: layout.top,
+                      left: layout.left,
+                      transform: layout.transform,
+                      zIndex: layout.zIndex,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.zIndex = '100';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.zIndex = String(layout.zIndex);
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.zIndex = '100';
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.zIndex = String(layout.zIndex);
+                    }}
                   >
-                    <Card
-                      className={`border-2 ${config.borderColor} ${config.bgColor} hover:shadow-xl transition-all duration-300 hover:scale-105`}
-                    >
-                      <CardContent className="p-4">
+                    {/* Decorative Tape */}
+                    {hasTape && (
+                      <div 
+                        className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-yellow-200/60 backdrop-blur-sm border-t border-b border-yellow-300/40 shadow-sm"
+                        style={{ transform: `translateX(-50%) rotate(${tapeRotation}deg)` }}
+                      />
+                    )}
+                    <CardContent className="p-4">
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex items-center gap-2">
                             <div className={`w-10 h-10 rounded-full ${config.iconBgColor} flex items-center justify-center shadow-sm`}>
@@ -432,7 +488,6 @@ export default function MemoryWall() {
                       )}
                     </CardContent>
                   </Card>
-                  </div>
                 );
               })}
             </div>
