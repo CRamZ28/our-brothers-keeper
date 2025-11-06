@@ -79,8 +79,8 @@ export default function MemoryWall() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedType, setSelectedType] = useState<EntryType>("memory");
   const [content, setContent] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [uploadingImages, setUploadingImages] = useState(false);
 
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
@@ -88,10 +88,59 @@ export default function MemoryWall() {
   const createMutation = trpc.memoryWall.create.useMutation();
   const deleteMutation = trpc.memoryWall.delete.useMutation();
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => file.type.startsWith('image/'));
+
+    if (validFiles.length !== files.length) {
+      toast.error("Only image files are allowed");
+    }
+
+    setImageFiles(prev => [...prev, ...validFiles]);
+  };
+
+  const removeImageFile = (index: number) => {
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadImageFiles = async (): Promise<string[]> => {
+    if (imageFiles.length === 0) return [];
+
+    setUploadingImages(true);
+    const uploadedUrls: string[] = [];
+
+    try {
+      for (const file of imageFiles) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to upload ${file.name}`);
+        }
+
+        const data = await response.json();
+        uploadedUrls.push(data.url);
+      }
+
+      return uploadedUrls;
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload some files');
+      return [];
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
   const handleSubmit = async () => {
     try {
       if (selectedType === "picture") {
-        if (!imageUrl && imageUrls.length === 0) {
+        if (imageFiles.length === 0) {
           toast.error("Please add at least one image");
           return;
         }
@@ -102,17 +151,24 @@ export default function MemoryWall() {
         }
       }
 
+      // Upload images first if any
+      const uploadedUrls = await uploadImageFiles();
+
+      if (selectedType === "picture" && uploadedUrls.length === 0) {
+        toast.error("Failed to upload images");
+        return;
+      }
+
       await createMutation.mutateAsync({
         type: selectedType,
         content: content.trim() || undefined,
-        imageUrl: imageUrl || undefined,
-        imageUrls: imageUrls.length > 0 ? imageUrls : undefined,
+        imageUrl: uploadedUrls.length > 0 ? uploadedUrls[0] : undefined,
+        imageUrls: uploadedUrls.length > 1 ? uploadedUrls : undefined,
       });
 
       toast.success(`${typeConfig[selectedType].label} added to memory wall!`);
       setContent("");
-      setImageUrl("");
-      setImageUrls([]);
+      setImageFiles([]);
       setDialogOpen(false);
       refetch();
     } catch (error: any) {
@@ -194,33 +250,50 @@ export default function MemoryWall() {
 
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      Image {selectedType === "picture" ? "(Required)" : "(Optional)"}
+                      Images {selectedType === "picture" ? "(Required)" : "(Optional)"}
                     </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="Image URL"
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-md"
-                      />
-                      <Button variant="outline" size="sm">
-                        <Upload className="w-4 h-4 mr-2" />
-                        Upload
-                      </Button>
-                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleFileSelect}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer"
+                    />
+                    {imageFiles.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2 mt-3">
+                        {imageFiles.map((file, index) => (
+                          <div key={index} className="relative group">
+                            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                              <img
+                                src={URL.createObjectURL(file)}
+                                alt={file.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={() => removeImageFile(index)}
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                    <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={uploadingImages || createMutation.isPending}>
                       Cancel
                     </Button>
                     <Button
                       onClick={handleSubmit}
-                      disabled={createMutation.isPending}
+                      disabled={createMutation.isPending || uploadingImages}
                       className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
                     >
-                      {createMutation.isPending ? "Adding..." : "Add to Wall"}
+                      {uploadingImages ? "Uploading..." : createMutation.isPending ? "Adding..." : "Add to Wall"}
                     </Button>
                   </div>
                 </div>

@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { AlertCircle, CheckCircle2, ExternalLink, Gift, Plus, ShoppingBag, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, ExternalLink, Gift, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -54,7 +54,8 @@ export default function GiftRegistry() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [url, setUrl] = useState("");
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [price, setPrice] = useState("");
   const [priority, setPriority] = useState<"low" | "normal" | "urgent">("normal");
   const [notes, setNotes] = useState("");
@@ -72,7 +73,7 @@ export default function GiftRegistry() {
     setName("");
     setDescription("");
     setUrl("");
-    setImageUrl("");
+    setImageFile(null);
     setPrice("");
     setPriority("normal");
     setNotes("");
@@ -84,11 +85,49 @@ export default function GiftRegistry() {
     setName(item.name);
     setDescription(item.description || "");
     setUrl(item.url || "");
-    setImageUrl(item.imageUrl || "");
+    setImageFile(null);
     setPrice(item.price || "");
     setPriority(item.priority);
     setNotes(item.notes || "");
     setDialogOpen(true);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      setImageFile(file);
+    } else if (file) {
+      toast.error("Only image files are allowed");
+    }
+  };
+
+  const uploadImageFile = async (): Promise<string | undefined> => {
+    if (!imageFile) return undefined;
+
+    setUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', imageFile);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to upload ${imageFile.name}`);
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error('Failed to upload image');
+      return undefined;
+    } finally {
+      setUploadingImage(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -98,13 +137,16 @@ export default function GiftRegistry() {
     }
 
     try {
+      // Upload image if present
+      const uploadedImageUrl = await uploadImageFile();
+
       if (editingItem) {
         await updateMutation.mutateAsync({
           itemId: editingItem.id,
           name,
           description: description.trim() || undefined,
           url: url.trim() || undefined,
-          imageUrl: imageUrl.trim() || undefined,
+          imageUrl: uploadedImageUrl || editingItem.imageUrl || undefined,
           price: price.trim() || undefined,
           priority,
           notes: notes.trim() || undefined,
@@ -115,7 +157,7 @@ export default function GiftRegistry() {
           name,
           description: description.trim() || undefined,
           url: url.trim() || undefined,
-          imageUrl: imageUrl.trim() || undefined,
+          imageUrl: uploadedImageUrl || undefined,
           price: price.trim() || undefined,
           priority,
           notes: notes.trim() || undefined,
@@ -255,12 +297,42 @@ export default function GiftRegistry() {
                     </div>
 
                     <div>
-                      <label className="text-sm font-medium mb-2 block">Image URL (Optional)</label>
-                      <Input
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="https://..."
+                      <label className="text-sm font-medium mb-2 block">Product Image (Optional)</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer"
                       />
+                      {imageFile && (
+                        <div className="mt-3 relative group inline-block">
+                          <div className="w-32 h-32 bg-gray-100 rounded-lg overflow-hidden">
+                            <img
+                              src={URL.createObjectURL(imageFile)}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => setImageFile(null)}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      )}
+                      {editingItem?.imageUrl && !imageFile && (
+                        <div className="mt-3">
+                          <img
+                            src={editingItem.imageUrl}
+                            alt="Current"
+                            className="w-32 h-32 object-cover rounded-lg"
+                          />
+                          <p className="text-xs text-gray-500 mt-1">Current image</p>
+                        </div>
+                      )}
                     </div>
 
                     <div>
@@ -285,10 +357,12 @@ export default function GiftRegistry() {
                       </Button>
                       <Button
                         onClick={handleSubmit}
-                        disabled={createMutation.isPending || updateMutation.isPending}
+                        disabled={createMutation.isPending || updateMutation.isPending || uploadingImage}
                         className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white"
                       >
-                        {(createMutation.isPending || updateMutation.isPending)
+                        {uploadingImage 
+                          ? "Uploading..."
+                          : (createMutation.isPending || updateMutation.isPending)
                           ? "Saving..."
                           : editingItem
                           ? "Update Item"
@@ -362,7 +436,7 @@ export default function GiftRegistry() {
                               variant="outline"
                               size="sm"
                               className="flex-1"
-                              onClick={() => window.open(item.url, "_blank")}
+                              onClick={() => window.open(item.url!, "_blank")}
                             >
                               <ExternalLink className="w-4 h-4 mr-1" />
                               View
