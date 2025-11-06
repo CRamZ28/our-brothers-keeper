@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/sidebar";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
-import { Calendar, Heart, Home, LayoutDashboard, LogOut, MessageCircle, PanelLeft, Settings, Users, Shield, Sparkles, ChefHat } from "lucide-react";
+import { Calendar, Heart, Home, LayoutDashboard, LogOut, MessageCircle, PanelLeft, Settings, Users, Shield, Sparkles, ChefHat, Gift, BookHeart } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
@@ -34,6 +34,8 @@ const menuItems = [
   { icon: Calendar, label: "Calendar", path: "/calendar" },
   { icon: ChefHat, label: "Meal Train", path: "/meal-train" },
   { icon: MessageCircle, label: "Messages", path: "/messages" },
+  { icon: BookHeart, label: "Memory Wall", path: "/memory-wall" },
+  { icon: Gift, label: "Gift Registry", path: "/gift-registry" },
   { icon: Users, label: "People", path: "/people" },
   { icon: Shield, label: "Admin Tools", path: "/admin", adminOnly: true },
   { icon: Settings, label: "Settings", path: "/settings" },

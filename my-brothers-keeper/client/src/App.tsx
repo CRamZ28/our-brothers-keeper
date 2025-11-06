@@ -16,6 +16,8 @@ import AcceptInvite from "./pages/AcceptInvite";
 import AdminTools from "./pages/AdminTools";
 import Updates from "./pages/Updates";
 import MealTrain from "./pages/MealTrain";
+import MemoryWall from "./pages/MemoryWall";
+import GiftRegistry from "./pages/GiftRegistry";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -29,6 +31,8 @@ function Router() {
       <Route path={"/calendar"} component={Calendar} />
       <Route path={"/messages"} component={Messages} />
       <Route path={"/meal-train"} component={MealTrain} />
+      <Route path={"/memory-wall"} component={MemoryWall} />
+      <Route path={"/gift-registry"} component={GiftRegistry} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/invite/:token"} component={AcceptInvite} />
       <Route path={"/admin"} component={AdminTools} />
