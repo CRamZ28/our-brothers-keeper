@@ -1,4 +1,5 @@
 import "dotenv/config";
+import * as Sentry from "@sentry/node";
 import express from "express";
 import { createServer } from "http";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
@@ -9,9 +10,26 @@ import { serveStatic, setupVite } from "./vite";
 import uploadRouter from "../uploadRouter";
 import { getUser } from "../db";
 
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    integrations: [
+      Sentry.httpIntegration(),
+      Sentry.expressIntegration(),
+    ],
+    tracesSampleRate: 1.0,
+    environment: process.env.NODE_ENV || "development",
+  });
+}
+
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Sentry request handler must be the first middleware
+  if (process.env.SENTRY_DSN) {
+    app.use(Sentry.expressErrorHandler());
+  }
   
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
