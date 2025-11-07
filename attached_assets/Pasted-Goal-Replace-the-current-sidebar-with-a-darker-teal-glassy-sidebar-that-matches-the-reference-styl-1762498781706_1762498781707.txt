@@ -1,0 +1,151 @@
+Goal: Replace the current sidebar with a darker teal, glassy sidebar that matches the reference style (rounded container, soft inner stroke, subtle texture, glowing logo, frosted “active” pill). Use Tailwind utilities only (no MUI/Chakra/Bootstrap). Keep the exact pages I already have.
+
+0) Prereqs
+
+Stack: React + Vite + Tailwind.
+
+Colors: teal #6BC4B8, mauve #B08CA7, silver #E9EEF2.
+
+Icons: lucide-react (install if missing).
+
+1) Create component
+
+Create src/components/Sidebar.tsx exporting a default <Sidebar />.
+
+Behavior
+
+Fixed left, full height.
+
+88px top padding (room for logo), vertical navigation with 12–16px gaps.
+
+“Active” route shows a frosted, rounded pill behind icon+label.
+
+Hover = slight lift + soft mauve glow.
+
+Structure
+
+Outer container (rounded, dark-teal gradient, subtle inner stroke + drop shadow).
+
+Top logo area with OBK logo centered and a gentle teal glow.
+
+Nav list with items for my existing pages in this order:
+
+Dashboard
+
+Needs
+
+Calendar
+
+Meal Train
+
+Messages
+
+Updates
+
+Memory Wall
+
+Gift Registry
+
+People
+
+Settings
+
+Bottom section: small “Register” link (or the profile chip if already present).
+
+Icons (lucide-react)
+
+Home, Heart, Calendar, Utensils/ChefHat (closest match), MessageCircle, Megaphone, Image (for Memory Wall), Gift, Users, Settings.
+
+2) Visual spec (Tailwind classes to apply)
+
+Outer sidebar container
+
+w-72 min-h-screen sticky top-0
+
+rounded-[28px]
+
+bg-[linear-gradient(180deg,#0a6f66_0%,#1d8f86_45%,#2ea79d_100%)]
+
+shadow-[0_10px_40px_rgba(0,0,0,.25)]
+
+border border-white/10
+
+relative overflow-hidden
+
+Subtle inner highlight & edge
+
+Add a pseudo/extra div: absolute inset-0 pointer-events-none with
+ring-1 ring-white/10 and a top light: bg-gradient-to-b from-white/5 to-transparent
+
+Logo block (top, centered)
+
+Wrap: flex flex-col items-center pt-8 pb-6
+
+Image: /obk-logo.svg (or current) w-16 h-16 drop-shadow-[0_0_18px_rgba(107,196,184,.45)]
+
+Title text: 2 lines, text-white font-semibold leading-tight text-center
+
+Nav list container
+
+px-4 space-y-2
+
+Nav item (default state)
+
+Row: flex items-center gap-3 px-4 py-2 rounded-xl text-white/90 hover:text-white transition
+
+Icon chip (behind the icon): h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center
+
+Text: text-base font-medium tracking-tight
+
+Active item pill
+
+Add a background wrapper behind the item:
+absolute inset-y-0 left-2 right-2 rounded-xl bg-white/12 backdrop-blur-md border border-white/20
+
+Foreground row sits relative above that pill.
+
+On hover of active: subtle mauve glow: hover:ring-8 hover:ring-[#B08CA7]/18
+
+Hover/Focus effects for every item
+
+hover:-translate-y-[1px]
+
+hover:shadow-[0_8px_24px_rgba(0,0,0,.18)]
+
+focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#B08CA7]/25 rounded-xl
+
+Bottom utility row (Register/Profile)
+
+mt-auto px-4 pb-5
+
+Row style matches default item but smaller type.
+
+3) Routing integration
+
+Use current routing. If react-router-dom is present, wire NavLink to compute “active” state (adds active pill).
+
+If not using a router, accept an activePath prop and apply the active pill when label matches.
+
+4) Replace old sidebar
+
+Import <Sidebar /> into your main layout (e.g., src/App.tsx or src/layouts/DashboardLayout.tsx).
+
+Layout grid: sidebar fixed, content scrollable.
+
+Wrapper: grid grid-cols-[18rem_1fr] on desktop, collapsible on mobile (icon-only rail).
+
+5) Acceptance criteria
+
+Darker teal gradient panel with rounded corners and soft inner stroke.
+
+Centered glowing OBK logo at top.
+
+Each nav item shows icon + label; active item has frosted pill background.
+
+Hover glow uses mauve (#B08CA7) subtly.
+
+No extra CSS frameworks; Tailwind utilities only.
+
+Pages preserved: Dashboard, Needs, Calendar, Meal Train, Messages, Updates, Memory Wall, Gift Registry, People, Settings.
+
+Visual parity with the reference screenshot.
