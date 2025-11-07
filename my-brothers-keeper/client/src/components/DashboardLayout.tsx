@@ -113,15 +113,13 @@ function DashboardLayoutContent({
 }: DashboardLayoutContentProps) {
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
-  const { state } = useSidebar();
-  const isCollapsed = state === "collapsed";
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
 
   return (
     <>
       <Sidebar
-        collapsible="icon"
+        collapsible="none"
         className="border-r-0"
         style={{
           backgroundColor: '#6BC4B8',
@@ -134,11 +132,9 @@ function DashboardLayoutContent({
               className="h-16 w-16 rounded-xl object-cover shadow-lg"
               alt="Logo"
             />
-            {!isCollapsed && (
-              <h1 className="text-white font-bold text-lg text-center leading-tight">
-                {APP_TITLE}
-              </h1>
-            )}
+            <h1 className="text-white font-bold text-lg text-center leading-tight">
+              {APP_TITLE}
+            </h1>
           </div>
         </SidebarHeader>
 
@@ -170,13 +166,13 @@ function DashboardLayoutContent({
         <SidebarFooter className="p-4 border-t-0 mt-auto">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <button className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/10 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50">
+              <button className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/10 transition-colors w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50">
                 <Avatar className="h-9 w-9 border-2 border-white/30 shrink-0">
                   <AvatarFallback className="text-xs font-medium bg-white/20 text-white">
                     {user?.name?.charAt(0).toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
+                <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate leading-none text-white">
                     {user?.name || "-"}
                   </p>
