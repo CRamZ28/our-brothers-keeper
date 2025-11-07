@@ -35,12 +35,17 @@ const navigationItems = [
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  onNavigate?: () => void;
+}
+
+export default function Sidebar({ onNavigate }: SidebarProps = {}) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
 
   const handleNavigate = (path: string) => {
     setLocation(path);
+    onNavigate?.();
   };
 
   return (

@@ -1,174 +1,53 @@
 # Our Brother's Keeper - Replit Project Documentation
 
 ## Overview
-Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times.
+Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times by simplifying community support and communication for families in need.
 
 ## User Preferences
 - **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
+- **Sidebar**: Darker teal gradient with rounded container, glowing logo, frosted active pill, mauve hover effects
 - **Logo**: Professional teal cross held by caring hands (stored at `client/public/obk-logo.png`) - w-16 h-16 size across the app
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
 
-### Key Features
-- **Meal Train Management**: Full-featured meal coordination with:
-  - **Day Scheduling System**: Admin/primary can select specific days for meals with quick options (Select All, Weekdays Only, Weekends Only, Clear All)
-  - **Days Ahead Control**: Limit how far in advance supporters can sign up (configurable 1-365 days)
-  - **Availability Enforcement**: Volunteers cannot sign up for unavailable days
-  - Calendar and list views for meal signups
-  - Daily capacity controls (1-10 volunteers per day)
-  - Per-day capacity overrides for specific dates
-  - Dual-layer privacy controls (meal train visibility + address visibility)
-  - Dietary preferences (allergies, dislikes, favorite meals)
-  - Special delivery instructions
-  - Volunteer notes and status tracking
-- **Group Management**: Full CRUD operations for organizing supporters
-  - Create custom groups (e.g., Inner Circle, Church Friends)
-  - Edit group names and descriptions
-  - Manage group members with user selector interface
-  - Delete groups with usage warnings
-  - Member count tracking
-  - Used for custom visibility controls on needs, events, and meal trains
-- **Needs Board**: Community support requests with group filtering
-- **Shared Calendar**: Event scheduling and coordination
-- **Messaging**: Private communication between supporters and family
-- **Updates**: Family news and progress sharing
-- **Memory Wall**: Community collage of memories, stories, encouragement, and prayers
-  - **True Vision Board Aesthetic**: Pinterest/scrapbook style with completely overlapping cards at random angles
-  - **Extreme Random Rotations**: -18° to +18° for organic, handmade look
-  - **Absolute Positioning**: Seeded random placement across canvas (5-85% range to avoid edges)
-  - **Varied Sizes**: 5 size tiers (tiny 70%, small 85%, medium 100%, large 120%, extra-large 140%)
-  - **Decorative Tape Elements**: Random semi-transparent yellow tape on ~50% of cards
-  - **Vibrant Color Coding**: memory (vibrant teal), story (vibrant blue), encouragement (vibrant amber), prayer (vibrant pink)
-  - **Deterministic Layout**: Same entry always appears in same position (seeded random based on entry ID)
-  - **Z-index Layering**: Random stacking order with hover/focus boost to bring cards to front
-  - **Scrollable Canvas**: 150vh virtual canvas for expansive collage feeling
-  - **Responsive Design**: Cards scale appropriately on mobile devices with max-width constraints
-  - **Keyboard Accessible**: Tab navigation with focus bringing cards to front
-  - Filter functionality to view specific types or all entries
-  - All entry types support optional image uploads (single and multiple)
-  - **No dates displayed** - focuses on timeless memories rather than chronology
-  - Anyone can post; author, admin, or primary can delete
-- **Gift Registry**: Wishlist management with three-stage tracking
-  - Organized into three sections: Needed, Purchased, Received
-  - Priority levels (urgent, normal, low) for items
-  - Optional fields: price, product URL, image, special notes
-  - Track purchaser information
-  - Admin/primary manage registry; supporters can mark items purchased
-  - Family marks items as received
-- **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) with centralized enforcement across all features
-- **Role-Based Access**: Admin, primary, and supporter roles with appropriate permissions
-- **Invitation System**: Secure supporter onboarding
+### UI/UX Decisions
+The UI/UX features a consistent glassmorphism theme across all pages (Dashboard, Needs, Calendar, MealTrain, Messages, Updates, People, Home). This includes:
+- Gradient backgrounds (teal → blue → purple)
+- Animated gradient orbs
+- Frosted glass cards (`bg-white/90 backdrop-blur-md`)
+- Enhanced shadow effects for a professional and modern aesthetic.
+- A custom-implemented sidebar replacing `shadcn/ui` for full design control, featuring a darker teal gradient, rounded containers, a glowing logo, frosted active pills for active routes, and mauve hover effects.
+- The Dashboard features a modern SaaS aesthetic with semi-transparent cards, a gradient background (from-white via-[#6BC4B8]/20 to-gray-100), and a "Family Hero Card" with gradient text.
+- The Memory Wall has a "True Vision Board Aesthetic" with overlapping, randomly rotated cards, varied sizes, decorative tape elements, and vibrant color coding for different entry types.
 
-### Security & Privacy Architecture
-**PRODUCTION-READY:** Comprehensive visibility filtering with zero information leakage.
+### Technical Implementations & Feature Specifications
+- **Meal Train Management**: Comprehensive meal coordination including:
+    - Day scheduling system with quick selection options.
+    - Configurable "Days Ahead Control" for sign-ups.
+    - Daily capacity controls and per-day overrides.
+    - Dual-layer privacy and dietary preference management.
+- **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
+- **Needs Board**: Community support requests with group filtering.
+- **Shared Calendar**: Event scheduling and coordination.
+- **Messaging**: Private communication and announcements with media upload support.
+- **Updates**: Family news and progress sharing.
+- **Memory Wall**: A community collage for memories, stories, encouragement, and prayers. Features an aesthetic with random rotations, absolute positioning, varied card sizes, decorative tape, and vibrant color coding. Supports image uploads and filtering.
+- **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
+- **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.
+- **Role-Based Access**: Admin, primary, and supporter roles with defined permissions.
+- **Invitation System**: Secure supporter onboarding.
+- **Notification System**: Opt-in email notifications for 11 event types, configurable by users.
 
-**Centralized Visibility System (`server/visibilityHelpers.ts`):**
-- `checkContentVisibility()`: Single-item visibility check for any content type
-- `filterByVisibility()`: Performance-optimized list filtering (caches group membership to eliminate N+1 queries)
-- `checkContentVisibilitySync()`: Internal helper for synchronous filtering with pre-fetched groups
-
-**Five-Step Security Pattern** (enforced across ALL endpoints):
-1. Fetch resource by ID
-2. Return NOT_FOUND if resource doesn't exist
-3. Return NOT_FOUND for cross-household access (never FORBIDDEN)
-4. Check visibility using `filterByVisibility` - return NOT_FOUND if unauthorized
-5. Check permissions - only return FORBIDDEN after visibility confirmed
-
-**Visibility Enforcement:**
-- All list endpoints (`needs.list`, `events.list`, `messages.listAnnouncements`) filter by visibility
-- All get endpoints check household ownership + visibility before returning data
-- All mutation endpoints (update, delete, claim, RSVP) validate visibility before permissions
-- Primary/Admin can always see all content regardless of visibility scope
-
-**Performance Optimization:**
-- Group membership cached per request (1 DB call instead of N for lists)
-- Supports filtering 100+ items with only 1 database query
-
-**Automated Security Tests:**
-- 17 comprehensive tests in `server/__tests__/visibility-security.test.ts`
-- Full coverage: group visibility (with mocks), custom visibility, role restrictions, performance validation
-- Prevents security regressions that could leak private information
-
-**Developer Documentation:**
-- `CONTRIBUTING.md` documents security patterns for future development
-- Includes correct/incorrect examples, common pitfalls, code review checklist
-- Required reading before adding new endpoints
-
-The UI/UX features a consistent glassmorphism theme across all pages (Dashboard, Needs, Calendar, MealTrain, Messages, Updates, People, Home), incorporating gradient backgrounds (teal → blue → purple), animated gradient orbs, frosted glass cards (`bg-white/90 backdrop-blur-md`), and enhanced shadow effects for a professional and modern aesthetic.
-
-## Database Management
-This project uses Drizzle ORM's **push workflow** for database schema management:
-- Schema changes are defined in `drizzle/schema.ts`
-- Run `npm run db:push` to apply schema changes directly to the database
-- If push encounters warnings, use `npm run db:push --force` to force the update
-- **Never manually write SQL migrations** - the push workflow handles all schema updates
-- Database schema is version-controlled through `drizzle/schema.ts`
-
-Key database tables for new features:
-- `meal_train_days`: Tracks which specific days are available for meal signups
-- `groups` & `group_members`: Support custom visibility groups
-- `meal_trains`: Extended with `days_ahead_open`, `availability_start_date`, `availability_end_date`
-- `memory_wall`: Stores memories, stories, encouragement, prayers, and pictures
-- `gift_registry`: Tracks wishlist items with status (needed/purchased/received)
-
-## Recent Updates (November 2025)
-- **Dashboard & Sidebar Redesign (Modern SaaS Aesthetic - Pinterest Inspired):**
-  - **Complete Visual Overhaul**: Redesigned to match modern glassmorphism/SaaS dashboard aesthetic from user's Pinterest inspiration board
-  - **Teal Sidebar**: Solid #6BC4B8 background with white text, logo at top split across three lines ("Our / Brother's / Keeper"), user profile at bottom
-  - **Semi-Transparent Cards**: Frosted glass effect with varying opacity (bg-white/10 to bg-white/40) and backdrop-blur-xl
-  - **Gradient Background**: Smooth teal/white/silver gradient (from-white via-[#6BC4B8]/20 to-gray-100)
-  - **Family Hero Card**: Large centered card with family name in gradient text (teal → mauve purple), optional photo with circular stats
-  - **Mixed Card Layouts**: Varying card sizes and tints (progress card with mauve tint, quick actions, activity feed)
-  - **Circular Stat Badges**: Three circles in hero card showing Supporters, Open Needs, Events with center badge highlighted
-  - **Clean Typography**: Large numbers, minimal text, professional spacing
-  - **Exact Color Palette**: Teal (#6BC4B8), Mauve Purple (#B08CA7), Silver/White throughout
-  - All functionality preserved (stats, recent activity, quick actions, pending approvals)
-- **Enhanced Landing Page (Production-Ready):**
-  - Comprehensive feature showcase explaining all 6 core features with detailed capabilities
-  - "Why OBK?" section highlighting three key value propositions
-  - **Flexible Admin Control** section explaining primary can handle everything themselves or delegate to admins
-  - Email notifications callout and final call-to-action
-  - Improved content hierarchy and user education for new visitors
-  - **Pinyon Script** font for Galatians 6:2 scripture verse (closest free alternative to Bible Script)
-- **Logo Updates:**
-  - Updated to new professional logo: teal cross held by caring hands
-  - Increased logo size across entire app to w-16 h-16 for consistency (including DashboardLayout and all dialogs)
-  - Applied uniformly in landing page header, authenticated views, and dialog components
-- **UI Consistency (Glassmorphism Design):**
-  - Applied landing page glassmorphism design across ALL authenticated pages (Dashboard, Needs, Calendar, MealTrain, Messages, Updates, People, Settings)
-  - Implemented consistent animated gradient orbs with proper animations (`animate-blob` with staggered delays: 0ms, 2000ms, 4000ms)
-  - Standardized gradient backgrounds: `bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50`
-  - Unified orb styling: w-72 h-72, `mix-blend-multiply dark:mix-blend-soft-light`, 20% opacity
-  - Professional, cohesive user experience across entire application
-- **Media Upload for Announcements:**
-  - Added support for uploading images and videos to announcements/messages
-  - Multi-file upload with preview thumbnails
-  - Automatic image/video detection and display in announcement cards
-  - 50MB file limit with strict MIME validation for security
-- **Security Enhancements (Production-Ready):**
-  - Implemented comprehensive visibility filtering with zero information leakage
-  - Optimized performance: Group membership caching eliminates N+1 queries (100 items = 1 DB call)
-  - Added 17 automated security tests with full group visibility coverage
-  - Created CONTRIBUTING.md with Five-Step Security Pattern documentation
-- **Memory Wall Feature (New):**
-  - Community collage of memories, stories, encouragement, prayers, and pictures
-  - Color-coded cards by type with filter functionality
-  - Support for image uploads (single and multiple)
-  - Beautiful responsive collage layout using CSS columns
-  - Anyone can post; author, admin, or primary can delete
-- **Gift Registry Feature (New):**
-  - Wishlist management with three-stage tracking (needed/purchased/received)
-  - Priority levels (urgent, normal, low) for items
-  - Optional fields: price, product URL, image, special notes
-  - Supporters can mark items as purchased; family marks as received
-  - Admin/primary manage the registry
-  - **Coming Soon banner**: Teaser for upcoming product link import feature (Amazon, Target, etc.)
-- Added meal train day scheduling system with calendar UI
-- Implemented full CRUD for groups on People page
-- Expanded glassmorphism design across all app pages
-- Created comprehensive recommendations document (RECOMMENDATIONS.md)
+### System Design Choices
+- **Security & Privacy Architecture**: Production-ready with a centralized visibility system (`server/visibilityHelpers.ts`) ensuring zero information leakage.
+    - A "Five-Step Security Pattern" is enforced across all endpoints to validate resource existence, household access, visibility, and permissions.
+    - Visibility enforcement filters all list and get endpoints and validates mutations.
+    - Performance is optimized by caching group membership per request.
+    - 17 automated security tests ensure no regressions.
+    - `CONTRIBUTING.md` documents security patterns for future development.
+- **Database Management**: Uses Drizzle ORM's **push workflow** for schema management. Schema changes are defined in `drizzle/schema.ts` and applied via `npm run db:push`, eliminating manual SQL migrations.
 
 ## External Dependencies
 - **Database**: PostgreSQL (managed by Replit, accessed via Drizzle ORM)
@@ -182,9 +61,3 @@ Key database tables for new features:
 - **API Layer**: tRPC
 - **Package Manager**: pnpm
 - **Runtime**: Node.js
-
-## Notification System
-- **Email Notifications**: Opt-in system using Resend (all notifications default to OFF)
-- **Notification Types**: 11 event types (needs, events, meal trains, messages, announcements, updates, invites)
-- **User Control**: Settings page allows users to toggle each notification type individually
-- **Database Tables**: `notification_preferences`, `notification_logs`, `push_subscriptions` (future use)
