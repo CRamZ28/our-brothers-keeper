@@ -1,9 +1,9 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { Calendar, Heart, MessageCircle, Users, ChefHat, Sparkles, ArrowRight, TrendingUp } from "lucide-react";
+import { Calendar, Heart, Users, ChefHat, MessageCircle, Bell, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Dashboard() {
@@ -18,7 +18,7 @@ export default function Dashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-muted-foreground">Loading household...</p>
+          <p className="text-gray-500">Loading...</p>
         </div>
       </DashboardLayout>
     );
@@ -28,8 +28,8 @@ export default function Dashboard() {
   const activeUsers = users?.filter((u) => u.status === "active") || [];
   const pendingUsers = users?.filter((u) => u.status === "pending") || [];
   
-  // Calculate stats
   const openNeeds = needs?.filter((n) => n.status === "open") || [];
+  const completedNeeds = needs?.filter((n) => n.status === "completed") || [];
   const upcomingEvents = events?.filter((e) => {
     const eventDate = new Date(e.startAt);
     const now = new Date();
@@ -37,238 +37,174 @@ export default function Dashboard() {
     return eventDate >= now && eventDate <= sevenDaysFromNow;
   }) || [];
 
-  // Calculate completion percentage
   const totalNeeds = needs?.length || 0;
-  const completedNeeds = needs?.filter((n) => n.status === "completed").length || 0;
-  const completionRate = totalNeeds > 0 ? Math.round((completedNeeds / totalNeeds) * 100) : 0;
+  const completionRate = totalNeeds > 0 ? Math.round((completedNeeds.length / totalNeeds) * 100) : 0;
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Pending Approvals Alert */}
-          {isPrimaryOrAdmin && pendingUsers.length > 0 && (
-            <Card className="border border-[#B08CA7]/20 bg-white shadow-sm">
-              <CardHeader className="pb-3">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-[#B08CA7]/10 flex items-center justify-center shrink-0">
-                    <Users className="w-6 h-6 text-[#B08CA7]" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <CardTitle className="text-lg">Pending Approvals</CardTitle>
-                    <CardDescription>
-                      {pendingUsers.length} {pendingUsers.length === 1 ? "person" : "people"} waiting for approval
-                    </CardDescription>
+      {/* Clean gradient background with subtle orbs */}
+      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 relative overflow-hidden">
+        {/* Animated gradient orbs */}
+        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
+        <div className="absolute top-0 -right-4 w-72 h-72 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+
+        <div className="relative z-10 p-4 md:p-8">
+          <div className="max-w-7xl mx-auto space-y-6">
+            {/* Pending Approvals Banner */}
+            {isPrimaryOrAdmin && pendingUsers.length > 0 && (
+              <div className="bg-white/70 backdrop-blur-md border border-[#B08CA7]/20 rounded-2xl p-4 shadow-lg">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#B08CA7]/20 flex items-center justify-center">
+                      <Bell className="w-5 h-5 text-[#B08CA7]" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {pendingUsers.length} pending {pendingUsers.length === 1 ? "approval" : "approvals"}
+                      </p>
+                      <p className="text-sm text-gray-600">Review supporter requests</p>
+                    </div>
                   </div>
                   <Link href="/people">
-                    <Button className="bg-[#B08CA7] hover:bg-[#B08CA7]/90 text-white">
-                      Review Now
+                    <Button className="bg-[#B08CA7] hover:bg-[#9A7A91] text-white shadow-md font-semibold">
+                      Review
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
                   </Link>
                 </div>
-              </CardHeader>
-            </Card>
-          )}
+              </div>
+            )}
 
-          {/* Family Showcase - Clean Hero Section */}
-          <Card className="border border-[#6BC4B8]/20 bg-white shadow-sm">
-            <CardContent className="p-6 md:p-10">
-              {/* Optional Family Photo */}
+            {/* Hero Section - Family Centered */}
+            <div className="bg-white/70 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
               {household.photoUrl && (
                 <div className="flex justify-center mb-6">
-                  <img 
-                    src={household.photoUrl} 
-                    alt={household.name}
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-xl object-cover shadow-md border-2 border-[#6BC4B8]/20"
-                  />
+                  <div className="relative">
+                    <img 
+                      src={household.photoUrl} 
+                      alt={household.name}
+                      className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover shadow-xl"
+                    />
+                    <div className="absolute inset-0 rounded-3xl ring-4 ring-[#6BC4B8]/20" />
+                  </div>
                 </div>
               )}
               
-              {/* Family Name - Large & Centered in Teal */}
-              <h1 className="text-3xl md:text-5xl font-bold text-center mb-3 text-[#6BC4B8]">
+              <h1 className="text-5xl md:text-7xl font-bold text-center mb-4 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
                 {household.name}
               </h1>
               
-              {/* Optional Description */}
               {household.description && (
-                <p className="text-center text-gray-600 text-sm md:text-base mb-4 max-w-2xl mx-auto">
+                <p className="text-center text-gray-700 text-base md:text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
                   {household.description}
                 </p>
               )}
               
-              {/* Mission Subtitle */}
-              {!household.description && (
-                <p className="text-center text-gray-600 text-sm mb-4">
-                  Your community's rally point for coordinated support
-                </p>
-              )}
-              
-              {/* User Context - Subtle and Centered */}
-              <div className="flex flex-wrap items-center justify-center gap-2 text-sm mb-6">
-                <span className="text-gray-500">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-sm mb-8">
+                <span className="text-gray-600 font-medium">
                   {user?.name?.split(" ")[0] || "You"}
                 </span>
                 <span className="text-gray-400">·</span>
-                <span className="px-2 py-0.5 bg-[#B08CA7]/10 border border-[#B08CA7]/20 rounded text-gray-700 capitalize">
+                <span className="px-3 py-1 bg-[#B08CA7]/10 rounded-full text-gray-700 capitalize font-medium">
                   {user?.role}
                 </span>
                 <span className="text-gray-400">·</span>
-                <span className="text-gray-500">
+                <span className="text-gray-600">
                   {getGreeting()}
                 </span>
               </div>
-              
-              {/* Community Progress */}
-              {completionRate > 0 && (
-                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 max-w-2xl mx-auto">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-600 flex items-center gap-1.5">
-                      <TrendingUp className="w-4 h-4 text-[#6BC4B8]" />
-                      Community Momentum
-                    </span>
-                    <span className="text-base font-semibold text-[#6BC4B8]">
-                      {completionRate}%
-                    </span>
+            </div>
+
+            {/* Stats Grid - Clean & Minimal */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <Link href="/people">
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/70 transition-all cursor-pointer group">
+                  <div className="w-12 h-12 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center mb-4 group-hover:bg-[#6BC4B8]/20 transition-colors">
+                    <Users className="w-6 h-6 text-[#6BC4B8]" />
                   </div>
-                  <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-[#6BC4B8] rounded-full transition-all duration-700"
-                      style={{ width: `${completionRate}%` }}
-                    />
-                  </div>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">{activeUsers.length}</div>
+                  <div className="text-sm text-gray-600">Supporters</div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </Link>
 
-          {/* Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Link href="/people">
-              <Card className="border border-gray-200 bg-white hover:border-[#6BC4B8]/30 hover:shadow-sm transition-all cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center shrink-0">
-                      <Users className="w-5 h-5 text-[#6BC4B8]" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-2xl font-bold text-gray-800">{activeUsers.length}</div>
-                      <div className="text-xs text-gray-600 truncate">Active Supporters</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link href="/needs">
-              <Card className="border border-gray-200 bg-white hover:border-[#6BC4B8]/30 hover:shadow-sm transition-all cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center shrink-0">
-                      <Heart className="w-5 h-5 text-[#6BC4B8]" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-2xl font-bold text-gray-800">{openNeeds.length}</div>
-                      <div className="text-xs text-gray-600 truncate">Open Needs</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-
-            <Link href="/calendar">
-              <Card className="border border-gray-200 bg-white hover:border-[#6BC4B8]/30 hover:shadow-sm transition-all cursor-pointer">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center shrink-0">
-                      <Calendar className="w-5 h-5 text-[#6BC4B8]" />
-                    </div>
-                    <div className="min-w-0">
-                      <div className="text-2xl font-bold text-gray-800">{upcomingEvents.length}</div>
-                      <div className="text-xs text-gray-600 truncate">Upcoming Events</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          </div>
-
-          {/* Quick Actions */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href="/needs">
-              <Card className="border border-gray-200 bg-white hover:border-[#6BC4B8]/30 hover:shadow-sm transition-all cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="w-12 h-12 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center mb-3 group-hover:bg-[#6BC4B8]/15 transition-colors">
+              <Link href="/needs">
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/70 transition-all cursor-pointer group">
+                  <div className="w-12 h-12 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center mb-4 group-hover:bg-[#6BC4B8]/20 transition-colors">
                     <Heart className="w-6 h-6 text-[#6BC4B8]" />
                   </div>
-                  <CardTitle className="text-base">Needs Board</CardTitle>
-                  <CardDescription className="text-xs">Help requests</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
+                  <div className="text-3xl font-bold text-gray-900 mb-1">{openNeeds.length}</div>
+                  <div className="text-sm text-gray-600">Open Needs</div>
+                </div>
+              </Link>
 
-            <Link href="/meal-train">
-              <Card className="border border-gray-200 bg-white hover:border-[#6BC4B8]/30 hover:shadow-sm transition-all cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="w-12 h-12 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center mb-3 group-hover:bg-[#6BC4B8]/15 transition-colors">
-                    <ChefHat className="w-6 h-6 text-[#6BC4B8]" />
-                  </div>
-                  <CardTitle className="text-base">Meal Train</CardTitle>
-                  <CardDescription className="text-xs">Meal coordination</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-
-            <Link href="/calendar">
-              <Card className="border border-gray-200 bg-white hover:border-[#6BC4B8]/30 hover:shadow-sm transition-all cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="w-12 h-12 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center mb-3 group-hover:bg-[#6BC4B8]/15 transition-colors">
+              <Link href="/calendar">
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/70 transition-all cursor-pointer group">
+                  <div className="w-12 h-12 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center mb-4 group-hover:bg-[#6BC4B8]/20 transition-colors">
                     <Calendar className="w-6 h-6 text-[#6BC4B8]" />
                   </div>
-                  <CardTitle className="text-base">Calendar</CardTitle>
-                  <CardDescription className="text-xs">Upcoming events</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-
-            <Link href="/messages">
-              <Card className="border border-gray-200 bg-white hover:border-[#B08CA7]/30 hover:shadow-sm transition-all cursor-pointer group">
-                <CardHeader className="pb-3">
-                  <div className="w-12 h-12 rounded-lg bg-[#B08CA7]/10 flex items-center justify-center mb-3 group-hover:bg-[#B08CA7]/15 transition-colors">
-                    <MessageCircle className="w-6 h-6 text-[#B08CA7]" />
-                  </div>
-                  <CardTitle className="text-base">Messages</CardTitle>
-                  <CardDescription className="text-xs">Stay connected</CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
-          </div>
-
-          {/* Recent Activity */}
-          <Card className="border border-gray-200 bg-white shadow-sm">
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#6BC4B8]/10 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-[#6BC4B8]" />
+                  <div className="text-3xl font-bold text-gray-900 mb-1">{upcomingEvents.length}</div>
+                  <div className="text-sm text-gray-600">This Week</div>
                 </div>
-                <div>
-                  <CardTitle className="text-lg">Recent Activity</CardTitle>
-                  <CardDescription className="text-sm">Stay updated on what's happening</CardDescription>
+              </Link>
+
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 relative overflow-hidden">
+                <div className="w-12 h-12 rounded-xl bg-[#B08CA7]/10 flex items-center justify-center mb-4">
+                  <Sparkles className="w-6 h-6 text-[#B08CA7]" />
+                </div>
+                <div className="text-3xl font-bold text-gray-900 mb-1">{completionRate}%</div>
+                <div className="text-sm text-gray-600">Complete</div>
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
+                  <div 
+                    className="h-full bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] transition-all duration-700"
+                    style={{ width: `${completionRate}%` }}
+                  />
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
+            </div>
+
+            {/* Quick Actions - Icon Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {[
+                { href: "/needs", icon: Heart, label: "Needs", color: "#6BC4B8" },
+                { href: "/meal-train", icon: ChefHat, label: "Meal Train", color: "#6BC4B8" },
+                { href: "/calendar", icon: Calendar, label: "Calendar", color: "#6BC4B8" },
+                { href: "/messages", icon: MessageCircle, label: "Messages", color: "#B08CA7" },
+              ].map((action) => (
+                <Link key={action.href} href={action.href}>
+                  <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/60 transition-all cursor-pointer group text-center">
+                    <div 
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 transition-all"
+                      style={{ backgroundColor: `${action.color}15` }}
+                    >
+                      <action.icon className="w-7 h-7" style={{ color: action.color }} />
+                    </div>
+                    <div className="text-sm font-semibold text-gray-900">{action.label}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            {/* Activity Feed - Simplified */}
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 shadow-lg">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-[#6BC4B8]" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
+              </div>
+
               {!recentActivity || recentActivity.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">
-                  <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
                     <Sparkles className="w-8 h-8 text-gray-400" />
                   </div>
-                  <p className="font-medium">No recent activity</p>
-                  <p className="text-sm mt-1">Activity will appear here as your community grows</p>
+                  <p className="text-gray-600">No activity yet</p>
+                  <p className="text-sm text-gray-500 mt-1">Updates will appear here</p>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  {recentActivity.map((activity) => {
+                <div className="space-y-3">
+                  {recentActivity.slice(0, 5).map((activity) => {
                     const date = new Date(activity.createdAt);
                     const isToday = date.toDateString() === new Date().toDateString();
                     const timeStr = isToday
@@ -276,71 +212,41 @@ export default function Dashboard() {
                       : date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
                     let actionText = "";
-                    let iconColor = "text-[#6BC4B8]";
-                    let bgColor = "bg-[#6BC4B8]/10";
+                    let color = "#6BC4B8";
                     
                     switch (activity.action) {
-                      case "need_created":
-                        actionText = "posted a new need";
-                        iconColor = "text-[#6BC4B8]";
-                        bgColor = "bg-[#6BC4B8]/10";
-                        break;
-                      case "need_claimed":
-                        actionText = "claimed a need";
-                        iconColor = "text-[#6BC4B8]";
-                        bgColor = "bg-[#6BC4B8]/10";
-                        break;
-                      case "need_completed":
-                        actionText = "completed a need";
-                        iconColor = "text-[#6BC4B8]";
-                        bgColor = "bg-[#6BC4B8]/10";
-                        break;
-                      case "event_created":
-                        actionText = "created an event";
-                        iconColor = "text-[#6BC4B8]";
-                        bgColor = "bg-[#6BC4B8]/10";
-                        break;
-                      case "event_rsvp":
-                        actionText = "RSVP'd to an event";
-                        iconColor = "text-[#B08CA7]";
-                        bgColor = "bg-[#B08CA7]/10";
-                        break;
-                      case "announcement_created":
-                        actionText = "posted an announcement";
-                        iconColor = "text-[#B08CA7]";
-                        bgColor = "bg-[#B08CA7]/10";
-                        break;
-                      case "user_joined":
-                        actionText = "joined the household";
-                        iconColor = "text-[#6BC4B8]";
-                        bgColor = "bg-[#6BC4B8]/10";
-                        break;
-                      default:
-                        actionText = activity.action.replace(/_/g, " ");
+                      case "need_created": actionText = "posted a need"; break;
+                      case "need_claimed": actionText = "claimed a need"; break;
+                      case "need_completed": actionText = "completed a need"; break;
+                      case "event_created": actionText = "created an event"; break;
+                      case "event_rsvp": actionText = "RSVP'd"; color = "#B08CA7"; break;
+                      case "announcement_created": actionText = "posted an update"; color = "#B08CA7"; break;
+                      case "user_joined": actionText = "joined"; break;
+                      default: actionText = activity.action.replace(/_/g, " ");
                     }
 
                     return (
-                      <div
-                        key={activity.id}
-                        className="flex items-start gap-3 pb-3 border-b last:border-0 last:pb-0"
-                      >
-                        <div className={`w-10 h-10 rounded-lg ${bgColor} flex items-center justify-center shrink-0 ${iconColor} font-semibold`}>
+                      <div key={activity.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/40 border border-white/20">
+                        <div 
+                          className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm"
+                          style={{ backgroundColor: color }}
+                        >
                           {activity.actorName?.charAt(0)?.toUpperCase() || "?"}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm">
+                          <p className="text-sm text-gray-900">
                             <span className="font-semibold">{activity.actorName || "Someone"}</span>{" "}
-                            <span className="text-muted-foreground">{actionText}</span>
+                            <span className="text-gray-600">{actionText}</span>
                           </p>
-                          <p className="text-xs text-muted-foreground mt-0.5">{timeStr}</p>
+                          <p className="text-xs text-gray-500">{timeStr}</p>
                         </div>
                       </div>
                     );
                   })}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayout>
