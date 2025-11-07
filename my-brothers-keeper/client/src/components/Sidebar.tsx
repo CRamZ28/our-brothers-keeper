@@ -60,11 +60,8 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
         <img
           src={APP_LOGO}
           alt="Our Brother's Keeper"
-          className="w-16 h-16 drop-shadow-[0_0_18px_rgba(107,196,184,.45)]"
+          className="w-48 h-auto drop-shadow-[0_0_24px_rgba(107,196,184,.6)]"
         />
-        <h1 className="text-white font-semibold leading-tight text-center mt-3">
-          Our<br />Brother's<br />Keeper
-        </h1>
       </div>
 
       {/* Navigation list */}

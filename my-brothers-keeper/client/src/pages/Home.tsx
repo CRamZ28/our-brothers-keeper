@@ -38,9 +38,8 @@ export default function Home() {
           {/* Header with glassmorphism */}
           <header className="container py-6">
             <div className="flex items-center justify-between backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
-              <div className="flex items-center gap-3">
-                {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="w-16 h-16 rounded-lg shadow-md" />}
-                <span className="text-xl font-bold" style={{ background: 'linear-gradient(to right, #6BC4B8, #B08CA7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>{APP_TITLE}</span>
+              <div className="flex items-center">
+                {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-16 w-auto drop-shadow-[0_0_16px_rgba(107,196,184,.5)]" />}
               </div>
               <Button 
                 onClick={() => (window.location.href = "/api/login")}
