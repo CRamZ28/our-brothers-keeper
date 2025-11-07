@@ -1101,7 +1101,7 @@ export async function createMemoryWallEntry(entry: InsertMemoryWallEntry) {
 }
 
 // Get memory wall entries with optional type filter
-export async function getMemoryWallEntries(householdId: number, type?: "memory" | "story" | "encouragement" | "prayer") {
+export async function getMemoryWallEntries(householdId: number, type?: "memory" | "story" | "encouragement" | "prayer" | "picture") {
   const db = await getDb();
   if (!db) return [];
 

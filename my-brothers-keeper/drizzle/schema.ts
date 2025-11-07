@@ -56,7 +56,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "invite_sent"
 ]);
 export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
-export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer"]);
+export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer", "picture"]);
 export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
 export const eventTypeEnum = pgEnum("event_type", ["regular", "birthday", "anniversary", "milestone", "holiday"]);
 
