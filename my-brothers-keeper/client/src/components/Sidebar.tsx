@@ -39,7 +39,7 @@ interface SidebarProps {
   onNavigate?: () => void;
 }
 
-export default function Sidebar({ onNavigate }: SidebarProps = {}) {
+export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: undefined }) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
 
