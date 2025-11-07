@@ -18,6 +18,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { loading, user } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   if (loading) {
     return <DashboardLayoutSkeleton />
@@ -57,8 +58,6 @@ export default function DashboardLayout({
       </div>
     );
   }
-
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen bg-gray-50">
