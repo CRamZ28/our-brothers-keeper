@@ -126,14 +126,14 @@ function DashboardLayoutContent({
         }}
       >
         <SidebarHeader className="h-auto py-8 justify-center border-b-0">
-          <div className="flex flex-col items-center gap-4 px-4">
+          <div className="flex flex-col items-center gap-3 px-4">
             <img
               src={APP_LOGO}
-              className="h-16 w-16 rounded-xl object-cover shadow-lg"
+              className="h-20 w-20 object-contain"
               alt="Logo"
             />
-            <h1 className="text-white font-bold text-lg text-center leading-tight">
-              {APP_TITLE}
+            <h1 className="text-white font-bold text-xl text-center leading-tight">
+              Our<br />Brother's<br />Keeper
             </h1>
           </div>
         </SidebarHeader>
