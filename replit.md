@@ -53,6 +53,11 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
     - Display avatars with fallback to initials
     - UserAvatar component used throughout the app
     - Integrated in People page for profile management and user lists
+- **Error Monitoring**: Production error tracking with Sentry integration.
+    - Automatic error capture for frontend (React) and backend (Express)
+    - Session replay for debugging user issues
+    - Email alerts on production errors
+    - Performance monitoring and tracing
 
 ### System Design Choices
 - **Security & Privacy Architecture**: Production-ready with a centralized visibility system (`server/visibilityHelpers.ts`) ensuring zero information leakage.
@@ -68,6 +73,7 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
 - **Authentication**: Replit Auth (OpenID Connect via Passport.js)
 - **Session Store**: PostgreSQL (using `connect-pg-simple`)
 - **Email Service**: Resend (transactional emails with custom domain `notifications.obkapp.com`)
+- **Error Monitoring**: Sentry (production error tracking, session replay, and performance monitoring)
 - **Frontend Framework**: React
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS

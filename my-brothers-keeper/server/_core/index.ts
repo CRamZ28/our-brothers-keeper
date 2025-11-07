@@ -26,9 +26,9 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   
-  // Sentry request handler must be the first middleware
+  // Sentry error handler must be registered early to capture all requests
   if (process.env.SENTRY_DSN) {
-    app.use(Sentry.expressErrorHandler());
+    Sentry.setupExpressErrorHandler(app);
   }
   
   // Configure body parser with larger size limit for file uploads
