@@ -221,6 +221,33 @@ export const eventsRouter = router({
         });
       }
 
+      // Important dates (birthday, anniversary, milestone, holiday) can ONLY be modified by admin/primary
+      // This prevents supporters from editing important dates even if they created the original regular event
+      const importantDateTypes = ["birthday", "anniversary", "milestone", "holiday"];
+      const isExistingImportantDate = event.eventType && importantDateTypes.includes(event.eventType);
+      const isChangingToImportantDate = input.eventType && importantDateTypes.includes(input.eventType);
+      
+      if (isExistingImportantDate || isChangingToImportantDate) {
+        const canManageImportantDates = ctx.user.role === "primary" || ctx.user.role === "admin";
+        if (!canManageImportantDates) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only Primary or Admin can create or modify important dates (birthdays, anniversaries, milestones, holidays)",
+          });
+        }
+      }
+
+      // Also check if trying to set associatedUserId - only admin/primary can associate events with people
+      if (input.associatedUserId !== undefined && input.associatedUserId !== null) {
+        const canAssociate = ctx.user.role === "primary" || ctx.user.role === "admin";
+        if (!canAssociate) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only Primary or Admin can associate events with specific people",
+          });
+        }
+      }
+
       const { id, ...updateData } = input;
       await db.updateEvent(id, updateData);
 

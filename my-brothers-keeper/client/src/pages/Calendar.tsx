@@ -46,7 +46,7 @@ import {
   List,
   CalendarDays,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   startOfMonth,
@@ -86,11 +86,22 @@ export default function Calendar() {
   const [endDate, setEndDate] = useState("");
   const [endTime, setEndTime] = useState("");
   const [capacity, setCapacity] = useState<string>("");
+  const [eventType, setEventType] = useState<"regular" | "birthday" | "anniversary" | "milestone" | "holiday">("regular");
+  const [recurring, setRecurring] = useState(false);
+  const [associatedUserId, setAssociatedUserId] = useState<string>("");
   const [visibilityScope, setVisibilityScope] = useState<
     "private" | "all_supporters" | "group" | "role" | "custom"
   >("all_supporters");
   const [visibilityGroupIds, setVisibilityGroupIds] = useState<string[]>([]);
   const [customUserIds, setCustomUserIds] = useState<string[]>([]);
+
+  // Clear associatedUserId and recurring when event type changes away from birthday/anniversary
+  useEffect(() => {
+    if (eventType !== "birthday" && eventType !== "anniversary") {
+      setAssociatedUserId("");
+      setRecurring(false);
+    }
+  }, [eventType]);
 
   const createEventMutation = trpc.events.create.useMutation({
     onSuccess: () => {
@@ -146,6 +157,9 @@ export default function Calendar() {
     setEndDate("");
     setEndTime("");
     setCapacity("");
+    setEventType("regular");
+    setRecurring(false);
+    setAssociatedUserId("");
     setVisibilityScope("all_supporters");
     setVisibilityGroupIds([]);
     setCustomUserIds([]);
@@ -180,6 +194,9 @@ export default function Calendar() {
       location,
       startAt,
       endAt,
+      eventType,
+      recurring,
+      associatedUserId: associatedUserId || undefined,
       capacity: capacity ? parseInt(capacity) : undefined,
       visibilityScope,
       visibilityGroupIds: visibilityGroupIds.map(id => parseInt(id)),
@@ -218,6 +235,9 @@ export default function Calendar() {
       location,
       startAt,
       endAt,
+      eventType,
+      recurring,
+      associatedUserId: associatedUserId || undefined,
       capacity: capacity ? parseInt(capacity) : undefined,
       visibilityScope,
       visibilityGroupIds: visibilityGroupIds.map(id => parseInt(id)),
@@ -249,6 +269,9 @@ export default function Calendar() {
       setEndTime("");
     }
     setCapacity(event.capacity?.toString() || "");
+    setEventType(event.eventType || "regular");
+    setRecurring(event.recurring || false);
+    setAssociatedUserId(event.associatedUserId || "");
     setVisibilityScope(event.visibilityScope || "all_supporters");
     setVisibilityGroupIds(event.visibilityGroupIds?.map((id: number) => id.toString()) || []);
     setCustomUserIds(event.customUserIds || []);
@@ -402,6 +425,55 @@ export default function Calendar() {
                         Set a limit for RSVPs (e.g., "Dinner for 6"). Leave empty for open attendance.
                       </p>
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="eventType">Event Type</Label>
+                      <Select value={eventType} onValueChange={(v) => setEventType(v as any)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="regular">Regular Event</SelectItem>
+                          <SelectItem value="birthday">Birthday</SelectItem>
+                          <SelectItem value="anniversary">Anniversary</SelectItem>
+                          <SelectItem value="milestone">Milestone</SelectItem>
+                          <SelectItem value="holiday">Holiday</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">
+                        Important dates (birthdays, anniversaries, etc.) will appear prominently on the calendar
+                      </p>
+                    </div>
+                    {(eventType === "birthday" || eventType === "anniversary") && (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <input
+                            type="checkbox"
+                            id="recurring"
+                            checked={recurring}
+                            onChange={(e) => setRecurring(e.target.checked)}
+                            className="rounded border-gray-300"
+                          />
+                          <Label htmlFor="recurring" className="cursor-pointer">
+                            Recurring (repeats yearly)
+                          </Label>
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Enable for birthdays and anniversaries to automatically repeat each year
+                        </p>
+                      </div>
+                    )}
+                    {(eventType === "birthday" || eventType === "anniversary") && (
+                      <div className="space-y-2">
+                        <Label>Associated Person (optional)</Label>
+                        <UserSelector
+                          selectedUserIds={associatedUserId ? [associatedUserId] : []}
+                          onChange={(ids) => setAssociatedUserId(ids[0] || "")}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          Link this date to a specific person (e.g., whose birthday it is)
+                        </p>
+                      </div>
+                    )}
                     <div className="space-y-2">
                       <Label htmlFor="visibility">Who Can See This</Label>
                       <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
@@ -1132,6 +1204,55 @@ export default function Calendar() {
                   Set a limit for RSVPs (e.g., "Dinner for 6"). Leave empty for open attendance.
                 </p>
               </div>
+              <div className="space-y-2">
+                <Label htmlFor="edit-eventType">Event Type</Label>
+                <Select value={eventType} onValueChange={(v) => setEventType(v as any)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="regular">Regular Event</SelectItem>
+                    <SelectItem value="birthday">Birthday</SelectItem>
+                    <SelectItem value="anniversary">Anniversary</SelectItem>
+                    <SelectItem value="milestone">Milestone</SelectItem>
+                    <SelectItem value="holiday">Holiday</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Important dates (birthdays, anniversaries, etc.) will appear prominently on the calendar
+                </p>
+              </div>
+              {(eventType === "birthday" || eventType === "anniversary") && (
+                <div className="space-y-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="edit-recurring"
+                      checked={recurring}
+                      onChange={(e) => setRecurring(e.target.checked)}
+                      className="rounded border-gray-300"
+                    />
+                    <Label htmlFor="edit-recurring" className="cursor-pointer">
+                      Recurring (repeats yearly)
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Enable for birthdays and anniversaries to automatically repeat each year
+                  </p>
+                </div>
+              )}
+              {(eventType === "birthday" || eventType === "anniversary") && (
+                <div className="space-y-2">
+                  <Label>Associated Person (optional)</Label>
+                  <UserSelector
+                    selectedUserIds={associatedUserId ? [associatedUserId] : []}
+                    onChange={(ids) => setAssociatedUserId(ids[0] || "")}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Link this date to a specific person (e.g., whose birthday it is)
+                  </p>
+                </div>
+              )}
               <div className="space-y-2">
                 <Label htmlFor="edit-visibility">Who Can See This</Label>
                 <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>

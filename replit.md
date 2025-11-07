@@ -30,7 +30,11 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
     - Dual-layer privacy and dietary preference management.
 - **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
 - **Needs Board**: Community support requests with group filtering.
-- **Shared Calendar**: Event scheduling and coordination.
+- **Shared Calendar**: Event scheduling and coordination with Important Dates feature.
+    - **Important Dates**: Admin/primary-only feature for tracking birthdays, anniversaries, milestones, and holidays.
+    - Supports yearly recurring dates for birthdays and anniversaries.
+    - Optional person association to link dates to specific household members.
+    - Enforced security ensures only admin/primary users can create or modify important dates.
 - **Messaging**: Private communication and announcements with media upload support.
 - **Updates**: Family news and progress sharing.
 - **Memory Wall**: A community collage for memories, stories, encouragement, and prayers. Features an aesthetic with random rotations, absolute positioning, varied card sizes, decorative tape, and vibrant color coding. Supports image uploads and filtering.
