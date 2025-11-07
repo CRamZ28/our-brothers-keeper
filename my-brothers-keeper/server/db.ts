@@ -179,6 +179,13 @@ export async function updateUserStatus(userId: string, status: "active" | "pendi
   await db.update(users).set({ status }).where(eq(users.id, userId));
 }
 
+export async function updateUserProfile(userId: string, data: Partial<Pick<InsertUser, "name" | "phone" | "profileImageUrl">>) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(users).set(data).where(eq(users.id, userId));
+}
+
 // ============================================================================
 // HOUSEHOLD MANAGEMENT
 // ============================================================================
@@ -1066,7 +1073,7 @@ export async function createMemoryWallEntry(entry: InsertMemoryWallEntry) {
 }
 
 // Get memory wall entries with optional type filter
-export async function getMemoryWallEntries(householdId: number, type?: string) {
+export async function getMemoryWallEntries(householdId: number, type?: "memory" | "story" | "encouragement" | "prayer") {
   const db = await getDb();
   if (!db) return [];
 

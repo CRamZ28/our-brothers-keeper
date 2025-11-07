@@ -28,10 +28,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus } from "lucide-react";
-import { useState, useEffect } from "react";
+import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus, Camera, Upload } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { UserSelector } from "@/components/UserSelector";
+import { UserAvatar } from "@/components/UserAvatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -62,6 +63,25 @@ export default function People() {
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const [groupMemberIds, setGroupMemberIds] = useState<string[]>([]);
+
+  // Profile edit states
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [profileName, setProfileName] = useState("");
+  const [profilePhone, setProfilePhone] = useState("");
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const updateProfileMutation = trpc.user.updateProfile.useMutation({
+    onSuccess: () => {
+      toast.success("Profile updated successfully!");
+      setProfileDialogOpen(false);
+      window.location.reload(); // Reload to update the auth context
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update profile");
+    },
+  });
 
   const createInviteMutation = trpc.invite.create.useMutation({
     onSuccess: (data) => {
@@ -175,6 +195,77 @@ export default function People() {
     setGroupDescription("");
     setGroupMemberIds([]);
     setSelectedGroupId(null);
+  };
+
+  const openProfileDialog = () => {
+    setProfileName(user?.name || "");
+    setProfilePhone(user?.phone || "");
+    setProfileImageUrl(user?.profileImageUrl || "");
+    setProfileDialogOpen(true);
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      setProfileImageUrl(data.url);
+      toast.success("Image uploaded successfully!");
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleSaveProfile = () => {
+    const updates: any = {};
+    
+    if (profileName.trim() && profileName !== user?.name) {
+      updates.name = profileName.trim();
+    }
+    
+    if (profilePhone.trim() && profilePhone !== user?.phone) {
+      updates.phone = profilePhone.trim();
+    }
+    
+    if (profileImageUrl && profileImageUrl !== user?.profileImageUrl) {
+      updates.profileImageUrl = profileImageUrl;
+    }
+
+    if (Object.keys(updates).length === 0) {
+      toast.info("No changes to save");
+      return;
+    }
+
+    updateProfileMutation.mutate(updates);
   };
 
   const handleCreateGroup = () => {
@@ -404,6 +495,121 @@ export default function People() {
           )}
         </div>
 
+        {/* My Profile */}
+        <Card className="bg-white/90 backdrop-blur-md">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>My Profile</CardTitle>
+                <CardDescription>Manage your profile information</CardDescription>
+              </div>
+              <Button onClick={openProfileDialog}>
+                <Pencil className="w-4 h-4 mr-2" />
+                Edit Profile
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <UserAvatar user={user || undefined} size="xl" />
+              <div>
+                <p className="font-medium text-lg">{user?.name || "No name set"}</p>
+                <p className="text-sm text-muted-foreground">{user?.email}</p>
+                {user?.phone && (
+                  <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                    <Phone className="w-3 h-3" />
+                    {user.phone}
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Profile Edit Dialog */}
+        <Dialog open={profileDialogOpen} onOpenChange={setProfileDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Edit Profile</DialogTitle>
+              <DialogDescription>
+                Update your profile picture, name, and contact information
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {/* Profile Picture Upload */}
+              <div className="space-y-2">
+                <Label>Profile Picture</Label>
+                <div className="flex items-center gap-4">
+                  <UserAvatar 
+                    user={profileImageUrl ? { id: user?.id || "", profileImageUrl } : (user || undefined)} 
+                    size="xl" 
+                  />
+                  <div className="flex flex-col gap-2">
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                    >
+                      <Camera className="w-4 h-4 mr-2" />
+                      {uploading ? "Uploading..." : "Change Photo"}
+                    </Button>
+                    <p className="text-xs text-muted-foreground">
+                      Max 5MB. JPG, PNG, or GIF
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Name */}
+              <div className="space-y-2">
+                <Label htmlFor="profileName">Name</Label>
+                <Input
+                  id="profileName"
+                  value={profileName}
+                  onChange={(e) => setProfileName(e.target.value)}
+                  placeholder="Your name"
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="space-y-2">
+                <Label htmlFor="profilePhone">Phone (optional)</Label>
+                <Input
+                  id="profilePhone"
+                  type="tel"
+                  value={profilePhone}
+                  onChange={(e) => setProfilePhone(e.target.value)}
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setProfileDialogOpen(false)}
+                disabled={updateProfileMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSaveProfile} 
+                disabled={updateProfileMutation.isPending || uploading}
+              >
+                {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
         {/* Pending Approvals */}
         {canManageUsers && pendingUsers.length > 0 && (
           <Card className="border-primary/50 bg-white/90 backdrop-blur-md">
@@ -421,9 +627,7 @@ export default function People() {
                   className="flex items-center justify-between p-3 bg-background rounded-lg border"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
-                      {pendingUser.name?.charAt(0).toUpperCase() || "?"}
-                    </div>
+                    <UserAvatar user={pendingUser} size="md" />
                     <div>
                       <p className="font-medium">{pendingUser.name || "Unknown"}</p>
                       <p className="text-sm text-muted-foreground">
@@ -545,9 +749,7 @@ export default function People() {
                     className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-semibold">
-                        {member.name?.charAt(0).toUpperCase() || "?"}
-                      </div>
+                      <UserAvatar user={member} size="md" />
                       <div>
                         <p className="font-medium">{member.name || "Unknown"}</p>
                         <div className="flex items-center gap-2 text-sm text-muted-foreground">

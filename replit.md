@@ -43,6 +43,11 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
 - **Role-Based Access**: Admin, primary, and supporter roles with defined permissions.
 - **Invitation System**: Secure supporter onboarding.
 - **Notification System**: Opt-in email notifications for 11 event types, configurable by users.
+- **Profile Pictures**: User avatar upload system with object storage integration for easy recognition of community members.
+    - Upload profile pictures (images up to 5MB)
+    - Display avatars with fallback to initials
+    - UserAvatar component used throughout the app
+    - Integrated in People page for profile management and user lists
 
 ### System Design Choices
 - **Security & Privacy Architecture**: Production-ready with a centralized visibility system (`server/visibilityHelpers.ts`) ensuring zero information leakage.

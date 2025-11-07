@@ -269,6 +269,32 @@ export const appRouter = router({
       return await db.getUsersByHousehold(ctx.user.householdId);
     }),
 
+    // Update user profile (name, phone, profile picture)
+    updateProfile: protectedProcedure
+      .input(
+        z.object({
+          name: z.string().optional(),
+          phone: z.string().optional(),
+          profileImageUrl: z.string().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        await db.updateUserProfile(ctx.user.id, input);
+
+        if (ctx.user.householdId) {
+          await db.createAuditLog({
+            householdId: ctx.user.householdId,
+            actorUserId: ctx.user.id,
+            action: "user_profile_updated",
+            targetType: "user",
+            targetId: 0,
+            metadata: { userId: ctx.user.id, updates: input },
+          });
+        }
+
+        return { success: true };
+      }),
+
     // Update user status (approve/block)
     updateStatus: protectedProcedure
       .input(
