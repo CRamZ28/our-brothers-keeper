@@ -55,11 +55,6 @@ async function startServer() {
     }
   });
   
-  // Test endpoint to verify Sentry error tracking
-  app.get('/api/test-error', (req, res) => {
-    throw new Error('🧪 Test error from backend - Sentry should capture this!');
-  });
-  
   // File upload endpoint
   app.use("/api", uploadRouter);
   
