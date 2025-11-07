@@ -1,7 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { Calendar, Heart, Users, ChefHat, MessageCircle, Bell, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "wouter";
@@ -42,21 +41,22 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      {/* Clean gradient background with subtle orbs */}
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 relative overflow-hidden">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-0 -right-4 w-72 h-72 bg-teal-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      {/* Modern flowy gradient background */}
+      <div className="min-h-screen relative overflow-hidden">
+        {/* Gradient background with modern flow */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-[#6BC4B8]/10 to-gray-100" />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-[#6BC4B8]/20 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-gray-200/50 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-r from-[#B08CA7]/10 to-[#6BC4B8]/10 rounded-full blur-3xl" />
 
         <div className="relative z-10 p-4 md:p-8">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Pending Approvals Banner */}
             {isPrimaryOrAdmin && pendingUsers.length > 0 && (
-              <div className="bg-white/70 backdrop-blur-md border border-[#B08CA7]/20 rounded-2xl p-4 shadow-lg">
+              <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl p-4 shadow-lg">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-[#B08CA7]/20 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-[#B08CA7]/30 backdrop-blur-sm flex items-center justify-center">
                       <Bell className="w-5 h-5 text-[#B08CA7]" />
                     </div>
                     <div>
@@ -76,37 +76,34 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Hero Section - Family Centered */}
-            <div className="bg-white/70 backdrop-blur-md border border-white/20 rounded-3xl p-8 md:p-12 shadow-2xl">
+            {/* Family Name Hero - Centered & Prominent */}
+            <div className="text-center py-8">
               {household.photoUrl && (
                 <div className="flex justify-center mb-6">
-                  <div className="relative">
-                    <img 
-                      src={household.photoUrl} 
-                      alt={household.name}
-                      className="w-28 h-28 md:w-36 md:h-36 rounded-3xl object-cover shadow-xl"
-                    />
-                    <div className="absolute inset-0 rounded-3xl ring-4 ring-[#6BC4B8]/20" />
-                  </div>
+                  <img 
+                    src={household.photoUrl} 
+                    alt={household.name}
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-3xl object-cover shadow-xl ring-4 ring-white/50"
+                  />
                 </div>
               )}
               
-              <h1 className="text-5xl md:text-7xl font-bold text-center mb-4 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+              <h1 className="text-5xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
                 {household.name}
               </h1>
               
               {household.description && (
-                <p className="text-center text-gray-700 text-base md:text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-gray-700 text-base md:text-lg mb-6 max-w-2xl mx-auto leading-relaxed">
                   {household.description}
                 </p>
               )}
               
-              <div className="flex flex-wrap items-center justify-center gap-2 text-sm mb-8">
+              <div className="flex flex-wrap items-center justify-center gap-2 text-sm">
                 <span className="text-gray-600 font-medium">
                   {user?.name?.split(" ")[0] || "You"}
                 </span>
                 <span className="text-gray-400">·</span>
-                <span className="px-3 py-1 bg-[#B08CA7]/10 rounded-full text-gray-700 capitalize font-medium">
+                <span className="px-3 py-1 bg-white/40 backdrop-blur-sm rounded-full text-gray-700 capitalize font-medium border border-white/30">
                   {user?.role}
                 </span>
                 <span className="text-gray-400">·</span>
@@ -116,45 +113,53 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Stats Grid - Clean & Minimal */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {/* Small Rectangular Stats - Transparent */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <Link href="/people">
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/70 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center mb-4 group-hover:bg-[#6BC4B8]/20 transition-colors">
-                    <Users className="w-6 h-6 text-[#6BC4B8]" />
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Users className="w-5 h-5 text-[#6BC4B8]" />
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{activeUsers.length}</div>
+                      <div className="text-xs text-gray-600">Supporters</div>
+                    </div>
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-1">{activeUsers.length}</div>
-                  <div className="text-sm text-gray-600">Supporters</div>
                 </div>
               </Link>
 
               <Link href="/needs">
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/70 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center mb-4 group-hover:bg-[#6BC4B8]/20 transition-colors">
-                    <Heart className="w-6 h-6 text-[#6BC4B8]" />
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Heart className="w-5 h-5 text-[#6BC4B8]" />
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{openNeeds.length}</div>
+                      <div className="text-xs text-gray-600">Open Needs</div>
+                    </div>
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-1">{openNeeds.length}</div>
-                  <div className="text-sm text-gray-600">Open Needs</div>
                 </div>
               </Link>
 
               <Link href="/calendar">
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/70 transition-all cursor-pointer group">
-                  <div className="w-12 h-12 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center mb-4 group-hover:bg-[#6BC4B8]/20 transition-colors">
-                    <Calendar className="w-6 h-6 text-[#6BC4B8]" />
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 hover:bg-white/20 transition-all cursor-pointer">
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 text-[#6BC4B8]" />
+                    <div>
+                      <div className="text-2xl font-bold text-gray-900">{upcomingEvents.length}</div>
+                      <div className="text-xs text-gray-600">This Week</div>
+                    </div>
                   </div>
-                  <div className="text-3xl font-bold text-gray-900 mb-1">{upcomingEvents.length}</div>
-                  <div className="text-sm text-gray-600">This Week</div>
                 </div>
               </Link>
 
-              <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 relative overflow-hidden">
-                <div className="w-12 h-12 rounded-xl bg-[#B08CA7]/10 flex items-center justify-center mb-4">
-                  <Sparkles className="w-6 h-6 text-[#B08CA7]" />
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20 relative overflow-hidden">
+                <div className="flex items-center gap-3">
+                  <Sparkles className="w-5 h-5 text-[#B08CA7]" />
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">{completionRate}%</div>
+                    <div className="text-xs text-gray-600">Complete</div>
+                  </div>
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-1">{completionRate}%</div>
-                <div className="text-sm text-gray-600">Complete</div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200">
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
                   <div 
                     className="h-full bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] transition-all duration-700"
                     style={{ width: `${completionRate}%` }}
@@ -163,19 +168,19 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Quick Actions - Icon Grid */}
+            {/* Quick Actions - Transparent Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {[
-                { href: "/needs", icon: Heart, label: "Needs", color: "#6BC4B8" },
+                { href: "/needs", icon: Heart, label: "Needs Board", color: "#6BC4B8" },
                 { href: "/meal-train", icon: ChefHat, label: "Meal Train", color: "#6BC4B8" },
                 { href: "/calendar", icon: Calendar, label: "Calendar", color: "#6BC4B8" },
                 { href: "/messages", icon: MessageCircle, label: "Messages", color: "#B08CA7" },
               ].map((action) => (
                 <Link key={action.href} href={action.href}>
-                  <div className="bg-white/40 backdrop-blur-sm rounded-2xl p-6 border border-white/40 hover:shadow-lg hover:bg-white/60 transition-all cursor-pointer group text-center">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all cursor-pointer text-center">
                     <div 
-                      className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 transition-all"
-                      style={{ backgroundColor: `${action.color}15` }}
+                      className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 backdrop-blur-sm border border-white/20"
+                      style={{ backgroundColor: `${action.color}20` }}
                     >
                       <action.icon className="w-7 h-7" style={{ color: action.color }} />
                     </div>
@@ -185,10 +190,10 @@ export default function Dashboard() {
               ))}
             </div>
 
-            {/* Activity Feed - Simplified */}
-            <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/40 shadow-lg">
+            {/* Activity Feed - Transparent */}
+            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 shadow-lg">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-[#6BC4B8]/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-[#6BC4B8]/20 backdrop-blur-sm flex items-center justify-center border border-white/20">
                   <Sparkles className="w-5 h-5 text-[#6BC4B8]" />
                 </div>
                 <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
@@ -196,7 +201,7 @@ export default function Dashboard() {
 
               {!recentActivity || recentActivity.length === 0 ? (
                 <div className="text-center py-12">
-                  <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-3">
+                  <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-3 border border-white/20">
                     <Sparkles className="w-8 h-8 text-gray-400" />
                   </div>
                   <p className="text-gray-600">No activity yet</p>
@@ -226,7 +231,7 @@ export default function Dashboard() {
                     }
 
                     return (
-                      <div key={activity.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/40 border border-white/20">
+                      <div key={activity.id} className="flex items-center gap-3 p-3 rounded-xl bg-white/20 backdrop-blur-sm border border-white/20">
                         <div 
                           className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-white font-bold text-sm"
                           style={{ backgroundColor: color }}
