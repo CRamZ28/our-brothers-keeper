@@ -58,6 +58,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
 export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
 export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer"]);
 export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
+export const eventTypeEnum = pgEnum("event_type", ["regular", "birthday", "anniversary", "milestone", "holiday"]);
 
 /**
  * Core user table backing auth flow.
@@ -181,6 +182,9 @@ export const events = pgTable("events", {
   location: varchar("location", { length: 500 }),
   createdBy: varchar("created_by").notNull(),
   googleCalendarEvtId: varchar("google_calendar_evt_id", { length: 255 }),
+  eventType: eventTypeEnum("event_type").default("regular").notNull(),
+  recurring: boolean("recurring").default(false).notNull(),
+  associatedUserId: varchar("associated_user_id"),
   visibilityScope: visibilityScopeEnum("visibility_scope").default("all_supporters").notNull(),
   visibilityGroupIds: integer("visibility_group_ids").array(),
   customUserIds: jsonb("custom_user_ids").$type<string[]>(),
@@ -192,6 +196,7 @@ export const events = pgTable("events", {
   householdIdx: index("events_household_idx").on(table.householdId),
   startAtIdx: index("events_start_at_idx").on(table.startAt),
   visibilityIdx: index("events_visibility_idx").on(table.visibilityScope),
+  eventTypeIdx: index("events_event_type_idx").on(table.eventType),
 }));
 
 export type Event = typeof events.$inferSelect;
