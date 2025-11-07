@@ -96,9 +96,9 @@ export const updatesRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Update belongs to different household" });
       }
 
-      // Only author or admin can delete
-      if (update.authorId !== ctx.user.id && ctx.user.role !== "admin") {
-        throw new TRPCError({ code: "FORBIDDEN", message: "Only the author or admin can delete" });
+      // Only author, admin, or primary can delete
+      if (update.authorId !== ctx.user.id && ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the author, admin, or primary can delete" });
       }
 
       await db.deleteUpdate(input.updateId);

@@ -41,6 +41,11 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
 - **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
 - **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.
 - **Role-Based Access**: Admin, primary, and supporter roles with defined permissions.
+    - **Admin/Primary Permissions**: Full control over household management including:
+        - Delete or modify any content (needs, events, updates, messages, memory wall entries, gift registry items, meal trains)
+        - Remove users from the household (removes from all groups, sets status to blocked)
+        - Send direct messages to specific users using custom visibility scoping
+        - Manage all household settings and configurations
 - **Invitation System**: Secure supporter onboarding.
 - **Notification System**: Opt-in email notifications for 11 event types, configurable by users.
 - **Profile Pictures**: User avatar upload system with object storage integration for easy recognition of community members.

@@ -262,5 +262,78 @@ export const messagesRouter = router({
 
       return { success: true, announcementId };
     }),
+
+  // Send a direct message to specific users (admin/primary only)
+  sendDirectMessage: protectedProcedure
+    .input(
+      z.object({
+        title: z.string().min(1),
+        body: z.string().min(1),
+        recipientUserIds: z.array(z.string()).min(1),
+        mediaUrls: z.array(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Only admin or primary can send direct messages
+      if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only Admin or Primary can send direct messages",
+        });
+      }
+
+      // Verify all recipients are in the same household
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const memberIds = allMembers.map((m) => m.id);
+      
+      for (const recipientId of input.recipientUserIds) {
+        if (!memberIds.includes(recipientId)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `Recipient ${recipientId} is not in your household`,
+          });
+        }
+      }
+
+      // Create announcement with custom visibility
+      const announcementId = await db.createAnnouncement({
+        householdId: ctx.user.householdId,
+        title: input.title,
+        body: input.body,
+        pinned: false,
+        createdBy: ctx.user.id,
+        visibilityScope: "custom",
+        visibilityGroupIds: null,
+        customUserIds: input.recipientUserIds,
+        mediaUrls: input.mediaUrls || null,
+      });
+
+      await db.createAuditLog({
+        householdId: ctx.user.householdId,
+        actorUserId: ctx.user.id,
+        action: "direct_message_sent",
+        targetType: "announcement",
+        targetId: announcementId,
+        metadata: { recipientCount: input.recipientUserIds.length },
+      });
+
+      // Send notification to recipients
+      notifyVisibleUsers(
+        ctx.user.householdId,
+        input.recipientUserIds,
+        "new_message",
+        {
+          announcementBody: input.body.substring(0, 150) + (input.body.length > 150 ? "..." : ""),
+          actionUrl: `${process.env.REPL_HOME || ""}/messages`,
+        },
+        [ctx.user.id]
+      ).catch((err: Error) => console.error("Failed to send direct message notification:", err));
+
+      return { success: true, announcementId };
+    }),
 });
 

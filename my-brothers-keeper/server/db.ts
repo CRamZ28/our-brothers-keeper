@@ -186,6 +186,34 @@ export async function updateUserProfile(userId: string, data: Partial<Pick<Inser
   await db.update(users).set(data).where(eq(users.id, userId));
 }
 
+export async function removeUserFromHousehold(userId: string, householdId: number) {
+  const db = await getDb();
+  if (!db) return;
+
+  // Get the user to verify household membership
+  const targetUser = await getUserById(userId);
+  if (!targetUser) {
+    throw new Error("User not found");
+  }
+
+  // CRITICAL: Verify user belongs to the specified household before removing
+  if (targetUser.householdId !== householdId) {
+    throw new Error("User does not belong to this household");
+  }
+
+  // Remove user from all groups in this household
+  const userGroups = await getUserGroups(userId, householdId);
+  for (const group of userGroups) {
+    await removeUserFromGroup(group.id, userId);
+  }
+
+  // Set user's household to null and status to blocked
+  await db.update(users).set({ 
+    householdId: null,
+    status: "blocked"
+  }).where(eq(users.id, userId));
+}
+
 // ============================================================================
 // HOUSEHOLD MANAGEMENT
 // ============================================================================

@@ -338,6 +338,56 @@ export const appRouter = router({
 
         return { success: true };
       }),
+
+    // Remove user from household (admin/primary only)
+    removeFromHousehold: protectedProcedure
+      .input(
+        z.object({
+          userId: z.string(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        // Only admin or primary can remove users
+        if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only Admin or Primary can remove users from the household",
+          });
+        }
+
+        // Get target user to verify they're in the same household
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+
+        if (targetUser.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "User belongs to different household" });
+        }
+
+        // Can't remove yourself
+        if (input.userId === ctx.user.id) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot remove yourself from household" });
+        }
+
+        // Remove user from household
+        await db.removeUserFromHousehold(input.userId, ctx.user.householdId);
+
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "user_removed_from_household",
+          targetType: "user",
+          targetId: 0,
+          metadata: { userId: input.userId, userName: targetUser.name },
+        });
+
+        return { success: true };
+      }),
   }),
 
   group: router({

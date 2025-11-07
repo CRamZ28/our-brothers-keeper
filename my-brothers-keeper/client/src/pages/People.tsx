@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus, Camera, Upload } from "lucide-react";
+import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus, Camera, Upload, UserX } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { UserSelector } from "@/components/UserSelector";
@@ -104,6 +104,16 @@ export default function People() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update user status");
+    },
+  });
+
+  const removeUserMutation = trpc.user.removeFromHousehold.useMutation({
+    onSuccess: () => {
+      toast.success("User removed from household");
+      refetchUsers();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to remove user");
     },
   });
 
@@ -786,6 +796,20 @@ export default function People() {
                             >
                               Block User
                             </DropdownMenuItem>
+                            {isPrimaryOrAdmin && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  if (confirm(`Are you sure you want to remove ${member.name || 'this user'} from the household? This action will remove them from all groups.`)) {
+                                    removeUserMutation.mutate({ userId: member.id });
+                                  }
+                                }}
+                                className="text-destructive"
+                                disabled={removeUserMutation.isPending}
+                              >
+                                <UserX className="w-4 h-4 mr-2" />
+                                Remove from Household
+                              </DropdownMenuItem>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       )}
