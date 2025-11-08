@@ -38,8 +38,19 @@ export default function Home() {
           {/* Header with glassmorphism */}
           <header className="container py-6">
             <div className="flex items-center justify-between backdrop-blur-lg bg-white/60 dark:bg-gray-900/60 rounded-2xl px-6 py-4 border border-white/20 shadow-xl">
-              <div className="flex items-center">
-                {APP_LOGO && <img src={APP_LOGO} alt={APP_TITLE} className="h-16 w-auto drop-shadow-[0_0_16px_rgba(107,196,184,.5)]" />}
+              <div className="flex items-center gap-3">
+                <img 
+                  src="/obk-symbol.png" 
+                  alt={APP_TITLE} 
+                  className="h-12 w-12 drop-shadow-[0_0_16px_rgba(107,196,184,.5)]" 
+                />
+                <div className="font-bold text-gray-800 dark:text-white leading-tight">
+                  <div className="text-base" style={{ fontVariant: 'small-caps' }}>
+                    <span className="text-lg" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
+                    <span className="text-lg" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
+                    <span className="text-lg" style={{ fontVariant: 'normal' }}>K</span>eeper
+                  </div>
+                </div>
               </div>
               <Button 
                 onClick={() => (window.location.href = "/api/login")}

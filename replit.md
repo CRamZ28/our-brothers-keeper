@@ -5,8 +5,8 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 
 ## User Preferences
 - **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
-- **Sidebar**: Darker teal gradient with rounded container, glowing logo with integrated text, frosted active pill, mauve hover effects
-- **Logo**: Professional glowing teal cross held by caring hands with integrated "Our Brother's Keeper" text below (stored at `client/public/obk-logo.png`) - displayed at w-48 on sidebar with glow effect, h-16 on landing page header
+- **Sidebar**: Darker teal gradient with rounded container, glowing logo symbol with CSS small-caps text, frosted active pill, mauve hover effects
+- **Logo**: Professional glowing teal cross held by caring hands symbol (stored at `client/public/obk-symbol.png`) with CSS-styled "Our Brother's Keeper" text using small caps (first letters O, B, K larger)
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 
 ## System Architecture
