@@ -4,7 +4,7 @@ export const APP_TITLE = import.meta.env.VITE_APP_TITLE || "Our Brother's Keeper
 
 export const APP_LOGO =
   import.meta.env.VITE_APP_LOGO ||
-  "/obk-logo.png";
+  "/obk-logo-v2.png?v=2";
 
 // Replit Auth endpoints
 export const getLoginUrl = () => "/api/login";
