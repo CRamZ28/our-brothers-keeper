@@ -84,11 +84,14 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
                 relative flex items-center gap-3 h-11 pl-[18px] pr-4 rounded-xl w-full text-left
                 transition-all duration-300 ease-in-out
                 ${isActive 
-                  ? 'bg-[#B08CA7]/60 text-white shadow-[0_4px_15px_rgba(176,140,167,0.3)]' 
+                  ? 'text-white shadow-[0_4px_12px_rgba(176,140,167,0.25)]' 
                   : 'text-teal-800 hover:bg-white/30 hover:translate-x-1'
                 }
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40
               `}
+              style={isActive ? {
+                background: 'rgba(211, 197, 232, 0.9)'
+              } : undefined}
             >
               {/* Icon */}
               <Icon 

@@ -4,31 +4,30 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times by simplifying community support and communication for families in need.
 
 ## User Preferences
-- **Design Style**: Unified glassmorphism with ONE big clear glass container wrapping all content
-- **Background**: Light teal gradient (from #5EDDD0 via #3FC9BB to #2AB5A7) with soft circular orb elements for depth
-- **Glass Container Structure**: 
-  - ONE big clear glass panel (bg-white/10 backdrop-blur-xl) wraps sidebar and content
-  - Frosted sidebar inside container (bg-white/20 backdrop-blur-md) with logo directly on frosted glass
-  - Clear content area inside container (bg-white/5 backdrop-blur-sm)
-  - Page cards use frosted glass (bg-white/25 backdrop-blur-lg) with dark text for readability
-- **Logo**: Professional glowing teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) with soft teal glow effect, paired with CSS small-caps "Our Brother's Keeper" wordmark (first letters O, B, K larger)
-- **Typography**: Dark teal text (text-teal-900) on all frosted glass surfaces for optimal readability
-- **Active Navigation**: Mauve gradient pill (bg-[#B08CA7]/50) with border and glow for active route
+- **Design Style**: Four-layer glassmorphism architecture with 40px viewport margins
+- **Four-Layer Glass System**:
+  - **Layer 1 (Background)**: Teal gradient (#0D7C7A → #0E8986 → #0F9692) with decorative circular orbs
+  - **Layer 2 (Glass Container)**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(20px)` wrapping both sidebar and main content, 40px margins from viewport edges
+  - **Layer 3 (Sidebar)**: `background: rgba(255, 255, 255, 0.15)` - slightly more opaque than main content, with dark teal text
+  - **Layer 4 (Main Content)**: `background: rgba(255, 255, 255, 0.05)` - more transparent to show the teal background
+- **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) paired with CSS small-caps "Our Brother's Keeper" wordmark (first letters O, B, K larger)
+- **Typography**: Dark teal text (text-teal-800) on frosted sidebar for optimal readability, white text on teal content areas
+- **Active Navigation**: `background: rgba(211, 197, 232, 0.9)` (mauve/purple) with white text and subtle shadow
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
 
 ### UI/UX Decisions
-The UI/UX features a unified glassmorphism design with ONE big clear glass container wrapping all content. This includes:
-- **Unified Glass Container Architecture**: All pages share a single clear glass panel that contains both sidebar and content
-- **Light Teal Gradient Background**: From #5EDDD0 via #3FC9BB to #2AB5A7 with soft circular orb elements for depth
-- **Three-Layer Glass System**:
-  - Main container: Clear glass (bg-white/10 backdrop-blur-xl) with rounded corners and border
-  - Sidebar: Frosted glass (bg-white/20 backdrop-blur-md) inside container with logo directly on frosted background
-  - Content cards: Frosted glass (bg-white/25 backdrop-blur-lg) with dark teal text for readability
-- **Typography**: Dark teal (text-teal-900) on all frosted glass surfaces for optimal contrast and readability
-- **Navigation**: Custom sidebar with glowing emblem, CSS small-caps wordmark, and mauve gradient active pill (bg-[#B08CA7]/50)
+The UI/UX features a precise four-layer glassmorphism design system:
+- **Four-Layer Glassmorphism Architecture**:
+  - **Layer 1 (Background)**: Dark teal gradient (#0D7C7A → #0E8986 → #0F9692) with decorative circular orbs for depth
+  - **Layer 2 (Glass Container)**: `rgba(255, 255, 255, 0.1)` with 20px blur, 40px margins from viewport edges
+  - **Layer 3 (Sidebar)**: `rgba(255, 255, 255, 0.15)` - slightly more opaque, dark teal text (text-teal-800)
+  - **Layer 4 (Main Content)**: `rgba(255, 255, 255, 0.05)` - more transparent to reveal teal background
+- **Active Navigation**: `rgba(211, 197, 232, 0.9)` (mauve/purple pill) with white text and shadow
+- **Typography**: Dark teal (text-teal-800) on frosted sidebar, white text on transparent content areas
+- **Logo Implementation**: Emblem + CSS small-caps wordmark with larger first letters (O, B, K)
 - **Dashboard**: Simplified hero section with centered family name pill + three action cards (Supporters, Open Needs, Upcoming Events)
 - **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
 - **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
