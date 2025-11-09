@@ -1,0 +1,100 @@
+CSS Implementation
+Copy/* Left Sidebar - Glassmorphism Base */
+.sidebar {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+}
+
+/* Navigation Item - Default State */
+.nav-item {
+  color: rgba(255, 255, 255, 0.85);
+  background: transparent;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Navigation Item - Hover State */
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
+  transform: translateX(4px);
+}
+
+/* Navigation Item - Active State (Purple Highlight) */
+.nav-item.active {
+  background: rgba(176, 140, 167, 0.25); /* Mauve Purple #B08CA7 */
+  color: #ffffff;
+  box-shadow: 0 4px 15px rgba(176, 140, 167, 0.3);
+  border-left: 3px solid #B08CA7;
+}
+
+/* Navigation Icons */
+.nav-icon {
+  color: inherit;
+  opacity: 0.8;
+}
+
+.nav-item.active .nav-icon {
+  opacity: 1;
+  color: #B08CA7;
+}
+Color Variables (Design System)
+Copy:root {
+  /* Primary Colors */
+  --teal-primary: #6BC4B8;
+  --mauve-purple: #B08CA7;
+  
+  /* Glassmorphism Sidebar */
+  --sidebar-bg: rgba(255, 255, 255, 0.08);
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-shadow: rgba(31, 38, 135, 0.15);
+  
+  /* Navigation States */
+  --nav-text: rgba(255, 255, 255, 0.85);
+  --nav-hover-bg: rgba(255, 255, 255, 0.12);
+  --nav-active-bg: rgba(176, 140, 167, 0.25);
+  --nav-active-border: #B08CA7;
+  --nav-active-shadow: rgba(176, 140, 167, 0.3);
+}
+React/Component Implementation
+Copy// Sidebar Component
+const Sidebar = () => {
+  const [activeItem, setActiveItem] = useState('Dashboard');
+  
+  return (
+    <div className="sidebar">
+      {navItems.map(item => (
+        <div 
+          key={item.name}
+          className={`nav-item ${activeItem === item.name ? 'active' : ''}`}
+          onClick={() => setActiveItem(item.name)}
+        >
+          <Icon name={item.icon} className="nav-icon" />
+          <span>{item.name}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+Key Design Specifications
+Glassmorphism Effect:
+
+Background: 8% white opacity with 20px blur
+Border: 12% white opacity
+Shadow: Subtle depth with low opacity
+Color Hierarchy:
+
+Base text: 85% white opacity
+Hover text: 95% white opacity
+Active highlight: Mauve purple (#B08CA7) with 25% opacity background
+Active accent: Full mauve purple for borders and icons
+Interactive States:
+
+Smooth 0.3s transitions
+Subtle transform on hover (4px slide)
+Distinct active state with left border accent
+This creates the sophisticated, translucent sidebar effect we've designed while maintaining accessibility and clear visual hierarchy for the grief support platform.
