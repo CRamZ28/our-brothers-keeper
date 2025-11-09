@@ -35,8 +35,7 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
     - Supports yearly recurring dates for birthdays and anniversaries.
     - Optional person association to link dates to specific household members.
     - Enforced security ensures only admin/primary users can create or modify important dates.
-- **Messaging**: Private communication and announcements with media upload support.
-- **Updates**: Family news and progress sharing.
+- **Family Updates**: Unified timeline for family communication including announcements and personal updates with 5 types (Announcement, General Update, Gratitude, Memory, Milestone). Supports media uploads (photos, videos, documents) and pinned announcements.
 - **Memory Wall**: A community collage for memories, stories, encouragement, and prayers. Features an aesthetic with random rotations, absolute positioning, varied card sizes, decorative tape, and vibrant color coding. Supports image uploads and filtering.
 - **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
 - **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.

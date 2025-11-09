@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, Redirect } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
@@ -10,11 +10,10 @@ import Onboarding from "./pages/Onboarding";
 import People from "./pages/People";
 import Needs from "./pages/Needs";
 import Calendar from "./pages/Calendar";
-import Messages from "./pages/Messages";
+import FamilyUpdates from "./pages/FamilyUpdates";
 import Settings from "./pages/Settings";
 import AcceptInvite from "./pages/AcceptInvite";
 import AdminTools from "./pages/AdminTools";
-import Updates from "./pages/Updates";
 import MealTrain from "./pages/MealTrain";
 import MemoryWall from "./pages/MemoryWall";
 import GiftRegistry from "./pages/GiftRegistry";
@@ -29,14 +28,19 @@ function Router() {
       <Route path={"/people"} component={People} />
       <Route path={"/needs"} component={Needs} />
       <Route path={"/calendar"} component={Calendar} />
-      <Route path={"/messages"} component={Messages} />
+      <Route path={"/family-updates"} component={FamilyUpdates} />
+      <Route path={"/messages"}>
+        <Redirect to="/family-updates" />
+      </Route>
+      <Route path={"/updates"}>
+        <Redirect to="/family-updates" />
+      </Route>
       <Route path={"/meal-train"} component={MealTrain} />
       <Route path={"/memory-wall"} component={MemoryWall} />
       <Route path={"/gift-registry"} component={GiftRegistry} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/invite/:token"} component={AcceptInvite} />
       <Route path={"/admin"} component={AdminTools} />
-      <Route path={"/updates"} component={Updates} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
