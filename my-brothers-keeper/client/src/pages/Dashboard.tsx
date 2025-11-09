@@ -2,7 +2,8 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
-import { Calendar, Heart, Users, ChefHat, MessageCircle, Bell, ArrowRight, Sparkles, TrendingUp } from "lucide-react";
+import { UserAvatar } from "@/components/UserAvatar";
+import { Calendar, Heart, Users, ChefHat, Plus, Check } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Dashboard() {
@@ -11,7 +12,7 @@ export default function Dashboard() {
   const { data: users } = trpc.user.listInHousehold.useQuery();
   const { data: needs } = trpc.needs.list.useQuery();
   const { data: events } = trpc.events.list.useQuery();
-  const { data: recentActivity } = trpc.household.getRecentActivity.useQuery();
+  const { data: mealTrain } = trpc.mealTrain.get.useQuery();
 
   if (!household) {
     return (
@@ -24,210 +25,278 @@ export default function Dashboard() {
   }
 
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
-  const activeUsers = users?.filter((u) => u.status === "active") || [];
-  const pendingUsers = users?.filter((u) => u.status === "pending") || [];
+  const activeUsers = users?.filter((u) => u.status === "active").slice(0, 6) || [];
   
-  const openNeeds = needs?.filter((n) => n.status === "open") || [];
-  const completedNeeds = needs?.filter((n) => n.status === "completed") || [];
+  const openNeeds = needs?.filter((n) => n.status === "open").slice(0, 3) || [];
+  
   const upcomingEvents = events?.filter((e) => {
     const eventDate = new Date(e.startAt);
-    const now = new Date();
-    const sevenDaysFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    return eventDate >= now && eventDate <= sevenDaysFromNow;
-  }) || [];
+    return eventDate >= new Date();
+  }).slice(0, 5) || [];
 
-  const totalNeeds = needs?.length || 0;
-  const completionRate = totalNeeds > 0 ? Math.round((completedNeeds.length / totalNeeds) * 100) : 0;
+  const hasMealTrain = mealTrain && mealTrain.enabled;
 
   return (
     <DashboardLayout>
-      {/* Teal/White/Silver gradient background - smooth and clean */}
-      <div className="min-h-screen bg-gradient-to-br from-white via-[#6BC4B8]/20 to-gray-100">
-        <div className="p-4 md:p-8">
-          <div className="max-w-7xl mx-auto space-y-4">
-            {/* Pending Approvals - if any */}
-            {isPrimaryOrAdmin && pendingUsers.length > 0 && (
-              <div className="bg-white/40 backdrop-blur-xl border border-white/60 rounded-3xl p-4 shadow-lg">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#B08CA7]/20 flex items-center justify-center">
-                      <Bell className="w-5 h-5 text-[#B08CA7]" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {pendingUsers.length} pending {pendingUsers.length === 1 ? "approval" : "approvals"}
-                      </p>
-                      <p className="text-sm text-gray-600">Review supporter requests</p>
+      {/* Large outer glassmorphism container */}
+      <div className="min-h-screen bg-gradient-to-br from-[#14B8A6] via-[#6BC4B8] to-[#8DD3CB] p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-white/20 backdrop-blur-2xl border border-white/30 rounded-[32px] p-8 shadow-[0_20px_60px_rgba(0,0,0,0.15)]">
+            
+            {/* Page Title */}
+            <h1 className="text-4xl font-bold text-white mb-8 drop-shadow-lg">
+              Dashboard
+            </h1>
+
+            {/* Widget Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              
+              {/* Supporters Widget */}
+              <Link href="/people">
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg hover:bg-white/70 transition-all cursor-pointer group border border-white/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Supporters</h3>
+                    <div className="w-8 h-8 rounded-full bg-[#B08CA7] flex items-center justify-center">
+                      <Users className="w-4 h-4 text-white" />
                     </div>
                   </div>
-                  <Link href="/people">
-                    <Button className="bg-gray-900 hover:bg-gray-800 text-white shadow-md font-semibold rounded-full px-6">
-                      Review
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {/* Hero Card - Family Name (like "Total balance" card in image) */}
-            <div className="bg-white/40 backdrop-blur-xl border border-white/60 rounded-3xl p-8 shadow-xl">
-              <div className="text-center">
-                {household.photoUrl && (
-                  <div className="flex justify-center mb-4">
-                    <img 
-                      src={household.photoUrl} 
-                      alt={household.name}
-                      className="w-20 h-20 rounded-full object-cover shadow-lg"
-                    />
-                  </div>
-                )}
-                
-                <h1 className="text-5xl md:text-6xl font-bold mb-3 bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
-                  {household.name}
-                </h1>
-                
-                {household.description && (
-                  <p className="text-gray-700 text-sm md:text-base mb-4 max-w-xl mx-auto">
-                    {household.description}
-                  </p>
-                )}
-                
-                {/* Small stat circles (like the card circles in image) */}
-                <div className="flex items-center justify-center gap-4 mt-6">
-                  <Link href="/people">
-                    <div className="w-24 h-24 rounded-full bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer hover:bg-white/80 transition-all shadow-md">
-                      <div className="text-2xl font-bold text-gray-900">{activeUsers.length}</div>
-                      <div className="text-xs text-gray-600">Supporters</div>
-                    </div>
-                  </Link>
                   
-                  <Link href="/needs">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#6BC4B8]/30 to-[#6BC4B8]/50 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer hover:from-[#6BC4B8]/40 hover:to-[#6BC4B8]/60 transition-all shadow-md">
-                      <div className="text-2xl font-bold text-white">{openNeeds.length}</div>
-                      <div className="text-xs text-white/90">Open</div>
-                    </div>
-                  </Link>
-                  
-                  <Link href="/calendar">
-                    <div className="w-24 h-24 rounded-full bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center cursor-pointer hover:bg-white/80 transition-all shadow-md">
-                      <div className="text-2xl font-bold text-gray-900">{upcomingEvents.length}</div>
-                      <div className="text-xs text-gray-600">Events</div>
-                    </div>
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Grid of cards - varying opacity and tints */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Community Progress Card - with gradient tint like "Financial health" */}
-              <div className="bg-gradient-to-br from-[#B08CA7]/30 to-[#B08CA7]/20 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-lg">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg font-semibold text-gray-900">Community Progress</h3>
-                  <TrendingUp className="w-5 h-5 text-[#B08CA7]" />
-                </div>
-                <div className="text-4xl font-bold text-gray-900 mb-2">{completionRate}%</div>
-                <p className="text-sm text-gray-600 mb-4">Tasks completed since start</p>
-                <div className="h-2 bg-white/40 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] transition-all duration-700"
-                    style={{ width: `${completionRate}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Quick Actions - semi-transparent */}
-              <div className="bg-white/30 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-lg">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { href: "/needs", icon: Heart, label: "Needs", color: "#6BC4B8" },
-                    { href: "/meal-train", icon: ChefHat, label: "Meals", color: "#6BC4B8" },
-                    { href: "/calendar", icon: Calendar, label: "Events", color: "#B08CA7" },
-                    { href: "/messages", icon: MessageCircle, label: "Messages", color: "#B08CA7" },
-                  ].map((action) => (
-                    <Link key={action.href} href={action.href}>
-                      <div className="bg-white/50 backdrop-blur-sm rounded-2xl p-4 hover:bg-white/70 transition-all cursor-pointer text-center shadow-sm">
-                        <action.icon className="w-6 h-6 mx-auto mb-2" style={{ color: action.color }} />
-                        <div className="text-sm font-medium text-gray-900">{action.label}</div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Recent Activity - like "Upcoming payments" list */}
-            <div className="bg-white/30 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-lg">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Recent Activity</h3>
-                {recentActivity && recentActivity.length > 5 && (
-                  <button className="text-sm text-gray-600 hover:text-gray-900">View All</button>
-                )}
-              </div>
-
-              {!recentActivity || recentActivity.length === 0 ? (
-                <div className="text-center py-8">
-                  <Sparkles className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                  <p className="text-gray-500 text-sm">No activity yet</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {recentActivity.slice(0, 5).map((activity) => {
-                    const date = new Date(activity.createdAt);
-                    const isToday = date.toDateString() === new Date().toDateString();
-                    const timeStr = isToday
-                      ? date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-                      : date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-
-                    let actionText = "";
-                    let iconBg = "#6BC4B8";
-                    
-                    switch (activity.action) {
-                      case "need_created": actionText = "posted a need"; break;
-                      case "need_claimed": actionText = "claimed a need"; break;
-                      case "need_completed": actionText = "completed a need"; break;
-                      case "event_created": actionText = "created an event"; break;
-                      case "event_rsvp": actionText = "RSVP'd to event"; iconBg = "#B08CA7"; break;
-                      case "announcement_created": actionText = "posted update"; iconBg = "#B08CA7"; break;
-                      case "user_joined": actionText = "joined"; break;
-                      default: actionText = activity.action.replace(/_/g, " ");
-                    }
-
-                    return (
-                      <div key={activity.id} className="flex items-center justify-between p-3 rounded-2xl bg-white/40 hover:bg-white/60 transition-all">
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm"
-                            style={{ backgroundColor: iconBg }}
-                          >
-                            {activity.actorName?.charAt(0)?.toUpperCase() || "?"}
+                  {/* Circular avatar arrangement */}
+                  <div className="relative h-32 flex items-center justify-center">
+                    {activeUsers.length === 0 ? (
+                      <p className="text-sm text-gray-500">No supporters yet</p>
+                    ) : (
+                      <div className="relative w-full h-full">
+                        {activeUsers.slice(0, 6).map((supporter, index) => {
+                          const angle = (index * 360) / Math.min(activeUsers.length, 6);
+                          const radius = 45;
+                          const x = radius * Math.cos((angle - 90) * (Math.PI / 180));
+                          const y = radius * Math.sin((angle - 90) * (Math.PI / 180));
+                          
+                          return (
+                            <div
+                              key={supporter.id}
+                              className="absolute top-1/2 left-1/2 transition-transform group-hover:scale-110"
+                              style={{
+                                transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`,
+                              }}
+                            >
+                              <UserAvatar user={supporter} size="md" />
+                            </div>
+                          );
+                        })}
+                        {activeUsers.length > 6 && (
+                          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                            <div className="w-10 h-10 rounded-full bg-[#14B8A6] flex items-center justify-center text-white font-semibold text-sm shadow-md">
+                              +{activeUsers.length - 6}
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
-                              {activity.actorName || "Someone"}
-                            </p>
-                            <p className="text-xs text-gray-600">{actionText}</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="text-center mt-2">
+                    <p className="text-sm text-gray-600">{activeUsers.length} active supporters</p>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Open Needs Widget */}
+              <Link href="/needs">
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg hover:bg-white/70 transition-all cursor-pointer border border-white/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Open Needs</h3>
+                    <div className="w-8 h-8 rounded-full bg-[#B08CA7] flex items-center justify-center">
+                      <Heart className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  
+                  {openNeeds.length === 0 ? (
+                    <div className="h-32 flex items-center justify-center">
+                      <p className="text-sm text-gray-500">No open needs</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {openNeeds.map((need) => (
+                        <div key={need.id} className="flex items-start gap-3">
+                          <div className="w-5 h-5 rounded border-2 border-gray-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            {need.status === "completed" && <Check className="w-3 h-3 text-[#14B8A6]" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-gray-800 truncate">{need.title}</p>
                           </div>
                         </div>
-                        <span className="text-xs text-gray-500">{timeStr}</span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <div className="mt-4 pt-3 border-t border-gray-300">
+                    <p className="text-sm text-gray-600 text-center">
+                      {openNeeds.length} open {openNeeds.length === 1 ? "need" : "needs"}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Upcoming Events Widget */}
+              <Link href="/calendar">
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg hover:bg-white/70 transition-all cursor-pointer border border-white/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Upcoming Events</h3>
+                    <div className="w-8 h-8 rounded-full bg-[#14B8A6] flex items-center justify-center">
+                      <Calendar className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  
+                  {upcomingEvents.length === 0 ? (
+                    <div className="h-32 flex items-center justify-center">
+                      <p className="text-sm text-gray-500">No upcoming events</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {upcomingEvents.slice(0, 4).map((event) => {
+                        const eventDate = new Date(event.startAt);
+                        return (
+                          <div key={event.id} className="flex items-center gap-3 p-2 rounded-lg bg-white/40">
+                            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-[#14B8A6] to-[#6BC4B8] flex flex-col items-center justify-center text-white flex-shrink-0">
+                              <div className="text-xs font-medium">{eventDate.toLocaleDateString("en-US", { month: "short" }).toUpperCase()}</div>
+                              <div className="text-lg font-bold leading-none">{eventDate.getDate()}</div>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-800 truncate">{event.title}</p>
+                              <p className="text-xs text-gray-600">{eventDate.toLocaleDateString("en-US", { weekday: "short" })}</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                  
+                  <div className="mt-4 pt-3 border-t border-gray-300">
+                    <p className="text-sm text-gray-600 text-center">
+                      {upcomingEvents.length} upcoming {upcomingEvents.length === 1 ? "event" : "events"}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Meal Train Widget */}
+              <Link href="/meal-train">
+                <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg hover:bg-white/70 transition-all cursor-pointer border border-white/50">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">Meal Train</h3>
+                    <div className="w-8 h-8 rounded-full bg-[#14B8A6] flex items-center justify-center">
+                      <ChefHat className="w-4 h-4 text-white" />
+                    </div>
+                  </div>
+                  
+                  {!hasMealTrain ? (
+                    <div className="h-32 flex items-center justify-center">
+                      <p className="text-sm text-gray-500">No active meal train</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="p-3 rounded-lg bg-white/40">
+                        <p className="text-sm font-medium text-gray-800 mb-2">Meal Train Active</p>
+                        {mealTrain.availabilityStartDate && mealTrain.availabilityEndDate && (
+                          <p className="text-xs text-gray-600">
+                            {new Date(mealTrain.availabilityStartDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(mealTrain.availabilityEndDate).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                          </p>
+                        )}
                       </div>
-                    );
-                  })}
+                      
+                      {mealTrain.location && (
+                        <div className="p-3 rounded-lg bg-gradient-to-br from-[#14B8A6]/20 to-[#14B8A6]/10">
+                          <p className="text-xs text-gray-600">📍 {mealTrain.location}</p>
+                        </div>
+                      )}
+                      
+                      {mealTrain.favoriteMeals && (
+                        <div className="p-3 rounded-lg bg-white/40">
+                          <p className="text-xs font-medium text-gray-700 mb-1">Favorites</p>
+                          <p className="text-xs text-gray-600">{mealTrain.favoriteMeals}</p>
+                        </div>
+                      )}
+                      
+                      {mealTrain.allergies && (
+                        <div className="p-3 rounded-lg bg-red-50">
+                          <p className="text-xs font-medium text-red-700 mb-1">Allergies</p>
+                          <p className="text-xs text-red-600">{mealTrain.allergies}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="mt-4 pt-3 border-t border-gray-300">
+                    <p className="text-sm text-gray-600 text-center">
+                      {hasMealTrain ? "Active meal train" : "No meal train"}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Quick Actions Widget */}
+              {isPrimaryOrAdmin && (
+                <div className="bg-gradient-to-br from-[#B08CA7]/40 to-[#B08CA7]/30 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/50">
+                  <h3 className="text-lg font-semibold text-white mb-4 drop-shadow">Get Support Now</h3>
+                  
+                  <div className="space-y-2">
+                    <Link href="/needs">
+                      <Button className="w-full bg-white/90 hover:bg-white text-[#B08CA7] font-semibold shadow-md rounded-full">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Post a Need
+                      </Button>
+                    </Link>
+                    
+                    <Link href="/calendar">
+                      <Button className="w-full bg-white/90 hover:bg-white text-[#14B8A6] font-semibold shadow-md rounded-full">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        Add Event
+                      </Button>
+                    </Link>
+                    
+                    <Link href="/meal-train">
+                      <Button className="w-full bg-white/90 hover:bg-white text-[#14B8A6] font-semibold shadow-md rounded-full">
+                        <ChefHat className="w-4 h-4 mr-2" />
+                        Start Meal Train
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               )}
+
+              {/* Community Stats Widget */}
+              <div className="bg-white/60 backdrop-blur-md rounded-3xl p-6 shadow-lg border border-white/50">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Community Stats</h3>
+                
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Supporters</span>
+                    <span className="text-lg font-bold text-[#14B8A6]">{users?.filter(u => u.status === "active").length || 0}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Needs Completed</span>
+                    <span className="text-lg font-bold text-[#14B8A6]">{needs?.filter(n => n.status === "completed").length || 0}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Total Events</span>
+                    <span className="text-lg font-bold text-[#14B8A6]">{events?.length || 0}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Active Meal Train</span>
+                    <span className="text-lg font-bold text-[#14B8A6]">{hasMealTrain ? 1 : 0}</span>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
       </div>
     </DashboardLayout>
   );
-}
-
-function getGreeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good Morning";
-  if (hour < 18) return "Good Afternoon";
-  return "Good Evening";
 }
