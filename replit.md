@@ -40,12 +40,24 @@ The UI/UX features a consistent glassmorphism theme across all pages (Dashboard,
 - **Memory Wall**: A community collage for memories, stories, encouragement, and prayers. Features an aesthetic with random rotations, absolute positioning, varied card sizes, decorative tape, and vibrant color coding. Supports image uploads and filtering.
 - **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
 - **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.
+- **Access Tier System**: Three-tier access control (Community/Friend/Family) with invisible tiering for inclusive experience:
+    - Users select their relationship tier when joining (Family Member, Friend, or Community Member)
+    - All users start as "Community" tier by default regardless of selection (invisible to them)
+    - Admin/Primary can review pending tier requests and approve upgrades to Friend or Family tiers
+    - Optional auto-promotion: Admin can enable automatic tier upgrades after configurable hours (default 48, range 1-168)
+    - Meal trains default to Family+Friend visibility with optional Community tier inclusion toggle
+    - All visibility filtering respects access tiers while maintaining existing group-based controls
+    - Hourly background job processes auto-promotions for households with feature enabled
+    - Tier approval UI integrated into People page for admin/primary users
+    - Auto-promotion settings available in Settings page for admin/primary users
 - **Role-Based Access**: Admin, primary, and supporter roles with defined permissions.
     - **Admin/Primary Permissions**: Full control over household management including:
         - Delete or modify any content (needs, events, updates, messages, memory wall entries, gift registry items, meal trains)
         - Remove users from the household (removes from all groups, sets status to blocked)
         - Send direct messages to specific users using custom visibility scoping
         - Manage all household settings and configurations
+        - Approve or deny access tier upgrade requests
+        - Configure auto-promotion settings (enable/disable, hours threshold)
 - **Invitation System**: Secure supporter onboarding.
 - **Notification System**: Opt-in email notifications for 11 event types, configurable by users.
 - **Profile Pictures**: User avatar upload system with object storage integration for easy recognition of community members.
