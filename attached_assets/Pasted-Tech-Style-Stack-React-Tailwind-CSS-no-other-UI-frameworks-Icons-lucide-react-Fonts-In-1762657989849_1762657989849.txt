@@ -1,0 +1,253 @@
+Tech + Style
+
+Stack: React + Tailwind CSS (no other UI frameworks).
+
+Icons: lucide-react.
+
+Fonts: Inter (default) or Poppins.
+
+Palette
+
+Teal base: #6BC4B8
+
+Dark teal (sidebar gradient start): #0F6F67
+
+Mid teal (sidebar gradient mid): #1E9087
+
+Light teal (content glass tint): #BFE9E4 @ 10–16% opacity
+
+Silver white text: #EAF4F3
+
+Accent mauve (active pill & CTA): #B08CA7
+
+Glass tokens
+
+bg-white/10 to bg-white/12 on panels
+
+backdrop-blur-xl
+
+border border-white/18
+
+Shadows: outer shadow-[0_8px_40px_rgba(0,0,0,.20)], inner highlight ring-1 ring-white/10
+
+Corner radius: 28px on large containers, 18px on tiles, 12px on pills
+
+Layout (exact)
+
+Viewport: 1440×900 design reference; scale fluidly.
+
+Structure: Two columns
+
+Left sidebar: fixed 280px wide
+
+Content panel: fills remaining width with 24px outer padding
+
+Global background: teal gradient
+
+bg-[radial-gradient(1200px_800px_at_20%_30%,#1FB6A6_0%,#0F6F67_60%,#0B5C55_100%)]
+
+Add 2–3 soft blurred orbs (teal/silver) with opacity-30 blur-3xl for depth.
+
+Sidebar (frosted glass, vertical nav)
+
+Container
+
+Width 280px, full height, rounded corners (28px)
+
+Background: dark-teal vertical gradient with subtle glass edge:
+
+bg-[linear-gradient(180deg,#0F6F67_0%,#1E9087_60%,#279F96_100%)]
+
+ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.12)]
+
+Logo + wordmark
+
+Transparent logo (cross + hands) centered at top.
+
+Subtle teal glow: drop-shadow-[0_0_22px_rgba(107,196,184,.45)]
+
+Wordmark under it: “Our Brother’s Keeper” (legible, not distorted).
+
+Weight 700, tracking +2%, color #EAF4F3.
+
+Nav list (exact items)
+
+Dashboard (active)
+
+Needs
+
+Meal Train
+
+Messages
+
+Updates
+
+Memory Wall
+
+Gift Registry
+
+Settings
+
+Nav row spec
+
+Row height 44px, left padding 18px, gap 12px, rounded-xl.
+
+Icon: text-white/90 (active text-white), size 20–22px.
+
+Active pill (Dashboard in screenshot):
+
+Background: bg-[#B08CA7]/40 (mauve glass), backdrop-blur-md
+
+Border: border border-white/24
+
+Text: text-white
+
+Hover ring: hover:ring-4 hover:ring-[#B08CA7]/25
+
+Content Panel (glass canvas)
+
+Outer “screen”
+
+Large rounded rectangle (28px radius), soft glass:
+
+bg-white/10 backdrop-blur-xl border border-white/18
+
+shadow-[0_12px_60px_rgba(0,0,0,.22)]
+
+Inner highlight: ring-1 ring-white/10
+
+Header area:
+
+Title: Community Dashboard (H1, 28–32px, bold, text-white)
+
+Subheading line under it (muted): text-white/60 (placeholder lorem OK)
+
+Tile grid (2 rows × 3 columns)
+
+Row 1: Supporters (L), Open Needs (R)
+
+Row 2: Upcoming Events (L), Upcoming/Next… (middle placeholder), New Transactions (R wider)
+
+Spacing: grid gap 20px; tile internal padding 18–20px; tile radius 18px.
+
+Tile baseline style
+
+bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl
+
+Header: 16–18px, text-white
+
+Body text: text-white/85 (labels), text-white/70 (secondary)
+
+Top-right small action chip (where present): circular 36px, bg-[#B08CA7]/45, icon white 18px
+
+Tile content details (match layout)
+
+Supporters
+
+Title “Supporters”
+
+Network mini-avatars connected with thin lines (3–4 avatars, 32–36px, ring-2 ring-white/40)
+
+Lower-left “+” circular button: bg-white/14 border-white/25
+
+Open Needs
+
+Title “Open Needs”
+
+Three rows with left icon (avatar/emoji) + truncated task text; right check or action dots.
+
+Each row: rounded-xl bg-white/10 border-white/15 h-[54px] px-12 with faint divider.
+
+Upcoming Events
+
+Title + mini calendar grid (3 col preview)
+
+Left mini calendar icon (mauve badge bg-[#B08CA7]/50, white icon)
+
+Right small settings gear chip (as in reference).
+
+Middle tile (placeholder name in screenshot)
+
+Title “Upcoming / Next…”
+
+Two short rows with leading icons and right info dot.
+
+New Transactions (right column tile)
+
+Title “New transactions”
+
+Row of three avatars with name labels faintly under (or none)
+
+CTA button full width:
+
+“Get Support Now”
+
+Button spec: h-44px rounded-full bg-[linear-gradient(180deg,#B08CA7_0%,#8D6B85_100%)] text-white font-medium shadow-[0_8px_20px_rgba(176,140,167,.45)] hover:brightness-110
+
+Small floating circular action (plus/chat) overlapping the row: bg-[#B08CA7] size-36 text-white
+
+Typography
+
+Titles (tiles): 16–18px, 700, tracking-wide, color #EAF4F3.
+
+Body: 14–15px, 500–600, text-white/85.
+
+Secondary/helper: 12–13px, text-white/65.
+
+Micro-effects
+
+Hover on tiles: hover:bg-white/14 hover:shadow-[0_10px_28px_rgba(0,0,0,.18)] transition
+
+Icon hover: teal → white with drop-shadow-[0_0_8px_rgba(107,196,184,.45)]
+
+Focus rings: focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:outline-none
+
+Component Tree
+AppLayout
+ ├─ Sidebar
+ │   ├─ LogoMark
+ │   └─ NavList (NavItem x8)
+ └─ GlassCanvas
+     ├─ Header (H1 + subline)
+     └─ TilesGrid
+         ├─ TileSupporters
+         ├─ TileOpenNeeds
+         ├─ TileUpcomingEvents
+         ├─ TileUpcomingNext
+         └─ TileNewTransactions
+
+Assets
+
+Transparent SVG logo with soft teal halo (center top of sidebar).
+
+Placeholder 4–6 avatar images (32–40px, circular, ring-2 ring-white/40).
+
+Icons: Home, List, Calendar, MessageCircle, Megaphone, Image, Gift, Settings, UserPlus, Check, MoreHorizontal, Calendar, Bell.
+
+Responsiveness
+
+≥1280px: two rows grid as above.
+
+1024–1279px: reduce tile gaps to 16px; compress text sizes by 1pt.
+
+≤1024px: stack tiles in one column beneath header; sidebar collapses to rail (56px) with tooltips.
+
+Acceptance Criteria
+
+Sidebar width 280px, frosted dark-teal gradient with glowing logo and legible wordmark.
+
+Active Dashboard item shows mauve frosted pill exactly like reference.
+
+Content glass panel with rounded corners and subtle inner highlight.
+
+Tiles look like glass (blur + translucency), same positions and proportions as screenshot.
+
+All labels are clean and readable (no fuzzy/gibberish text).
+
+CTA “Get Support Now” matches mauve gradient style and placement.
+
+Overall hue, lighting, depth, and glow match the reference image.
+
+One-liner prompt (if needed):
+
+Build a glassmorphism “Community Dashboard” UI in React + Tailwind matching the attached reference: frosted dark-teal sidebar (280px) with glowing OBK logo and mauve active pill; large frosted content canvas; six tiles (Supporters, Open Needs, Upcoming Events, Upcoming/Next, New Transactions) with glass cards, teal text on white/silver, mauve chips, and a mauve gradient CTA. Use exact sizes, palette, shadows, and blur tokens listed; ensure all text is crisp and legible.
