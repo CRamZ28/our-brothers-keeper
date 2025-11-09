@@ -46,17 +46,14 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   };
 
   return (
-    <aside className="w-[280px] min-h-screen bg-gradient-to-b from-[#0E6C66] via-[#148C82] to-[#24A199] ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.12)] px-5 pt-6 pb-5 flex flex-col rounded-[24px] relative overflow-hidden">
+    <div className="h-full px-5 pt-6 pb-5 flex flex-col">
       
-      {/* Inner light gradient at top */}
-      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/10 via-transparent to-transparent pointer-events-none"></div>
-      
-      {/* Logo block */}
-      <div className="relative flex flex-col items-center mb-8 z-10">
+      {/* Logo block - directly on frosted sidebar background */}
+      <div className="relative flex flex-col items-center mb-8">
         {/* Soft background halo */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 h-[100px] w-[100px] bg-teal-300/25 blur-2xl -z-10"></div>
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 h-[100px] w-[100px] bg-teal-300/20 blur-2xl -z-10"></div>
 
-        {/* Emblem - larger with enhanced glow */}
+        {/* Emblem with glow */}
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
@@ -81,7 +78,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
       </div>
 
       {/* Navigation list */}
-      <nav className="space-y-1 relative z-10">
+      <nav className="space-y-1">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.path;
@@ -113,7 +110,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
       </nav>
 
       {/* Bottom user profile section */}
-      <div className="mt-auto pt-4 relative z-10">
+      <div className="mt-auto pt-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/10 transition-all duration-200 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50">
@@ -143,6 +140,6 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-    </aside>
+    </div>
   );
 }
