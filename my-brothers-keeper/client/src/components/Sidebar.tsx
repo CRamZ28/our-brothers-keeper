@@ -48,18 +48,25 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   return (
     <div className="h-full px-5 pt-6 pb-5 flex flex-col">
       
-      {/* Logo block */}
-      <div className="relative flex flex-col items-center mb-8">
+      {/* Logo block with frosted glass background */}
+      <div 
+        className="relative flex flex-col items-center mb-8 rounded-2xl p-4"
+        style={{
+          background: 'rgba(255, 255, 255, 0.2)',
+          backdropFilter: 'blur(5px)',
+          WebkitBackdropFilter: 'blur(5px)'
+        }}
+      >
         {/* Emblem */}
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
-          className="w-[80px] h-[80px] mx-auto mt-4"
+          className="w-[80px] h-[80px] mx-auto"
           loading="eager"
         />
 
-        {/* Wordmark - small caps with larger first letters */}
-        <div className="mt-2 text-[16px] font-semibold tracking-wide text-teal-800 text-center leading-tight">
+        {/* Wordmark - small caps with larger first letters - DARK TEAL */}
+        <div className="mt-2 text-[16px] font-semibold tracking-wide text-center leading-tight" style={{ color: '#2C5F5D' }}>
           <div style={{ 
             fontVariant: 'small-caps'
           }}>
@@ -84,23 +91,25 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
                 relative flex items-center gap-3 h-11 pl-[18px] pr-4 rounded-xl w-full text-left
                 transition-all duration-300 ease-in-out
                 ${isActive 
-                  ? 'text-white shadow-[0_4px_12px_rgba(176,140,167,0.25)]' 
-                  : 'text-teal-800 hover:bg-white/30 hover:translate-x-1'
+                  ? 'shadow-[0_4px_12px_rgba(176,140,167,0.25)]' 
+                  : 'hover:bg-white/30 hover:translate-x-1'
                 }
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40
               `}
               style={isActive ? {
-                background: 'rgba(211, 197, 232, 0.9)'
-              } : undefined}
+                background: 'rgba(211, 197, 232, 0.9)',
+                color: '#2C5F5D'
+              } : {
+                color: '#2C5F5D'
+              }}
             >
-              {/* Icon */}
+              {/* Icon - DARK TEAL */}
               <Icon 
-                className={`w-[20px] h-[20px] transition-all duration-300 ${
-                  isActive ? 'text-white' : 'text-teal-700'
-                }`} 
+                className="w-[20px] h-[20px] transition-all duration-300"
+                style={{ color: '#2C5F5D' }}
               />
               
-              {/* Label */}
+              {/* Label - DARK TEAL */}
               <span className="text-[15px] font-medium">
                 {item.label}
               </span>
@@ -113,17 +122,26 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
       <div className="mt-auto pt-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/30 transition-all duration-300 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40">
+            <button 
+              className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/30 transition-all duration-300 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40"
+              style={{ color: '#2C5F5D' }}
+            >
               <Avatar className="h-9 w-9 border-2 border-teal-600/30 shrink-0">
-                <AvatarFallback className="text-xs font-medium bg-white/40 text-teal-800">
+                <AvatarFallback 
+                  className="text-xs font-medium"
+                  style={{ 
+                    background: 'rgba(255, 255, 255, 0.4)',
+                    color: '#2C5F5D'
+                  }}
+                >
                   {user?.name?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate leading-none text-teal-800">
+                <p className="text-sm font-medium truncate leading-none" style={{ color: '#2C5F5D' }}>
                   {user?.name || "-"}
                 </p>
-                <p className="text-xs text-teal-700 truncate mt-1.5">
+                <p className="text-xs truncate mt-1.5" style={{ color: '#2C5F5D', opacity: 0.7 }}>
                   {user?.role || "supporter"}
                 </p>
               </div>

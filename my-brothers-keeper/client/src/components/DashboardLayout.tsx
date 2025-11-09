@@ -98,8 +98,8 @@ export default function DashboardLayout({
                 className="p-0 w-80 border border-white/30"
                 style={{
                   background: 'rgba(255, 255, 255, 0.15)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)'
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)'
                 }}
               >
                 <Sidebar onNavigate={() => setMobileMenuOpen(false)} />
@@ -109,13 +109,13 @@ export default function DashboardLayout({
 
           {/* Desktop layout - INSIDE glass container */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Layer 3: Sidebar - slightly more opaque */}
+            {/* Layer 3: Sidebar - frosted white glass with teal showing through */}
             <div 
               className="hidden lg:flex flex-col w-64 border-r border-white/30 shrink-0"
               style={{
                 background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)'
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
               }}
             >
               <Sidebar />
