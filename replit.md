@@ -4,23 +4,34 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times by simplifying community support and communication for families in need.
 
 ## User Preferences
-- **Design Style**: Modern glassmorphism with gradient backgrounds (teal → blue → purple)
-- **Sidebar**: Darker teal gradient with rounded container, glowing logo symbol with CSS small-caps text, frosted active pill, mauve hover effects
-- **Logo**: Professional glowing teal cross held by caring hands symbol (stored at `client/public/obk-symbol.png`) with CSS-styled "Our Brother's Keeper" text using small caps (first letters O, B, K larger)
+- **Design Style**: Unified glassmorphism with ONE big clear glass container wrapping all content
+- **Background**: Light teal gradient (from #5EDDD0 via #3FC9BB to #2AB5A7) with soft circular orb elements for depth
+- **Glass Container Structure**: 
+  - ONE big clear glass panel (bg-white/10 backdrop-blur-xl) wraps sidebar and content
+  - Frosted sidebar inside container (bg-white/20 backdrop-blur-md) with logo directly on frosted glass
+  - Clear content area inside container (bg-white/5 backdrop-blur-sm)
+  - Page cards use frosted glass (bg-white/25 backdrop-blur-lg) with dark text for readability
+- **Logo**: Professional glowing teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) with soft teal glow effect, paired with CSS small-caps "Our Brother's Keeper" wordmark (first letters O, B, K larger)
+- **Typography**: Dark teal text (text-teal-900) on all frosted glass surfaces for optimal readability
+- **Active Navigation**: Mauve gradient pill (bg-[#B08CA7]/50) with border and glow for active route
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
 
 ### UI/UX Decisions
-The UI/UX features a consistent glassmorphism theme across all pages (Dashboard, Needs, Calendar, MealTrain, Messages, Updates, People, Home). This includes:
-- Gradient backgrounds (teal → blue → purple)
-- Animated gradient orbs
-- Frosted glass cards (`bg-white/90 backdrop-blur-md`)
-- Enhanced shadow effects for a professional and modern aesthetic.
-- A custom-implemented sidebar replacing `shadcn/ui` for full design control, featuring a darker teal gradient, rounded containers, a glowing logo, frosted active pills for active routes, and mauve hover effects.
-- The Dashboard features a modern SaaS aesthetic with semi-transparent cards, a gradient background (from-white via-[#6BC4B8]/20 to-gray-100), and a "Family Hero Card" with gradient text.
-- The Memory Wall has a "True Vision Board Aesthetic" with overlapping, randomly rotated cards, varied sizes, decorative tape elements, and vibrant color coding for different entry types.
+The UI/UX features a unified glassmorphism design with ONE big clear glass container wrapping all content. This includes:
+- **Unified Glass Container Architecture**: All pages share a single clear glass panel that contains both sidebar and content
+- **Light Teal Gradient Background**: From #5EDDD0 via #3FC9BB to #2AB5A7 with soft circular orb elements for depth
+- **Three-Layer Glass System**:
+  - Main container: Clear glass (bg-white/10 backdrop-blur-xl) with rounded corners and border
+  - Sidebar: Frosted glass (bg-white/20 backdrop-blur-md) inside container with logo directly on frosted background
+  - Content cards: Frosted glass (bg-white/25 backdrop-blur-lg) with dark teal text for readability
+- **Typography**: Dark teal (text-teal-900) on all frosted glass surfaces for optimal contrast and readability
+- **Navigation**: Custom sidebar with glowing emblem, CSS small-caps wordmark, and mauve gradient active pill (bg-[#B08CA7]/50)
+- **Dashboard**: Simplified hero section with centered family name pill + three action cards (Supporters, Open Needs, Upcoming Events)
+- **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
+- **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
 
 ### Technical Implementations & Feature Specifications
 - **Meal Train Management**: Comprehensive meal coordination including:
