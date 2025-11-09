@@ -46,27 +46,33 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   };
 
   return (
-    <aside className="w-[280px] min-h-screen bg-[linear-gradient(180deg,#0F6F67_0%,#1E9087_55%,#279F96_100%)] ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.12)] px-5 pt-6 pb-5 flex flex-col rounded-[28px] relative overflow-hidden">
+    <aside className="w-[280px] min-h-screen bg-gradient-to-b from-[#0E6C66] via-[#148C82] to-[#24A199] ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.12)] px-5 pt-6 pb-5 flex flex-col rounded-[24px] relative overflow-hidden">
       
       {/* Inner light gradient at top */}
       <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/10 via-transparent to-transparent pointer-events-none"></div>
       
       {/* Logo block */}
       <div className="relative flex flex-col items-center mb-8 z-10">
-        {/* Soft teal halo behind the emblem */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 h-20 w-20 rounded-full bg-teal-300/30 blur-2xl -z-10"></div>
+        {/* Soft background halo */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 h-[100px] w-[100px] bg-teal-300/25 blur-2xl -z-10"></div>
 
-        {/* Emblem - larger and more prominent */}
+        {/* Emblem - larger with enhanced glow */}
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
-          className="w-[72px] h-[72px] mx-auto mt-4 drop-shadow-[0_0_22px_rgba(107,196,184,.45)]"
+          className="w-[80px] h-[80px] mx-auto mt-4"
+          style={{
+            filter: 'drop-shadow(0 0 25px rgba(0, 255, 230, 0.35))'
+          }}
           loading="eager"
         />
 
-        {/* Wordmark - refined and balanced */}
-        <div className="mt-3 text-[16px] leading-tight text-center">
-          <div className="font-semibold tracking-wide text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]" style={{ fontVariant: 'small-caps' }}>
+        {/* Wordmark - small caps with larger first letters */}
+        <div className="mt-2 text-[16px] font-semibold tracking-wide text-white text-center leading-tight">
+          <div style={{ 
+            fontVariant: 'small-caps',
+            textShadow: '0 1px 1px rgba(0, 0, 0, 0.4)'
+          }}>
             <span className="text-[18px]" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
             <span className="text-[18px]" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
             <span className="text-[18px]" style={{ fontVariant: 'normal' }}>K</span>eeper
@@ -88,15 +94,14 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
                 relative flex items-center gap-3 h-11 pl-[18px] rounded-xl w-full text-left
                 transition-all duration-200 ease-in-out
                 ${isActive 
-                  ? 'bg-[#B08CA7]/40 backdrop-blur-md border border-white/20 shadow-[0_0_12px_rgba(176,140,167,0.4)] text-white' 
+                  ? 'bg-[#B08CA7]/50 border border-white/25 backdrop-blur-md shadow-[0_0_20px_rgba(176,140,167,0.35)] text-white hover:scale-[1.02]' 
                   : 'text-white/90 hover:bg-white/10 hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:text-white'
                 }
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40
-                ${isActive ? 'before:content-[""] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[4px] before:h-[24px] before:bg-[#B08CA7] before:rounded-full' : ''}
               `}
             >
               {/* Icon */}
-              <Icon className={`w-[20px] h-[20px] ${isActive ? 'text-white' : 'text-white/90'}`} />
+              <Icon className="w-[20px] h-[20px] text-white" />
               
               {/* Label */}
               <span className="text-[15px] font-medium">

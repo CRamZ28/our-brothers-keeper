@@ -1,0 +1,159 @@
+UI Refinement Task for Replit AI Agent
+
+Objective: Finalize the “Our Brother’s Keeper” dashboard so it matches the premium glassmorphic visual quality in the concept mockups.
+
+🧭 1. Sidebar Adjustments
+
+Goal: Increase visual focus and balance between logo and navigation.
+
+Instructions:
+
+Logo section:
+
+Add a subtle glow:
+
+drop-shadow(0 0 25px rgba(0, 255, 230, 0.35));
+
+
+Slightly increase logo size to w-[80px] h-[80px].
+
+Add a soft background halo using:
+
+<div className="absolute h-[100px] w-[100px] bg-teal-300/25 blur-2xl -z-10"></div>
+
+
+Title (“Our Brother’s Keeper”):
+
+Change text style to small caps with large initials:
+
+text-[16px] font-semibold tracking-wide text-white text-center mt-2
+
+
+Example appearance: Our Brother’s Keeper
+
+Use subtle drop shadow:
+text-shadow: 0 1px 1px rgba(0, 0, 0, 0.4);
+
+Sidebar gradient:
+
+Adjust background gradient for more depth:
+
+bg-gradient-to-b from-[#0E6C66] via-[#148C82] to-[#24A199]
+
+
+Active button (Dashboard)
+Use a stronger glass highlight:
+
+bg-[#B08CA7]/50 border border-white/25 backdrop-blur-md shadow-[0_0_20px_rgba(176,140,167,0.35)]
+
+
+Icon color: text-white
+
+Hover state: hover:scale-[1.02] transition-all
+
+🧊 2. Dashboard Background
+
+Goal: Add visual richness and realism.
+
+Add ambient glow bubbles:
+
+<div className="absolute -left-20 top-32 w-[400px] h-[400px] bg-teal-200/25 blur-[160px] rounded-full"></div>
+<div className="absolute right-0 bottom-32 w-[320px] h-[320px] bg-white/20 blur-[180px] rounded-full"></div>
+
+
+Apply subtle vignette:
+
+bg-[radial-gradient(ellipse_at_center,_rgba(255,255,255,0.05)_0%,_rgba(0,0,0,0.3)_100%)]
+
+🪟 3. Tile Styling (Supporters, Needs, Events, Meals)
+
+Goal: Create consistent glass panels that feel light but readable.
+
+Tile base:
+
+bg-white/12 backdrop-blur-xl border border-white/18 rounded-[20px]
+shadow-[0_8px_40px_rgba(0,0,0,0.15)] hover:bg-white/16 hover:shadow-[0_12px_50px_rgba(0,0,0,0.2)] transition-all
+
+
+Titles (Supporters, Open Needs, etc.):
+
+text-white text-lg font-semibold mb-3
+
+
+Secondary text:
+
+text-white/70 text-sm
+
+
+Icons and action buttons:
+
+Color: bg-[#B08CA7] text-white
+
+Hover: brightness-110 scale-105
+
+Rounded: rounded-full p-2 shadow-md transition-all
+
+💬 4. Buttons & Accents
+
+Update “Get Support Now” button:
+
+bg-gradient-to-b from-[#B08CA7] to-[#8D6B85]
+rounded-full h-11 text-white font-medium tracking-wide
+shadow-[0_8px_25px_rgba(176,140,167,0.45)]
+hover:brightness-110
+
+
+Add light animation:
+
+transition-all duration-200 ease-in-out hover:scale-[1.02]
+
+🧠 5. Typography
+
+Main header (“Community Dashboard”):
+
+text-[32px] font-bold text-white leading-tight
+
+Subheader:
+
+text-white/75 text-[15px]
+
+Tile header font:
+text-[18px] font-semibold
+
+Body font:
+text-[14px] text-white/80
+
+Use Inter or Nunito Sans for soft, modern type rendering.
+
+🌟 6. Finishing Touches
+
+Add slight inner shadow to the main dashboard panel:
+
+shadow-[inset_0_1px_0_rgba(255,255,255,0.15),_0_20px_60px_rgba(0,0,0,0.25)]
+
+
+Apply smooth border radius consistency:
+
+Sidebar: rounded-[24px]
+
+Main panel: rounded-[28px]
+
+Tiles: rounded-[20px]
+
+Add a subtle top sheen:
+
+before:content-[''] before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:bg-white/10
+
+✅ Expected Final Look
+
+Once done:
+
+The logo softly glows with no visible square border.
+
+The sidebar gradient transitions smoothly and feels 3D.
+
+Tiles appear luminous and slightly elevated, with clear text contrast.
+
+Buttons have depth and tactile highlights.
+
+The dashboard feels airy, clean, and modern, evoking trust and calm support.
