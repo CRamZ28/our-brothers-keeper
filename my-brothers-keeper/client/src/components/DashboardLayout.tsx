@@ -86,7 +86,7 @@ export default function DashboardLayout({
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-80 bg-gradient-to-b from-white/40 via-white/35 to-white/30 backdrop-blur-md border-r-2 border-white/40">
+              <SheetContent side="left" className="p-0 w-80 bg-white/40 backdrop-blur-[20px] border border-white/30">
                 <Sidebar onNavigate={() => setMobileMenuOpen(false)} />
               </SheetContent>
             </Sheet>
@@ -94,8 +94,8 @@ export default function DashboardLayout({
 
           {/* Desktop layout - INSIDE glass container */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* SILVER FROSTED SIDEBAR - inside the glass container */}
-            <div className="hidden lg:flex flex-col w-64 bg-gradient-to-b from-white/40 via-white/35 to-white/30 backdrop-blur-md border-r-2 border-white/40 shrink-0">
+            {/* LIGHT FROSTED SIDEBAR - inside the glass container */}
+            <div className="hidden lg:flex flex-col w-64 bg-white/40 backdrop-blur-[20px] border-r border-white/30 shrink-0">
               <Sidebar />
             </div>
 
