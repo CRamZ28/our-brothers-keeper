@@ -60,33 +60,33 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#5EDDD0] via-[#3FC9BB] to-[#2AB5A7] relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0D7C7A] via-[#0E8986] to-[#0F9692] relative overflow-hidden">
       {/* Soft circular orbs in background */}
-      <div className="absolute top-[10%] right-[15%] w-[300px] h-[300px] bg-white/20 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[15%] left-[10%] w-[400px] h-[400px] bg-teal-300/25 blur-[140px] rounded-full pointer-events-none"></div>
-      <div className="absolute top-[60%] right-[5%] w-[200px] h-[200px] bg-white/15 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-[15%] right-[20%] w-[350px] h-[350px] bg-teal-400/15 blur-[130px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[20%] left-[10%] w-[450px] h-[450px] bg-emerald-400/10 blur-[150px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-[50%] right-[8%] w-[250px] h-[250px] bg-cyan-300/12 blur-[110px] rounded-full pointer-events-none"></div>
 
-      {/* ONE BIG CLEAR GLASS CONTAINER - wraps everything */}
+      {/* ONE BIG GLASS CONTAINER - wraps everything */}
       <div className="min-h-screen p-4 lg:p-8">
-        <div className="mx-auto max-w-7xl h-[calc(100vh-2rem)] lg:h-[calc(100vh-4rem)] bg-white/10 backdrop-blur-xl rounded-3xl border border-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.2)] overflow-hidden flex flex-col">
+        <div className="mx-auto max-w-7xl h-[calc(100vh-2rem)] lg:h-[calc(100vh-4rem)] bg-white/10 backdrop-blur-xl rounded-3xl border-2 border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.3)] overflow-hidden flex flex-col">
           
           {/* Mobile header - INSIDE glass container */}
-          <div className="lg:hidden flex items-center justify-between h-16 px-4 border-b border-white/20 shrink-0">
+          <div className="lg:hidden flex items-center justify-between h-16 px-4 border-b border-white/25 shrink-0 bg-gradient-to-r from-teal-600/60 to-teal-500/60">
             <div className="flex items-center gap-3">
               <img
                 src={APP_LOGO}
                 alt={APP_TITLE}
                 className="h-10 w-10"
               />
-              <h1 className="font-semibold text-lg text-teal-900">{APP_TITLE}</h1>
+              <h1 className="font-semibold text-lg text-white">{APP_TITLE}</h1>
             </div>
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-teal-900 hover:bg-white/10">
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="p-0 w-80 bg-white/20 backdrop-blur-md border-r border-white/20">
+              <SheetContent side="left" className="p-0 w-80 bg-white/25 backdrop-blur-md border-r-2 border-white/30">
                 <Sidebar onNavigate={() => setMobileMenuOpen(false)} />
               </SheetContent>
             </Sheet>
@@ -95,12 +95,12 @@ export default function DashboardLayout({
           {/* Desktop layout - INSIDE glass container */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
             {/* FROSTED SIDEBAR - inside the glass container */}
-            <div className="hidden lg:flex flex-col w-64 bg-white/20 backdrop-blur-md border-r border-white/20 shrink-0">
+            <div className="hidden lg:flex flex-col w-64 bg-white/25 backdrop-blur-md border-r-2 border-white/30 shrink-0">
               <Sidebar />
             </div>
 
-            {/* CLEAR CONTENT AREA - inside the glass container */}
-            <main className="flex-1 overflow-auto bg-white/5 backdrop-blur-sm">
+            {/* TEAL CONTENT AREA - inside the glass container */}
+            <main className="flex-1 overflow-auto bg-gradient-to-br from-teal-600/50 via-teal-500/45 to-teal-600/50 backdrop-blur-sm">
               {children}
             </main>
           </div>

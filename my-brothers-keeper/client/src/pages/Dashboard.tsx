@@ -15,7 +15,7 @@ export default function Dashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-white/70">Loading...</p>
+          <p className="text-white/80">Loading...</p>
         </div>
       </DashboardLayout>
     );
@@ -35,37 +35,25 @@ export default function Dashboard() {
     <DashboardLayout>
       <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
         
-        {/* Hero Section - Family Name Pill */}
-        <div className="flex justify-center">
-          <div className="px-8 py-3 bg-white/30 backdrop-blur-lg border border-white/40 rounded-full shadow-lg">
-            <h1 className="text-2xl font-bold text-teal-900 uppercase tracking-wide text-center">
-              {household.name}
-            </h1>
-          </div>
+        {/* Hero Section - Family Name */}
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl lg:text-4xl font-bold text-white tracking-wide">
+            {household.name}
+          </h1>
+          <p className="text-white/80 text-sm">
+            Supporting the family through community care and connection
+          </p>
         </div>
-
-        {/* Optional Picture Pill */}
-        {household.photoUrl && (
-          <div className="flex justify-center">
-            <div className="px-6 py-2 bg-white/30 backdrop-blur-lg border border-white/40 rounded-full shadow-lg">
-              <img 
-                src={household.photoUrl} 
-                alt={household.name}
-                className="h-20 w-20 rounded-full object-cover"
-              />
-            </div>
-          </div>
-        )}
 
         {/* Three Action Cards - Responsive Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           
           {/* Card 1: Supporters */}
-          <div className="bg-white/25 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-lg space-y-6">
+          <div className="bg-white/30 backdrop-blur-lg border-2 border-white/40 rounded-2xl p-6 shadow-xl space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-teal-900">Supporters</h2>
-              <div className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center">
-                <Users className="w-5 h-5 text-teal-700" />
+              <div className="w-10 h-10 rounded-full bg-[#B08CA7]/60 flex items-center justify-center">
+                <Users className="w-5 h-5 text-white" />
               </div>
             </div>
 
@@ -84,7 +72,7 @@ export default function Dashboard() {
                 </button>
               </Link>
               <Link href="/people">
-                <button className="w-full py-3 px-4 bg-white/30 backdrop-blur-sm border border-white/40 rounded-full text-teal-900 font-medium hover:bg-white/40 transition-all duration-200">
+                <button className="w-full py-3 px-4 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full text-teal-900 font-medium hover:bg-white/50 transition-all duration-200">
                   View All Supporters
                 </button>
               </Link>
@@ -92,11 +80,11 @@ export default function Dashboard() {
           </div>
 
           {/* Card 2: Open Needs */}
-          <div className="bg-white/25 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-lg space-y-6">
+          <div className="bg-white/30 backdrop-blur-lg border-2 border-white/40 rounded-2xl p-6 shadow-xl space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-teal-900">Open Needs</h2>
-              <div className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center">
-                <Heart className="w-5 h-5 text-teal-700" />
+              <div className="w-10 h-10 rounded-full bg-[#B08CA7]/60 flex items-center justify-center">
+                <Heart className="w-5 h-5 text-white" />
               </div>
             </div>
 
@@ -114,7 +102,7 @@ export default function Dashboard() {
                 openNeeds.slice(0, 2).map((need) => (
                   <div 
                     key={need.id} 
-                    className="px-4 py-3 bg-white/40 backdrop-blur-sm border border-white/40 rounded-xl"
+                    className="px-4 py-3 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl"
                   >
                     <div className="text-teal-900 font-medium text-sm truncate">
                       {need.title}
@@ -130,18 +118,18 @@ export default function Dashboard() {
             </div>
 
             <Link href="/needs">
-              <button className="w-full py-3 px-4 bg-white/30 backdrop-blur-sm border border-white/40 rounded-full text-teal-900 font-medium hover:bg-white/40 transition-all duration-200">
+              <button className="w-full py-3 px-4 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full text-teal-900 font-medium hover:bg-white/50 transition-all duration-200">
                 View All Needs
               </button>
             </Link>
           </div>
 
           {/* Card 3: Upcoming Events */}
-          <div className="bg-white/25 backdrop-blur-lg border border-white/30 rounded-2xl p-6 shadow-lg space-y-6">
+          <div className="bg-white/30 backdrop-blur-lg border-2 border-white/40 rounded-2xl p-6 shadow-xl space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-teal-900">Upcoming Events</h2>
-              <div className="w-10 h-10 rounded-full bg-white/40 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-teal-700" />
+              <div className="w-10 h-10 rounded-full bg-[#B08CA7]/60 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-white" />
               </div>
             </div>
 
@@ -161,7 +149,7 @@ export default function Dashboard() {
                   return (
                     <div 
                       key={event.id} 
-                      className="px-4 py-3 bg-white/40 backdrop-blur-sm border border-white/40 rounded-xl"
+                      className="px-4 py-3 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl"
                     >
                       <div className="text-teal-900 font-medium text-sm truncate">
                         {event.title}
@@ -182,7 +170,7 @@ export default function Dashboard() {
             </div>
 
             <Link href="/calendar">
-              <button className="w-full py-3 px-4 bg-white/30 backdrop-blur-sm border border-white/40 rounded-full text-teal-900 font-medium hover:bg-white/40 transition-all duration-200">
+              <button className="w-full py-3 px-4 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full text-teal-900 font-medium hover:bg-white/50 transition-all duration-200">
                 See Full Calendar
               </button>
             </Link>
