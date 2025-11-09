@@ -30,25 +30,24 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      {/* Global background: teal radial gradient with soft blurred orbs */}
+      {/* Global background: teal radial gradient */}
       <div className="min-h-screen bg-[radial-gradient(1200px_800px_at_20%_30%,#1FB6A6_0%,#0F6F67_60%,#0B5C55_100%)] relative overflow-hidden">
-        {/* Soft blurred orbs for depth */}
-        <div className="absolute top-20 right-40 w-[500px] h-[500px] bg-[#6BC4B8] opacity-30 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-20 w-[400px] h-[400px] bg-[#EAF4F3] opacity-30 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#6BC4B8] opacity-20 rounded-full blur-3xl"></div>
+        {/* Background light blobs for depth */}
+        <div className="absolute -left-32 top-24 h-[400px] w-[400px] bg-teal-300/30 blur-[160px] rounded-full"></div>
+        <div className="absolute right-[-100px] bottom-32 h-[320px] w-[320px] bg-white/20 blur-[180px] rounded-full"></div>
         
-        {/* Content Panel (glass canvas) */}
+        {/* Content Panel */}
         <div className="relative z-10 p-6">
           <div className="max-w-7xl mx-auto">
-            {/* Large glass container */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/18 rounded-[28px] shadow-[0_12px_60px_rgba(0,0,0,.22)] ring-1 ring-white/10 p-8">
+            {/* Large glass container with depth */}
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[28px] shadow-[0_12px_60px_rgba(0,0,0,.25)] ring-1 ring-white/10 p-8">
               
               {/* Header area */}
               <div className="mb-8">
-                <h1 className="text-[32px] font-bold text-white tracking-wide mb-2">
+                <h1 className="text-[32px] font-bold text-white leading-tight tracking-wide mb-2">
                   Community Dashboard
                 </h1>
-                <p className="text-white/60 text-sm">
+                <p className="text-white/70 text-[15px] font-medium">
                   Supporting {household.name} through community care and connection
                 </p>
               </div>
@@ -58,9 +57,9 @@ export default function Dashboard() {
                 
                 {/* Row 1, Col 1: Supporters */}
                 <Link href="/people">
-                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 hover:bg-white/14 hover:shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-all cursor-pointer group">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-[17px] font-bold text-[#EAF4F3] tracking-wide">
+                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)] hover:bg-white/14 hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)] transition-all duration-200 ease-in-out cursor-pointer group">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-white font-semibold text-[18px]">
                         Supporters
                       </h3>
                       <div className="w-9 h-9 rounded-full bg-[#B08CA7]/45 flex items-center justify-center">
@@ -71,7 +70,7 @@ export default function Dashboard() {
                     {/* Network mini-avatars */}
                     <div className="relative h-32 flex items-center justify-center">
                       {activeUsers.length === 0 ? (
-                        <p className="text-white/70 text-sm">No supporters yet</p>
+                        <p className="text-white/65 text-[14px]">No supporters yet</p>
                       ) : (
                         <>
                           {activeUsers.map((supporter, index) => {
@@ -92,11 +91,11 @@ export default function Dashboard() {
                               </div>
                             );
                           })}
-                          {/* + button in lower-left relative position */}
+                          {/* + button */}
                           <div className="absolute bottom-0 left-4">
-                            <div className="w-10 h-10 rounded-full bg-white/14 border border-white/25 flex items-center justify-center hover:bg-white/20 transition-all">
-                              <Plus className="w-5 h-5 text-white" />
-                            </div>
+                            <button className="w-10 h-10 rounded-full bg-[#B08CA7] text-white p-2 shadow-lg hover:scale-105 transition-transform duration-200 ease-in-out flex items-center justify-center">
+                              <Plus className="w-5 h-5" />
+                            </button>
                           </div>
                         </>
                       )}
@@ -106,9 +105,9 @@ export default function Dashboard() {
 
                 {/* Row 1, Col 2: Open Needs */}
                 <Link href="/needs">
-                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 hover:bg-white/14 hover:shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-all cursor-pointer">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-[17px] font-bold text-[#EAF4F3] tracking-wide">
+                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)] hover:bg-white/14 hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)] transition-all duration-200 ease-in-out cursor-pointer">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-white font-semibold text-[18px]">
                         Open Needs
                       </h3>
                       <div className="w-9 h-9 rounded-full bg-[#B08CA7]/45 flex items-center justify-center">
@@ -120,7 +119,7 @@ export default function Dashboard() {
                     <div className="space-y-2">
                       {openNeeds.length === 0 ? (
                         <div className="h-32 flex items-center justify-center">
-                          <p className="text-white/70 text-sm">No open needs</p>
+                          <p className="text-white/65 text-[14px]">No open needs</p>
                         </div>
                       ) : (
                         openNeeds.map((need) => (
@@ -129,7 +128,7 @@ export default function Dashboard() {
                               {need.title.charAt(0).toUpperCase()}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-white/85 text-sm truncate">{need.title}</p>
+                              <p className="text-white/85 text-[14px] truncate">{need.title}</p>
                             </div>
                             <Check className="w-5 h-5 text-white/70 flex-shrink-0" />
                           </div>
@@ -140,36 +139,36 @@ export default function Dashboard() {
                 </Link>
 
                 {/* Row 1, Col 3: New Transactions (wider) */}
-                <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 lg:row-span-2">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-[17px] font-bold text-[#EAF4F3] tracking-wide">
+                <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)] hover:bg-white/14 hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)] transition-all duration-200 ease-in-out lg:row-span-2">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-white font-semibold text-[18px]">
                       New transactions
                     </h3>
                   </div>
                   
                   {/* Row of avatars with names */}
                   <div className="flex items-center gap-4 mb-6">
-                    {activeUsers.slice(0, 3).map((user) => (
-                      <div key={user.id} className="flex flex-col items-center gap-2">
+                    {activeUsers.slice(0, 3).map((supporter) => (
+                      <div key={supporter.id} className="flex flex-col items-center gap-2">
                         <div className="ring-2 ring-white/40 rounded-full">
-                          <UserAvatar user={user} size="md" />
+                          <UserAvatar user={supporter} size="md" />
                         </div>
-                        <span className="text-white/70 text-xs truncate max-w-[60px]">
-                          {user.name?.split(' ')[0] || 'User'}
+                        <span className="text-white/65 text-[13px] truncate max-w-[60px]">
+                          {supporter.name?.split(' ')[0] || 'User'}
                         </span>
                       </div>
                     ))}
                     {/* Floating circular plus */}
                     <div className="relative -ml-2">
-                      <div className="w-9 h-9 rounded-full bg-[#B08CA7] flex items-center justify-center shadow-lg">
-                        <Plus className="w-5 h-5 text-white" />
-                      </div>
+                      <button className="w-9 h-9 rounded-full bg-[#B08CA7] text-white p-2 shadow-lg hover:scale-105 transition-transform duration-200 ease-in-out flex items-center justify-center">
+                        <Plus className="w-5 h-5" />
+                      </button>
                     </div>
                   </div>
                   
-                  {/* CTA button */}
+                  {/* CTA button - mauve gradient */}
                   <Link href="/needs">
-                    <button className="w-full h-11 rounded-full bg-[linear-gradient(180deg,#B08CA7_0%,#8D6B85_100%)] text-white font-medium shadow-[0_8px_20px_rgba(176,140,167,.45)] hover:brightness-110 transition-all">
+                    <button className="h-11 w-full rounded-full bg-[linear-gradient(180deg,#B08CA7_0%,#8D6B85_100%)] text-white font-medium tracking-wide shadow-[0_8px_20px_rgba(176,140,167,.45)] hover:brightness-110 transition-all duration-200 ease-in-out">
                       Get Support Now
                     </button>
                   </Link>
@@ -177,9 +176,9 @@ export default function Dashboard() {
 
                 {/* Row 2, Col 1: Upcoming Events */}
                 <Link href="/calendar">
-                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 hover:bg-white/14 hover:shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-all cursor-pointer">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-[17px] font-bold text-[#EAF4F3] tracking-wide">
+                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)] hover:bg-white/14 hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)] transition-all duration-200 ease-in-out cursor-pointer">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-white font-semibold text-[18px]">
                         Upcoming Events
                       </h3>
                       <div className="flex items-center gap-2">
@@ -196,7 +195,7 @@ export default function Dashboard() {
                     <div className="grid grid-cols-3 gap-2">
                       {upcomingEvents.length === 0 ? (
                         <div className="col-span-3 h-20 flex items-center justify-center">
-                          <p className="text-white/70 text-sm">No upcoming events</p>
+                          <p className="text-white/65 text-[14px]">No upcoming events</p>
                         </div>
                       ) : (
                         upcomingEvents.map((event) => {
@@ -219,9 +218,9 @@ export default function Dashboard() {
 
                 {/* Row 2, Col 2: Upcoming/Next Meals */}
                 <Link href="/meal-train">
-                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 hover:bg-white/14 hover:shadow-[0_10px_28px_rgba(0,0,0,.18)] transition-all cursor-pointer">
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className="text-[17px] font-bold text-[#EAF4F3] tracking-wide">
+                  <div className="bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)] hover:bg-white/14 hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)] transition-all duration-200 ease-in-out cursor-pointer">
+                    <div className="flex items-center justify-between mb-3">
+                      <h3 className="text-white font-semibold text-[18px]">
                         Upcoming Meal Cares
                       </h3>
                       <div className="w-9 h-9 rounded-full bg-[#B08CA7]/45 flex items-center justify-center">
@@ -233,7 +232,7 @@ export default function Dashboard() {
                     <div className="space-y-3">
                       {upcomingMeals.length === 0 ? (
                         <div className="h-20 flex items-center justify-center">
-                          <p className="text-white/70 text-sm">No upcoming meals</p>
+                          <p className="text-white/65 text-[14px]">No upcoming meals</p>
                         </div>
                       ) : (
                         upcomingMeals.slice(0, 2).map((signup) => {
@@ -244,8 +243,8 @@ export default function Dashboard() {
                                 {signup.userName?.charAt(0)?.toUpperCase() || "?"}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="text-white/85 text-sm">{signup.userName || "Anonymous"}</p>
-                                <p className="text-white/65 text-xs">{mealDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
+                                <p className="text-white/85 text-[14px]">{signup.userName || "Anonymous"}</p>
+                                <p className="text-white/65 text-[13px]">{mealDate.toLocaleDateString("en-US", { month: "short", day: "numeric" })}</p>
                               </div>
                               <div className="w-2 h-2 rounded-full bg-[#6BC4B8]"></div>
                             </div>

@@ -1,0 +1,161 @@
+Objective:
+Polish the sidebar and dashboard visuals so they match a modern glassmorphism design and better showcase the Our Brother’s Keeper branding.
+
+1️⃣ Sidebar – Logo and Header Section
+
+Goal: Center and emphasize the logo, make the wordmark more refined and balanced.
+
+Instructions:
+
+Replace the white background behind the logo with transparent, using the provided PNG or SVG.
+
+Add a soft teal glow behind the emblem:
+
+drop-shadow(0 0 22px rgba(107,196,184,0.45));
+
+
+Slightly enlarge the logo:
+w-[72px] h-[72px] mx-auto mt-4
+
+For the Our Brother’s Keeper wordmark:
+
+Use small caps with first letters slightly larger.
+
+Center align.
+
+font-semibold tracking-wide text-white drop-shadow-[0_1px_1px_rgba(0,0,0,0.3)]
+
+Add mt-3 text-[16px] leading-tight text-center.
+
+✅ Optional improvement: Create two separate assets — the emblem and the wordmark — to keep proportions balanced.
+
+2️⃣ Sidebar – Active Item + Hover States
+
+Goal: Match the glowing glass effect from your inspiration image.
+
+Instructions:
+
+Active item (Dashboard):
+
+bg-[#B08CA7]/40 backdrop-blur-md border border-white/20 shadow-[0_0_12px_rgba(176,140,167,0.4)]
+
+
+Hover effect for inactive items:
+
+hover:bg-white/10 hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:text-white transition-all
+
+
+Add a subtle left accent line for active states:
+
+before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-[4px] before:h-[24px] before:bg-[#B08CA7] before:rounded-full
+
+3️⃣ Main Panel – Depth and Glow
+
+Goal: Give the entire dashboard surface more visual depth.
+
+Instructions:
+
+Wrap the main dashboard container with:
+
+bg-white/10 backdrop-blur-xl border border-white/20 rounded-[28px]
+shadow-[0_12px_60px_rgba(0,0,0,0.25)] ring-1 ring-white/10
+
+
+Add two background light blobs for depth:
+
+<div className="absolute -left-32 top-24 h-[400px] w-[400px] bg-teal-300/30 blur-[160px] rounded-full"></div>
+<div className="absolute right-[-100px] bottom-32 h-[320px] w-[320px] bg-white/20 blur-[180px] rounded-full"></div>
+
+4️⃣ Tile Refinements
+
+Goal: Add depth and readability to each module (Supporters, Open Needs, etc.)
+
+Instructions:
+
+Tile containers:
+
+bg-white/12 backdrop-blur-xl border border-white/18 rounded-2xl p-5 shadow-[0_10px_40px_rgba(0,0,0,0.18)]
+hover:bg-white/14 hover:shadow-[0_14px_44px_rgba(0,0,0,0.22)] transition-all
+
+
+Tile headers:
+text-white font-semibold text-[18px] mb-3
+
+Tile body text:
+text-white/85 text-[14px]
+
+Subtext (e.g., dates, labels):
+text-white/65 text-[13px]
+
+Use a consistent corner radius of 18px for all tiles.
+
+5️⃣ Buttons + Accents
+
+Goal: Modernize and unify all mauve accent buttons.
+
+Instructions:
+
+“Get Support Now” button:
+
+h-11 w-full rounded-full
+bg-[linear-gradient(180deg,#B08CA7_0%,#8D6B85_100%)]
+text-white font-medium tracking-wide
+shadow-[0_8px_20px_rgba(176,140,167,0.45)]
+hover:brightness-110
+
+
+Floating “+” icons:
+rounded-full bg-[#B08CA7] text-white p-2 shadow-lg hover:scale-105 transition-transform
+
+6️⃣ Typography + Sizing
+
+Goal: Increase clarity and contrast slightly.
+
+Instructions:
+
+Header ("Community Dashboard")
+
+text-[32px] font-bold text-white leading-tight
+
+Subheader
+
+text-white/70 text-[15px] font-medium
+
+Sidebar font size
+
+Increase slightly: text-[15px] for better legibility
+
+Icon size
+
+Uniform at w-[20px] h-[20px]
+
+Use text-white/90 (active: text-white)
+
+7️⃣ Finishing Touches
+
+Goal: Create subtle realism and polish.
+
+Instructions:
+
+Add inner light gradient at the top of the sidebar:
+
+bg-gradient-to-b from-white/10 via-transparent to-transparent
+
+
+Round the outer corners of the entire app (optional but elegant):
+rounded-[24px] overflow-hidden
+
+Ensure all transitions use:
+transition-all duration-200 ease-in-out
+
+✅ Final Visual Targets
+
+The logo glow is visible but soft (no harsh white edges).
+
+Sidebar active states feel glassy and dimensional.
+
+Tiles have consistent radii, shadow depth, and hover transitions.
+
+Text hierarchy is legible at a glance.
+
+The mauve accent is used only for CTAs and highlights (Dashboard, buttons, chips).
