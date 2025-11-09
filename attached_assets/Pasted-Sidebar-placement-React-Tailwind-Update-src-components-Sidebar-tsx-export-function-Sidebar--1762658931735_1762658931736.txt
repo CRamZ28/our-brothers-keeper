@@ -1,0 +1,75 @@
+Sidebar placement (React + Tailwind)
+
+Update src/components/Sidebar.tsx:
+
+export function Sidebar() {
+  return (
+    <aside className="relative w-[280px] min-h-screen
+      bg-[linear-gradient(180deg,#0F6F67_0%,#1E9087_55%,#279F96_100%)]
+      ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.12)]
+      px-5 pt-6 pb-5 flex flex-col">
+      
+      {/* Logo block */}
+      <div className="relative flex flex-col items-center">
+        {/* soft halo behind the emblem */}
+        <div className="absolute -z-10 h-16 w-16 rounded-full bg-teal-300/25 blur-2xl"></div>
+
+        {/* use emblem only for perfect spacing; or swap to /obk-logo.svg */}
+        <img
+          src="/obk-emblem.svg"
+          alt="Our Brother’s Keeper logo"
+          className="w-14 h-14 drop-shadow-[0_0_22px_rgba(107,196,184,.45)]"
+          loading="eager"
+        />
+
+        {/* wordmark under logo (SVG export with small-caps first letters larger) */}
+        <img
+          src="/obk-wordmark.svg"
+          alt="Our Brother’s Keeper"
+          className="mt-3 w-40 drop-shadow-[0_1px_0_rgba(0,0,0,.15)]"
+        />
+      </div>
+
+      {/* ...nav items below */}
+    </aside>
+  );
+}
+
+
+If you prefer the all-in-one logo (emblem + words), replace the two <img> tags with:
+
+<img
+  src="/obk-logo.svg"
+  alt="Our Brother’s Keeper"
+  className="w-40 drop-shadow-[0_0_22px_rgba(107,196,184,.45)] mx-auto"
+/>
+
+Rendering/legibility tweaks
+
+Ensure the sidebar text is readable over the gradient:
+
+Nav item labels: text-white/90 (active: text-white)
+
+Active pill: bg-[#B08CA7]/40 backdrop-blur-md border border-white/25
+
+Add high-dpi crispness:
+
+For PNG, export at 2× or 3× and size down with CSS.
+
+Prefer SVG to avoid blur on scaling.
+
+Accessibility
+
+alt="Our Brother’s Keeper" on the logo image.
+
+If the wordmark is purely decorative (the app name also appears as text elsewhere), add aria-hidden="true" on the wordmark image.
+
+Acceptance Criteria
+
+Logo appears centered at the top of the sidebar with a soft teal halo/glow.
+
+Wordmark sits directly beneath (small-caps style with slightly larger first letters).
+
+No visible background box around the images (true transparency).
+
+Crisp at all sidebar widths; no fuzziness on HiDPI screens.

@@ -47,72 +47,65 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   };
 
   return (
-    <aside className="w-72 min-h-screen sticky top-0 rounded-[28px] bg-[linear-gradient(180deg,#0a6f66_0%,#1d8f86_45%,#2ea79d_100%)] shadow-[0_10px_40px_rgba(0,0,0,.25)] border border-white/10 relative overflow-hidden">
-      {/* Subtle inner highlight & edge */}
-      <div className="absolute inset-0 pointer-events-none ring-1 ring-white/10 rounded-[28px]">
-        <div className="h-32 bg-gradient-to-b from-white/5 to-transparent rounded-t-[28px]" />
-      </div>
-
+    <aside className="w-[280px] min-h-screen bg-[linear-gradient(180deg,#0F6F67_0%,#1E9087_55%,#279F96_100%)] ring-1 ring-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,.12)] px-5 pt-6 pb-5 flex flex-col rounded-[28px]">
+      
       {/* Logo block */}
-      <div className="flex flex-col items-center pt-6 pb-5 relative z-10">
+      <div className="relative flex flex-col items-center mb-8">
+        {/* Soft teal halo behind the emblem */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 h-16 w-16 rounded-full bg-teal-300/25 blur-2xl -z-10"></div>
+
+        {/* Emblem only - cross + hands + curved line */}
         <img
-          src="/obk-symbol.png"
-          alt="Our Brother's Keeper"
-          className="w-44 h-44 drop-shadow-[0_0_32px_rgba(107,196,184,.7)] mb-4"
+          src="/obk-emblem.png"
+          alt="Our Brother's Keeper logo"
+          className="w-14 h-14 drop-shadow-[0_0_22px_rgba(107,196,184,.45)]"
+          loading="eager"
         />
-        <div className="text-white text-center font-bold leading-tight">
-          <div className="text-lg" style={{ fontVariant: 'small-caps' }}>
-            <span className="text-xl" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
-            <span className="text-xl" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
-            <span className="text-xl" style={{ fontVariant: 'normal' }}>K</span>eeper
+
+        {/* Wordmark under logo - CSS small-caps with larger first letters */}
+        <div className="mt-3 text-[#EAF4F3] text-center font-bold leading-tight tracking-[0.02em]">
+          <div className="text-sm" style={{ fontVariant: 'small-caps' }}>
+            <span className="text-base" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
+            <span className="text-base" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
+            <span className="text-base" style={{ fontVariant: 'normal' }}>K</span>eeper
           </div>
         </div>
       </div>
 
       {/* Navigation list */}
-      <nav className="px-4 space-y-2 relative z-10">
+      <nav className="space-y-1">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.path;
 
           return (
-            <div key={item.path} className="relative">
-              {/* Active pill background */}
-              {isActive && (
-                <div className="absolute inset-y-0 left-2 right-2 rounded-xl bg-white/12 backdrop-blur-md border border-white/20" />
-              )}
-
-              {/* Nav item */}
-              <button
-                onClick={() => handleNavigate(item.path)}
-                className={`
-                  relative flex items-center gap-3 px-4 py-2 rounded-xl w-full text-left
-                  transition-all duration-200
-                  ${isActive 
-                    ? 'text-white hover:ring-8 hover:ring-[#B08CA7]/18' 
-                    : 'text-white/90 hover:text-white'
-                  }
-                  hover:-translate-y-[1px] hover:shadow-[0_8px_24px_rgba(0,0,0,.18)]
-                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#B08CA7]/25
-                `}
-              >
-                {/* Icon chip */}
-                <div className="h-8 w-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                  <Icon className="w-4 h-4" />
-                </div>
-                
-                {/* Label */}
-                <span className="text-base font-medium tracking-tight">
-                  {item.label}
-                </span>
-              </button>
-            </div>
+            <button
+              key={item.path}
+              onClick={() => handleNavigate(item.path)}
+              className={`
+                relative flex items-center gap-3 h-11 pl-[18px] rounded-xl w-full text-left
+                transition-all duration-200
+                ${isActive 
+                  ? 'bg-[#B08CA7]/40 backdrop-blur-md border border-white/24 text-white hover:ring-4 hover:ring-[#B08CA7]/25' 
+                  : 'text-white/90 hover:text-white hover:bg-white/5'
+                }
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40
+              `}
+            >
+              {/* Icon */}
+              <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-white/90'}`} />
+              
+              {/* Label */}
+              <span className="text-sm font-medium">
+                {item.label}
+              </span>
+            </button>
           );
         })}
       </nav>
 
       {/* Bottom user profile section */}
-      <div className="mt-auto px-4 pb-5 relative z-10">
+      <div className="mt-auto pt-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/10 transition-colors w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50">
