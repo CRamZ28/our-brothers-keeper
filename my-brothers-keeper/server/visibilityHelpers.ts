@@ -7,6 +7,7 @@ import * as db from "./db";
 export async function checkContentVisibility(
   userId: string,
   userRole: string,
+  userAccessTier: string,
   householdId: number,
   content: {
     visibilityScope: string;
@@ -21,7 +22,17 @@ export async function checkContentVisibility(
     return true;
   }
 
-  // Check visibility scope
+  // Access tier filtering: Only family and friend tier can see content by default
+  // Community tier users are blocked unless explicitly allowed in specific contexts
+  if (userAccessTier === "community") {
+    // Community tier users can only see custom content if explicitly included
+    if (content.visibilityScope === "custom" && content.customUserIds) {
+      return content.customUserIds.includes(userId);
+    }
+    return false;
+  }
+
+  // Check visibility scope for family and friend tier users
   if (content.visibilityScope === "all_supporters") {
     return true;
   } else if (content.visibilityScope === "role") {
@@ -52,6 +63,7 @@ export async function checkContentVisibility(
 function checkContentVisibilitySync(
   userId: string,
   userRole: string,
+  userAccessTier: string,
   userGroupIds: number[],
   content: {
     visibilityScope: string;
@@ -66,7 +78,17 @@ function checkContentVisibilitySync(
     return true;
   }
 
-  // Check visibility scope
+  // Access tier filtering: Only family and friend tier can see content by default
+  // Community tier users are blocked unless explicitly allowed in specific contexts
+  if (userAccessTier === "community") {
+    // Community tier users can only see custom content if explicitly included
+    if (content.visibilityScope === "custom" && content.customUserIds) {
+      return content.customUserIds.includes(userId);
+    }
+    return false;
+  }
+
+  // Check visibility scope for family and friend tier users
   if (content.visibilityScope === "all_supporters") {
     return true;
   } else if (content.visibilityScope === "role") {
@@ -102,6 +124,7 @@ export async function filterByVisibility<T extends {
   items: T[],
   userId: string,
   userRole: string,
+  userAccessTier: string,
   householdId: number
 ): Promise<T[]> {
   // Early return for empty lists
@@ -117,7 +140,7 @@ export async function filterByVisibility<T extends {
   // Now filter synchronously using cached group IDs
   const visibleItems: T[] = [];
   for (const item of items) {
-    const canView = checkContentVisibilitySync(userId, userRole, userGroupIds, item);
+    const canView = checkContentVisibilitySync(userId, userRole, userAccessTier, userGroupIds, item);
     if (canView) {
       visibleItems.push(item);
     }

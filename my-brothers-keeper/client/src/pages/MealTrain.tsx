@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Calendar } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -693,6 +694,7 @@ function MealTrainConfigDialog({
     mealTrain?.addressVisibilityScope || "all_supporters"
   );
   const [addressVisibilityGroupIds, setAddressVisibilityGroupIds] = useState<string[]>([]);
+  const [includeCommunityTier, setIncludeCommunityTier] = useState(mealTrain?.includeCommunityTier ?? false);
   const [enabled, setEnabled] = useState(mealTrain?.enabled ?? true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
   const [daysAheadOpen, setDaysAheadOpen] = useState(30);
@@ -709,6 +711,7 @@ function MealTrainConfigDialog({
         setVisibilityScope(mealTrain.visibilityScope || "all_supporters");
         setAddressVisibilityScope(mealTrain.addressVisibilityScope || "all_supporters");
         setDaysAheadOpen(mealTrain.daysAheadOpen || 30);
+        setIncludeCommunityTier(mealTrain.includeCommunityTier ?? false);
         setVisibilityGroupIds(mealTrain.visibilityGroupIds?.map((id: number) => id.toString()) || []);
         setAddressVisibilityGroupIds(mealTrain.addressVisibilityGroupIds?.map((id: number) => id.toString()) || []);
         if (existingDays.length > 0) {
@@ -718,6 +721,7 @@ function MealTrainConfigDialog({
       } else {
         setVisibilityScope("all_supporters");
         setAddressVisibilityScope("all_supporters");
+        setIncludeCommunityTier(false);
         setVisibilityGroupIds([]);
         setAddressVisibilityGroupIds([]);
       }
@@ -754,6 +758,7 @@ function MealTrainConfigDialog({
       visibilityGroupIds: visibilityGroupIds.length > 0 ? visibilityGroupIds.map(id => parseInt(id)) : undefined,
       addressVisibilityScope: addressVisibilityScope as any,
       addressVisibilityGroupIds: addressVisibilityGroupIds.length > 0 ? addressVisibilityGroupIds.map(id => parseInt(id)) : undefined,
+      includeCommunityTier,
       enabled,
       daysAheadOpen,
       selectedDates: selectedDates.map(d => d.toISOString().split('T')[0]),
@@ -880,6 +885,20 @@ function MealTrainConfigDialog({
               </div>
             </div>
           )}
+
+          <div className="flex items-center justify-between space-x-2 p-4 border rounded-lg">
+            <div className="space-y-0.5">
+              <Label htmlFor="includeCommunityTier" className="text-base">Share with Community Tier</Label>
+              <p className="text-sm text-muted-foreground">
+                Allow community tier members to view and volunteer for this meal train
+              </p>
+            </div>
+            <Switch
+              id="includeCommunityTier"
+              checked={includeCommunityTier}
+              onCheckedChange={setIncludeCommunityTier}
+            />
+          </div>
 
           <div>
             <Label htmlFor="peopleCount">Number of People to Cook For</Label>

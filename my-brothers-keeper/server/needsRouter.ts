@@ -19,6 +19,7 @@ export const needsRouter = router({
       allNeeds,
       ctx.user.id,
       ctx.user.role,
+      ctx.user.accessTier,
       ctx.user.householdId
     );
 
@@ -44,6 +45,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -123,7 +125,8 @@ export const needsRouter = router({
             [createdNeed],
             member.id,
             member.role,
-            ctx.user.householdId
+        member.accessTier,
+        ctx.user.householdId
           );
           if (visibleNeeds.length > 0) {
             targetUserIds.push(member.id);
@@ -195,6 +198,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -250,6 +254,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -309,6 +314,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -389,6 +395,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -484,6 +491,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -544,6 +552,7 @@ export const needsRouter = router({
         [need],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 

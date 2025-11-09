@@ -46,6 +46,7 @@ export default function People() {
   const { data: users, refetch: refetchUsers } = trpc.user.listInHousehold.useQuery();
   const { data: groups, refetch: refetchGroups } = trpc.group.list.useQuery();
   const { data: pendingInvites, refetch: refetchInvites } = trpc.invite.listPending.useQuery();
+  const { data: pendingTierRequests, refetch: refetchTierRequests } = trpc.user.getPendingTierRequests.useQuery();
 
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState("");
@@ -189,6 +190,17 @@ export default function People() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to remove member");
+    },
+  });
+
+  const approveTierRequestMutation = trpc.user.approveTierRequest.useMutation({
+    onSuccess: () => {
+      toast.success("Access tier request approved!");
+      refetchTierRequests();
+      refetchUsers();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to approve tier request");
     },
   });
 
@@ -381,6 +393,10 @@ export default function People() {
     updateUserStatusMutation.mutate({ userId, status: "blocked" });
   };
 
+  const handleApproveTierRequest = (userId: string) => {
+    approveTierRequestMutation.mutate({ userId });
+  };
+
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
   const canManageUsers =
     user?.role === "primary" || (user?.role === "admin" && household?.delegateAdminApprovals);
@@ -504,6 +520,53 @@ export default function People() {
             </Dialog>
           )}
         </div>
+
+        {/* Pending Tier Requests */}
+        {isPrimaryOrAdmin && pendingTierRequests && pendingTierRequests.length > 0 && (
+          <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+            <CardHeader>
+              <CardTitle className="text-2xl bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
+                Pending Access Tier Requests
+              </CardTitle>
+              <CardDescription>
+                Users requesting higher access levels to your household
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {pendingTierRequests.map((request) => (
+                  <div
+                    key={request.id}
+                    className="flex items-center justify-between p-4 bg-gradient-to-r from-[#6BC4B8]/5 to-[#B08CA7]/5 rounded-lg border border-[#6BC4B8]/20"
+                  >
+                    <div className="flex items-center gap-4">
+                      <UserAvatar user={request} size="lg" />
+                      <div>
+                        <p className="font-semibold text-lg">{request.name || "No name"}</p>
+                        <p className="text-sm text-muted-foreground">
+                          Requested: <span className="font-medium text-[#B08CA7] capitalize">{request.requestedTier}</span>
+                        </p>
+                        {request.tierRequestedAt && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Requested {new Date(request.tierRequestedAt).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => handleApproveTierRequest(request.id)}
+                      disabled={approveTierRequestMutation.isPending}
+                      className="bg-[#6BC4B8] hover:bg-[#5AB3A8] text-white"
+                    >
+                      <Check className="w-4 h-4 mr-2" />
+                      Approve
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* My Profile */}
         <Card className="bg-white/90 backdrop-blur-md">

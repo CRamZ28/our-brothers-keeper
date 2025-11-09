@@ -8,6 +8,7 @@ import { notifyVisibleUsers } from "./notificationHelpers";
 async function checkMealTrainVisibility(
   userId: string,
   userRole: string,
+  userAccessTier: string,
   householdId: number,
   mealTrain: any
 ): Promise<boolean> {
@@ -16,6 +17,13 @@ async function checkMealTrainVisibility(
     return true;
   }
 
+  // Check access tier first - community tier needs explicit inclusion
+  if (userAccessTier === "community" && !mealTrain.includeCommunityTier) {
+    return false;
+  }
+
+  // Family and Friend tier can see meal trains by default
+  // Community tier can see if includeCommunityTier is true
   if (mealTrain.visibilityScope === "all_supporters") {
     return true;
   } else if (mealTrain.visibilityScope === "role") {
@@ -74,6 +82,7 @@ export const mealTrainRouter = router({
     const canViewMealTrain = await checkMealTrainVisibility(
       ctx.user.id,
       ctx.user.role,
+      ctx.user.accessTier,
       ctx.user.householdId,
       mealTrain
     );
@@ -112,6 +121,7 @@ export const mealTrainRouter = router({
     const canViewMealTrain = await checkMealTrainVisibility(
       ctx.user.id,
       ctx.user.role,
+      ctx.user.accessTier,
       ctx.user.householdId,
       mealTrain
     );
@@ -152,6 +162,7 @@ export const mealTrainRouter = router({
           .enum(["private", "all_supporters", "group", "role"])
           .default("all_supporters"),
         addressVisibilityGroupIds: z.array(z.number()).optional(),
+        includeCommunityTier: z.boolean().default(false),
         enabled: z.boolean().default(true),
         daysAheadOpen: z.number().min(1).max(365).optional(),
         availabilityStartDate: z.string().optional(),
@@ -191,6 +202,7 @@ export const mealTrainRouter = router({
           visibilityGroupIds: input.visibilityGroupIds || null,
           addressVisibilityScope: input.addressVisibilityScope,
           addressVisibilityGroupIds: input.addressVisibilityGroupIds || null,
+          includeCommunityTier: input.includeCommunityTier,
           enabled: input.enabled,
           daysAheadOpen: input.daysAheadOpen || null,
           availabilityStartDate: input.availabilityStartDate || null,
@@ -222,6 +234,7 @@ export const mealTrainRouter = router({
           visibilityGroupIds: input.visibilityGroupIds || null,
           addressVisibilityScope: input.addressVisibilityScope,
           addressVisibilityGroupIds: input.addressVisibilityGroupIds || null,
+          includeCommunityTier: input.includeCommunityTier,
           enabled: input.enabled,
           daysAheadOpen: input.daysAheadOpen || null,
           availabilityStartDate: input.availabilityStartDate || null,
@@ -270,6 +283,7 @@ export const mealTrainRouter = router({
       const canViewMealTrain = await checkMealTrainVisibility(
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId,
         mealTrain
       );

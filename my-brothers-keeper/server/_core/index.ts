@@ -9,6 +9,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import uploadRouter from "../uploadRouter";
 import { getUser } from "../db";
+import { processAutoPromotions } from "../autoPromotion";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -82,6 +83,32 @@ async function startServer() {
   server.listen(port, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${port}/`);
     console.log(`Replit Auth enabled`);
+    
+    // Set up auto-promotion background job
+    // Run once on startup to catch any pending promotions
+    processAutoPromotions()
+      .then(() => {
+        console.log("[AutoPromotion] Initial auto-promotion check completed");
+      })
+      .catch((error) => {
+        console.error("[AutoPromotion] Error during initial auto-promotion check:", error);
+      });
+    
+    // Run every hour (3600000ms)
+    const autoPromotionInterval = setInterval(() => {
+      processAutoPromotions()
+        .catch((error) => {
+          console.error("[AutoPromotion] Error during scheduled auto-promotion:", error);
+        });
+    }, 3600000);
+    
+    // Clean up interval on server shutdown
+    process.on('SIGTERM', () => {
+      console.log('[AutoPromotion] Cleaning up auto-promotion interval');
+      clearInterval(autoPromotionInterval);
+    });
+    
+    console.log("[AutoPromotion] Background job scheduled to run every hour");
   });
 }
 

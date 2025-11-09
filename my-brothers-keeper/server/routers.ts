@@ -258,6 +258,58 @@ export const appRouter = router({
       }
       return await db.getRecentActivity(ctx.user.householdId, 20);
     }),
+
+    // Allow users to join a household with a requested tier
+    joinWithTier: protectedProcedure
+      .input(
+        z.object({
+          householdId: z.number(),
+          requestedTier: z.enum(["community", "friend", "family"]),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        await db.joinHouseholdWithTier(ctx.user.id, input.householdId, input.requestedTier);
+
+        await db.createAuditLog({
+          householdId: input.householdId,
+          actorUserId: ctx.user.id,
+          action: "user_joined_with_tier_request",
+          targetType: "user",
+          targetId: 0,
+          metadata: { userId: ctx.user.id, requestedTier: input.requestedTier },
+        });
+
+        return { success: true };
+      }),
+
+    // Update auto-promote settings (admin/primary only)
+    updateAutoPromoteSettings: protectedProcedure
+      .input(
+        z.object({
+          autoPromoteEnabled: z.boolean().optional(),
+          autoPromoteHours: z.number().min(1).max(168).optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        await db.updateHouseholdAutoPromote(ctx.user.householdId, input);
+
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "household_auto_promote_updated",
+          targetType: "household",
+          targetId: ctx.user.householdId,
+          metadata: input,
+        });
+
+        return { success: true };
+      }),
   }),
 
   user: router({
@@ -384,6 +436,64 @@ export const appRouter = router({
           targetType: "user",
           targetId: 0,
           metadata: { userId: input.userId, userName: targetUser.name },
+        });
+
+        return { success: true };
+      }),
+
+    // Get pending tier requests (admin/primary only)
+    getPendingTierRequests: protectedProcedure.query(async ({ ctx }) => {
+      if (!ctx.user.householdId) {
+        return [];
+      }
+
+      await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+      return await db.getUsersPendingTierApproval(ctx.user.householdId);
+    }),
+
+    // Approve tier request (admin/primary only)
+    approveTierRequest: protectedProcedure
+      .input(
+        z.object({
+          userId: z.string(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        // Get the user to verify they have a pending request
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+
+        if (targetUser.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "User belongs to different household" });
+        }
+
+        if (!targetUser.requestedTier) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "User has no pending tier request" });
+        }
+
+        // Approve the tier request
+        await db.updateUserAccessTier(input.userId, targetUser.requestedTier);
+
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "tier_request_approved",
+          targetType: "user",
+          targetId: 0,
+          metadata: { 
+            userId: input.userId, 
+            approvedTier: targetUser.requestedTier,
+            userName: targetUser.name 
+          },
         });
 
         return { success: true };

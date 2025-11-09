@@ -19,6 +19,7 @@ export const messagesRouter = router({
       announcements,
       ctx.user.id,
       ctx.user.role,
+      ctx.user.accessTier,
       ctx.user.householdId
     );
 
@@ -97,7 +98,8 @@ export const messagesRouter = router({
           [announcement],
           member.id,
           member.role,
-          ctx.user.householdId
+        member.accessTier,
+        ctx.user.householdId
         );
         if (visibleAnnouncements.length > 0) {
           targetUserIds.push(member.id);

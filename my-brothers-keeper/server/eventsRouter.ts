@@ -19,6 +19,7 @@ export const eventsRouter = router({
       allEvents,
       ctx.user.id,
       ctx.user.role,
+      ctx.user.accessTier,
       ctx.user.householdId
     );
 
@@ -44,6 +45,7 @@ export const eventsRouter = router({
         [event],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -128,7 +130,8 @@ export const eventsRouter = router({
             [createdEvent],
             member.id,
             member.role,
-            ctx.user.householdId
+        member.accessTier,
+        ctx.user.householdId
           );
           if (visibleEvents.length > 0) {
             targetUserIds.push(member.id);
@@ -204,6 +207,7 @@ export const eventsRouter = router({
         [event],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -286,6 +290,7 @@ export const eventsRouter = router({
         [event],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 
@@ -345,6 +350,7 @@ export const eventsRouter = router({
         [event],
         ctx.user.id,
         ctx.user.role,
+        ctx.user.accessTier,
         ctx.user.householdId
       );
 

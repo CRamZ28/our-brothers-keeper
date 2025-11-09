@@ -214,6 +214,54 @@ export async function removeUserFromHousehold(userId: string, householdId: numbe
   }).where(eq(users.id, userId));
 }
 
+export async function getUsersPendingTierApproval(householdId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  const result = await db
+    .select()
+    .from(users)
+    .where(
+      and(
+        eq(users.householdId, householdId),
+        sql`${users.requestedTier} IS NOT NULL`,
+        sql`${users.requestedTier} != ${users.accessTier}`
+      )
+    );
+
+  return result;
+}
+
+export async function updateUserAccessTier(userId: string, tier: "community" | "friend" | "family") {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(users).set({ 
+    accessTier: tier,
+    requestedTier: null,
+    updatedAt: new Date()
+  }).where(eq(users.id, userId));
+}
+
+export async function joinHouseholdWithTier(
+  userId: string, 
+  householdId: number, 
+  requestedTier: "community" | "friend" | "family"
+) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(users).set({
+    householdId,
+    accessTier: "community",
+    requestedTier,
+    tierRequestedAt: new Date(),
+    role: "supporter",
+    status: "active",
+    updatedAt: new Date()
+  }).where(eq(users.id, userId));
+}
+
 // ============================================================================
 // HOUSEHOLD MANAGEMENT
 // ============================================================================
@@ -239,6 +287,19 @@ export async function updateHousehold(id: number, data: Partial<InsertHousehold>
   if (!db) return;
 
   await db.update(households).set(data).where(eq(households.id, id));
+}
+
+export async function updateHouseholdAutoPromote(
+  householdId: number,
+  settings: { autoPromoteEnabled?: boolean; autoPromoteHours?: number }
+) {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(households).set({
+    ...settings,
+    updatedAt: new Date()
+  }).where(eq(households.id, householdId));
 }
 
 // ============================================================================

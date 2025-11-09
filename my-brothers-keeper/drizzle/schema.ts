@@ -59,6 +59,7 @@ export const notificationChannelEnum = pgEnum("notification_channel", ["email", 
 export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer", "picture"]);
 export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
 export const eventTypeEnum = pgEnum("event_type", ["regular", "birthday", "anniversary", "milestone", "holiday"]);
+export const accessTierEnum = pgEnum("access_tier", ["community", "friend", "family"]);
 
 /**
  * Core user table backing auth flow.
@@ -80,6 +81,9 @@ export const users = pgTable("users", {
   role: userRoleEnum("role").default("user").notNull(),
   householdId: integer("household_id"),
   status: userStatusEnum("status").default("pending").notNull(),
+  accessTier: accessTierEnum("access_tier").default("community").notNull(),
+  requestedTier: accessTierEnum("requested_tier"),
+  tierRequestedAt: timestamp("tier_requested_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   lastSignedIn: timestamp("last_signed_in").defaultNow().notNull(),
@@ -105,6 +109,8 @@ export const households = pgTable("households", {
   quietMode: boolean("quiet_mode").default(false).notNull(),
   timezone: varchar("timezone", { length: 64 }).default("America/Chicago").notNull(),
   delegateAdminApprovals: boolean("delegate_admin_approvals").default(false).notNull(),
+  autoPromoteEnabled: boolean("auto_promote_enabled").default(false).notNull(),
+  autoPromoteHours: integer("auto_promote_hours").default(48).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
@@ -474,6 +480,7 @@ export const mealTrains = pgTable("meal_trains", {
   addressVisibilityScope: visibilityScopeEnum("address_visibility_scope").default("all_supporters").notNull(),
   addressVisibilityGroupIds: integer("address_visibility_group_ids").array(),
   customAddressUserIds: jsonb("custom_address_user_ids").$type<string[]>(),
+  includeCommunityTier: boolean("include_community_tier").default(false).notNull(),
   enabled: boolean("enabled").default(true).notNull(),
   daysAheadOpen: integer("days_ahead_open").default(30),
   availabilityStartDate: date("availability_start_date"),
