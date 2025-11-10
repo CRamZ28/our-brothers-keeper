@@ -15,7 +15,7 @@ export default function Dashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-white/80">Loading...</p>
+          <p className="text-teal-900/80">Loading...</p>
         </div>
       </DashboardLayout>
     );
@@ -33,114 +33,169 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-8">
+      <div className="p-6 lg:p-8 max-w-6xl mx-auto">
         
-        {/* Hero Section - Family Name */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl lg:text-4xl font-bold text-white tracking-wide">
-            {household.name}
-          </h1>
-          <p className="text-white/80 text-sm">
-            Supporting the family through community care and connection
-          </p>
+        {/* Top Section - Centered Family Name & Photo */}
+        <div className="flex flex-col items-center mb-8 space-y-4">
+          {/* Family Name Pill */}
+          <div 
+            className="px-8 py-4 rounded-full"
+            style={{
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              background: 'rgba(255, 255, 255, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.4)'
+            }}
+          >
+            <h1 className="text-2xl font-bold text-teal-900 uppercase tracking-wide">
+              {household.name}
+            </h1>
+          </div>
+
+          {/* Optional Family Photo Placeholder Pill */}
+          <div 
+            className="px-12 py-8 rounded-2xl"
+            style={{
+              backdropFilter: 'blur(16px)',
+              WebkitBackdropFilter: 'blur(16px)',
+              background: 'rgba(255, 255, 255, 0.3)',
+              border: '1px solid rgba(255, 255, 255, 0.4)'
+            }}
+          >
+            <p className="text-teal-700 text-sm italic">Family photo placeholder</p>
+          </div>
         </div>
 
-        {/* Three Action Cards - Responsive Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Three Square Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Card 1: Supporters */}
-          <div className="bg-white/30 backdrop-blur-lg border-2 border-white/40 rounded-2xl p-6 shadow-xl space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-teal-900">Supporters</h2>
-              <div className="w-10 h-10 rounded-full bg-[#B08CA7]/60 flex items-center justify-center">
-                <Users className="w-5 h-5 text-white" />
-              </div>
+          <div 
+            className="rounded-2xl p-6 flex flex-col"
+            style={{
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Number at top */}
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-teal-900 mb-2">Supporters</h2>
+              <div className="text-4xl font-bold text-teal-900">{activeUsers.length}</div>
             </div>
 
-            <div className="text-center py-4">
-              <div className="text-5xl font-bold text-teal-900">{activeUsers.length}</div>
-              <div className="text-teal-700 text-sm mt-1">Total Supporters</div>
+            {/* Preview items */}
+            <div className="flex-1 space-y-3 mb-6">
+              {activeUsers.slice(0, 2).map((supporter, idx) => (
+                <div 
+                  key={supporter.id}
+                  className="p-3 rounded-lg"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <p className="text-sm font-medium text-teal-900 truncate">{supporter.name}</p>
+                  <p className="text-xs text-teal-700 capitalize">{supporter.role}</p>
+                </div>
+              ))}
+              {activeUsers.length === 0 && (
+                <div className="p-3 rounded-lg text-center text-sm text-teal-700 italic"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  No supporters yet
+                </div>
+              )}
             </div>
 
-            <div className="space-y-3">
-              <Link href="/people?action=invite">
-                <button className="w-full py-3 px-4 bg-gradient-to-b from-[#B08CA7] to-[#8D6B85] rounded-full text-white font-medium shadow-md hover:brightness-110 hover:scale-[1.02] transition-all duration-200">
-                  <div className="flex items-center justify-center gap-2">
-                    <Plus className="w-4 h-4" />
-                    <span>Invite Someone</span>
-                  </div>
-                </button>
-              </Link>
-              <Link href="/people">
-                <button className="w-full py-3 px-4 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full text-teal-900 font-medium hover:bg-white/50 transition-all duration-200">
-                  View All Supporters
-                </button>
-              </Link>
-            </div>
+            {/* Button at bottom */}
+            <Link href="/people">
+              <button className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+                View All
+              </button>
+            </Link>
           </div>
 
           {/* Card 2: Open Needs */}
-          <div className="bg-white/30 backdrop-blur-lg border-2 border-white/40 rounded-2xl p-6 shadow-xl space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-teal-900">Open Needs</h2>
-              <div className="w-10 h-10 rounded-full bg-[#B08CA7]/60 flex items-center justify-center">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
+          <div 
+            className="rounded-2xl p-6 flex flex-col"
+            style={{
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Number at top */}
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-teal-900 mb-2">Open Needs</h2>
+              <div className="text-4xl font-bold text-teal-900">{openNeeds.length}</div>
             </div>
 
-            <div className="text-center py-4">
-              <div className="text-5xl font-bold text-teal-900">{openNeeds.length}</div>
-              <div className="text-teal-700 text-sm mt-1">Active Requests</div>
-            </div>
-
-            <div className="space-y-2">
+            {/* Preview items */}
+            <div className="flex-1 space-y-3 mb-6">
               {openNeeds.length === 0 ? (
-                <div className="text-center py-4 text-teal-600 text-sm">
-                  No open needs right now
+                <div 
+                  className="p-3 rounded-lg text-center text-sm text-teal-700 italic"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  No open needs
                 </div>
               ) : (
                 openNeeds.slice(0, 2).map((need) => (
                   <div 
-                    key={need.id} 
-                    className="px-4 py-3 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl"
+                    key={need.id}
+                    className="p-3 rounded-lg"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.3)'
+                    }}
                   >
-                    <div className="text-teal-900 font-medium text-sm truncate">
-                      {need.title}
-                    </div>
+                    <p className="text-sm font-medium text-teal-900 truncate">{need.title}</p>
                     {need.description && (
-                      <div className="text-teal-700 text-xs mt-1 truncate">
-                        {need.description}
-                      </div>
+                      <p className="text-xs text-teal-700 truncate mt-1">{need.description}</p>
                     )}
                   </div>
                 ))
               )}
             </div>
 
+            {/* Button at bottom */}
             <Link href="/needs">
-              <button className="w-full py-3 px-4 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full text-teal-900 font-medium hover:bg-white/50 transition-all duration-200">
-                View All Needs
+              <button className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+                View All
               </button>
             </Link>
           </div>
 
           {/* Card 3: Upcoming Events */}
-          <div className="bg-white/30 backdrop-blur-lg border-2 border-white/40 rounded-2xl p-6 shadow-xl space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-teal-900">Upcoming Events</h2>
-              <div className="w-10 h-10 rounded-full bg-[#B08CA7]/60 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
+          <div 
+            className="rounded-2xl p-6 flex flex-col"
+            style={{
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Number at top */}
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-teal-900 mb-2">Upcoming Events</h2>
+              <div className="text-4xl font-bold text-teal-900">{upcomingEvents.length}</div>
             </div>
 
-            <div className="text-center py-4">
-              <div className="text-5xl font-bold text-teal-900">{upcomingEvents.length}</div>
-              <div className="text-teal-700 text-sm mt-1">Events This Week</div>
-            </div>
-
-            <div className="space-y-2">
+            {/* Preview items */}
+            <div className="flex-1 space-y-3 mb-6">
               {upcomingEvents.length === 0 ? (
-                <div className="text-center py-4 text-teal-600 text-sm">
+                <div 
+                  className="p-3 rounded-lg text-center text-sm text-teal-700 italic"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                >
                   No events this week
                 </div>
               ) : (
@@ -148,30 +203,30 @@ export default function Dashboard() {
                   const eventDate = new Date(event.startAt);
                   return (
                     <div 
-                      key={event.id} 
-                      className="px-4 py-3 bg-white/50 backdrop-blur-sm border border-white/60 rounded-xl"
+                      key={event.id}
+                      className="p-3 rounded-lg"
+                      style={{
+                        background: 'rgba(255, 255, 255, 0.3)'
+                      }}
                     >
-                      <div className="text-teal-900 font-medium text-sm truncate">
-                        {event.title}
-                      </div>
-                      <div className="text-teal-700 text-xs mt-1">
+                      <p className="text-sm font-medium text-teal-900 truncate">{event.title}</p>
+                      <p className="text-xs text-teal-700 mt-1">
                         {eventDate.toLocaleDateString("en-US", { 
                           weekday: "short", 
                           month: "short", 
-                          day: "numeric",
-                          hour: "numeric",
-                          minute: "2-digit"
+                          day: "numeric"
                         })}
-                      </div>
+                      </p>
                     </div>
                   );
                 })
               )}
             </div>
 
+            {/* Button at bottom */}
             <Link href="/calendar">
-              <button className="w-full py-3 px-4 bg-white/40 backdrop-blur-sm border border-white/50 rounded-full text-teal-900 font-medium hover:bg-white/50 transition-all duration-200">
-                See Full Calendar
+              <button className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+                View Calendar
               </button>
             </Link>
           </div>
