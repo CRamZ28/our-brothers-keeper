@@ -95,27 +95,16 @@ export default function Dashboard() {
 
             {/* Preview items */}
             <div className="flex-1 space-y-3 mb-6">
-              {activeUsers.slice(0, 2).map((supporter, idx) => (
-                <div 
-                  key={supporter.id}
-                  className="p-3 rounded-lg"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)'
-                  }}
-                >
-                  <p className="text-sm font-medium text-teal-900 truncate">{supporter.name}</p>
-                  <p className="text-xs text-teal-700 capitalize">{supporter.role}</p>
-                </div>
-              ))}
-              {activeUsers.length === 0 && (
-                <div className="p-3 rounded-lg text-center text-sm text-teal-700 italic"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)'
-                  }}
-                >
-                  No supporters yet
-                </div>
-              )}
+              <div 
+                className="p-4 rounded-lg text-center"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.3)'
+                }}
+              >
+                <Users className="w-8 h-8 text-teal-600 mx-auto mb-2" />
+                <p className="text-sm font-medium text-teal-900">Invite friends & family</p>
+                <p className="text-xs text-teal-700 mt-1">Build your support network</p>
+              </div>
             </div>
 
             {/* Button at bottom */}
