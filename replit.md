@@ -41,7 +41,7 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
   - Teal gradient accent bars (#2DB5A8 → #4DD0C4) add visual pop beneath numbers
 - **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
 - **Calendar UI Consistency**: All calendar views (Events and Meal Train) use uniform transparent glassmorphism styling with `bg-muted/30` day cells for visual consistency
-  - **Color Coding**: Upcoming entries display in mauve purple (#B08CA7), past entries display in gray with grayscale filter for clear temporal distinction
+  - **Color Coding**: Upcoming entries display with dense mauve purple background `rgba(176, 140, 167, 0.7)` and dark teal text (`text-teal-700`) matching sidebar styling; past entries display in gray with grayscale filter for clear temporal distinction
 - **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
 
 ### Technical Implementations & Feature Specifications

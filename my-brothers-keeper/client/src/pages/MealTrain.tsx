@@ -245,7 +245,11 @@ export default function MealTrain() {
                         <div className={`text-sm font-medium mb-1 ${isPast ? "text-gray-500" : ""}`}>{format(date, "d")}</div>
                         <div className="space-y-1">
                           {capacityInfo.isAvailable && !isPast ? (
-                            <Badge variant="outline" className="text-xs border-[#B08CA7] text-[#B08CA7]">
+                            <Badge 
+                              variant="outline" 
+                              className="text-xs border-teal-700 text-teal-700 font-medium"
+                              style={{ background: 'rgba(176, 140, 167, 0.7)' }}
+                            >
                               {capacityInfo.capacity > 1
                                 ? `${capacityInfo.remaining} of ${capacityInfo.capacity} left`
                                 : "Available"}
@@ -253,19 +257,22 @@ export default function MealTrain() {
                           ) : capacityInfo.isFull ? (
                             <div>
                               <Badge 
-                                className={`text-xs mb-1 ${
+                                className={`text-xs mb-1 font-medium ${
                                   isPast 
                                     ? "bg-gray-400 text-white" 
-                                    : "bg-[#B08CA7] text-white"
+                                    : "text-teal-700"
                                 }`}
+                                style={isPast ? undefined : {
+                                  background: 'rgba(176, 140, 167, 0.7)'
+                                }}
                               >
                                 {capacityInfo.capacity > 1 ? "Full" : "Filled"}
                               </Badge>
                               {capacityInfo.signups.slice(0, 2).map((s) => (
                                 <p 
                                   key={s.id} 
-                                  className={`text-xs truncate ${
-                                    isPast ? "text-gray-500" : "text-muted-foreground"
+                                  className={`text-xs truncate font-medium ${
+                                    isPast ? "text-gray-500" : "text-teal-700"
                                   }`}
                                 >
                                   {s.userName}
@@ -277,8 +284,8 @@ export default function MealTrain() {
                                     e.stopPropagation();
                                     openDaySignupsDialog(date);
                                   }}
-                                  className={`text-xs hover:underline ${
-                                    isPast ? "text-gray-500" : "text-[#B08CA7]"
+                                  className={`text-xs hover:underline font-medium ${
+                                    isPast ? "text-gray-500" : "text-teal-700"
                                   }`}
                                 >
                                   +{capacityInfo.signups.length - 2} more

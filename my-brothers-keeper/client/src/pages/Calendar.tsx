@@ -650,11 +650,14 @@ export default function Calendar() {
                             return (
                               <div
                                 key={event.id}
-                                className={`text-xs p-1 rounded truncate ${
+                                className={`text-xs p-1 rounded truncate font-medium ${
                                   isPastEvent 
                                     ? "bg-gray-400/20 text-gray-600" 
-                                    : "bg-[#B08CA7]/20 text-[#B08CA7]"
+                                    : "text-teal-700"
                                 }`}
+                                style={isPastEvent ? undefined : {
+                                  background: 'rgba(176, 140, 167, 0.7)'
+                                }}
                                 title={event.title}
                                 onClick={(e) => {
                                   e.stopPropagation();
@@ -677,7 +680,7 @@ export default function Calendar() {
                                 e.stopPropagation();
                                 openDayEventsDialog(day);
                               }}
-                              className="text-xs text-[#B08CA7] hover:underline"
+                              className="text-xs text-teal-700 hover:underline font-medium"
                             >
                               +{dayEvents.length - 2} more
                             </button>
