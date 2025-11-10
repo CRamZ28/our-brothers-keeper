@@ -70,16 +70,15 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
               onClick={() => handleNavigate(item.path)}
               className={`
                 relative flex items-center gap-3 h-11 pl-4 pr-4 rounded-xl w-full text-left
-                transition-all duration-200 ease-in-out text-teal-700
+                transition-all duration-200 ease-in-out
                 ${isActive 
-                  ? 'shadow-[0_4px_15px_rgba(176,140,167,0.3)]' 
-                  : 'hover:bg-white/40 hover:translate-x-1'
+                  ? 'text-white shadow-[0_4px_15px_rgba(176,140,167,0.3)]' 
+                  : 'text-foreground hover:bg-white/40 hover:translate-x-1'
                 }
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50
               `}
               style={isActive ? {
-                background: 'rgba(176, 140, 167, 0.7)',
-                color: '#0D5F5D'
+                background: 'rgba(176, 140, 167, 0.7)'
               } : undefined}
             >
               {/* Icon */}
@@ -99,11 +98,11 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button 
-              className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/40 transition-all duration-200 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50 text-teal-700"
+              className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/40 transition-all duration-200 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50 text-foreground"
             >
               <Avatar className="h-9 w-9 border-2 border-white/40 shrink-0">
                 <AvatarFallback 
-                  className="text-xs font-medium text-teal-800"
+                  className="text-xs font-medium text-foreground"
                   style={{ 
                     background: 'rgba(255, 255, 255, 0.6)'
                   }}
