@@ -20,7 +20,7 @@ export function GlassPageLayout({
       
       {(title || actions) && (
         <div className="flex items-center justify-between mb-6">
-          {title && <h1 className="text-2xl font-bold text-teal-900">{title}</h1>}
+          {title && <h1 className="text-2xl font-bold text-foreground">{title}</h1>}
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>
       )}

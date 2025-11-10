@@ -6,13 +6,13 @@ export const glassStyles = {
   panel: "backdrop-blur-[6px] bg-white/10 border border-white/20 rounded-xl",
   badge: "backdrop-blur-[6px] bg-white/20 border border-white/30 rounded-full px-3 py-1 text-xs font-medium",
   button: {
-    primary: "bg-[#B08CA7]/70 hover:bg-[#B08CA7]/85 text-teal-900 backdrop-blur-sm border border-white/30 transition-all hover:shadow-lg",
-    secondary: "bg-white/20 hover:bg-white/30 text-teal-800 backdrop-blur-sm border border-white/30 transition-all",
-    outline: "bg-transparent hover:bg-white/10 text-teal-800 backdrop-blur-sm border-2 border-white/40 transition-all",
+    primary: "bg-[#B08CA7]/70 hover:bg-[#B08CA7]/85 text-white backdrop-blur-sm border border-white/30 transition-all hover:shadow-lg",
+    secondary: "bg-white/20 hover:bg-white/30 text-foreground backdrop-blur-sm border border-white/30 transition-all",
+    outline: "bg-transparent hover:bg-white/10 text-foreground backdrop-blur-sm border-2 border-white/40 transition-all",
   },
-  input: "backdrop-blur-sm bg-white/30 border-white/40 text-teal-900 placeholder:text-teal-700/50 focus:border-white/60 focus:ring-white/20",
-  select: "backdrop-blur-sm bg-white/30 border-white/40 text-teal-900 focus:border-white/60 focus:ring-white/20",
-  textarea: "backdrop-blur-sm bg-white/30 border-white/40 text-teal-900 placeholder:text-teal-700/50 focus:border-white/60 focus:ring-white/20",
+  input: "backdrop-blur-sm bg-white/30 border-white/40 text-foreground placeholder:text-foreground/50 focus:border-white/60 focus:ring-white/20",
+  select: "backdrop-blur-sm bg-white/30 border-white/40 text-foreground focus:border-white/60 focus:ring-white/20",
+  textarea: "backdrop-blur-sm bg-white/30 border-white/40 text-foreground placeholder:text-foreground/50 focus:border-white/60 focus:ring-white/20",
 };
 
 export const colors = {
@@ -75,9 +75,9 @@ interface GlassBadgeProps extends HTMLAttributes<HTMLSpanElement> {
 export const GlassBadge = forwardRef<HTMLSpanElement, GlassBadgeProps>(
   ({ className, children, variant = "default", ...props }, ref) => {
     const variantStyles = {
-      default: "text-teal-800",
-      teal: "bg-teal-500/20 text-teal-900 border-teal-400/40",
-      mauve: "bg-[#B08CA7]/20 text-teal-900 border-[#B08CA7]/40",
+      default: "text-foreground",
+      teal: "bg-teal-500/20 text-foreground border-teal-400/40",
+      mauve: "bg-[#B08CA7]/20 text-foreground border-[#B08CA7]/40",
     };
 
     return (

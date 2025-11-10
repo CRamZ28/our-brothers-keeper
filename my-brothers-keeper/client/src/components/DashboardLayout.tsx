@@ -87,11 +87,11 @@ export default function DashboardLayout({
                 alt={APP_TITLE}
                 className="h-10 w-10"
               />
-              <h1 className="font-semibold text-lg text-teal-900">{APP_TITLE}</h1>
+              <h1 className="font-semibold text-lg text-foreground">{APP_TITLE}</h1>
             </div>
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-teal-900 hover:bg-white/20">
+                <Button variant="ghost" size="icon" className="text-foreground hover:bg-white/20">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
