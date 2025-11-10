@@ -46,10 +46,10 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   };
 
   return (
-    <div className="h-full px-5 pt-6 pb-5 flex flex-col">
+    <div className="h-full px-5 pb-5 flex flex-col">
       
       {/* Logo - displayed directly on sidebar */}
-      <div className="flex justify-center pt-2 pb-4">
+      <div className="flex justify-center pt-4 pb-2">
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
