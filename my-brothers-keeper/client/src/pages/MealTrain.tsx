@@ -638,9 +638,9 @@ function RecipientInfoView({ mealTrain }: { mealTrain: any }) {
       {mealTrain.allergies && (
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-red-500 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-foreground/60 mt-0.5" />
             <div>
-              <p className="font-semibold text-red-600 dark:text-red-400">Allergies</p>
+              <p className="font-semibold text-foreground">Allergies</p>
               <p className="text-sm whitespace-pre-line">{mealTrain.allergies}</p>
             </div>
           </div>

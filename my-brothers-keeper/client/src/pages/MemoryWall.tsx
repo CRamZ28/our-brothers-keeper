@@ -439,7 +439,7 @@ export default function MemoryWall() {
                               onClick={() => handleDelete(entry.id)}
                               className="h-7 w-7 p-0 hover:bg-red-100"
                             >
-                              <X className="w-4 h-4 text-gray-500 hover:text-red-600" />
+                              <X className="w-4 h-4 text-foreground/60" />
                             </Button>
                           )}
                         </div>

@@ -70,7 +70,7 @@ export default function AcceptInvite() {
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             <div className="mx-auto w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4">
-              <Heart className="w-6 h-6 text-red-600" />
+              <Heart className="w-6 h-6 text-foreground" />
             </div>
             <CardTitle>Invalid Invite</CardTitle>
             <CardDescription>
@@ -164,7 +164,7 @@ export default function AcceptInvite() {
               </>
             ) : invite.email && user?.email !== invite.email ? (
               <>
-                <p className="text-sm text-red-600 text-center">
+                <p className="text-sm text-foreground text-center">
                   This invite was sent to {invite.email}, but you're signed in as {user?.email}.
                   Please sign in with the correct account.
                 </p>

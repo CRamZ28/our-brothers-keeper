@@ -444,7 +444,6 @@ export default function AdminTools() {
                         <DropdownMenuItem
                           onClick={() => deleteGroupMutation.mutate({ groupId: group.id })}
                           disabled={deleteGroupMutation.isPending}
-                          className="text-red-600"
                         >
                           <Trash2 className="w-4 h-4 mr-2" />
                           Delete Group

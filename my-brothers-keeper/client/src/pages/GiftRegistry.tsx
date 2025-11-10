@@ -427,7 +427,7 @@ export default function GiftRegistry() {
 
                         {item.notes && (
                           <div className="bg-amber-50 border border-amber-200 rounded-md p-2">
-                            <p className="text-xs text-amber-800">
+                            <p className="text-xs text-foreground">
                               <AlertCircle className="w-3 h-3 inline mr-1" />
                               {item.notes}
                             </p>

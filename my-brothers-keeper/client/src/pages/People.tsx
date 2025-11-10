@@ -753,7 +753,7 @@ export default function People() {
                         <span className="capitalize">{invite.invitedRole}</span>
                         <span>•</span>
                         {isExpired ? (
-                          <span className="text-red-600">Expired</span>
+                          <span className="text-foreground">Expired</span>
                         ) : (
                           <span>
                             Expires in {daysUntilExpiry} {daysUntilExpiry === 1 ? "day" : "days"}
@@ -778,7 +778,6 @@ export default function People() {
                         <DropdownMenuItem
                           onClick={() => revokeInviteMutation.mutate({ inviteId: invite.id })}
                           disabled={revokeInviteMutation.isPending}
-                          className="text-red-600"
                         >
                           <X className="w-4 h-4 mr-2" />
                           Revoke Invite
