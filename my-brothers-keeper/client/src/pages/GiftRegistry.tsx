@@ -29,21 +29,21 @@ import { toast } from "sonner";
 const priorityConfig = {
   urgent: {
     label: "Urgent",
-    color: "text-red-600",
-    bgColor: "bg-red-50",
-    borderColor: "border-red-300",
+    color: "text-white",
+    bgColor: "bg-[#B08CA7]/30",
+    borderColor: "border-[#B08CA7]/40",
   },
   normal: {
     label: "Normal",
-    color: "text-blue-600",
-    bgColor: "bg-blue-50",
-    borderColor: "border-blue-200",
+    color: "text-foreground",
+    bgColor: "bg-white/30",
+    borderColor: "border-white/40",
   },
   low: {
     label: "Low",
-    color: "text-gray-600",
-    bgColor: "bg-gray-50",
-    borderColor: "border-gray-200",
+    color: "text-foreground/70",
+    bgColor: "bg-white/20",
+    borderColor: "border-white/30",
   },
 };
 
@@ -481,7 +481,6 @@ export default function GiftRegistry() {
                             <Button
                               variant="outline"
                               size="sm"
-                              className="text-red-600 hover:text-red-700"
                               onClick={() => handleDelete(item.id)}
                             >
                               <Trash2 className="w-4 h-4" />
@@ -499,8 +498,8 @@ export default function GiftRegistry() {
           {/* Purchased Items */}
           {purchasedItems.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <ShoppingBag className="w-5 h-5 text-blue-600" />
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <ShoppingBag className="w-5 h-5 text-foreground/60" />
                 Purchased ({purchasedItems.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -516,7 +515,12 @@ export default function GiftRegistry() {
                       <CardContent>
                         <Button
                           size="sm"
-                          className="w-full bg-green-600 hover:bg-green-700 text-white"
+                          style={{
+                            backgroundColor: '#B08CA7',
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+                          className="w-full text-white"
                           onClick={() => handleMarkReceived(item.id)}
                         >
                           <CheckCircle2 className="w-4 h-4 mr-1" />
@@ -533,16 +537,16 @@ export default function GiftRegistry() {
           {/* Received Items */}
           {receivedItems.length > 0 && (
             <div>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
+              <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-foreground/60" />
                 Received ({receivedItems.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {receivedItems.map((item) => (
-                  <Card key={item.id} className="border border-green-200 bg-green-50">
+                  <Card key={item.id} className="border border-white/40 bg-white/30">
                     <CardHeader className="pb-3">
-                      <CardTitle className="text-base text-gray-700">{item.name}</CardTitle>
-                      <CardDescription className="text-green-700">
+                      <CardTitle className="text-base text-foreground">{item.name}</CardTitle>
+                      <CardDescription className="text-foreground/70">
                         ✓ Received from {item.purchaserName || "Someone"}
                       </CardDescription>
                     </CardHeader>

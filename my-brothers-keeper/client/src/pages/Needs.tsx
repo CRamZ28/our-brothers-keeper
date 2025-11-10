@@ -72,9 +72,9 @@ const categoryIcons: Record<string, typeof Utensils> = {
 };
 
 const priorityColors: Record<string, string> = {
-  low: "bg-teal-500/20 text-teal-900 border-teal-400/40",
-  normal: "bg-white/20 text-teal-800 border-white/30",
-  urgent: "bg-[#B08CA7]/30 text-teal-900 border-[#B08CA7]/50",
+  low: "bg-teal-500/20 text-foreground border-teal-400/40",
+  normal: "bg-white/20 text-foreground border-white/30",
+  urgent: "bg-[#B08CA7]/30 text-white border-[#B08CA7]/50",
 };
 
 export default function Needs() {
@@ -1032,19 +1032,19 @@ export default function Needs() {
                       <CardHeader className="pb-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
-                            <div className="w-12 h-12 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
-                              <Icon className="w-6 h-6 text-teal-600" />
+                            <div className="w-12 h-12 rounded-lg bg-white/30 flex items-center justify-center shrink-0">
+                              <Icon className="w-6 h-6 text-foreground/60" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <span className="text-xs font-medium text-teal-600 uppercase tracking-wide">{need.category}</span>
+                                <span className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{need.category}</span>
                                 {need.priority === "urgent" && (
-                                  <Badge variant="outline" className="bg-[#B08CA7]/10 text-[#B08CA7] border-[#B08CA7]/30 text-xs">
+                                  <Badge variant="outline" className="bg-[#B08CA7]/10 text-white border-[#B08CA7]/30 text-xs">
                                     Urgent
                                   </Badge>
                                 )}
                               </div>
-                              <CardTitle className="text-lg font-semibold text-teal-900 leading-snug">{need.title}</CardTitle>
+                              <CardTitle className="text-lg font-semibold text-foreground leading-snug">{need.title}</CardTitle>
                             </div>
                           </div>
                           {(user && (need.createdById === user.id || isPrimaryOrAdmin)) && (
@@ -1061,7 +1061,6 @@ export default function Needs() {
                                 </DropdownMenuItem>
                                 <DropdownMenuItem 
                                   onClick={() => handleDeleteNeed(need.id)}
-                                  className="text-destructive"
                                 >
                                   <Trash2 className="w-4 h-4 mr-2" />
                                   Delete
@@ -1073,7 +1072,7 @@ export default function Needs() {
                       </CardHeader>
                       <CardContent className="space-y-4 pt-0">
                         {need.dueAt && (
-                          <div className="flex items-center gap-2 text-sm text-teal-700">
+                          <div className="flex items-center gap-2 text-sm text-foreground/70">
                             <Calendar className="w-4 h-4" />
                             <span className="font-medium">{formatDateWithDayOfWeek(new Date(need.dueAt))}</span>
                           </div>
@@ -1106,7 +1105,7 @@ export default function Needs() {
                           contextId={need.id}
                           defaultSubject={`Question about: ${need.title}`}
                           trigger={
-                            <button className="text-sm text-teal-600 hover:text-teal-700 font-medium">
+                            <button className="text-sm text-foreground/70 hover:text-foreground font-medium">
                               Ask a Question →
                             </button>
                           }
@@ -1135,13 +1134,13 @@ export default function Needs() {
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
-                            <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
-                              <Icon className="w-5 h-5 text-teal-600" />
+                            <div className="w-10 h-10 rounded-lg bg-white/30 flex items-center justify-center shrink-0">
+                              <Icon className="w-5 h-5 text-foreground/60" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-lg">{need.title}</CardTitle>
                               <div className="flex flex-wrap items-center gap-2 mt-2">
-                                <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
+                                <Badge variant="outline" className="bg-white/30 text-foreground border-white/40">
                                   Claimed
                                 </Badge>
                                 <span className="text-sm text-muted-foreground">
@@ -1172,7 +1171,7 @@ export default function Needs() {
                                 onClick={() => handleDeleteNeed(need.id)}
                                 disabled={deleteNeedMutation.isPending}
                               >
-                                <Trash2 className="w-4 h-4 text-destructive" />
+                                <Trash2 className="w-4 h-4" />
                               </Button>
                             </div>
                           )}

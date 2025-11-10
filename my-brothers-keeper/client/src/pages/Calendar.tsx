@@ -1057,7 +1057,7 @@ export default function Calendar() {
                             onClick={() => handleDeleteEvent(event.id)}
                             disabled={deleteEventMutation.isPending}
                           >
-                            <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                            <Trash2 className="w-4 h-4 mr-2" />
                             Delete
                           </Button>
                         </div>

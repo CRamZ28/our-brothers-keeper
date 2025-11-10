@@ -253,8 +253,8 @@ export default function FamilyUpdates() {
     announcement: {
       label: "Announcement",
       icon: Pin,
-      color: "text-teal-600",
-      bgColor: "bg-teal-50",
+      color: "text-foreground",
+      bgColor: "bg-white/30",
       placeholder: "Share important information with everyone...",
     },
     general: {

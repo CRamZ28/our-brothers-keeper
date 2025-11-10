@@ -175,7 +175,7 @@ export default function Settings() {
             <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
               <CardHeader>
                 <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#B08CA7]" />
+                  <Users className="w-5 h-5 text-foreground/60" />
                   <CardTitle>Access Tier Auto-Promotion</CardTitle>
                 </div>
                 <CardDescription>
@@ -493,7 +493,7 @@ export default function Settings() {
               <div className="pt-4 border-t">
                 <Button
                   variant="outline"
-                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/10"
+                  className="w-full"
                   onClick={() => {
                     window.location.href = "/api/logout";
                   }}

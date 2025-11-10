@@ -28,38 +28,38 @@ const typeConfig = {
   memory: {
     label: "Memory",
     icon: Heart,
-    color: "#14B8A6", // Vibrant teal
+    color: "#14B8A6", // Vibrant teal (border/accent color)
     bgColor: "bg-teal-100",
     borderColor: "border-teal-400",
     iconBgColor: "bg-teal-200",
-    textColor: "text-teal-700",
+    textColor: "text-foreground",
   },
   story: {
     label: "Story",
     icon: BookOpen,
-    color: "#3B82F6", // Vibrant blue
+    color: "#3B82F6", // Vibrant blue (border/accent color)
     bgColor: "bg-blue-100",
     borderColor: "border-blue-400",
     iconBgColor: "bg-blue-200",
-    textColor: "text-blue-700",
+    textColor: "text-foreground",
   },
   encouragement: {
     label: "Encouragement",
     icon: Sparkles,
-    color: "#F59E0B", // Vibrant amber
+    color: "#F59E0B", // Vibrant amber (border/accent color)
     bgColor: "bg-amber-100",
     borderColor: "border-amber-400",
     iconBgColor: "bg-amber-200",
-    textColor: "text-amber-800",
+    textColor: "text-foreground",
   },
   prayer: {
     label: "Prayer/Verse",
     icon: MessageSquare,
-    color: "#EC4899", // Vibrant pink
+    color: "#EC4899", // Vibrant pink (border/accent color)
     bgColor: "bg-pink-100",
     borderColor: "border-pink-400",
     iconBgColor: "bg-pink-200",
-    textColor: "text-pink-700",
+    textColor: "text-foreground",
   },
 };
 

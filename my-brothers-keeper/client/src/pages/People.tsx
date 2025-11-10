@@ -533,7 +533,7 @@ export default function People() {
                       <div>
                         <p className="font-semibold text-lg">{request.name || "No name"}</p>
                         <p className="text-sm text-muted-foreground">
-                          Requested: <span className="font-medium text-[#B08CA7] capitalize">{request.requestedTier}</span>
+                          Requested: <span className="font-medium text-foreground capitalize">{request.requestedTier}</span>
                         </p>
                         {request.tierRequestedAt && (
                           <p className="text-xs text-muted-foreground mt-1">
@@ -844,7 +844,6 @@ export default function People() {
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
                               onClick={() => handleBlockUser(member.id)}
-                              className="text-destructive"
                             >
                               Block User
                             </DropdownMenuItem>
@@ -855,7 +854,6 @@ export default function People() {
                                     removeUserMutation.mutate({ userId: member.id });
                                   }
                                 }}
-                                className="text-destructive"
                                 disabled={removeUserMutation.isPending}
                               >
                                 <UserX className="w-4 h-4 mr-2" />
@@ -923,7 +921,7 @@ export default function People() {
                           onClick={() => openDeleteGroupDialog(group.id)}
                           title="Delete Group"
                         >
-                          <Trash2 className="w-4 h-4 text-destructive" />
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </div>

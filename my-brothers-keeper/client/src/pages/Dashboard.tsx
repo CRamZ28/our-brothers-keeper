@@ -166,7 +166,7 @@ export default function Dashboard() {
             <div className="flex-1 space-y-3 mb-6">
               {openNeeds.length === 0 ? (
                 <div 
-                  className="p-3 rounded-lg text-center text-sm text-teal-700 italic"
+                  className="p-3 rounded-lg text-center text-sm text-foreground/70 italic"
                   style={{
                     background: 'rgba(255, 255, 255, 0.3)'
                   }}
