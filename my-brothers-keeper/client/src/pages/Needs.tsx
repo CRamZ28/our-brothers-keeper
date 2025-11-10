@@ -966,7 +966,7 @@ export default function Needs() {
                     claimed: {
                       badge: "Claimed",
                       badgeClass: "bg-[#B08CA7]/30 text-white border-[#B08CA7]/50",
-                      buttonText: "Mark Complete",
+                      buttonText: "Claimed",
                       showButton: user?.id === need.claimedById || isPrimaryOrAdmin
                     },
                     completed: {
@@ -993,7 +993,7 @@ export default function Needs() {
                                   {statusConfig.badge}
                                 </Badge>
                                 {need.priority === "urgent" && (
-                                  <Badge variant="outline" className="bg-[#B08CA7]/10 text-white border-[#B08CA7]/30 text-xs">
+                                  <Badge variant="outline" className="bg-red-100/80 text-red-700 border-red-300/50 text-xs">
                                     Urgent
                                   </Badge>
                                 )}
@@ -1119,7 +1119,7 @@ export default function Needs() {
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{need.category}</span>
                                 {need.priority === "urgent" && (
-                                  <Badge variant="outline" className="bg-[#B08CA7]/10 text-white border-[#B08CA7]/30 text-xs">
+                                  <Badge variant="outline" className="bg-red-100/80 text-red-700 border-red-300/50 text-xs">
                                     Urgent
                                   </Badge>
                                 )}
