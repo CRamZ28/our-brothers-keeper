@@ -1,5 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { PageHeader } from "@/components/PageHeader";
+import { GlassCard, GlassButton, GlassBadge, glassStyles } from "@/components/ui/glass";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { UserSelector } from "@/components/UserSelector";
@@ -63,9 +65,9 @@ const categoryIcons: Record<string, typeof Utensils> = {
 };
 
 const priorityColors: Record<string, string> = {
-  low: "bg-blue-100 text-blue-800 border-blue-200",
-  normal: "bg-gray-100 text-gray-800 border-gray-200",
-  urgent: "bg-red-100 text-red-800 border-red-200",
+  low: "bg-teal-500/20 text-teal-900 border-teal-400/40",
+  normal: "bg-white/20 text-teal-800 border-white/30",
+  urgent: "bg-[#B08CA7]/30 text-teal-900 border-[#B08CA7]/50",
 };
 
 export default function Needs() {
@@ -419,17 +421,13 @@ export default function Needs() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
+      <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+        <PageHeader />
         
-        <div className="relative p-4 md:p-8 space-y-4 md:space-y-6 z-10">
-          {/* Header */}
+        <div className="space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-            <h1>Needs Board</h1>
+            <h1 className="text-2xl font-bold text-teal-900">Needs Board</h1>
             <div className="flex items-center gap-2">
               {/* View Toggle */}
               <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
