@@ -1053,12 +1053,15 @@ export default function Needs() {
                               onClick={() => openClaimDialog(need.id)}
                               disabled={
                                 user?.role === "primary" ||
-                                (need.capacity && need.claimCount >= need.capacity)
+                                (need.capacity && need.claimCount >= need.capacity) ||
+                                (need.dueAt && new Date(need.dueAt) < new Date() && !isPrimaryOrAdmin)
                               }
                             >
                               <Check className="w-4 h-4 mr-2" />
                               {need.capacity && need.claimCount >= need.capacity
                                 ? "Filled"
+                                : (need.dueAt && new Date(need.dueAt) < new Date() && !isPrimaryOrAdmin)
+                                ? "Past Due"
                                 : statusConfig.buttonText}
                             </Button>
                             <QuestionDialog
@@ -1172,12 +1175,15 @@ export default function Needs() {
                           onClick={() => openClaimDialog(need.id)}
                           disabled={
                             user?.role === "primary" ||
-                            (need.capacity && need.claimCount >= need.capacity)
+                            (need.capacity && need.claimCount >= need.capacity) ||
+                            (need.dueAt && new Date(need.dueAt) < new Date() && !isPrimaryOrAdmin)
                           }
                         >
                           <Check className="w-4 h-4 mr-2" />
                           {need.capacity && need.claimCount >= need.capacity
                             ? "Filled"
+                            : (need.dueAt && new Date(need.dueAt) < new Date() && !isPrimaryOrAdmin)
+                            ? "Past Due"
                             : "I Can Help"}
                         </Button>
                         <QuestionDialog
@@ -1540,12 +1546,15 @@ export default function Needs() {
                     }}
                     disabled={
                       user?.role === "primary" ||
-                      (selectedNeedDetails.capacity && selectedNeedDetails.claimCount >= selectedNeedDetails.capacity)
+                      (selectedNeedDetails.capacity && selectedNeedDetails.claimCount >= selectedNeedDetails.capacity) ||
+                      (selectedNeedDetails.dueAt && new Date(selectedNeedDetails.dueAt) < new Date() && !isPrimaryOrAdmin)
                     }
                   >
                     <Check className="w-4 h-4 mr-2" />
                     {selectedNeedDetails.capacity && selectedNeedDetails.claimCount >= selectedNeedDetails.capacity
                       ? "Filled"
+                      : (selectedNeedDetails.dueAt && new Date(selectedNeedDetails.dueAt) < new Date() && !isPrimaryOrAdmin)
+                      ? "Past Due"
                       : "I Can Help"}
                   </Button>
                 </>
