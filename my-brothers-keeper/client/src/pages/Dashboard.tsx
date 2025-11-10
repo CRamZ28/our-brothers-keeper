@@ -81,8 +81,8 @@ export default function Dashboard() {
           >
             {/* Header with icon */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(45, 181, 168, 0.15)' }}>
-                <Users className="w-5 h-5 text-teal-600" />
+              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
+                <Users className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-lg font-semibold text-teal-900">Supporters</h2>
             </div>
@@ -145,8 +145,8 @@ export default function Dashboard() {
           >
             {/* Header with icon */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(45, 181, 168, 0.15)' }}>
-                <Heart className="w-5 h-5 text-teal-600" />
+              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
+                <Heart className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-lg font-semibold text-teal-900">Open Needs</h2>
             </div>
@@ -213,8 +213,8 @@ export default function Dashboard() {
           >
             {/* Header with icon */}
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(45, 181, 168, 0.15)' }}>
-                <Calendar className="w-5 h-5 text-teal-600" />
+              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
+                <Calendar className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-lg font-semibold text-teal-900">Upcoming Events</h2>
             </div>
