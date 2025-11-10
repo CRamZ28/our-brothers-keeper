@@ -144,19 +144,30 @@ export function backendToPreset(
   visibilityScope: string,
   groupIds: number[],
   customUserIds?: string[]
-): { preset: VisibilityPreset; groupIds: string[]; customUserIds: string[] } {
+): { preset: VisibilityPreset; groupIds: string[]; customUserIds: string[]; legacy: boolean } {
   if (visibilityScope === "all_supporters") {
-    return { preset: "friends", groupIds: [], customUserIds: [] };
+    return { preset: "friends", groupIds: [], customUserIds: [], legacy: false };
   }
   if (visibilityScope === "custom") {
-    return { preset: "custom", groupIds: [], customUserIds: customUserIds || [] };
+    return { preset: "custom", groupIds: [], customUserIds: customUserIds || [], legacy: false };
   }
   if (visibilityScope === "group") {
     return { 
       preset: "inner_circle",
       groupIds: groupIds.map(id => id.toString()),
-      customUserIds: []
+      customUserIds: [],
+      legacy: false
     };
   }
-  return { preset: "friends", groupIds: [], customUserIds: [] };
+  
+  if (visibilityScope === "private" || visibilityScope === "role") {
+    return {
+      preset: "custom",
+      groupIds: [],
+      customUserIds: [],
+      legacy: true
+    };
+  }
+  
+  return { preset: "friends", groupIds: [], customUserIds: [], legacy: false };
 }
