@@ -41,8 +41,8 @@ export default function Dashboard() {
           <div 
             className="px-8 py-4 rounded-full"
             style={{
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
               background: 'rgba(255, 255, 255, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.4)'
             }}
@@ -56,8 +56,8 @@ export default function Dashboard() {
           <div 
             className="px-12 py-8 rounded-2xl"
             style={{
-              backdropFilter: 'blur(16px)',
-              WebkitBackdropFilter: 'blur(16px)',
+              backdropFilter: 'blur(8px)',
+              WebkitBackdropFilter: 'blur(8px)',
               background: 'rgba(255, 255, 255, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.4)'
             }}
@@ -73,8 +73,8 @@ export default function Dashboard() {
           <div 
             className="rounded-2xl p-6 flex flex-col"
             style={{
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
               background: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)'
             }}
@@ -122,8 +122,8 @@ export default function Dashboard() {
           <div 
             className="rounded-2xl p-6 flex flex-col"
             style={{
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
               background: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)'
             }}
@@ -175,8 +175,8 @@ export default function Dashboard() {
           <div 
             className="rounded-2xl p-6 flex flex-col"
             style={{
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
               background: 'rgba(255, 255, 255, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.3)'
             }}

@@ -8,10 +8,10 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Background**: Abstract wavy teal background (`/waves-bg.png`) with large decorative blur orbs for added depth
 - **Blur Orbs**: Three large visible orbs (600px, 700px, 400px) with cyan, emerald, and teal colors for depth
 - **Glass System**:
-  - **Glass Container**: `background: rgba(255, 255, 255, 0.03)` with `backdrop-filter: blur(5px)`, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
+  - **Glass Container**: `background: rgba(255, 255, 255, 0.03)` - no blur, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
   - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))` with `backdrop-filter: blur(40px) saturate(180%)` - white to silver gradient glassmorphism with enhanced frosting, dark teal text
   - **Main Content**: `background: rgba(255, 255, 255, 0)` - fully transparent, no blur
-  - **Cards**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(12px)`
+  - **Cards**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(6px)`
 - **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) displayed directly on sidebar without background container
 - **Typography**: Dark teal text (`text-teal-700/900`) on light frosted glass for optimal readability
 - **Active Navigation**: `background: rgba(211, 197, 232, 0.7)` (mauve/purple pill) with dark teal text
@@ -25,10 +25,10 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
 - **Glassmorphism Architecture**:
   - **Background**: Abstract wavy teal background image (`/waves-bg.png`) with large decorative orbs
   - **Blur Orbs**: Three large visible orbs (600px cyan/40, 700px emerald/35, 400px teal/45) with heavy blur for depth
-  - **Glass Container**: `rgba(255, 255, 255, 0.03)` with 5px blur, 40px margins, white border glow
+  - **Glass Container**: `rgba(255, 255, 255, 0.03)` with no blur, 40px margins, white border glow
   - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, dark teal text (`text-teal-700`)
   - **Main Content**: `rgba(255, 255, 255, 0)` - fully transparent, no blur, shows wave background
-  - **Cards**: `rgba(255, 255, 255, 0.1)` with 12px blur, white/30 preview items
+  - **Cards**: `rgba(255, 255, 255, 0.1)` with 6px blur, white/30 preview items
 - **Active Navigation**: `rgba(211, 197, 232, 0.7)` (soft mauve/purple pill) with dark teal text
 - **Typography**: Dark teal (`text-teal-700/900`) on all frosted glass surfaces for excellent readability
 - **Logo Implementation**: Emblem displayed directly on sidebar without background container
