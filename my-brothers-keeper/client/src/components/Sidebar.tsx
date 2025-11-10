@@ -53,7 +53,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
-          className="h-24 w-auto"
+          className="h-20 w-auto"
           loading="eager"
         />
       </div>
