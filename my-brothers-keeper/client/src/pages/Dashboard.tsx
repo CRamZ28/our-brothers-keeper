@@ -48,16 +48,22 @@ export default function Dashboard() {
             }}
           >
             <h1 
-              className="text-3xl font-bold tracking-wide"
+              className="text-[36px] font-semibold tracking-wide"
               style={{
                 fontFamily: "'Cinzel', serif",
-                color: '#2DB5A8',
-                fontVariant: 'small-caps'
+                color: '#0fa9a7',
+                filter: 'drop-shadow(0 0 8px rgba(15,169,167,0.7))'
               }}
             >
-              {household.name.split(' ').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-              ).join(' ')}
+              {household.name.split(' ').map((word, idx) => (
+                <span key={idx}>
+                  {idx > 0 && ' '}
+                  <span className="text-[48px]" style={{ color: '#1fb5b0' }}>
+                    {word.charAt(0).toUpperCase()}
+                  </span>
+                  {word.slice(1).toLowerCase()}
+                </span>
+              ))}
             </h1>
           </div>
 

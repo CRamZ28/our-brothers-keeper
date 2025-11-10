@@ -16,7 +16,7 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Typography**: Dark teal text (`text-teal-700/900`) on light frosted glass for optimal readability
 - **Active Navigation**: `background: rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
-- **Family Name Font**: Cinzel serif with large cap first letters and small caps for remaining letters (text-3xl, bold, wide tracking) in brand teal (#2DB5A8) to match logo text style
+- **Family Name Font**: Cinzel serif with large cap first letters (48px #1fb5b0) and small caps for remaining letters (36px #0fa9a7), wide tracking with enhanced teal drop-shadow glow for prominent focal point display
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
