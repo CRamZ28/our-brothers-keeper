@@ -1014,7 +1014,7 @@ export default function Needs() {
                 {openNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <GlassCard key={need.id} className="hover-lift accent-bar-teal relative">
+                    <GlassCard key={need.id} className="hover-lift relative">
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
@@ -1260,7 +1260,7 @@ export default function Needs() {
                 getTodaysNeeds().map(need => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <GlassCard key={need.id} className="hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                    <GlassCard key={need.id} className="hover-lift cursor-pointer" onClick={() => {
                       setTodayNeedsDialogOpen(false);
                       openDetailsDialog(need);
                     }}>
@@ -1323,7 +1323,7 @@ export default function Needs() {
               {selectedDayNeeds.map(need => {
                 const Icon = categoryIcons[need.category];
                 return (
-                  <GlassCard key={need.id} className="hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                  <GlassCard key={need.id} className="hover-lift cursor-pointer" onClick={() => {
                     setDayNeedsDialogOpen(false);
                     openDetailsDialog(need);
                   }}>
