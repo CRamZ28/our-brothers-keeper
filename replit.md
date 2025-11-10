@@ -9,11 +9,11 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Blur Orbs**: Three large visible orbs (600px, 700px, 400px) with cyan, emerald, and teal colors for depth
 - **Glass System**:
   - **Glass Container**: `background: rgba(255, 255, 255, 0.03)` - no blur, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
-  - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))` with `backdrop-filter: blur(40px) saturate(180%)` - white to silver gradient glassmorphism with enhanced frosting, dark teal text
+  - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))` with `backdrop-filter: blur(40px) saturate(180%)` - white to silver gradient glassmorphism with enhanced frosting, neutral text colors
   - **Main Content**: `background: rgba(255, 255, 255, 0)` - fully transparent, no blur
   - **Cards**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(6px)`
 - **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) displayed directly on sidebar without background container
-- **Typography**: Dark teal text (`text-teal-700/900`) on light frosted glass for optimal readability
+- **Typography**: Neutral text colors only (black, white, gray shades) for optimal readability - all chromatic text colors removed except family name special styling
 - **Active Navigation**: `background: rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 - **Family Name Font**: Cinzel serif with large cap first letters (48px #1fb5b0) and small caps for remaining letters (36px #0fa9a7), wide tracking with enhanced teal drop-shadow glow for prominent focal point display
@@ -29,11 +29,11 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
   - **Background**: Abstract wavy teal background image (`/waves-bg.png`) with large decorative orbs
   - **Blur Orbs**: Three large visible orbs (600px cyan/40, 700px emerald/35, 400px teal/45) with heavy blur for depth
   - **Glass Container**: `rgba(255, 255, 255, 0.03)` with no blur, 40px margins, white border glow
-  - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, dark teal text (`text-teal-700`)
+  - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, neutral text colors
   - **Main Content**: `rgba(255, 255, 255, 0)` - fully transparent, no blur, shows wave background
   - **Cards**: `rgba(255, 255, 255, 0.1)` with 6px blur, white/30 preview items
 - **Active Navigation**: `rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
-- **Typography**: Dark teal (`text-teal-700/900`) on all frosted glass surfaces for excellent readability
+- **Typography**: Neutral colors (black, white, gray) throughout application - chromatic text colors removed except family name special styling
 - **Logo Implementation**: Emblem displayed directly on sidebar without background container
 - **Dashboard**: Centered family name pill, optional photo placeholder, three equal square cards (Supporters, Open Needs, Upcoming Events) with polished professional design:
   - Each card features white icon on solid teal background (#2DB5A8), large number display (5xl), teal gradient accent bar, preview items, and Mauve Purple action button
@@ -41,7 +41,7 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
   - Teal gradient accent bars (#2DB5A8 → #4DD0C4) add visual pop beneath numbers
 - **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
 - **Calendar UI Consistency**: All calendar views (Events, Needs, and Meal Train) use uniform transparent glassmorphism styling with `bg-muted/30` day cells for visual consistency
-  - **Color Coding**: Upcoming entries display with dense mauve purple background `rgba(176, 140, 167, 0.7)` and dark teal text (`text-teal-700`) matching sidebar styling; past entries display in gray with grayscale filter for clear temporal distinction
+  - **Color Coding**: Upcoming entries display with dense mauve purple background `rgba(176, 140, 167, 0.7)` and white text for contrast; past entries display in gray with grayscale filter for clear temporal distinction
   - All three calendars feature identical day cell styling, event/need item displays, and temporal visual cues
 - **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
 

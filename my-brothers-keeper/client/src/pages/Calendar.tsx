@@ -643,7 +643,7 @@ export default function Calendar() {
                           {format(day, "d")}
                         </div>
                         <div className="space-y-1">
-                          {dayEvents.slice(0, 2).map((event) => {
+                          {dayEvents.slice(0, 3).map((event) => {
                             const eventDate = new Date(event.startAt);
                             const isPastEvent = eventDate < new Date();
                             
@@ -674,7 +674,7 @@ export default function Calendar() {
                               </div>
                             );
                           })}
-                          {dayEvents.length > 2 && (
+                          {dayEvents.length > 3 && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -682,7 +682,7 @@ export default function Calendar() {
                               }}
                               className="text-xs text-foreground hover:underline font-medium"
                             >
-                              +{dayEvents.length - 2} more
+                              +{dayEvents.length - 3} more
                             </button>
                           )}
                         </div>
