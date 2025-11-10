@@ -4,7 +4,8 @@ import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { GlassCard, GlassButton, GlassBadge, glassStyles } from "@/components/ui/glass";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { UserSelector } from "@/components/UserSelector";
+import { VisibilitySelect, visibilityToBackend, backendToVisibility } from "@/components/VisibilitySelect";
+import type { VisibilityOption } from "@/const";
 import {
   Card,
   CardContent,
@@ -93,9 +94,7 @@ export default function Needs() {
   const [priority, setPriority] = useState<"low" | "normal" | "urgent">("normal");
   const [dueDate, setDueDate] = useState("");
   const [capacity, setCapacity] = useState<string>("");
-  const [visibilityScope, setVisibilityScope] = useState<
-    "private" | "all_supporters" | "group" | "role" | "custom"
-  >("all_supporters");
+  const [visibilityOption, setVisibilityOption] = useState<VisibilityOption>("everyone");
   const [visibilityGroupIds, setVisibilityGroupIds] = useState<string[]>([]);
   const [customUserIds, setCustomUserIds] = useState<string[]>([]);
 
@@ -180,7 +179,7 @@ export default function Needs() {
     setPriority("normal");
     setDueDate("");
     setCapacity("");
-    setVisibilityScope("all_supporters");
+    setVisibilityOption("everyone");
     setVisibilityGroupIds([]);
     setCustomUserIds([]);
   };
@@ -191,15 +190,17 @@ export default function Needs() {
       return;
     }
 
-    if (visibilityScope === "group" && visibilityGroupIds.length === 0) {
+    if (visibilityOption === "groups" && visibilityGroupIds.length === 0) {
       toast.error("Please select at least one group");
       return;
     }
 
-    if (visibilityScope === "custom" && customUserIds.length === 0) {
+    if (visibilityOption === "custom" && customUserIds.length === 0) {
       toast.error("Please select at least one person");
       return;
     }
+
+    const backendData = visibilityToBackend(visibilityOption, visibilityGroupIds, customUserIds);
 
     createNeedMutation.mutate({
       title,
@@ -208,9 +209,9 @@ export default function Needs() {
       priority,
       dueAt: dueDate ? new Date(dueDate) : undefined,
       capacity: capacity ? parseInt(capacity) : undefined,
-      visibilityScope,
-      visibilityGroupIds: visibilityGroupIds.length > 0 ? visibilityGroupIds.map(id => parseInt(id)) : undefined,
-      customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
+      visibilityScope: backendData.visibilityScope,
+      visibilityGroupIds: backendData.visibilityGroupIds.length > 0 ? backendData.visibilityGroupIds : undefined,
+      customUserIds: backendData.customUserIds,
     });
   };
 
@@ -221,15 +222,17 @@ export default function Needs() {
       return;
     }
 
-    if (visibilityScope === "group" && visibilityGroupIds.length === 0) {
+    if (visibilityOption === "groups" && visibilityGroupIds.length === 0) {
       toast.error("Please select at least one group");
       return;
     }
 
-    if (visibilityScope === "custom" && customUserIds.length === 0) {
+    if (visibilityOption === "custom" && customUserIds.length === 0) {
       toast.error("Please select at least one person");
       return;
     }
+
+    const backendData = visibilityToBackend(visibilityOption, visibilityGroupIds, customUserIds);
 
     updateNeedMutation.mutate({
       id: editingNeedId,
@@ -239,9 +242,9 @@ export default function Needs() {
       priority,
       dueAt: dueDate ? new Date(dueDate) : undefined,
       capacity: capacity ? parseInt(capacity) : undefined,
-      visibilityScope,
-      visibilityGroupIds: visibilityGroupIds.length > 0 ? visibilityGroupIds.map(id => parseInt(id)) : undefined,
-      customUserIds: visibilityScope === "custom" ? customUserIds : undefined,
+      visibilityScope: backendData.visibilityScope,
+      visibilityGroupIds: backendData.visibilityGroupIds.length > 0 ? backendData.visibilityGroupIds : undefined,
+      customUserIds: backendData.customUserIds,
     });
   };
 
@@ -259,9 +262,16 @@ export default function Needs() {
     setPriority(need.priority);
     setDueDate(need.dueAt ? new Date(need.dueAt).toISOString().split("T")[0] : "");
     setCapacity(need.capacity?.toString() || "");
-    setVisibilityScope(need.visibilityScope || "all_supporters");
-    setVisibilityGroupIds(need.visibilityGroupIds?.map((id: number) => id.toString()) || []);
-    setCustomUserIds(need.customUserIds || []);
+    
+    const converted = backendToVisibility(
+      need.visibilityScope || "all_supporters",
+      need.visibilityGroupIds || [],
+      need.customUserIds || []
+    );
+    setVisibilityOption(converted.option);
+    setVisibilityGroupIds(converted.groupIds);
+    setCustomUserIds(converted.customUserIds);
+    
     setEditDialogOpen(true);
   };
 
@@ -507,67 +517,16 @@ export default function Needs() {
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="visibility">Who Can See This</Label>
-                    <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all_supporters">All Supporters</SelectItem>
-                        <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
-                        <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
-                        <SelectItem value="custom">Custom Group (Select Individuals)</SelectItem>
-                        <SelectItem value="private">Private (Primary only)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Control who can see and respond to this need
-                    </p>
-                  </div>
-                  {visibilityScope === "custom" && (
-                    <div className="space-y-2">
-                      <Label>Select People</Label>
-                      <UserSelector
-                        selectedUserIds={customUserIds}
-                        onChange={setCustomUserIds}
-                      />
-                      <p className="text-xs text-muted-foreground">
-                        Choose specific people who can see this need
-                      </p>
-                    </div>
-                  )}
-                  {visibilityScope === "group" && (
-                    <div className="space-y-2">
-                      <Label>Select Groups (you can select multiple)</Label>
-                      <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
-                        {groups && groups.length > 0 ? (
-                          groups.map((group: { id: number; name: string }) => (
-                            <div key={group.id} className="flex items-center space-x-2">
-                              <input
-                                type="checkbox"
-                                id={`group-${group.id}`}
-                                checked={visibilityGroupIds.includes(group.id.toString())}
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    setVisibilityGroupIds([...visibilityGroupIds, group.id.toString()]);
-                                  } else {
-                                    setVisibilityGroupIds(visibilityGroupIds.filter(id => id !== group.id.toString()));
-                                  }
-                                }}
-                                className="rounded border-gray-300"
-                              />
-                              <label htmlFor={`group-${group.id}`} className="text-sm cursor-pointer">
-                                {group.name}
-                              </label>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
-                        )}
-                      </div>
-                    </div>
-                  )}
+                  <VisibilitySelect
+                    value={visibilityOption}
+                    onChange={setVisibilityOption}
+                    groupIds={visibilityGroupIds}
+                    onGroupIdsChange={setVisibilityGroupIds}
+                    customUserIds={customUserIds}
+                    onCustomUserIdsChange={setCustomUserIds}
+                    label="Who Can See This"
+                    description="Control who can see and respond to this need"
+                  />
                   <div className="space-y-2">
                     <Label htmlFor="dueDate">Due Date (optional)</Label>
                     <Input
@@ -677,67 +636,16 @@ export default function Needs() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="edit-visibility">Who Can See This</Label>
-                <Select value={visibilityScope} onValueChange={(v) => setVisibilityScope(v as any)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all_supporters">All Supporters</SelectItem>
-                    <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
-                    <SelectItem value="role">By Role (Admin/Primary only)</SelectItem>
-                    <SelectItem value="custom">Custom Group (Select Individuals)</SelectItem>
-                    <SelectItem value="private">Private (Primary only)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <p className="text-xs text-muted-foreground">
-                  Control who can see and respond to this need
-                </p>
-              </div>
-              {visibilityScope === "custom" && (
-                <div className="space-y-2">
-                  <Label>Select People</Label>
-                  <UserSelector
-                    selectedUserIds={customUserIds}
-                    onChange={setCustomUserIds}
-                  />
-                  <p className="text-xs text-muted-foreground">
-                    Choose specific people who can see this need
-                  </p>
-                </div>
-              )}
-              {visibilityScope === "group" && (
-                <div className="space-y-2">
-                  <Label>Select Groups (you can select multiple)</Label>
-                  <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
-                    {groups && groups.length > 0 ? (
-                      groups.map((group: { id: number; name: string }) => (
-                        <div key={group.id} className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            id={`edit-group-${group.id}`}
-                            checked={visibilityGroupIds.includes(group.id.toString())}
-                            onChange={(e) => {
-                              if (e.target.checked) {
-                                setVisibilityGroupIds([...visibilityGroupIds, group.id.toString()]);
-                              } else {
-                                setVisibilityGroupIds(visibilityGroupIds.filter(id => id !== group.id.toString()));
-                              }
-                            }}
-                            className="rounded border-gray-300"
-                          />
-                          <label htmlFor={`edit-group-${group.id}`} className="text-sm cursor-pointer">
-                            {group.name}
-                          </label>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
-                    )}
-                  </div>
-                </div>
-              )}
+              <VisibilitySelect
+                value={visibilityOption}
+                onChange={setVisibilityOption}
+                groupIds={visibilityGroupIds}
+                onGroupIdsChange={setVisibilityGroupIds}
+                customUserIds={customUserIds}
+                onCustomUserIdsChange={setCustomUserIds}
+                label="Who Can See This"
+                description="Control who can see and respond to this need"
+              />
               <div className="space-y-2">
                 <Label htmlFor="edit-dueDate">Due Date (optional)</Label>
                 <Input
