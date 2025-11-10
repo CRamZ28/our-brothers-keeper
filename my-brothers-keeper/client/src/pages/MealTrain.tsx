@@ -439,27 +439,6 @@ export default function MealTrain() {
                       <div className="text-center py-8 text-muted-foreground">
                         <ChefHat className="w-12 h-12 mx-auto mb-3 text-primary/50" />
                         <p>No meal deliveries scheduled for this day</p>
-                        {capacityInfo.isAvailable && !isPast && (
-                          <div className="space-y-2 mt-4">
-                            <Button 
-                              className="w-full"
-                              onClick={() => openVolunteerDialogWithDate(selectedDayDate)}
-                            >
-                              <Users className="w-4 h-4 mr-2" />
-                              Volunteer for This Day
-                            </Button>
-                            <QuestionDialog
-                              context="meal_train"
-                              contextId={mealTrain?.id || 0}
-                              defaultSubject="Question about meal train"
-                              trigger={
-                                <Button variant="outline" size="sm" className="w-full">
-                                  Ask a Question
-                                </Button>
-                              }
-                            />
-                          </div>
-                        )}
                       </div>
                     );
                   }
