@@ -48,12 +48,9 @@ export default function Dashboard() {
             }}
           >
             <h1 
-              className="text-5xl font-bold tracking-wide"
+              className="text-3xl font-bold tracking-wide uppercase"
               style={{
-                fontFamily: "'Cinzel Decorative', serif",
-                fontVariant: 'small-caps',
-                color: '#2DB5A8',
-                textShadow: '0 1px 2px rgba(26, 127, 120, 0.3)'
+                color: '#2DB5A8'
               }}
             >
               {household.name}
