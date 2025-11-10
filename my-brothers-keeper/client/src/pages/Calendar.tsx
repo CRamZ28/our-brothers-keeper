@@ -629,9 +629,9 @@ export default function Calendar() {
                     return (
                       <div
                         key={idx}
-                        className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all ${
-                          !isCurrentMonth ? "bg-muted/30" : "bg-background"
-                        } ${isTodayDate ? "border-primary border-2" : ""}`}
+                        className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all bg-muted/30 ${
+                          isTodayDate ? "border-primary border-2" : ""
+                        }`}
                         onClick={() => openDayEventsDialog(day)}
                       >
                         <div
