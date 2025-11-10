@@ -926,7 +926,7 @@ export default function Needs() {
                                 }}
                                 className={`
                                   text-xs p-1 rounded cursor-pointer truncate font-medium
-                                  ${isPastNeed ? 'bg-gray-400/20 text-gray-600' : 'text-teal-700'}
+                                  ${isPastNeed ? 'bg-gray-400/20 text-gray-600' : 'text-white'}
                                   hover:shadow-md transition-shadow
                                 `}
                                 style={isPastNeed ? undefined : {
@@ -947,7 +947,7 @@ export default function Needs() {
                                 e.stopPropagation();
                                 openDayNeedsDialog(day, dayNeeds);
                               }}
-                              className="text-xs text-teal-700 hover:underline font-medium"
+                              className="text-xs text-foreground hover:underline font-medium"
                             >
                               +{dayNeeds.length - 2} more
                             </button>

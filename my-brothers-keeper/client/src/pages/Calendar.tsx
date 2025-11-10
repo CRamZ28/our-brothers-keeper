@@ -653,7 +653,7 @@ export default function Calendar() {
                                 className={`text-xs p-1 rounded truncate font-medium ${
                                   isPastEvent 
                                     ? "bg-gray-400/20 text-gray-600" 
-                                    : "text-teal-700"
+                                    : "text-white"
                                 }`}
                                 style={isPastEvent ? undefined : {
                                   background: 'rgba(176, 140, 167, 0.7)'
@@ -680,7 +680,7 @@ export default function Calendar() {
                                 e.stopPropagation();
                                 openDayEventsDialog(day);
                               }}
-                              className="text-xs text-teal-700 hover:underline font-medium"
+                              className="text-xs text-foreground hover:underline font-medium"
                             >
                               +{dayEvents.length - 2} more
                             </button>

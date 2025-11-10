@@ -247,7 +247,7 @@ export default function MealTrain() {
                           {capacityInfo.isAvailable && !isPast ? (
                             <Badge 
                               variant="outline" 
-                              className="text-xs border-teal-700 text-teal-700 font-medium"
+                              className="text-xs border-white text-white font-medium"
                               style={{ background: 'rgba(176, 140, 167, 0.7)' }}
                             >
                               {capacityInfo.capacity > 1
@@ -260,7 +260,7 @@ export default function MealTrain() {
                                 className={`text-xs mb-1 font-medium ${
                                   isPast 
                                     ? "bg-gray-400 text-white" 
-                                    : "text-teal-700"
+                                    : "text-white"
                                 }`}
                                 style={isPast ? undefined : {
                                   background: 'rgba(176, 140, 167, 0.7)'
@@ -272,7 +272,7 @@ export default function MealTrain() {
                                 <p 
                                   key={s.id} 
                                   className={`text-xs truncate font-medium ${
-                                    isPast ? "text-gray-500" : "text-teal-700"
+                                    isPast ? "text-gray-500" : "text-white"
                                   }`}
                                 >
                                   {s.userName}
@@ -285,7 +285,7 @@ export default function MealTrain() {
                                     openDaySignupsDialog(date);
                                   }}
                                   className={`text-xs hover:underline font-medium ${
-                                    isPast ? "text-gray-500" : "text-teal-700"
+                                    isPast ? "text-gray-500" : "text-white"
                                   }`}
                                 >
                                   +{capacityInfo.signups.length - 2} more

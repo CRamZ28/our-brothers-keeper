@@ -15,7 +15,7 @@ export default function Dashboard() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-full">
-          <p className="text-teal-900/80">Loading...</p>
+          <p className="text-foreground/80">Loading...</p>
         </div>
       </DashboardLayout>
     );
@@ -78,7 +78,7 @@ export default function Dashboard() {
               aspectRatio: '16 / 9'
             }}
           >
-            <p className="text-teal-700 text-sm italic">Family photo placeholder</p>
+            <p className="text-foreground/70 text-sm italic">Family photo placeholder</p>
           </div>
         </div>
 
@@ -100,12 +100,12 @@ export default function Dashboard() {
               <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
                 <Users className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-lg font-semibold text-teal-900">Supporters</h2>
+              <h2 className="text-lg font-semibold text-foreground">Supporters</h2>
             </div>
 
             {/* Large number with teal accent bar */}
             <div className="mb-6">
-              <div className="text-5xl font-bold text-teal-900 mb-2">{activeUsers.length}</div>
+              <div className="text-5xl font-bold text-foreground mb-2">{activeUsers.length}</div>
               <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
             </div>
 
@@ -117,9 +117,9 @@ export default function Dashboard() {
                   background: 'rgba(255, 255, 255, 0.3)'
                 }}
               >
-                <Users className="w-8 h-8 text-teal-600 mx-auto mb-2" />
-                <p className="text-sm font-medium text-teal-900">Invite friends & family</p>
-                <p className="text-xs text-teal-700 mt-1">Build your support network</p>
+                <Users className="w-8 h-8 text-foreground/60 mx-auto mb-2" />
+                <p className="text-sm font-medium text-foreground">Invite friends & family</p>
+                <p className="text-xs text-foreground/70 mt-1">Build your support network</p>
               </div>
             </div>
 
@@ -153,12 +153,12 @@ export default function Dashboard() {
               <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
                 <Heart className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-lg font-semibold text-teal-900">Open Needs</h2>
+              <h2 className="text-lg font-semibold text-foreground">Open Needs</h2>
             </div>
 
             {/* Large number with teal accent bar */}
             <div className="mb-6">
-              <div className="text-5xl font-bold text-teal-900 mb-2">{openNeeds.length}</div>
+              <div className="text-5xl font-bold text-foreground mb-2">{openNeeds.length}</div>
               <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
             </div>
 
@@ -182,9 +182,9 @@ export default function Dashboard() {
                       background: 'rgba(255, 255, 255, 0.3)'
                     }}
                   >
-                    <p className="text-sm font-medium text-teal-900 truncate">{need.title}</p>
+                    <p className="text-sm font-medium text-foreground truncate">{need.title}</p>
                     {need.description && (
-                      <p className="text-xs text-teal-700 truncate mt-1">{need.description}</p>
+                      <p className="text-xs text-foreground/70 truncate mt-1">{need.description}</p>
                     )}
                   </div>
                 ))
@@ -221,12 +221,12 @@ export default function Dashboard() {
               <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
                 <Calendar className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-lg font-semibold text-teal-900">Upcoming Events</h2>
+              <h2 className="text-lg font-semibold text-foreground">Upcoming Events</h2>
             </div>
 
             {/* Large number with teal accent bar */}
             <div className="mb-6">
-              <div className="text-5xl font-bold text-teal-900 mb-2">{upcomingEvents.length}</div>
+              <div className="text-5xl font-bold text-foreground mb-2">{upcomingEvents.length}</div>
               <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
             </div>
 
@@ -234,7 +234,7 @@ export default function Dashboard() {
             <div className="flex-1 space-y-3 mb-6">
               {upcomingEvents.length === 0 ? (
                 <div 
-                  className="p-3 rounded-lg text-center text-sm text-teal-700 italic"
+                  className="p-3 rounded-lg text-center text-sm text-foreground/70 italic"
                   style={{
                     background: 'rgba(255, 255, 255, 0.3)'
                   }}
@@ -252,8 +252,8 @@ export default function Dashboard() {
                         background: 'rgba(255, 255, 255, 0.3)'
                       }}
                     >
-                      <p className="text-sm font-medium text-teal-900 truncate">{event.title}</p>
-                      <p className="text-xs text-teal-700 mt-1">
+                      <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
+                      <p className="text-xs text-foreground/70 mt-1">
                         {eventDate.toLocaleDateString("en-US", { 
                           weekday: "short", 
                           month: "short", 
