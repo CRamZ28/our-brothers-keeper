@@ -334,7 +334,7 @@ export default function Calendar() {
   return (
     <DashboardLayout>
       <GlassPageLayout
-        title="Calendar"
+        title="Events"
         actions={
           <>
             {/* View Toggle */}
@@ -625,49 +625,59 @@ export default function Calendar() {
                     const dayEvents = getEventsForDay(day);
                     const isCurrentMonth = isSameMonth(day, currentMonth);
                     const isTodayDate = isToday(day);
+                    const isPastDay = day < new Date() && !isToday(day);
 
                     return (
                       <div
                         key={idx}
                         className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all bg-muted/30 ${
                           isTodayDate ? "border-primary border-2" : ""
-                        }`}
+                        } ${isPastDay ? "opacity-50 grayscale" : ""}`}
                         onClick={() => openDayEventsDialog(day)}
                       >
                         <div
                           className={`text-sm font-medium mb-1 ${
                             !isCurrentMonth ? "text-muted-foreground" : ""
-                          } ${isTodayDate ? "text-primary font-bold" : ""}`}
+                          } ${isTodayDate ? "text-primary font-bold" : ""} ${isPastDay ? "text-gray-500" : ""}`}
                         >
                           {format(day, "d")}
                         </div>
                         <div className="space-y-1">
-                          {dayEvents.slice(0, 2).map((event) => (
-                            <div
-                              key={event.id}
-                              className="text-xs p-1 bg-primary/10 text-primary rounded truncate"
-                              title={event.title}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedEvent(event.id);
-                                setEventDetailOpen(true);
-                              }}
-                            >
-                              {format(new Date(event.startAt), "h:mm a")} {event.title}
-                              {event.capacity && (
-                                <span className="ml-1">
-                                  ({event.goingCount}/{event.capacity})
-                                </span>
-                              )}
-                            </div>
-                          ))}
+                          {dayEvents.slice(0, 2).map((event) => {
+                            const eventDate = new Date(event.startAt);
+                            const isPastEvent = eventDate < new Date();
+                            
+                            return (
+                              <div
+                                key={event.id}
+                                className={`text-xs p-1 rounded truncate ${
+                                  isPastEvent 
+                                    ? "bg-gray-400/20 text-gray-600" 
+                                    : "bg-[#B08CA7]/20 text-[#B08CA7]"
+                                }`}
+                                title={event.title}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedEvent(event.id);
+                                  setEventDetailOpen(true);
+                                }}
+                              >
+                                {format(new Date(event.startAt), "h:mm a")} {event.title}
+                                {event.capacity && (
+                                  <span className="ml-1">
+                                    ({event.goingCount}/{event.capacity})
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
                           {dayEvents.length > 2 && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
                                 openDayEventsDialog(day);
                               }}
-                              className="text-xs text-primary hover:underline"
+                              className="text-xs text-[#B08CA7] hover:underline"
                             >
                               +{dayEvents.length - 2} more
                             </button>

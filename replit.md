@@ -40,6 +40,8 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
   - Hover effects with subtle shadow lift for interactivity
   - Teal gradient accent bars (#2DB5A8 → #4DD0C4) add visual pop beneath numbers
 - **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
+- **Calendar UI Consistency**: All calendar views (Events and Meal Train) use uniform transparent glassmorphism styling with `bg-muted/30` day cells for visual consistency
+  - **Color Coding**: Upcoming entries display in mauve purple (#B08CA7), past entries display in gray with grayscale filter for clear temporal distinction
 - **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
 
 ### Technical Implementations & Feature Specifications
@@ -50,7 +52,7 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
     - Dual-layer privacy and dietary preference management.
 - **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
 - **Needs Board**: Community support requests with group filtering.
-- **Shared Calendar**: Event scheduling and coordination with Important Dates feature.
+- **Events Calendar**: Event scheduling and coordination with Important Dates feature (navigation labeled "Events" to distinguish from Needs board).
     - **Important Dates**: Admin/primary-only feature for tracking birthdays, anniversaries, milestones, and holidays.
     - Supports yearly recurring dates for birthdays and anniversaries.
     - Optional person association to link dates to specific household members.

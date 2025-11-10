@@ -23,7 +23,7 @@ import {
 const navigationItems = [
   { icon: Home, label: "Dashboard", path: "/dashboard" },
   { icon: Heart, label: "Needs", path: "/needs" },
-  { icon: Calendar, label: "Calendar", path: "/calendar" },
+  { icon: Calendar, label: "Events", path: "/calendar" },
   { icon: ChefHat, label: "Meal Train", path: "/meal-train" },
   { icon: MessageSquare, label: "Family Updates", path: "/family-updates" },
   { icon: BookHeart, label: "Memory Wall", path: "/memory-wall" },

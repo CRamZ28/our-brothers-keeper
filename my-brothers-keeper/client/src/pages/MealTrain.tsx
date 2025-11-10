@@ -235,28 +235,39 @@ export default function MealTrain() {
                     const isPast = date < new Date() && !isSameDay(date, new Date());
 
                     return (
-                      <GlassCard
+                      <div
                         key={format(date, "yyyy-MM-dd")}
-                        className={`card-elevated hover-lift cursor-pointer ${
-                          isPast ? "opacity-50" : ""
+                        className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all bg-muted/30 ${
+                          isPast ? "opacity-50 grayscale" : ""
                         }`}
                         onClick={() => openDaySignupsDialog(date)}
                       >
-                        <CardContent className="p-3">
-                          <div className="text-sm font-medium mb-2">{format(date, "d")}</div>
+                        <div className={`text-sm font-medium mb-1 ${isPast ? "text-gray-500" : ""}`}>{format(date, "d")}</div>
+                        <div className="space-y-1">
                           {capacityInfo.isAvailable && !isPast ? (
-                            <Badge variant="outline" className="text-xs">
+                            <Badge variant="outline" className="text-xs border-[#B08CA7] text-[#B08CA7]">
                               {capacityInfo.capacity > 1
                                 ? `${capacityInfo.remaining} of ${capacityInfo.capacity} left`
                                 : "Available"}
                             </Badge>
                           ) : capacityInfo.isFull ? (
                             <div>
-                              <Badge variant="default" className="text-xs mb-1">
+                              <Badge 
+                                className={`text-xs mb-1 ${
+                                  isPast 
+                                    ? "bg-gray-400 text-white" 
+                                    : "bg-[#B08CA7] text-white"
+                                }`}
+                              >
                                 {capacityInfo.capacity > 1 ? "Full" : "Filled"}
                               </Badge>
                               {capacityInfo.signups.slice(0, 2).map((s) => (
-                                <p key={s.id} className="text-xs text-muted-foreground truncate">
+                                <p 
+                                  key={s.id} 
+                                  className={`text-xs truncate ${
+                                    isPast ? "text-gray-500" : "text-muted-foreground"
+                                  }`}
+                                >
                                   {s.userName}
                                 </p>
                               ))}
@@ -266,15 +277,17 @@ export default function MealTrain() {
                                     e.stopPropagation();
                                     openDaySignupsDialog(date);
                                   }}
-                                  className="text-xs text-primary hover:underline"
+                                  className={`text-xs hover:underline ${
+                                    isPast ? "text-gray-500" : "text-[#B08CA7]"
+                                  }`}
                                 >
                                   +{capacityInfo.signups.length - 2} more
                                 </button>
                               )}
                             </div>
                           ) : null}
-                        </CardContent>
-                      </GlassCard>
+                        </div>
+                      </div>
                     );
                   })}
                 </div>
