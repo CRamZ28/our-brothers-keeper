@@ -31,7 +31,7 @@ export function VisibilitySelect({
   label = "Who Can See This",
   description = "Control who can see and access this content",
 }: VisibilitySelectProps) {
-  const { data: groups = [] } = trpc.group.listForHousehold.useQuery();
+  const { data: groups = [] } = trpc.group.list.useQuery();
 
   const showGroupSelector = value === "inner_circle" || value === "community_groups";
   const showCustomSelector = value === "custom";
