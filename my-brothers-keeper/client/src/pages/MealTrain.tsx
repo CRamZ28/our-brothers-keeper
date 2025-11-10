@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { GlassPageLayout } from "@/components/GlassPageLayout";
+import { GlassCard } from "@/components/ui/glass";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -109,7 +110,7 @@ export default function MealTrain() {
       <DashboardLayout>
         <GlassPageLayout title="Meal Train">
           <div className="max-w-2xl mx-auto">
-            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+            <GlassCard>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ChefHat className="w-6 h-6" />
@@ -135,7 +136,7 @@ export default function MealTrain() {
                   />
                 </CardContent>
               )}
-            </Card>
+            </GlassCard>
           </div>
         </GlassPageLayout>
       </DashboardLayout>
@@ -190,7 +191,7 @@ export default function MealTrain() {
         <div className="space-y-6">
           {/* Calendar View */}
           {view === "calendar" && (
-            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+            <GlassCard>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Button
@@ -234,7 +235,7 @@ export default function MealTrain() {
                     const isPast = date < new Date() && !isSameDay(date, new Date());
 
                     return (
-                      <Card
+                      <GlassCard
                         key={format(date, "yyyy-MM-dd")}
                         className={`card-elevated hover-lift cursor-pointer ${
                           isPast ? "opacity-50" : ""
@@ -273,17 +274,17 @@ export default function MealTrain() {
                             </div>
                           ) : null}
                         </CardContent>
-                      </Card>
+                      </GlassCard>
                     );
                   })}
                 </div>
               </CardContent>
-            </Card>
+            </GlassCard>
           )}
 
           {/* List View */}
           {view === "list" && (
-            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+            <GlassCard>
               <CardHeader>
                 <CardTitle>Meal Signups</CardTitle>
                 <CardDescription>All scheduled meal deliveries</CardDescription>
@@ -297,7 +298,7 @@ export default function MealTrain() {
                   </div>
                 ) : (
                   signups.map((signup) => (
-                    <Card key={signup.id} className="card-elevated">
+                    <GlassCard key={signup.id} className="card-elevated">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -320,11 +321,11 @@ export default function MealTrain() {
                           </div>
                         </div>
                       </CardContent>
-                    </Card>
+                    </GlassCard>
                   ))
                 )}
               </CardContent>
-            </Card>
+            </GlassCard>
           )}
 
           {/* Today's Meals Dialog */}
@@ -351,7 +352,7 @@ export default function MealTrain() {
                   </div>
                 ) : (
                   getTodaysMeals().map(signup => (
-                    <Card key={signup.id} className="card-elevated accent-bar-teal">
+                    <GlassCard key={signup.id} className="card-elevated accent-bar-teal">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -371,7 +372,7 @@ export default function MealTrain() {
                           </div>
                         </div>
                       </CardContent>
-                    </Card>
+                    </GlassCard>
                   ))
                 )}
               </div>
@@ -444,7 +445,7 @@ export default function MealTrain() {
                   }
                   
                   return capacityInfo.signups.map(signup => (
-                    <Card key={signup.id} className="card-elevated accent-bar-teal">
+                    <GlassCard key={signup.id} className="card-elevated accent-bar-teal">
                       <CardContent className="p-4">
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -464,7 +465,7 @@ export default function MealTrain() {
                           </div>
                         </div>
                       </CardContent>
-                    </Card>
+                    </GlassCard>
                   ));
                 })()}
               </div>

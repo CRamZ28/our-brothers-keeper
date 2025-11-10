@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { GlassPageLayout } from "@/components/GlassPageLayout";
+import { GlassCard } from "@/components/ui/glass";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -587,7 +588,7 @@ export default function Calendar() {
         {view === "calendar" && (
           <div className="space-y-4">
             {/* Month Navigation */}
-            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+            <GlassCard>
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <Button variant="outline" size="sm" onClick={previousMonth}>
@@ -677,7 +678,7 @@ export default function Calendar() {
                   })}
                 </div>
               </CardContent>
-            </Card>
+            </GlassCard>
           </div>
         )}
 
@@ -691,14 +692,14 @@ export default function Calendar() {
 
             <TabsContent value="upcoming" className="space-y-4">
               {upcomingEvents.length === 0 ? (
-                <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+                <GlassCard>
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <CalendarIcon className="w-12 h-12 text-muted-foreground mb-4" />
                     <p className="text-muted-foreground text-center">
                       No upcoming events scheduled. Check back later!
                     </p>
                   </CardContent>
-                </Card>
+                </GlassCard>
               ) : (
                 <div className="space-y-4">
                   {upcomingEvents.map((event) => {
@@ -709,7 +710,7 @@ export default function Calendar() {
                       format(addMonths(new Date(), 0).setDate(new Date().getDate() + 1), "yyyy-MM-dd");
 
                     return (
-                      <Card key={event.id} className={`card-elevated hover-lift ${isTodayEvent ? "border-primary border-2 accent-bar-teal relative" : ""}`}>
+                      <GlassCard key={event.id} className={`card-elevated hover-lift ${isTodayEvent ? "border-primary border-2 accent-bar-teal relative" : ""}`}>
                         <CardHeader>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
@@ -804,7 +805,7 @@ export default function Calendar() {
                             }
                           />
                         </CardContent>
-                      </Card>
+                      </GlassCard>
                     );
                   })}
                 </div>
@@ -813,16 +814,16 @@ export default function Calendar() {
 
             <TabsContent value="past" className="space-y-4">
               {pastEvents.length === 0 ? (
-                <Card>
+                <GlassCard>
                   <CardContent className="flex flex-col items-center justify-center py-12">
                     <CalendarIcon className="w-12 h-12 text-muted-foreground mb-4" />
                     <p className="text-muted-foreground text-center">No past events yet.</p>
                   </CardContent>
-                </Card>
+                </GlassCard>
               ) : (
                 <div className="space-y-4">
                   {pastEvents.map((event) => (
-                    <Card key={event.id} className="opacity-75">
+                    <GlassCard key={event.id} className="opacity-75">
                       <CardHeader>
                         <CardTitle className="text-lg">{event.title}</CardTitle>
                         <CardDescription>
@@ -834,7 +835,7 @@ export default function Calendar() {
                           })}
                         </CardDescription>
                       </CardHeader>
-                    </Card>
+                    </GlassCard>
                   ))}
                 </div>
               )}
@@ -866,7 +867,7 @@ export default function Calendar() {
                 </div>
               ) : (
                 getTodaysEvents().map(event => (
-                  <Card key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                  <GlassCard key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
                     setTodayEventsDialogOpen(false);
                     setSelectedEvent(event.id);
                     setEventDetailOpen(true);
@@ -905,7 +906,7 @@ export default function Calendar() {
                         <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
                       </CardContent>
                     )}
-                  </Card>
+                  </GlassCard>
                 ))
               )}
             </div>
@@ -950,7 +951,7 @@ export default function Calendar() {
                 </div>
               ) : (
                 selectedDayDate && getEventsForDay(selectedDayDate).map(event => (
-                  <Card key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                  <GlassCard key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
                     setDayEventsDialogOpen(false);
                     setSelectedEvent(event.id);
                     setEventDetailOpen(true);
@@ -989,7 +990,7 @@ export default function Calendar() {
                         <p className="text-sm text-muted-foreground line-clamp-2">{event.description}</p>
                       </CardContent>
                     )}
-                  </Card>
+                  </GlassCard>
                 ))
               )}
             </div>
