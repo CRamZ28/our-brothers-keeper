@@ -60,21 +60,21 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-400 via-teal-50 to-white relative overflow-hidden">
-      {/* Decorative circular orbs in background - matching the image */}
-      <div className="absolute top-[10%] right-[15%] w-[300px] h-[300px] bg-white/30 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[15%] left-[5%] w-[500px] h-[500px] bg-teal-100/40 blur-[140px] rounded-full pointer-events-none"></div>
-      <div className="absolute top-[45%] right-[5%] w-[200px] h-[200px] bg-white/20 blur-[100px] rounded-full pointer-events-none"></div>
+    <div className="min-h-screen bg-gradient-to-br from-[#4DD0C4] via-[#3FC9BB] to-[#2DB5A8] relative overflow-hidden">
+      {/* Decorative circular orbs in background - much larger and more visible */}
+      <div className="absolute top-[10%] right-[15%] w-[600px] h-[600px] bg-cyan-300/40 blur-[150px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>
 
       {/* Glass Container - 40px margins from viewport edges */}
       <div className="min-h-screen p-[40px]">
         <div 
           className="mx-auto max-w-7xl h-[calc(100vh-80px)] rounded-3xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(31,38,135,0.15),inset_0_1px_0_rgba(255,255,255,0.5)]"
           style={{
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(255, 255, 255, 0.12)',
             backdropFilter: 'blur(20px)',
             WebkitBackdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.18)'
+            border: '2px solid rgba(255, 255, 255, 0.25)'
           }}
         >
           

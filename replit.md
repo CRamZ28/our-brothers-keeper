@@ -4,10 +4,11 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times by simplifying community support and communication for families in need.
 
 ## User Preferences
-- **Design Style**: Light glassmorphism architecture with teal-to-white gradient background
-- **Background**: Soft gradient from `teal-400` via `teal-100` to `white` with decorative white/teal orbs
+- **Design Style**: Glassmorphism architecture with consistent teal gradient background
+- **Background**: Consistent teal gradient from `#4DD0C4` via `#3FC9BB` to `#2DB5A8` with large decorative orbs
+- **Blur Orbs**: Three large visible orbs (600px, 700px, 400px) with cyan, emerald, and teal colors for depth
 - **Glass System**:
-  - **Glass Container**: `background: rgba(255, 255, 255, 0.08)` with `backdrop-filter: blur(20px)`, 40px viewport margins
+  - **Glass Container**: `background: rgba(255, 255, 255, 0.12)` with `backdrop-filter: blur(20px)`, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
   - **Sidebar**: `background: rgba(255, 255, 255, 0.25)` - light frosted white glass showing teal through, dark teal text
   - **Main Content**: `background: rgba(255, 255, 255, 0.02)` - very transparent
   - **Cards**: `background: rgba(255, 255, 255, 0.2)` with `backdrop-filter: blur(12px)`
@@ -20,10 +21,11 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
 
 ### UI/UX Decisions
-The UI/UX features a light glassmorphism design system with teal-to-white gradient:
-- **Light Glassmorphism Architecture**:
-  - **Background**: Teal-to-white gradient (`teal-400` → `teal-100` → `white`) with soft white/teal orbs
-  - **Glass Container**: `rgba(255, 255, 255, 0.08)` with 20px blur, 40px margins from viewport edges
+The UI/UX features a glassmorphism design system with consistent teal gradient:
+- **Glassmorphism Architecture**:
+  - **Background**: Consistent teal gradient (`#4DD0C4` → `#3FC9BB` → `#2DB5A8`) with large decorative orbs
+  - **Blur Orbs**: Three large visible orbs (600px cyan/40, 700px emerald/35, 400px teal/45) with heavy blur for depth
+  - **Glass Container**: `rgba(255, 255, 255, 0.12)` with 20px blur, 40px margins, white border glow
   - **Sidebar**: `rgba(255, 255, 255, 0.25)` - light frosted glass, dark teal text (`text-teal-700`)
   - **Main Content**: `rgba(255, 255, 255, 0.02)` - very transparent, shows background gradient
   - **Cards**: `rgba(255, 255, 255, 0.2)` with 12px blur, white/30 preview items
