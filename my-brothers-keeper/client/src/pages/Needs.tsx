@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
-import { PageHeader } from "@/components/PageHeader";
+import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { GlassCard, GlassButton, GlassBadge, glassStyles } from "@/components/ui/glass";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -421,43 +421,39 @@ export default function Needs() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 lg:p-8 max-w-6xl mx-auto">
-        <PageHeader />
-        
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between gap-3">
-            <h1 className="text-2xl font-bold text-teal-900">Needs Board</h1>
-            <div className="flex items-center gap-2">
-              {/* View Toggle */}
-              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
-                <Button
-                  variant={viewMode === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("list")}
-                  className={viewMode === "list" ? "" : "hover:bg-white/20"}
-                >
-                  <List className="w-4 h-4 md:mr-2" />
-                  <span className="hidden md:inline">List</span>
+      <GlassPageLayout 
+        title="Needs Board"
+        actions={
+          <div className="flex items-center gap-2">
+            {/* View Toggle */}
+            <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+              <Button
+                variant={viewMode === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("list")}
+                className={viewMode === "list" ? "" : "hover:bg-white/20"}
+              >
+                <List className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">List</span>
+              </Button>
+              <Button
+                variant={viewMode === "calendar" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setViewMode("calendar")}
+                className={viewMode === "calendar" ? "" : "hover:bg-white/20"}
+              >
+                <CalendarDays className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">Calendar</span>
+              </Button>
+            </div>
+            {isPrimaryOrAdmin && (
+            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="sm" className="shrink-0">
+                  <Plus className="w-4 h-4 md:mr-2" />
+                  <span className="hidden md:inline">Add Need</span>
                 </Button>
-                <Button
-                  variant={viewMode === "calendar" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setViewMode("calendar")}
-                  className={viewMode === "calendar" ? "" : "hover:bg-white/20"}
-                >
-                  <CalendarDays className="w-4 h-4 md:mr-2" />
-                  <span className="hidden md:inline">Calendar</span>
-                </Button>
-              </div>
-              {isPrimaryOrAdmin && (
-              <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" className="shrink-0">
-                    <Plus className="w-4 h-4 md:mr-2" />
-                    <span className="hidden md:inline">Add Need</span>
-                  </Button>
-                </DialogTrigger>
+              </DialogTrigger>
               <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Create a New Need</DialogTitle>
@@ -618,12 +614,13 @@ export default function Needs() {
               </DialogContent>
             </Dialog>
           )}
-            </div>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {openNeeds.length} open need{openNeeds.length !== 1 ? 's' : ''}
-            </p>
           </div>
+        }
+      >
+        <div className="space-y-6">
+          <p className="text-sm text-muted-foreground">
+            {openNeeds.length} open need{openNeeds.length !== 1 ? 's' : ''}
+          </p>
 
         {/* Edit Need Dialog */}
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
@@ -1508,8 +1505,8 @@ export default function Needs() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
-      </div>
+        </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }

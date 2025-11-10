@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -376,27 +377,17 @@ export default function FamilyUpdates() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
-        
-        <div className="relative p-8 space-y-8 z-10">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1>Family Updates</h1>
-              <p className="text-muted-foreground mt-2">
-                Updates, announcements, and memories from the family
-              </p>
-            </div>
-            {isPrimaryOrAdmin && (
-              <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="lg">
-                    <Plus className="w-4 h-4 mr-2" />
-                    New Post
-                  </Button>
-                </DialogTrigger>
+      <GlassPageLayout
+        title="Family Updates"
+        actions={
+          isPrimaryOrAdmin ? (
+            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg">
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Post
+                </Button>
+              </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Share an Update</DialogTitle>
@@ -555,10 +546,10 @@ export default function FamilyUpdates() {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            )}
-          </div>
-
-          {pinnedPosts.length > 0 && (
+            ) : undefined
+        }
+      >
+        {pinnedPosts.length > 0 && (
             <div className="space-y-4">
               <h2 className="text-lg font-semibold flex items-center gap-2">
                 <Pin className="w-5 h-5" />
@@ -598,8 +589,7 @@ export default function FamilyUpdates() {
               </div>
             )}
           </div>
-        </div>
-      </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }

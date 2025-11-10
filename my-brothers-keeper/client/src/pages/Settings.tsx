@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -137,24 +138,8 @@ export default function Settings() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 relative overflow-hidden">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
-
-        <div className="relative p-8 space-y-8">
-          {/* Header */}
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#6BC4B8] via-[#5A9FD4] to-[#B08CA7] bg-clip-text text-transparent">
-              Settings
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Manage your household and notification preferences
-            </p>
-          </div>
-
-          {/* Household Settings */}
+      <GlassPageLayout title="Settings">
+        {/* Household Settings */}
           {isPrimaryOrAdmin && (
             <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
               <CardHeader>
@@ -519,8 +504,7 @@ export default function Settings() {
               </div>
             </CardContent>
           </Card>
-        </div>
-      </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }

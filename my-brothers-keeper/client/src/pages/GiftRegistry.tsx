@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -212,28 +213,23 @@ export default function GiftRegistry() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Gift Registry</h1>
-              <p className="text-gray-600 mt-1">Wishlist of items the family needs</p>
-            </div>
-            {isPrimaryOrAdmin && (
-              <Dialog
-                open={dialogOpen}
-                onOpenChange={(open) => {
-                  setDialogOpen(open);
-                  if (!open) resetForm();
-                }}
-              >
-                <DialogTrigger asChild>
-                  <Button className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white">
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Item
-                  </Button>
-                </DialogTrigger>
+      <GlassPageLayout
+        title="Gift Registry"
+        actions={
+          isPrimaryOrAdmin ? (
+            <Dialog
+              open={dialogOpen}
+              onOpenChange={(open) => {
+                setDialogOpen(open);
+                if (!open) resetForm();
+              }}
+            >
+              <DialogTrigger asChild>
+                <Button className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Item
+                </Button>
+              </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>{editingItem ? "Edit Item" : "Add to Registry"}</DialogTitle>
@@ -373,10 +369,10 @@ export default function GiftRegistry() {
                   </div>
                 </DialogContent>
               </Dialog>
-            )}
-          </div>
-
-          {/* Coming Soon Banner */}
+            ) : undefined
+        }
+      >
+        {/* Coming Soon Banner */}
           <div className="bg-gradient-to-r from-teal-50 to-blue-50 border border-teal-200 rounded-lg p-4">
             <p className="text-sm text-gray-700">
               <span className="font-semibold text-[#14B8A6]">Coming Soon:</span> Add items by pasting product links from Amazon, Target, and more – we'll automatically fill in the details for you!
@@ -555,8 +551,7 @@ export default function GiftRegistry() {
               </div>
             </div>
           )}
-        </div>
-      </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }

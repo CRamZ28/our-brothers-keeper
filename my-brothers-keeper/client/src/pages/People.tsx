@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -414,22 +415,10 @@ export default function People() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
-        
-        <div className="relative p-8 space-y-8 z-10">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1>People</h1>
-            <p className="text-muted-foreground mt-2">
-              Manage your support network • {activeUsers.length} active members
-            </p>
-          </div>
-          {isPrimaryOrAdmin && (
+      <GlassPageLayout
+        title="People"
+        actions={
+          isPrimaryOrAdmin ? (
             <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
               <DialogTrigger asChild>
                 <Button>
@@ -518,9 +507,9 @@ export default function People() {
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-          )}
-        </div>
-
+          ) : undefined
+        }
+      >
         {/* Pending Tier Requests */}
         {isPrimaryOrAdmin && pendingTierRequests && pendingTierRequests.length > 0 && (
           <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
@@ -1105,8 +1094,7 @@ export default function People() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        </div>
-      </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }

@@ -1,5 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
+import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -221,21 +222,16 @@ export default function MemoryWall() {
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Memory Wall</h1>
-              <p className="text-gray-600 mt-1">Share memories, stories, encouragement, and prayers</p>
-            </div>
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add to Wall
-                </Button>
-              </DialogTrigger>
+      <GlassPageLayout 
+        title="Memory Wall"
+        actions={
+          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white">
+                <Plus className="w-4 h-4 mr-2" />
+                Add to Wall
+              </Button>
+            </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>Add to Memory Wall</DialogTitle>
@@ -326,8 +322,10 @@ export default function MemoryWall() {
                 </div>
               </DialogContent>
             </Dialog>
-          </div>
-
+        }
+      >
+        <p className="text-gray-600 mb-6">Share memories, stories, encouragement, and prayers</p>
+        <div className="space-y-6">
           {/* Filter */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
             <Button
@@ -480,7 +478,7 @@ export default function MemoryWall() {
             </div>
           )}
         </div>
-      </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }

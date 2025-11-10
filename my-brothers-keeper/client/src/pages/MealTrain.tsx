@@ -107,14 +107,9 @@ export default function MealTrain() {
   if (!mealTrain || !mealTrain.enabled) {
     return (
       <DashboardLayout>
-        <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
-          {/* Animated gradient orbs */}
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-          <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
-          
-          <div className="relative p-8 z-10">
-            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md max-w-2xl mx-auto">
+        <GlassPageLayout title="Meal Train">
+          <div className="max-w-2xl mx-auto">
+            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <ChefHat className="w-6 h-6" />
@@ -142,68 +137,57 @@ export default function MealTrain() {
               )}
             </Card>
           </div>
-        </div>
+        </GlassPageLayout>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout>
-      <div className="min-h-screen bg-gradient-to-br from-teal-50 via-blue-50 to-purple-50 noise-texture relative overflow-hidden">
-        {/* Animated gradient orbs */}
-        <div className="absolute top-0 -left-4 w-72 h-72 bg-teal-300 dark:bg-teal-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob" />
-        <div className="absolute top-20 -right-4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-2000" />
-          <div className="absolute bottom-20 left-20 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-xl opacity-20 animate-blob animation-delay-4000" />
-        
-        <div className="relative p-8 space-y-6 z-10">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="flex items-center gap-2">
-                <ChefHat className="w-8 h-8" />
-                Meal Calendar
-              </h1>
-              <p className="text-muted-foreground mt-1">Volunteer to provide a meal.</p>
-            </div>
-            <div className="flex gap-2">
+      <GlassPageLayout 
+        title="Meal Calendar"
+        actions={
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowRecipientInfo(true)}
+            >
+              Recipient Info
+            </Button>
+            {isPrimaryOrAdmin && (
+              <MealTrainConfigDialog
+                mealTrain={mealTrain}
+                onSave={() => refetchMealTrain()}
+                trigger={
+                  <Button variant="outline" size="sm">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Settings
+                  </Button>
+                }
+              />
+            )}
+            <div className="flex bg-muted p-1 rounded-md">
               <Button
-                variant="outline"
+                variant={view === "calendar" ? "default" : "ghost"}
                 size="sm"
-                onClick={() => setShowRecipientInfo(true)}
+                onClick={() => setView("calendar")}
               >
-                Recipient Info
+                <CalendarIcon className="w-4 h-4" />
               </Button>
-              {isPrimaryOrAdmin && (
-                <MealTrainConfigDialog
-                  mealTrain={mealTrain}
-                  onSave={() => refetchMealTrain()}
-                  trigger={
-                    <Button variant="outline" size="sm">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
-                    </Button>
-                  }
-                />
-              )}
-              <div className="flex bg-muted p-1 rounded-md">
-                <Button
-                  variant={view === "calendar" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setView("calendar")}
-                >
-                  <CalendarIcon className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant={view === "list" ? "default" : "ghost"}
-                  size="sm"
-                  onClick={() => setView("list")}
-                >
-                  <List className="w-4 h-4" />
-                </Button>
-              </div>
+              <Button
+                variant={view === "list" ? "default" : "ghost"}
+                size="sm"
+                onClick={() => setView("list")}
+              >
+                <List className="w-4 h-4" />
+              </Button>
             </div>
           </div>
-
+        }
+      >
+        <p className="text-muted-foreground mb-6">Volunteer to provide a meal.</p>
+        <div className="space-y-6">
           {/* Calendar View */}
           {view === "calendar" && (
             <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
@@ -551,7 +535,7 @@ export default function MealTrain() {
             </DialogContent>
           </Dialog>
         </div>
-      </div>
+      </GlassPageLayout>
     </DashboardLayout>
   );
 }
