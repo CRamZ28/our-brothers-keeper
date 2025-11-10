@@ -979,7 +979,7 @@ export default function Needs() {
                   const statusConfig = statusConfigs[need.status] || statusConfigs.open;
 
                   return (
-                    <GlassCard key={need.id} className="hover-lift">
+                    <GlassCard key={need.id} className="hover-lift flex flex-col h-full">
                       <CardHeader className="pb-4 pt-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -1029,7 +1029,7 @@ export default function Needs() {
                           )}
                         </div>
                       </CardHeader>
-                      <CardContent className="space-y-4 pt-0">
+                      <CardContent className="space-y-4 pt-0 flex-grow">
                         {need.dueAt && (
                           <div className="flex items-center gap-2 text-sm text-foreground/70">
                             <Calendar className="w-4 h-4" />
@@ -1108,7 +1108,7 @@ export default function Needs() {
                 {openNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <GlassCard key={need.id} className="hover-lift">
+                    <GlassCard key={need.id} className="hover-lift flex flex-col h-full">
                       <CardHeader className="pb-4 pt-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -1150,7 +1150,7 @@ export default function Needs() {
                           )}
                         </div>
                       </CardHeader>
-                      <CardContent className="space-y-4 pt-0">
+                      <CardContent className="space-y-4 pt-0 flex-grow">
                         {need.dueAt && (
                           <div className="flex items-center gap-2 text-sm text-foreground/70">
                             <Calendar className="w-4 h-4" />
