@@ -98,10 +98,10 @@ export default function DashboardLayout({
                 side="left" 
                 className="p-0 w-80"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.85)',
-                  backdropFilter: 'blur(30px)',
-                  WebkitBackdropFilter: 'blur(30px)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)'
+                  background: 'rgba(255, 255, 255, 0.75)',
+                  backdropFilter: 'blur(25px)',
+                  WebkitBackdropFilter: 'blur(25px)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
                 <Sidebar onNavigate={() => setMobileMenuOpen(false)} />
@@ -115,10 +115,10 @@ export default function DashboardLayout({
             <div 
               className="hidden lg:flex flex-col w-64 shrink-0"
               style={{
-                background: 'rgba(255, 255, 255, 0.85)',
-                backdropFilter: 'blur(30px)',
-                WebkitBackdropFilter: 'blur(30px)',
-                borderRight: '1px solid rgba(255, 255, 255, 0.3)'
+                background: 'rgba(255, 255, 255, 0.75)',
+                backdropFilter: 'blur(25px)',
+                WebkitBackdropFilter: 'blur(25px)',
+                borderRight: '1px solid rgba(255, 255, 255, 0.2)'
               }}
             >
               <Sidebar />
