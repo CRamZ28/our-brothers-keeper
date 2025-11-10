@@ -52,14 +52,15 @@ export default function Dashboard() {
             </h1>
           </div>
 
-          {/* Optional Family Photo Placeholder Pill */}
+          {/* Optional Family Photo Placeholder - 16:9 */}
           <div 
-            className="px-12 py-8 rounded-2xl"
+            className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center"
             style={{
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
               background: 'rgba(255, 255, 255, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.4)'
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              aspectRatio: '16 / 9'
             }}
           >
             <p className="text-teal-700 text-sm italic">Family photo placeholder</p>
