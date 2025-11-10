@@ -742,17 +742,19 @@ export default function Calendar() {
                               onClick={() => handleRsvp(event.id, "going")}
                               disabled={
                                 rsvpMutation.isPending ||
-                                (event.capacity && event.goingCount >= event.capacity)
+                                (event.capacity && event.goingCount >= event.capacity) ||
+                                (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)
                               }
                             >
                               <Check className="w-4 h-4 mr-1" />
-                              {event.capacity && event.goingCount >= event.capacity ? "Full" : "Going"}
+                              {event.capacity && event.goingCount >= event.capacity ? "Full" : 
+                               (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "Going"}
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleRsvp(event.id, "maybe")}
-                              disabled={rsvpMutation.isPending}
+                              disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
                             >
                               Maybe
                             </Button>
@@ -760,7 +762,7 @@ export default function Calendar() {
                               size="sm"
                               variant="outline"
                               onClick={() => handleRsvp(event.id, "declined")}
-                              disabled={rsvpMutation.isPending}
+                              disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
                             >
                               <X className="w-4 h-4 mr-1" />
                               Can't Go
@@ -1077,12 +1079,14 @@ export default function Calendar() {
                       }}
                       disabled={
                         rsvpMutation.isPending ||
-                        (event.capacity && event.goingCount >= event.capacity)
+                        (event.capacity && event.goingCount >= event.capacity) ||
+                        (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)
                       }
                       className="flex-1 whitespace-nowrap"
                     >
                       <Check className="w-4 h-4 mr-2" />
-                      {event.capacity && event.goingCount >= event.capacity ? "Full" : "I'm Going"}
+                      {event.capacity && event.goingCount >= event.capacity ? "Full" : 
+                       (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "I'm Going"}
                     </Button>
                     <Button
                       variant="outline"
@@ -1090,7 +1094,7 @@ export default function Calendar() {
                         handleRsvp(event.id, "maybe");
                         setEventDetailOpen(false);
                       }}
-                      disabled={rsvpMutation.isPending}
+                      disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
                       className="flex-1 whitespace-nowrap"
                     >
                       Maybe
@@ -1101,7 +1105,7 @@ export default function Calendar() {
                         handleRsvp(event.id, "declined");
                         setEventDetailOpen(false);
                       }}
-                      disabled={rsvpMutation.isPending}
+                      disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
                       className="flex-1 whitespace-nowrap"
                     >
                       <X className="w-4 h-4 mr-2" />
