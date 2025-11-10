@@ -9,7 +9,7 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Blur Orbs**: Three large visible orbs (600px, 700px, 400px) with cyan, emerald, and teal colors for depth
 - **Glass System**:
   - **Glass Container**: `background: rgba(255, 255, 255, 0.12)` with `backdrop-filter: blur(20px)`, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
-  - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(192, 192, 192, 0.65))` with `backdrop-filter: blur(25px)` - white to silver gradient glassmorphism, dark teal text
+  - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))` with `backdrop-filter: blur(40px) saturate(180%)` - white to silver gradient glassmorphism with enhanced frosting, dark teal text
   - **Main Content**: `background: rgba(255, 255, 255, 0.02)` - very transparent
   - **Cards**: `background: rgba(255, 255, 255, 0.2)` with `backdrop-filter: blur(12px)`
 - **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) displayed directly on sidebar without background container
@@ -26,7 +26,7 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
   - **Background**: Consistent teal gradient (`#4DD0C4` → `#3FC9BB` → `#2DB5A8`) with large decorative orbs
   - **Blur Orbs**: Three large visible orbs (600px cyan/40, 700px emerald/35, 400px teal/45) with heavy blur for depth
   - **Glass Container**: `rgba(255, 255, 255, 0.12)` with 20px blur, 40px margins, white border glow
-  - **Sidebar**: `linear-gradient(white to silver)` with 25px blur - white to silver gradient glassmorphism, dark teal text (`text-teal-700`)
+  - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, dark teal text (`text-teal-700`)
   - **Main Content**: `rgba(255, 255, 255, 0.02)` - very transparent, shows background gradient
   - **Cards**: `rgba(255, 255, 255, 0.2)` with 12px blur, white/30 preview items
 - **Active Navigation**: `rgba(211, 197, 232, 0.7)` (soft mauve/purple pill) with dark teal text

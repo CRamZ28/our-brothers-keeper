@@ -98,10 +98,11 @@ export default function DashboardLayout({
                 side="left" 
                 className="p-0 w-80"
                 style={{
-                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(192, 192, 192, 0.65))',
-                  backdropFilter: 'blur(25px)',
-                  WebkitBackdropFilter: 'blur(25px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))',
+                  backdropFilter: 'blur(40px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+                  border: '2px solid rgba(255, 255, 255, 0.4)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
                 }}
               >
                 <Sidebar onNavigate={() => setMobileMenuOpen(false)} />
@@ -115,10 +116,11 @@ export default function DashboardLayout({
             <div 
               className="hidden lg:flex flex-col w-64 shrink-0"
               style={{
-                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(192, 192, 192, 0.65))',
-                backdropFilter: 'blur(25px)',
-                WebkitBackdropFilter: 'blur(25px)',
-                borderRight: '1px solid rgba(255, 255, 255, 0.3)'
+                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))',
+                backdropFilter: 'blur(40px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+                borderRight: '2px solid rgba(255, 255, 255, 0.4)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
               }}
             >
               <Sidebar />
