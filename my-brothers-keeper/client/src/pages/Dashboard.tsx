@@ -71,7 +71,7 @@ export default function Dashboard() {
           
           {/* Card 1: Supporters */}
           <div 
-            className="rounded-2xl p-6 flex flex-col"
+            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
             style={{
               backdropFilter: 'blur(6px)',
               WebkitBackdropFilter: 'blur(6px)',
@@ -79,10 +79,18 @@ export default function Dashboard() {
               border: '1px solid rgba(255, 255, 255, 0.3)'
             }}
           >
-            {/* Number at top */}
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(45, 181, 168, 0.15)' }}>
+                <Users className="w-5 h-5 text-teal-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-teal-900">Supporters</h2>
+            </div>
+
+            {/* Large number with teal accent bar */}
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-teal-900 mb-2">Supporters</h2>
-              <div className="text-4xl font-bold text-teal-900">{activeUsers.length}</div>
+              <div className="text-5xl font-bold text-teal-900 mb-2">{activeUsers.length}</div>
+              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
             </div>
 
             {/* Preview items */}
@@ -127,7 +135,7 @@ export default function Dashboard() {
 
           {/* Card 2: Open Needs */}
           <div 
-            className="rounded-2xl p-6 flex flex-col"
+            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
             style={{
               backdropFilter: 'blur(6px)',
               WebkitBackdropFilter: 'blur(6px)',
@@ -135,10 +143,18 @@ export default function Dashboard() {
               border: '1px solid rgba(255, 255, 255, 0.3)'
             }}
           >
-            {/* Number at top */}
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(45, 181, 168, 0.15)' }}>
+                <Heart className="w-5 h-5 text-teal-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-teal-900">Open Needs</h2>
+            </div>
+
+            {/* Large number with teal accent bar */}
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-teal-900 mb-2">Open Needs</h2>
-              <div className="text-4xl font-bold text-teal-900">{openNeeds.length}</div>
+              <div className="text-5xl font-bold text-teal-900 mb-2">{openNeeds.length}</div>
+              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
             </div>
 
             {/* Preview items */}
@@ -187,7 +203,7 @@ export default function Dashboard() {
 
           {/* Card 3: Upcoming Events */}
           <div 
-            className="rounded-2xl p-6 flex flex-col"
+            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
             style={{
               backdropFilter: 'blur(6px)',
               WebkitBackdropFilter: 'blur(6px)',
@@ -195,10 +211,18 @@ export default function Dashboard() {
               border: '1px solid rgba(255, 255, 255, 0.3)'
             }}
           >
-            {/* Number at top */}
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl" style={{ background: 'rgba(45, 181, 168, 0.15)' }}>
+                <Calendar className="w-5 h-5 text-teal-600" />
+              </div>
+              <h2 className="text-lg font-semibold text-teal-900">Upcoming Events</h2>
+            </div>
+
+            {/* Large number with teal accent bar */}
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-teal-900 mb-2">Upcoming Events</h2>
-              <div className="text-4xl font-bold text-teal-900">{upcomingEvents.length}</div>
+              <div className="text-5xl font-bold text-teal-900 mb-2">{upcomingEvents.length}</div>
+              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
             </div>
 
             {/* Preview items */}

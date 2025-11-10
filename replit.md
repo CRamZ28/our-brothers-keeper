@@ -32,7 +32,10 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
 - **Active Navigation**: `rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
 - **Typography**: Dark teal (`text-teal-700/900`) on all frosted glass surfaces for excellent readability
 - **Logo Implementation**: Emblem displayed directly on sidebar without background container
-- **Dashboard**: Centered family name pill, optional photo placeholder, three equal square cards (Supporters, Open Needs, Upcoming Events) with consistent layout: number → preview items → action button
+- **Dashboard**: Centered family name pill, optional photo placeholder, three equal square cards (Supporters, Open Needs, Upcoming Events) with polished professional design:
+  - Each card features icon in teal background bubble, large number display (5xl), teal gradient accent bar, preview items, and Mauve Purple action button
+  - Hover effects with subtle shadow lift for interactivity
+  - Teal gradient accent bars (#2DB5A8 → #4DD0C4) add visual pop beneath numbers
 - **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
 - **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
 
