@@ -424,9 +424,9 @@ export default function Needs() {
   const claimedNeeds = needs?.filter((n) => n.status === "claimed") || [];
   const completedNeeds = needs?.filter((n) => n.status === "completed") || [];
 
-  // Organize needs by date for calendar view
-  const needsByDate = new Map<string, typeof openNeeds>();
-  openNeeds.filter(n => n.dueAt).forEach(need => {
+  // Organize needs by date for calendar view (show ALL needs)
+  const needsByDate = new Map<string, typeof needs>();
+  (needs || []).filter(n => n.dueAt).forEach(need => {
     const dateKey = getDateKey(new Date(need.dueAt!));
     if (!needsByDate.has(dateKey)) {
       needsByDate.set(dateKey, []);
@@ -434,7 +434,7 @@ export default function Needs() {
     needsByDate.get(dateKey)!.push(need);
   });
 
-  const undatedNeeds = openNeeds.filter(n => !n.dueAt);
+  const undatedNeeds = (needs || []).filter(n => !n.dueAt);
 
   return (
     <DashboardLayout>
@@ -822,8 +822,15 @@ export default function Needs() {
                         <div className="space-y-1">
                           {dayNeeds.slice(0, 3).map(need => {
                             const Icon = categoryIcons[need.category];
-                            const needDate = need.dueDate ? new Date(need.dueDate) : null;
+                            const needDate = need.dueAt ? new Date(need.dueAt) : null;
                             const isPastNeed = needDate && needDate < new Date();
+                            
+                            const statusColors = {
+                              open: { bg: 'rgba(45, 181, 168, 0.7)', text: 'text-white' },
+                              claimed: { bg: 'rgba(176, 140, 167, 0.7)', text: 'text-white' },
+                              completed: { bg: 'rgba(156, 163, 175, 0.5)', text: 'text-gray-600' }
+                            };
+                            const statusColor = statusColors[need.status as keyof typeof statusColors] || statusColors.open;
                             
                             return (
                               <div
@@ -834,13 +841,13 @@ export default function Needs() {
                                 }}
                                 className={`
                                   text-xs p-1 rounded cursor-pointer truncate font-medium
-                                  ${isPastNeed ? 'bg-gray-400/20 text-gray-600' : 'text-white'}
+                                  ${isPastNeed ? 'bg-gray-400/20 text-gray-600 grayscale' : statusColor.text}
                                   hover:shadow-md transition-shadow
                                 `}
                                 style={isPastNeed ? undefined : {
-                                  background: 'rgba(176, 140, 167, 0.7)'
+                                  background: statusColor.bg
                                 }}
-                                title={need.title}
+                                title={`${need.title} (${need.status})`}
                               >
                                 <div className="flex items-center gap-1">
                                   <Icon className="w-3 h-3 shrink-0" />
