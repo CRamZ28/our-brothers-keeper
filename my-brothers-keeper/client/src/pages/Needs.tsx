@@ -45,6 +45,7 @@ import {
   Heart,
   Home,
   List,
+  MoreVertical,
   Pencil,
   Plus,
   ShoppingCart,
@@ -52,6 +53,12 @@ import {
   Truck,
   Utensils,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -1014,70 +1021,68 @@ export default function Needs() {
                 {openNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <GlassCard key={need.id} className="hover-lift relative">
-                      <CardHeader>
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-start gap-3 flex-1">
-                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                              <Icon className="w-5 h-5 text-primary" />
+                    <GlassCard key={need.id} className="hover-lift">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="w-12 h-12 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
+                              <Icon className="w-6 h-6 text-teal-600" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <CardTitle className="text-lg">{need.title}</CardTitle>
-                              <div className="flex items-center gap-2 mt-2">
-                                <Badge variant="outline" className={priorityColors[need.priority]}>
-                                  {need.priority === "urgent" && (
-                                    <AlertCircle className="w-3 h-3 mr-1" />
-                                  )}
-                                  {need.priority}
-                                </Badge>
-                                <Badge variant="secondary">{need.category}</Badge>
-                                {need.capacity && (
-                                  <Badge variant="outline" className="gap-1">
-                                    {need.claimCount || 0}/{need.capacity}
-                                    {need.claimCount >= need.capacity && " (Filled)"}
+                              <div className="flex items-center gap-2 mb-1">
+                                <span className="text-xs font-medium text-teal-600 uppercase tracking-wide">{need.category}</span>
+                                {need.priority === "urgent" && (
+                                  <Badge variant="outline" className="bg-[#B08CA7]/10 text-[#B08CA7] border-[#B08CA7]/30 text-xs">
+                                    Urgent
                                   </Badge>
                                 )}
                               </div>
+                              <CardTitle className="text-lg font-semibold text-teal-900 leading-snug">{need.title}</CardTitle>
                             </div>
                           </div>
                           {(user && (need.createdById === user.id || isPrimaryOrAdmin)) && (
-                            <div className="flex gap-1">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openEditDialog(need)}
-                                disabled={deleteNeedMutation.isPending}
-                              >
-                                <Pencil className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteNeed(need.id)}
-                                disabled={deleteNeedMutation.isPending}
-                              >
-                                <Trash2 className="w-4 h-4 text-destructive" />
-                              </Button>
-                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => openEditDialog(need)}>
+                                  <Pencil className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteNeed(need.id)}
+                                  className="text-destructive"
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           )}
                         </div>
                       </CardHeader>
-                      {(need.details || need.dueAt) && (
-                        <CardContent className="space-y-2">
-                          {need.details && (
-                            <p className="text-sm text-muted-foreground">{need.details}</p>
-                          )}
-                          {need.dueAt && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <Calendar className="w-4 h-4" />
-                              Due: {formatDateWithDayOfWeek(new Date(need.dueAt))}
-                            </div>
-                          )}
-                        </CardContent>
-                      )}
-                      <CardFooter className="flex-col gap-2">
+                      <CardContent className="space-y-4 pt-0">
+                        {need.dueAt && (
+                          <div className="flex items-center gap-2 text-sm text-teal-700">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-medium">{formatDateWithDayOfWeek(new Date(need.dueAt))}</span>
+                          </div>
+                        )}
+                        {need.details && (
+                          <p className="text-sm text-gray-600 leading-relaxed">{need.details}</p>
+                        )}
+                        {need.capacity && (
+                          <div className="text-xs text-gray-500">
+                            {need.claimCount || 0} of {need.capacity} volunteer{need.capacity > 1 ? 's' : ''} signed up
+                          </div>
+                        )}
+                      </CardContent>
+                      <CardFooter className="flex-col gap-3 pt-4">
                         <Button
-                          className="w-full"
+                          className="w-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm"
                           onClick={() => openClaimDialog(need.id)}
                           disabled={
                             user?.role === "primary" ||
@@ -1094,9 +1099,9 @@ export default function Needs() {
                           contextId={need.id}
                           defaultSubject={`Question about: ${need.title}`}
                           trigger={
-                            <Button variant="outline" size="sm" className="w-full">
-                              Ask a Question
-                            </Button>
+                            <button className="text-sm text-teal-600 hover:text-teal-700 font-medium">
+                              Ask a Question →
+                            </button>
                           }
                         />
                       </CardFooter>
