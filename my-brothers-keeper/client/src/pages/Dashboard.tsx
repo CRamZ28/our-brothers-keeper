@@ -50,6 +50,7 @@ export default function Dashboard() {
             <h1 
               className="text-3xl font-bold tracking-wide"
               style={{
+                fontFamily: "'Cinzel', serif",
                 color: '#2DB5A8',
                 fontVariant: 'small-caps'
               }}
