@@ -14,7 +14,7 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
   - **Cards**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(6px)`
 - **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) displayed directly on sidebar without background container
 - **Typography**: Dark teal text (`text-teal-700/900`) on light frosted glass for optimal readability
-- **Active Navigation**: `background: rgba(211, 197, 232, 0.7)` (mauve/purple pill) with dark teal text
+- **Active Navigation**: `background: rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
 - **Scripture Font**: Pinyon Script for biblical verse (Galatians 6:2) on landing page
 
 ## System Architecture
@@ -29,7 +29,7 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
   - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, dark teal text (`text-teal-700`)
   - **Main Content**: `rgba(255, 255, 255, 0)` - fully transparent, no blur, shows wave background
   - **Cards**: `rgba(255, 255, 255, 0.1)` with 6px blur, white/30 preview items
-- **Active Navigation**: `rgba(211, 197, 232, 0.7)` (soft mauve/purple pill) with dark teal text
+- **Active Navigation**: `rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
 - **Typography**: Dark teal (`text-teal-700/900`) on all frosted glass surfaces for excellent readability
 - **Logo Implementation**: Emblem displayed directly on sidebar without background container
 - **Dashboard**: Centered family name pill, optional photo placeholder, three equal square cards (Supporters, Open Needs, Upcoming Events) with consistent layout: number → preview items → action button

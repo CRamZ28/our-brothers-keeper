@@ -78,7 +78,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50
               `}
               style={isActive ? {
-                background: 'rgba(211, 197, 232, 0.7)',
+                background: 'rgba(176, 140, 167, 0.7)',
                 color: '#0D5F5D'
               } : undefined}
             >
