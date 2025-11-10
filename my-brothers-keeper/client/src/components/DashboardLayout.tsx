@@ -60,11 +60,11 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-teal-400 via-teal-100 to-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-teal-400 via-teal-50 to-white relative overflow-hidden">
       {/* Decorative circular orbs in background - matching the image */}
       <div className="absolute top-[10%] right-[15%] w-[300px] h-[300px] bg-white/30 blur-[120px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-[15%] left-[5%] w-[500px] h-[500px] bg-teal-100/40 blur-[140px] rounded-full pointer-events-none"></div>
-      <div className="absolute top-[45%] right-[5%] w-[200px] h-[200px] bg-white/25 blur-[100px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-[45%] right-[5%] w-[200px] h-[200px] bg-white/20 blur-[100px] rounded-full pointer-events-none"></div>
 
       {/* Glass Container - 40px margins from viewport edges */}
       <div className="min-h-screen p-[40px]">
