@@ -60,8 +60,11 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#4DD0C4] via-[#3FC9BB] to-[#2DB5A8] relative overflow-hidden">
-      {/* Decorative circular orbs in background - much larger and more visible */}
+    <div 
+      className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden"
+      style={{ backgroundImage: 'url(/waves-bg.png)' }}
+    >
+      {/* Decorative circular orbs in background - add depth on top of waves */}
       <div className="absolute top-[10%] right-[15%] w-[600px] h-[600px] bg-cyan-300/40 blur-[150px] rounded-full pointer-events-none"></div>
       <div className="absolute bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
       <div className="absolute top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>

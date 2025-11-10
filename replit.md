@@ -4,8 +4,8 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times by simplifying community support and communication for families in need.
 
 ## User Preferences
-- **Design Style**: Glassmorphism architecture with consistent teal gradient background
-- **Background**: Consistent teal gradient from `#4DD0C4` via `#3FC9BB` to `#2DB5A8` with large decorative orbs
+- **Design Style**: Glassmorphism architecture with abstract wave background image
+- **Background**: Abstract wavy teal background (`/waves-bg.png`) with large decorative blur orbs for added depth
 - **Blur Orbs**: Three large visible orbs (600px, 700px, 400px) with cyan, emerald, and teal colors for depth
 - **Glass System**:
   - **Glass Container**: `background: rgba(255, 255, 255, 0.12)` with `backdrop-filter: blur(20px)`, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
@@ -23,7 +23,7 @@ The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) 
 ### UI/UX Decisions
 The UI/UX features a glassmorphism design system with consistent teal gradient:
 - **Glassmorphism Architecture**:
-  - **Background**: Consistent teal gradient (`#4DD0C4` → `#3FC9BB` → `#2DB5A8`) with large decorative orbs
+  - **Background**: Abstract wavy teal background image (`/waves-bg.png`) with large decorative orbs
   - **Blur Orbs**: Three large visible orbs (600px cyan/40, 700px emerald/35, 400px teal/45) with heavy blur for depth
   - **Glass Container**: `rgba(255, 255, 255, 0.12)` with 20px blur, 40px margins, white border glow
   - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, dark teal text (`text-teal-700`)
