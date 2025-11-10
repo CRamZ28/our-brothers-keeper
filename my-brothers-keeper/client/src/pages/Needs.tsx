@@ -895,24 +895,28 @@ export default function Needs() {
                     const dayNeeds = needsByDate.get(dateKey) || [];
                     const isCurrentMonth = day.getMonth() === currentDate.getMonth();
                     const isToday = isSameDay(day, new Date());
+                    const isPastDay = day < new Date() && !isToday;
                     
                     return (
                       <div
                         key={idx}
                         onClick={() => openDayNeedsDialog(day, dayNeeds)}
                         className={`
-                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border cursor-pointer
-                          ${isCurrentMonth ? 'bg-white/50' : 'bg-gray-50/50'}
-                          ${isToday ? 'border-primary border-2' : 'border-gray-200'}
-                          hover:bg-white/70 hover-lift transition-all
+                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border cursor-pointer bg-muted/30
+                          ${isToday ? 'border-primary border-2' : ''}
+                          ${isPastDay ? 'opacity-50 grayscale' : ''}
+                          hover-lift transition-all
                         `}
                       >
-                        <div className={`text-xs md:text-sm font-semibold mb-1 ${!isCurrentMonth ? 'text-muted-foreground' : ''}`}>
+                        <div className={`text-xs md:text-sm font-semibold mb-1 ${!isCurrentMonth ? 'text-muted-foreground' : ''} ${isPastDay ? 'text-gray-500' : ''}`}>
                           {day.getDate()}
                         </div>
                         <div className="space-y-1">
                           {dayNeeds.slice(0, 2).map(need => {
                             const Icon = categoryIcons[need.category];
+                            const needDate = need.dueDate ? new Date(need.dueDate) : null;
+                            const isPastNeed = needDate && needDate < new Date();
+                            
                             return (
                               <div
                                 key={need.id}
@@ -921,10 +925,13 @@ export default function Needs() {
                                   openDetailsDialog(need);
                                 }}
                                 className={`
-                                  text-xs p-1 rounded cursor-pointer truncate
-                                  ${priorityColors[need.priority]} 
+                                  text-xs p-1 rounded cursor-pointer truncate font-medium
+                                  ${isPastNeed ? 'bg-gray-400/20 text-gray-600' : 'text-teal-700'}
                                   hover:shadow-md transition-shadow
                                 `}
+                                style={isPastNeed ? undefined : {
+                                  background: 'rgba(176, 140, 167, 0.7)'
+                                }}
                                 title={need.title}
                               >
                                 <div className="flex items-center gap-1">
@@ -940,7 +947,7 @@ export default function Needs() {
                                 e.stopPropagation();
                                 openDayNeedsDialog(day, dayNeeds);
                               }}
-                              className="text-xs text-primary hover:underline"
+                              className="text-xs text-teal-700 hover:underline font-medium"
                             >
                               +{dayNeeds.length - 2} more
                             </button>
