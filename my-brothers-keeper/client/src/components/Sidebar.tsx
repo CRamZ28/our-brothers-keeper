@@ -48,33 +48,14 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   return (
     <div className="h-full px-5 pt-6 pb-5 flex flex-col">
       
-      {/* Logo block - clean white background */}
-      <div 
-        className="relative flex flex-col items-center mb-8 rounded-2xl p-4"
-        style={{
-          background: 'rgba(255, 255, 255, 0.5)',
-          backdropFilter: 'blur(5px)',
-          WebkitBackdropFilter: 'blur(5px)'
-        }}
-      >
-        {/* Emblem */}
+      {/* Logo - displayed directly on sidebar */}
+      <div className="flex justify-center pt-6 pb-4 mb-6">
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
-          className="w-[80px] h-[80px] mx-auto"
+          className="h-24 w-24"
           loading="eager"
         />
-
-        {/* Wordmark - small caps with larger first letters */}
-        <div className="mt-2 text-[15px] font-semibold tracking-wide text-center leading-tight text-teal-700">
-          <div style={{ 
-            fontVariant: 'small-caps'
-          }}>
-            <span className="text-[17px]" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
-            <span className="text-[17px]" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
-            <span className="text-[17px]" style={{ fontVariant: 'normal' }}>K</span>eeper
-          </div>
-        </div>
       </div>
 
       {/* Navigation list */}
