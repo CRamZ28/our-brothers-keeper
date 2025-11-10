@@ -810,9 +810,9 @@ export default function Needs() {
                         key={idx}
                         onClick={() => openDayNeedsDialog(day, dayNeeds)}
                         className={`
-                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border cursor-pointer bg-muted/30
-                          ${isToday ? 'border-primary border-2' : ''}
-                          ${isPastDay ? 'opacity-50 grayscale' : ''}
+                          min-h-[80px] md:min-h-[120px] p-1 md:p-2 rounded-lg border cursor-pointer
+                          ${isToday ? 'border-primary border-2 bg-muted/30' : ''}
+                          ${isPastDay ? 'bg-gray-100/20 opacity-80' : 'bg-muted/30'}
                           hover-lift transition-all
                         `}
                       >
@@ -823,7 +823,7 @@ export default function Needs() {
                           {dayNeeds.slice(0, 3).map(need => {
                             const Icon = categoryIcons[need.category];
                             const needDate = need.dueAt ? new Date(need.dueAt) : null;
-                            const isPastNeed = needDate && needDate < new Date();
+                            const isPastNeed = needDate && needDate < new Date() && !isSameDay(needDate, new Date());
                             
                             const statusColors = {
                               open: { bg: 'rgba(45, 181, 168, 0.7)', text: 'text-white' },
@@ -831,6 +831,9 @@ export default function Needs() {
                               completed: { bg: 'rgba(156, 163, 175, 0.5)', text: 'text-gray-600' }
                             };
                             const statusColor = statusColors[need.status as keyof typeof statusColors] || statusColors.open;
+                            
+                            const isCompleted = need.status === 'completed';
+                            const isOverdue = isPastNeed && !isCompleted;
                             
                             return (
                               <div
@@ -841,17 +844,20 @@ export default function Needs() {
                                 }}
                                 className={`
                                   text-xs p-1 rounded cursor-pointer truncate font-medium
-                                  ${isPastNeed ? 'bg-gray-400/20 text-gray-600 grayscale' : statusColor.text}
+                                  ${statusColor.text}
+                                  ${isOverdue ? 'opacity-70 border border-white/50' : ''}
+                                  ${isCompleted && isPastNeed ? 'grayscale' : ''}
                                   hover:shadow-md transition-shadow
                                 `}
-                                style={isPastNeed ? undefined : {
+                                style={{
                                   background: statusColor.bg
                                 }}
-                                title={`${need.title} (${need.status})`}
+                                title={`${need.title} (${need.status}${isOverdue ? ' - overdue' : ''})`}
                               >
                                 <div className="flex items-center gap-1">
                                   <Icon className="w-3 h-3 shrink-0" />
                                   <span className="truncate">{need.title}</span>
+                                  {isOverdue && <AlertCircle className="w-3 h-3 shrink-0" />}
                                 </div>
                               </div>
                             );
