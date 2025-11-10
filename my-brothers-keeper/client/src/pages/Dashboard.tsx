@@ -112,7 +112,14 @@ export default function Dashboard() {
 
             {/* Button at bottom */}
             <Link href="/people">
-              <button className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+              <button 
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#B08CA7',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+              >
                 View All
               </button>
             </Link>
@@ -165,7 +172,14 @@ export default function Dashboard() {
 
             {/* Button at bottom */}
             <Link href="/needs">
-              <button className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+              <button 
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#B08CA7',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+              >
                 View All
               </button>
             </Link>
@@ -225,7 +239,14 @@ export default function Dashboard() {
 
             {/* Button at bottom */}
             <Link href="/calendar">
-              <button className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg transition-colors">
+              <button 
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#B08CA7',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+              >
                 View Calendar
               </button>
             </Link>
