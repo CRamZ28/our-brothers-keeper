@@ -19,10 +19,11 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Family Name Font**: Cinzel serif with large cap first letters (48px #1fb5b0) and small caps for remaining letters (36px #0fa9a7), wide tracking with enhanced teal drop-shadow glow for prominent focal point display
 - **Glass Components**: Reusable glass primitives (GlassCard, GlassButton, GlassBadge) in `client/src/components/ui/glass.tsx` with teal/mauve color tokens
 - **Page Layout**: GlassPageLayout wrapper (`client/src/components/GlassPageLayout.tsx`) provides consistent structure with PageHeader, title, and actions slots
-- **Visibility Controls**: Standardized 3-option model across all features:
+- **Visibility Controls**: Standardized 3-option model across all features (Needs, Events, Messages):
   - **Everyone**: Share with all supporters (all family/friend/community tier members)
-  - **Specific Groups**: Select from household groups (Inner Circle, Friends, Church/Community, etc.)
+  - **Specific Groups**: Select from any custom household groups (group names don't affect functionality)
   - **Custom**: Select specific people individually
+  - Group names are fully customizable - the dropdown shows all groups created on the People page
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
