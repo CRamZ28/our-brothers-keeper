@@ -326,6 +326,18 @@ export const needsRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "Need is not available to claim" });
       }
 
+      // Check if need is past due (only allow admin/primary to claim past needs)
+      const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+      const now = new Date();
+      const dueAt = need.dueAt ? new Date(need.dueAt) : null;
+      
+      if (!isPrivileged && dueAt && dueAt.getTime() < now.getTime()) {
+        throw new TRPCError({ 
+          code: "FORBIDDEN", 
+          message: "Cannot claim past-due needs" 
+        });
+      }
+
       // Create claim
       const claimId = await db.createNeedClaim({
         needId: input.needId,

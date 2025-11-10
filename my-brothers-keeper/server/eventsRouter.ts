@@ -358,6 +358,18 @@ export const eventsRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Event not found" });
       }
 
+      // Check if event is past (only allow admin/primary to RSVP to past events)
+      const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+      const now = new Date();
+      const startAt = event.startAt ? new Date(event.startAt) : null;
+      
+      if (!isPrivileged && startAt && startAt.getTime() < now.getTime()) {
+        throw new TRPCError({ 
+          code: "FORBIDDEN", 
+          message: "Cannot RSVP to past events" 
+        });
+      }
+
       // Upsert RSVP
       const rsvpId = await db.upsertRsvp({
         eventId: input.eventId,
