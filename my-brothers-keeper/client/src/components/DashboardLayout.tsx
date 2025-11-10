@@ -75,8 +75,8 @@ export default function DashboardLayout({
           className="mx-auto max-w-7xl h-[calc(100vh-80px)] rounded-3xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(31,38,135,0.15),inset_0_1px_0_rgba(255,255,255,0.5)]"
           style={{
             background: 'rgba(255, 255, 255, 0.03)',
-            backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)',
+            backdropFilter: 'blur(5px)',
+            WebkitBackdropFilter: 'blur(5px)',
             border: '2px solid rgba(255, 255, 255, 0.25)'
           }}
         >
@@ -133,9 +133,7 @@ export default function DashboardLayout({
             <main 
               className="flex-1 overflow-auto"
               style={{
-                background: 'rgba(255, 255, 255, 0)',
-                backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)'
+                background: 'rgba(255, 255, 255, 0)'
               }}
             >
               {children}
