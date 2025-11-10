@@ -912,7 +912,7 @@ export default function Needs() {
                           {day.getDate()}
                         </div>
                         <div className="space-y-1">
-                          {dayNeeds.slice(0, 2).map(need => {
+                          {dayNeeds.slice(0, 3).map(need => {
                             const Icon = categoryIcons[need.category];
                             const needDate = need.dueDate ? new Date(need.dueDate) : null;
                             const isPastNeed = needDate && needDate < new Date();
@@ -941,7 +941,7 @@ export default function Needs() {
                               </div>
                             );
                           })}
-                          {dayNeeds.length > 2 && (
+                          {dayNeeds.length > 3 && (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();

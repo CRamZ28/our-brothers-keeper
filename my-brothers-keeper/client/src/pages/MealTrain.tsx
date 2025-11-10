@@ -268,7 +268,7 @@ export default function MealTrain() {
                               >
                                 {capacityInfo.capacity > 1 ? "Full" : "Filled"}
                               </Badge>
-                              {capacityInfo.signups.slice(0, 2).map((s) => (
+                              {capacityInfo.signups.slice(0, 3).map((s) => (
                                 <p 
                                   key={s.id} 
                                   className={`text-xs truncate font-medium ${
@@ -278,7 +278,7 @@ export default function MealTrain() {
                                   {s.userName}
                                 </p>
                               ))}
-                              {capacityInfo.signups.length > 2 && (
+                              {capacityInfo.signups.length > 3 && (
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
