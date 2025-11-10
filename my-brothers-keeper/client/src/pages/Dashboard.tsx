@@ -48,12 +48,15 @@ export default function Dashboard() {
             }}
           >
             <h1 
-              className="text-3xl font-bold tracking-wide uppercase"
+              className="text-3xl font-bold tracking-wide"
               style={{
-                color: '#2DB5A8'
+                color: '#2DB5A8',
+                fontVariant: 'small-caps'
               }}
             >
-              {household.name}
+              {household.name.split(' ').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+              ).join(' ')}
             </h1>
           </div>
 
