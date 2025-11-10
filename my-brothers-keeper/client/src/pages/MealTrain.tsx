@@ -785,19 +785,31 @@ function MealTrainConfigDialog({
         <div className="space-y-4">
           <div>
             <Label htmlFor="visibilityScope">Who Can See This Meal Train</Label>
-            <Select value={visibilityScope} onValueChange={setVisibilityScope}>
+            <Select 
+              value={includeCommunityTier ? "all_supporters_plus_community" : visibilityScope} 
+              onValueChange={(value) => {
+                if (value === "all_supporters_plus_community") {
+                  setVisibilityScope("all_supporters");
+                  setIncludeCommunityTier(true);
+                } else {
+                  setVisibilityScope(value);
+                  setIncludeCommunityTier(false);
+                }
+              }}
+            >
               <SelectTrigger id="visibilityScope">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all_supporters">All Supporters</SelectItem>
-                <SelectItem value="group">Specific Group (e.g., Immediate Family)</SelectItem>
+                <SelectItem value="all_supporters">Family + Friends</SelectItem>
+                <SelectItem value="all_supporters_plus_community">Family + Friends + Community</SelectItem>
+                <SelectItem value="group">Specific Groups</SelectItem>
                 <SelectItem value="role">Admin/Primary Only</SelectItem>
                 <SelectItem value="private">Private</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground mt-1">
-              Control who can see and respond to this meal train
+              Control who can see and volunteer for this meal train
             </p>
           </div>
           {visibilityScope === "group" && (
@@ -850,10 +862,10 @@ function MealTrainConfigDialog({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all_supporters">All Supporters</SelectItem>
-                <SelectItem value="group">Specific Group</SelectItem>
+                <SelectItem value="all_supporters">Same as Meal Train</SelectItem>
+                <SelectItem value="group">Specific Groups</SelectItem>
                 <SelectItem value="role">Admin/Primary Only</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
+                <SelectItem value="private">Private (No One)</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground mt-1">
@@ -891,20 +903,6 @@ function MealTrainConfigDialog({
               </div>
             </div>
           )}
-
-          <div className="flex items-center justify-between space-x-2 p-4 border rounded-lg">
-            <div className="space-y-0.5">
-              <Label htmlFor="includeCommunityTier" className="text-base">Share with Community Tier</Label>
-              <p className="text-sm text-muted-foreground">
-                Allow community tier members to view and volunteer for this meal train
-              </p>
-            </div>
-            <Switch
-              id="includeCommunityTier"
-              checked={includeCommunityTier}
-              onCheckedChange={setIncludeCommunityTier}
-            />
-          </div>
 
           <div>
             <Label htmlFor="peopleCount">Number of People to Cook For</Label>
