@@ -908,8 +908,11 @@ export default function Needs() {
           </div>
         ) : (
           /* List View - Needs Tabs */
-        <Tabs defaultValue="open" className="space-y-6">
+        <Tabs defaultValue="all" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="all">
+              All Needs ({(needs || []).length})
+            </TabsTrigger>
             <TabsTrigger value="open">
               Open ({openNeeds.length})
             </TabsTrigger>
@@ -920,6 +923,162 @@ export default function Needs() {
               Completed ({completedNeeds.length})
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="all" className="space-y-4">
+            {(needs || []).length === 0 ? (
+              <GlassCard>
+                <CardContent className="flex flex-col items-center justify-center py-12">
+                  <Heart className="w-12 h-12 text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground text-center">
+                    No needs yet. Create one to get started!
+                  </p>
+                </CardContent>
+              </GlassCard>
+            ) : (
+              <div className="grid md:grid-cols-2 gap-4">
+                {(needs || []).map((need) => {
+                  const Icon = categoryIcons[need.category];
+                  const statusConfigs: Record<string, {
+                    badge: string;
+                    badgeClass: string;
+                    buttonText: string;
+                    showButton: boolean;
+                  }> = {
+                    open: {
+                      badge: "Available",
+                      badgeClass: "bg-[#2DB5A8]/20 text-foreground border-[#2DB5A8]/40",
+                      buttonText: "I Can Help",
+                      showButton: true
+                    },
+                    claimed: {
+                      badge: "Claimed",
+                      badgeClass: "bg-[#B08CA7]/30 text-white border-[#B08CA7]/50",
+                      buttonText: "Mark Complete",
+                      showButton: user?.id === need.claimedById || isPrimaryOrAdmin
+                    },
+                    completed: {
+                      badge: "Completed",
+                      badgeClass: "bg-gray-400/30 text-foreground border-gray-400/50",
+                      buttonText: "",
+                      showButton: false
+                    }
+                  };
+                  const statusConfig = statusConfigs[need.status] || statusConfigs.open;
+
+                  return (
+                    <GlassCard key={need.id} className="hover-lift">
+                      <CardHeader className="pb-6">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-3 flex-1 min-w-0">
+                            <div className="w-12 h-12 rounded-lg bg-white/30 flex items-center justify-center shrink-0">
+                              <Icon className="w-6 h-6 text-foreground/60" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <span className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{need.category}</span>
+                                <Badge variant="outline" className={statusConfig.badgeClass}>
+                                  {statusConfig.badge}
+                                </Badge>
+                                {need.priority === "urgent" && (
+                                  <Badge variant="outline" className="bg-[#B08CA7]/10 text-white border-[#B08CA7]/30 text-xs">
+                                    Urgent
+                                  </Badge>
+                                )}
+                              </div>
+                              <CardTitle className="text-lg font-semibold text-foreground leading-snug">{need.title}</CardTitle>
+                              {need.status === "claimed" && need.claimedByName && (
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  by <span className="font-medium text-foreground">{need.claimedByName}</span>
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {(user && (need.createdById === user.id || isPrimaryOrAdmin)) && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => openEditDialog(need)}>
+                                  <Pencil className="w-4 h-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem 
+                                  onClick={() => handleDeleteNeed(need.id)}
+                                >
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4 pt-0">
+                        {need.dueAt && (
+                          <div className="flex items-center gap-2 text-sm text-foreground/70">
+                            <Calendar className="w-4 h-4" />
+                            <span className="font-medium">{formatDateWithDayOfWeek(new Date(need.dueAt))}</span>
+                          </div>
+                        )}
+                        {need.details && (
+                          <p className="text-sm text-gray-600 leading-relaxed">{need.details}</p>
+                        )}
+                        {need.capacity && (
+                          <div className="text-xs text-gray-500">
+                            {need.claimCount || 0} of {need.capacity} volunteer{need.capacity > 1 ? 's' : ''} signed up
+                          </div>
+                        )}
+                      </CardContent>
+                      <CardFooter className="flex-col gap-3 pt-6">
+                        {statusConfig.showButton && need.status === "open" && (
+                          <>
+                            <Button
+                              className="w-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm"
+                              onClick={() => openClaimDialog(need.id)}
+                              disabled={
+                                user?.role === "primary" ||
+                                (need.capacity && need.claimCount >= need.capacity)
+                              }
+                            >
+                              <Check className="w-4 h-4 mr-2" />
+                              {need.capacity && need.claimCount >= need.capacity
+                                ? "Filled"
+                                : statusConfig.buttonText}
+                            </Button>
+                            <QuestionDialog
+                              context="need"
+                              contextId={need.id}
+                              defaultSubject={`Question about: ${need.title}`}
+                              trigger={
+                                <button className="text-sm text-foreground/70 hover:text-foreground font-medium">
+                                  Ask a Question →
+                                </button>
+                              }
+                            />
+                          </>
+                        )}
+                        {statusConfig.showButton && need.status === "claimed" && (
+                          <Button
+                            className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
+                            onClick={() => {
+                              setSelectedNeedId(need.id);
+                              setCompleteDialogOpen(true);
+                            }}
+                          >
+                            <CheckCircle2 className="w-4 h-4 mr-2" />
+                            {statusConfig.buttonText}
+                          </Button>
+                        )}
+                      </CardFooter>
+                    </GlassCard>
+                  );
+                })}
+              </div>
+            )}
+          </TabsContent>
 
           <TabsContent value="open" className="space-y-4">
             {openNeeds.length === 0 ? (
