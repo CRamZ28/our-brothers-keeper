@@ -39,7 +39,7 @@ export default function Dashboard() {
         <div className="flex flex-col items-center mb-8 space-y-4">
           {/* Family Name Pill */}
           <div 
-            className="px-8 py-4 rounded-full"
+            className="px-10 py-5 rounded-full"
             style={{
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
@@ -47,7 +47,15 @@ export default function Dashboard() {
               border: '1px solid rgba(255, 255, 255, 0.4)'
             }}
           >
-            <h1 className="text-2xl font-bold text-teal-900 uppercase tracking-wide">
+            <h1 
+              className="text-5xl font-bold tracking-wide"
+              style={{
+                fontFamily: "'Cinzel Decorative', serif",
+                fontVariant: 'small-caps',
+                color: '#2DB5A8',
+                textShadow: '0 1px 2px rgba(26, 127, 120, 0.3)'
+              }}
+            >
               {household.name}
             </h1>
           </div>
