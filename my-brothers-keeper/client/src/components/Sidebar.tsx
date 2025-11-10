@@ -48,11 +48,11 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
   return (
     <div className="h-full px-5 pt-6 pb-5 flex flex-col">
       
-      {/* Logo block with frosted glass background */}
+      {/* Logo block - clean white background */}
       <div 
         className="relative flex flex-col items-center mb-8 rounded-2xl p-4"
         style={{
-          background: 'rgba(255, 255, 255, 0.2)',
+          background: 'rgba(255, 255, 255, 0.5)',
           backdropFilter: 'blur(5px)',
           WebkitBackdropFilter: 'blur(5px)'
         }}
@@ -65,14 +65,14 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
           loading="eager"
         />
 
-        {/* Wordmark - small caps with larger first letters - DARK TEAL */}
-        <div className="mt-2 text-[16px] font-semibold tracking-wide text-center leading-tight" style={{ color: '#2C5F5D' }}>
+        {/* Wordmark - small caps with larger first letters */}
+        <div className="mt-2 text-[15px] font-semibold tracking-wide text-center leading-tight text-teal-700">
           <div style={{ 
             fontVariant: 'small-caps'
           }}>
-            <span className="text-[18px]" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
-            <span className="text-[18px]" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
-            <span className="text-[18px]" style={{ fontVariant: 'normal' }}>K</span>eeper
+            <span className="text-[17px]" style={{ fontVariant: 'normal' }}>O</span>ur{' '}
+            <span className="text-[17px]" style={{ fontVariant: 'normal' }}>B</span>rother's{' '}
+            <span className="text-[17px]" style={{ fontVariant: 'normal' }}>K</span>eeper
           </div>
         </div>
       </div>
@@ -88,29 +88,24 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
               key={item.path}
               onClick={() => handleNavigate(item.path)}
               className={`
-                relative flex items-center gap-3 h-11 pl-[18px] pr-4 rounded-xl w-full text-left
-                transition-all duration-300 ease-in-out
+                relative flex items-center gap-3 h-11 pl-4 pr-4 rounded-xl w-full text-left
+                transition-all duration-200 ease-in-out text-teal-700
                 ${isActive 
-                  ? 'shadow-[0_4px_12px_rgba(176,140,167,0.25)]' 
-                  : 'hover:bg-white/30 hover:translate-x-1'
+                  ? 'shadow-[0_4px_15px_rgba(176,140,167,0.3)]' 
+                  : 'hover:bg-white/40 hover:translate-x-1'
                 }
-                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40
+                focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50
               `}
               style={isActive ? {
-                background: 'rgba(211, 197, 232, 0.9)',
-                color: '#2C5F5D'
-              } : {
-                color: '#2C5F5D'
-              }}
+                background: 'rgba(211, 197, 232, 0.7)',
+                color: '#0D5F5D'
+              } : undefined}
             >
-              {/* Icon - DARK TEAL */}
-              <Icon 
-                className="w-[20px] h-[20px] transition-all duration-300"
-                style={{ color: '#2C5F5D' }}
-              />
+              {/* Icon */}
+              <Icon className="w-[18px] h-[18px] transition-all duration-200" />
               
-              {/* Label - DARK TEAL */}
-              <span className="text-[15px] font-medium">
+              {/* Label */}
+              <span className="text-[14px] font-medium">
                 {item.label}
               </span>
             </button>
@@ -123,25 +118,23 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button 
-              className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/30 transition-all duration-300 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-600/40"
-              style={{ color: '#2C5F5D' }}
+              className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/40 transition-all duration-200 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50 text-teal-700"
             >
-              <Avatar className="h-9 w-9 border-2 border-teal-600/30 shrink-0">
+              <Avatar className="h-9 w-9 border-2 border-white/40 shrink-0">
                 <AvatarFallback 
-                  className="text-xs font-medium"
+                  className="text-xs font-medium text-teal-800"
                   style={{ 
-                    background: 'rgba(255, 255, 255, 0.4)',
-                    color: '#2C5F5D'
+                    background: 'rgba(255, 255, 255, 0.6)'
                   }}
                 >
                   {user?.name?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate leading-none" style={{ color: '#2C5F5D' }}>
+                <p className="text-sm font-medium truncate leading-none">
                   {user?.name || "-"}
                 </p>
-                <p className="text-xs truncate mt-1.5" style={{ color: '#2C5F5D', opacity: 0.7 }}>
+                <p className="text-xs truncate mt-1.5 opacity-70">
                   {user?.role || "supporter"}
                 </p>
               </div>

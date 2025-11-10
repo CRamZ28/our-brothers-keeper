@@ -60,46 +60,48 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0D7C7A] via-[#0E8986] to-[#0F9692] relative overflow-hidden">
-      {/* Layer 1: Decorative circular orbs in background */}
-      <div className="absolute top-[15%] right-[20%] w-[350px] h-[350px] bg-teal-400/15 blur-[130px] rounded-full pointer-events-none"></div>
-      <div className="absolute bottom-[20%] left-[10%] w-[450px] h-[450px] bg-emerald-400/10 blur-[150px] rounded-full pointer-events-none"></div>
-      <div className="absolute top-[50%] right-[8%] w-[250px] h-[250px] bg-cyan-300/12 blur-[110px] rounded-full pointer-events-none"></div>
+    <div className="min-h-screen bg-gradient-to-br from-[#5EDDD0] via-[#3FC9BB] to-[#2AB5A7] relative overflow-hidden">
+      {/* Decorative circular orbs in background - matching the image */}
+      <div className="absolute top-[10%] right-[15%] w-[300px] h-[300px] bg-teal-200/40 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="absolute bottom-[15%] left-[5%] w-[500px] h-[500px] bg-emerald-200/30 blur-[140px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-[45%] right-[5%] w-[200px] h-[200px] bg-cyan-200/35 blur-[100px] rounded-full pointer-events-none"></div>
 
-      {/* Layer 2: Glass Container - 40px margins from viewport edges */}
+      {/* Glass Container - 40px margins from viewport edges */}
       <div className="min-h-screen p-[40px]">
         <div 
-          className="mx-auto max-w-7xl h-[calc(100vh-80px)] rounded-3xl border-2 border-white/30 shadow-[0_8px_32px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.3)] overflow-hidden flex flex-col"
+          className="mx-auto max-w-7xl h-[calc(100vh-80px)] rounded-3xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(31,38,135,0.15),inset_0_1px_0_rgba(255,255,255,0.5)]"
           style={{
-            background: 'rgba(255, 255, 255, 0.1)',
+            background: 'rgba(255, 255, 255, 0.08)',
             backdropFilter: 'blur(20px)',
-            WebkitBackdropFilter: 'blur(20px)'
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.18)'
           }}
         >
           
           {/* Mobile header - INSIDE glass container */}
-          <div className="lg:hidden flex items-center justify-between h-16 px-4 border-b border-white/25 shrink-0 bg-gradient-to-r from-teal-600/60 to-teal-500/60">
+          <div className="lg:hidden flex items-center justify-between h-16 px-4 border-b border-white/25 shrink-0">
             <div className="flex items-center gap-3">
               <img
                 src={APP_LOGO}
                 alt={APP_TITLE}
                 className="h-10 w-10"
               />
-              <h1 className="font-semibold text-lg text-white">{APP_TITLE}</h1>
+              <h1 className="font-semibold text-lg text-teal-900">{APP_TITLE}</h1>
             </div>
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                <Button variant="ghost" size="icon" className="text-teal-900 hover:bg-white/20">
                   <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
               <SheetContent 
                 side="left" 
-                className="p-0 w-80 border border-white/30"
+                className="p-0 w-80"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.15)',
+                  background: 'rgba(255, 255, 255, 0.25)',
                   backdropFilter: 'blur(10px)',
-                  WebkitBackdropFilter: 'blur(10px)'
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
                 <Sidebar onNavigate={() => setMobileMenuOpen(false)} />
@@ -109,25 +111,26 @@ export default function DashboardLayout({
 
           {/* Desktop layout - INSIDE glass container */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* Layer 3: Sidebar - frosted white glass with teal showing through */}
+            {/* LIGHT FROSTED SIDEBAR - very light, almost white glass */}
             <div 
-              className="hidden lg:flex flex-col w-64 border-r border-white/30 shrink-0"
+              className="hidden lg:flex flex-col w-64 shrink-0"
               style={{
-                background: 'rgba(255, 255, 255, 0.15)',
+                background: 'rgba(255, 255, 255, 0.25)',
                 backdropFilter: 'blur(10px)',
-                WebkitBackdropFilter: 'blur(10px)'
+                WebkitBackdropFilter: 'blur(10px)',
+                borderRight: '1px solid rgba(255, 255, 255, 0.3)'
               }}
             >
               <Sidebar />
             </div>
 
-            {/* Layer 4: Main Content - more transparent to show teal background */}
+            {/* Main Content - transparent to show teal background */}
             <main 
               className="flex-1 overflow-auto"
               style={{
-                background: 'rgba(255, 255, 255, 0.05)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)'
+                background: 'rgba(255, 255, 255, 0.02)',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
               }}
             >
               {children}
