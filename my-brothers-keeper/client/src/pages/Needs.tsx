@@ -833,7 +833,7 @@ export default function Needs() {
         {viewMode === "calendar" ? (
           <div className="space-y-4">
             {/* Calendar Navigation */}
-            <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+            <GlassCard>
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
@@ -944,11 +944,11 @@ export default function Needs() {
                   })}
                 </div>
               </CardContent>
-            </Card>
+            </GlassCard>
 
             {/* Undated Needs Section */}
             {undatedNeeds.length > 0 && (
-              <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+              <GlassCard>
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center gap-2">
                     <AlertCircle className="w-5 h-5" />
@@ -981,7 +981,7 @@ export default function Needs() {
                     })}
                   </div>
                 </CardContent>
-              </Card>
+              </GlassCard>
             )}
           </div>
         ) : (
@@ -1001,20 +1001,20 @@ export default function Needs() {
 
           <TabsContent value="open" className="space-y-4">
             {openNeeds.length === 0 ? (
-              <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+              <GlassCard>
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <Heart className="w-12 h-12 text-muted-foreground mb-4" />
                   <p className="text-muted-foreground text-center">
                     No open needs at the moment. Check back later!
                   </p>
                 </CardContent>
-              </Card>
+              </GlassCard>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
                 {openNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="card-elevated hover-lift accent-bar-teal relative">
+                    <GlassCard key={need.id} className="hover-lift accent-bar-teal relative">
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
@@ -1100,7 +1100,7 @@ export default function Needs() {
                           }
                         />
                       </CardFooter>
-                    </Card>
+                    </GlassCard>
                   );
                 })}
               </div>
@@ -1109,17 +1109,17 @@ export default function Needs() {
 
           <TabsContent value="claimed" className="space-y-4">
             {claimedNeeds.length === 0 ? (
-              <Card>
+              <GlassCard>
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <p className="text-muted-foreground text-center">No claimed needs yet</p>
                 </CardContent>
-              </Card>
+              </GlassCard>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
                 {claimedNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="card-elevated hover-lift">
+                    <GlassCard key={need.id} className="hover-lift">
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
@@ -1184,7 +1184,7 @@ export default function Needs() {
                           Mark as Completed
                         </Button>
                       </CardFooter>
-                    </Card>
+                    </GlassCard>
                   );
                 })}
               </div>
@@ -1193,17 +1193,17 @@ export default function Needs() {
 
           <TabsContent value="completed" className="space-y-4">
             {completedNeeds.length === 0 ? (
-              <Card>
+              <GlassCard>
                 <CardContent className="flex flex-col items-center justify-center py-12">
                   <p className="text-muted-foreground text-center">No completed needs yet</p>
                 </CardContent>
-              </Card>
+              </GlassCard>
             ) : (
               <div className="grid md:grid-cols-2 gap-4">
                 {completedNeeds.map((need) => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="card-elevated opacity-75">
+                    <GlassCard key={need.id} className="opacity-75">
                       <CardHeader>
                         <div className="flex items-start gap-3">
                           <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
@@ -1225,7 +1225,7 @@ export default function Needs() {
                           </div>
                         </div>
                       </CardHeader>
-                    </Card>
+                    </GlassCard>
                   );
                 })}
               </div>
@@ -1260,7 +1260,7 @@ export default function Needs() {
                 getTodaysNeeds().map(need => {
                   const Icon = categoryIcons[need.category];
                   return (
-                    <Card key={need.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                    <GlassCard key={need.id} className="hover-lift accent-bar-teal cursor-pointer" onClick={() => {
                       setTodayNeedsDialogOpen(false);
                       openDetailsDialog(need);
                     }}>
@@ -1294,7 +1294,7 @@ export default function Needs() {
                           <p className="text-sm text-muted-foreground line-clamp-2">{need.details}</p>
                         </CardContent>
                       )}
-                    </Card>
+                    </GlassCard>
                   );
                 })
               )}
@@ -1323,7 +1323,7 @@ export default function Needs() {
               {selectedDayNeeds.map(need => {
                 const Icon = categoryIcons[need.category];
                 return (
-                  <Card key={need.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                  <GlassCard key={need.id} className="hover-lift accent-bar-teal cursor-pointer" onClick={() => {
                     setDayNeedsDialogOpen(false);
                     openDetailsDialog(need);
                   }}>
@@ -1357,7 +1357,7 @@ export default function Needs() {
                         <p className="text-sm text-muted-foreground line-clamp-2">{need.details}</p>
                       </CardContent>
                     )}
-                  </Card>
+                  </GlassCard>
                 );
               })}
             </div>
