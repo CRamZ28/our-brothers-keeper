@@ -980,7 +980,7 @@ export default function Needs() {
 
                   return (
                     <GlassCard key={need.id} className="hover-lift">
-                      <CardHeader className="pb-6">
+                      <CardHeader className="pb-4 pt-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
                             <div className="w-12 h-12 rounded-lg bg-white/30 flex items-center justify-center shrink-0">
@@ -1045,7 +1045,7 @@ export default function Needs() {
                           </div>
                         )}
                       </CardContent>
-                      <CardFooter className="flex-col gap-3 pt-6">
+                      <CardFooter className="flex-col gap-3 pt-4 pb-6">
                         {statusConfig.showButton && need.status === "open" && (
                           <>
                             <Button
@@ -1109,7 +1109,7 @@ export default function Needs() {
                   const Icon = categoryIcons[need.category];
                   return (
                     <GlassCard key={need.id} className="hover-lift">
-                      <CardHeader className="pb-6">
+                      <CardHeader className="pb-4 pt-6">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-3 flex-1 min-w-0">
                             <div className="w-12 h-12 rounded-lg bg-white/30 flex items-center justify-center shrink-0">
@@ -1166,7 +1166,7 @@ export default function Needs() {
                           </div>
                         )}
                       </CardContent>
-                      <CardFooter className="flex-col gap-3 pt-6">
+                      <CardFooter className="flex-col gap-3 pt-4 pb-6">
                         <Button
                           className="w-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm"
                           onClick={() => openClaimDialog(need.id)}
