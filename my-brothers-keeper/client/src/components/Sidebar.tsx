@@ -49,17 +49,17 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
     <div className="h-full px-5 pb-5 flex flex-col">
       
       {/* Logo - displayed directly on sidebar */}
-      <div className="flex justify-center pt-2 pb-2 mb-4">
+      <div className="flex justify-center pt-0 pb-2 mb-4">
         <img
           src="/obk-emblem.png"
           alt="Our Brother's Keeper logo"
-          className="h-56 w-auto max-w-full"
+          className="h-64 w-auto max-w-full"
           loading="eager"
         />
       </div>
 
       {/* Navigation list */}
-      <nav className="space-y-1 -mt-8">
+      <nav className="space-y-1 -mt-12">
         {navigationItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.path;
