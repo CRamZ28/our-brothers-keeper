@@ -1123,13 +1123,13 @@ export default function Needs() {
                       <CardHeader>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3 flex-1">
-                            <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
-                              <Icon className="w-5 h-5 text-green-600" />
+                            <div className="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center shrink-0">
+                              <Icon className="w-5 h-5 text-teal-600" />
                             </div>
                             <div className="flex-1 min-w-0">
                               <CardTitle className="text-lg">{need.title}</CardTitle>
                               <div className="flex flex-wrap items-center gap-2 mt-2">
-                                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200">
                                   Claimed
                                 </Badge>
                                 <span className="text-sm text-muted-foreground">
