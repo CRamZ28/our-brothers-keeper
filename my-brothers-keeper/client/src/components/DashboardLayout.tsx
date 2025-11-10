@@ -98,7 +98,7 @@ export default function DashboardLayout({
                 side="left" 
                 className="p-0 w-80"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.78)',
+                  background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(192, 192, 192, 0.65))',
                   backdropFilter: 'blur(25px)',
                   WebkitBackdropFilter: 'blur(25px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)'
@@ -111,11 +111,11 @@ export default function DashboardLayout({
 
           {/* Desktop layout - INSIDE glass container */}
           <div className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-            {/* OPAQUE FROSTED SIDEBAR - almost white with heavy frosting */}
+            {/* WHITE TO SILVER GRADIENT FROSTED SIDEBAR */}
             <div 
               className="hidden lg:flex flex-col w-64 shrink-0"
               style={{
-                background: 'rgba(255, 255, 255, 0.78)',
+                background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.75), rgba(192, 192, 192, 0.65))',
                 backdropFilter: 'blur(25px)',
                 WebkitBackdropFilter: 'blur(25px)',
                 borderRight: '1px solid rgba(255, 255, 255, 0.3)'
