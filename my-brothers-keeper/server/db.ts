@@ -302,6 +302,70 @@ export async function updateHouseholdAutoPromote(
   }).where(eq(households.id, householdId));
 }
 
+// Slug utilities
+export function generateSlug(name: string): string {
+  // Normalize accented characters to their base form
+  const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+  let slug = normalized
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ''); // Remove all non-alphanumeric characters
+  
+  // If slug is empty (e.g., all emoji or special chars), use "family" as fallback
+  if (!slug || slug.length === 0) {
+    slug = 'family';
+  }
+  
+  return slug;
+}
+
+export async function getHouseholdBySlug(slug: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const result = await db.select().from(households).where(eq(households.slug, slug)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function isSlugAvailable(slug: string, excludeHouseholdId?: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available - cannot check slug availability");
+  }
+
+  const conditions = excludeHouseholdId 
+    ? and(eq(households.slug, slug), sql`${households.id} != ${excludeHouseholdId}`)
+    : eq(households.slug, slug);
+    
+  const result = await db.select({ id: households.id }).from(households).where(conditions).limit(1);
+  return result.length === 0;
+}
+
+export async function generateUniqueSlug(baseName: string, excludeHouseholdId?: number): Promise<string> {
+  const MAX_SLUG_LENGTH = 250; // Reserve 5 chars for numeric suffix
+  
+  let baseSlug = generateSlug(baseName);
+  // Truncate base slug to ensure room for numeric suffixes
+  if (baseSlug.length > MAX_SLUG_LENGTH) {
+    baseSlug = baseSlug.substring(0, MAX_SLUG_LENGTH);
+  }
+  
+  let slug = baseSlug;
+  let counter = 1;
+  
+  while (!(await isSlugAvailable(slug, excludeHouseholdId))) {
+    slug = `${baseSlug}${counter}`;
+    counter++;
+    
+    // Safety check - prevent infinite loops
+    if (counter > 10000) {
+      throw new Error(`Unable to generate unique slug for "${baseName}" after 10000 attempts`);
+    }
+  }
+  
+  return slug;
+}
+
 // ============================================================================
 // GROUP MANAGEMENT
 // ============================================================================
