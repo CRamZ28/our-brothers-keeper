@@ -54,6 +54,10 @@ export default function MealTrain() {
       setShowVolunteerDialog(false);
       setSelectedDate(undefined);
     },
+    onError: (error) => {
+      console.error("Volunteer error:", error);
+      alert(error.message || "Failed to sign up for meal delivery. Please try again.");
+    },
   });
 
   const handleVolunteer = (date: Date, notes: string) => {
