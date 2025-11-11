@@ -155,13 +155,10 @@ export const mealTrainRouter = router({
         specialInstructions: z.string().optional(),
         dailyCapacity: z.number().min(1).max(10).default(1),
         visibilityScope: z
-          .enum(["private", "all_supporters", "group", "role"])
+          .enum(["private", "all_supporters", "group", "role", "custom"])
           .default("all_supporters"),
         visibilityGroupIds: z.array(z.number()).optional(),
-        addressVisibilityScope: z
-          .enum(["private", "all_supporters", "group", "role"])
-          .default("all_supporters"),
-        addressVisibilityGroupIds: z.array(z.number()).optional(),
+        customUserIds: z.array(z.string()).optional(),
         includeCommunityTier: z.boolean().default(false),
         enabled: z.boolean().default(true),
         daysAheadOpen: z.number().min(1).max(365).optional(),
@@ -200,8 +197,7 @@ export const mealTrainRouter = router({
           dailyCapacity: input.dailyCapacity,
           visibilityScope: input.visibilityScope,
           visibilityGroupIds: input.visibilityGroupIds || null,
-          addressVisibilityScope: input.addressVisibilityScope,
-          addressVisibilityGroupIds: input.addressVisibilityGroupIds || null,
+          customUserIds: input.customUserIds || null,
           includeCommunityTier: input.includeCommunityTier,
           enabled: input.enabled,
           daysAheadOpen: input.daysAheadOpen || null,
@@ -232,8 +228,7 @@ export const mealTrainRouter = router({
           dailyCapacity: input.dailyCapacity,
           visibilityScope: input.visibilityScope,
           visibilityGroupIds: input.visibilityGroupIds || null,
-          addressVisibilityScope: input.addressVisibilityScope,
-          addressVisibilityGroupIds: input.addressVisibilityGroupIds || null,
+          customUserIds: input.customUserIds || null,
           includeCommunityTier: input.includeCommunityTier,
           enabled: input.enabled,
           daysAheadOpen: input.daysAheadOpen || null,
