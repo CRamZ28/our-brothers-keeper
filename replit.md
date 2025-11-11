@@ -87,9 +87,17 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
         - Approve or deny access tier upgrade requests
         - Configure auto-promotion settings (enable/disable, hours threshold)
 - **Invitation System**: Secure supporter onboarding.
-- **Notification System**: Opt-in email notifications for 12 event types, configurable by users.
+- **Notification System**: Opt-in email notifications for 14 event types, configurable by users.
     - Role-sensitive defaults: Admin/primary users automatically receive unclaim notifications with email enabled by default
     - Supporters must opt in to all notification types
+- **Reminder System**: Personal reminder notifications for upcoming needs and events.
+    - Users can create reminders for specific needs or events they care about
+    - Seven preset time options: 15 minutes, 30 minutes, 1 hour, 2 hours, 1 day, 3 days, 1 week before target date
+    - Reminders default to enabled in notification preferences (opt-out model since users explicitly create them)
+    - Background job processes reminders every 15 minutes for timely delivery
+    - Automatic retry logic with exponential backoff for failed email sends (max 3 attempts)
+    - Reminders are automatically cancelled if the target need/event is deleted
+    - Backend-only implementation - UI for creating reminders not yet built
 - **Profile Pictures**: User avatar upload system with object storage integration for easy recognition of community members.
     - Upload profile pictures (images up to 5MB)
     - Display avatars with fallback to initials
