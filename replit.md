@@ -1,7 +1,7 @@
 # Our Brother's Keeper - Replit Project Documentation
 
 ## Overview
-Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application facilitates coordination of care through features like a needs board, shared calendar, meal train, messaging, and update tracking. The project aims to offer a robust and user-friendly experience for managing community support during difficult times by simplifying community support and communication for families in need.
+Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication for families in need by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking. The project's goal is to offer a robust and user-friendly experience for managing community support during difficult times.
 
 ## User Preferences
 - **Design Style**: Glassmorphism architecture with abstract wave background image
@@ -30,111 +30,40 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
 
 ### UI/UX Decisions
-The UI/UX features a glassmorphism design system with consistent teal gradient:
-- **Glassmorphism Architecture**:
-  - **Background**: Abstract wavy teal background image (`/waves-bg.png`) with large decorative orbs
-  - **Blur Orbs**: Three large visible orbs (600px cyan/40, 700px emerald/35, 400px teal/45) with heavy blur for depth
-  - **Glass Container**: `rgba(255, 255, 255, 0.03)` with no blur, 40px margins, white border glow
-  - **Sidebar**: `linear-gradient(white to silver)` with 40px blur + saturate(180%) - white to silver gradient glassmorphism with enhanced frosting, neutral text colors
-  - **Main Content**: `rgba(255, 255, 255, 0)` - fully transparent, no blur, shows wave background
-  - **Cards**: `rgba(255, 255, 255, 0.1)` with 6px blur, white/30 preview items
-- **Active Navigation**: `rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
-- **Typography**: Neutral colors (black, white, gray) throughout application - chromatic text colors removed except family name special styling
-- **Logo Implementation**: Emblem displayed directly on sidebar without background container
-- **Dashboard**: Centered family name pill, optional photo placeholder, three equal square cards (Supporters, Open Needs, Upcoming Events) with polished professional design:
-  - Each card features white icon on solid teal background (#2DB5A8), large number display (5xl), teal gradient accent bar, preview items, and Mauve Purple action button
-  - Hover effects with subtle shadow lift for interactivity
-  - Teal gradient accent bars (#2DB5A8 → #4DD0C4) add visual pop beneath numbers
-- **Responsive Design**: Glass container adapts across breakpoints, mobile header integrated inside unified container
-- **Calendar UI Consistency**: All calendar views (Events, Needs, and Meal Train) use uniform transparent glassmorphism styling with `bg-muted/30` day cells for visual consistency
-  - **Color Coding**: Upcoming entries display with dense mauve purple background `rgba(176, 140, 167, 0.7)` and white text for contrast; past entries display in gray with grayscale filter for clear temporal distinction
-  - All three calendars feature identical day cell styling, event/need item displays, and temporal visual cues
-- **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding
+The UI/UX features a consistent glassmorphism design system with teal gradients and neutral typography. Key elements include:
+- **Glassmorphism Architecture**: Transparent and blurred elements over a wavy teal background with decorative blur orbs.
+- **Dashboard**: Centered family name, customizable display area (photo, slideshow, quote, memory), and three equal square cards for Supporters, Open Needs, and Upcoming Events. Cards feature white icons on a solid teal background, large numbers, teal gradient accent bars, and Mauve Purple action buttons with hover effects.
+- **Responsive Design**: Adapts glass containers and mobile headers across breakpoints.
+- **Calendar UI Consistency**: Uniform transparent glassmorphism styling across Events, Needs, and Meal Train calendars, with distinct color coding for upcoming (mauve purple) and past (grayscale) entries.
+- **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding.
 
 ### Technical Implementations & Feature Specifications
-- **Meal Train Management**: Comprehensive meal coordination including:
-    - Day scheduling system with quick selection options.
-    - Configurable "Days Ahead Control" for sign-ups.
-    - Daily capacity controls and per-day overrides.
-    - Standardized 3-option visibility model (Everyone/Specific Groups/Custom) matching Needs/Events/Messages.
-    - Address visibility follows meal train visibility - anyone who can see the meal train can see the location.
-    - Dietary preference management.
+- **Meal Train Management**: Comprehensive meal coordination with day scheduling, configurable "Days Ahead Control," daily capacity controls, and dietary preference management. Includes the standardized 3-option visibility model.
 - **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
-- **Needs Board**: Community support requests with group filtering.
-    - **Unclaim Functionality**: Users can release claimed needs if they can no longer fulfill them, with immediate email notifications to admin/primary users
-- **Events Calendar**: Event scheduling and coordination with Important Dates feature (navigation labeled "Events" to distinguish from Needs board).
-    - **Important Dates**: Admin/primary-only feature for tracking birthdays, anniversaries, milestones, and holidays.
-    - Supports yearly recurring dates for birthdays and anniversaries.
-    - Optional person association to link dates to specific household members.
-    - Enforced security ensures only admin/primary users can create or modify important dates.
-- **Family Updates**: Unified timeline for family communication including announcements and personal updates with 5 types (Announcement, General Update, Gratitude, Memory, Milestone). Supports media uploads (photos, videos, documents) and pinned announcements.
-- **Memory Wall**: A community collage for memories, stories, encouragement, and prayers. Features an aesthetic with random rotations, absolute positioning, varied card sizes, decorative tape, and vibrant color coding. Supports image uploads and filtering.
+- **Needs Board**: Community support requests with group filtering and an "Unclaim Functionality" for users to release claimed needs, triggering email notifications to admin/primary users.
+- **Events Calendar**: Event scheduling and coordination, including an "Important Dates" feature for tracking recurring dates like birthdays and anniversaries, restricted to admin/primary users.
+- **Family Updates**: A unified timeline for announcements and personal updates (Announcement, General Update, Gratitude, Memory, Milestone) supporting media uploads and pinned announcements.
+- **Memory Wall**: A community collage for memories, stories, encouragement, and prayers with image uploads and filtering.
 - **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
 - **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.
-- **Access Tier System**: Three-tier access control (Community/Friend/Family) with invisible tiering for inclusive experience:
-    - Users select their relationship tier when joining (Family Member, Friend, or Community Member)
-    - All users start as "Community" tier by default regardless of selection (invisible to them)
-    - Admin/Primary can review pending tier requests and approve upgrades to Friend or Family tiers
-    - Optional auto-promotion: Admin can enable automatic tier upgrades after configurable hours (default 48, range 1-168)
-    - Meal trains default to Family+Friend visibility with optional Community tier inclusion toggle
-    - All visibility filtering respects access tiers while maintaining existing group-based controls
-    - Hourly background job processes auto-promotions for households with feature enabled
-    - Tier approval UI integrated into People page for admin/primary users
-    - Auto-promotion settings available in Settings page for admin/primary users
-- **Role-Based Access**: Admin, primary, and supporter roles with defined permissions.
-    - **Admin/Primary Permissions**: Full control over household management including:
-        - Delete or modify any content (needs, events, updates, messages, memory wall entries, gift registry items, meal trains)
-        - Remove users from the household (removes from all groups, sets status to blocked)
-        - Send direct messages to specific users using custom visibility scoping
-        - Manage all household settings and configurations
-        - Approve or deny access tier upgrade requests
-        - Configure auto-promotion settings (enable/disable, hours threshold)
-- **Invitation System**: Secure supporter onboarding with public household pages.
-    - **Public Household Pages**: Each household has a customizable slug-based URL (e.g., `www.obkapp.com/theramseys`)
-    - **Slug Management**: Admin/primary users can customize household slugs in Settings (alphanumeric + hyphens, min 3 chars)
-    - **Auto-Generated Slugs**: New households automatically receive slugs based on household name during creation
-    - **Join Flow**: Anyone can visit a household page, view basic info (name, description, photo), and join with Community tier access
-    - **Tier Selection**: Users select their relationship (Family/Friend/Community) when joining, creating a tier upgrade request if needed
-    - **Login Redirect**: Unauthenticated visitors can click "Join" and are redirected back to the household page after authentication
-    - **Invite Links**: Email/phone invitations now send household page URLs instead of token-based links for easy sharing
-    - **Security**: Login redirect validates paths to prevent open redirect attacks; public endpoint only exposes safe household data
-- **Notification System**: Opt-in email notifications for 14 event types, configurable by users.
-    - Role-sensitive defaults: Admin/primary users automatically receive unclaim notifications with email enabled by default
-    - Supporters must opt in to all notification types
-- **Reminder System**: Personal reminder notifications for upcoming needs and events.
-    - Users can create reminders for specific needs or events they care about
-    - Seven preset time options: 15 minutes, 30 minutes, 1 hour, 2 hours, 1 day, 3 days, 1 week before target date
-    - Reminders default to enabled in notification preferences (opt-out model since users explicitly create them)
-    - Background job processes reminders every 15 minutes for timely delivery
-    - Automatic retry logic with exponential backoff for failed email sends (max 3 attempts)
-    - Reminders are automatically cancelled if the target need/event is deleted
-    - Backend-only implementation - UI for creating reminders not yet built
-- **Profile Pictures**: User avatar upload system with object storage integration for easy recognition of community members.
-    - Upload profile pictures (images up to 5MB)
-    - Display avatars with fallback to initials
-    - UserAvatar component used throughout the app
-    - Integrated in People page for profile management and user lists
-- **Error Monitoring**: Production error tracking with Sentry integration.
-    - Automatic error capture for frontend (React) and backend (Express)
-    - Session replay for debugging user issues
-    - Email alerts on production errors
-    - Performance monitoring and tracing
+- **Access Tier System**: Three-tier access control (Community/Friend/Family) with invisible tiering. Users select their tier upon joining, and admin/primary users can approve upgrades. Includes optional auto-promotion after a configurable duration.
+- **Role-Based Access**: Admin, primary, and supporter roles with defined permissions, including full control for admin/primary users over content, user management, and household settings.
+- **Invitation System**: Secure supporter onboarding via public household pages with customizable slug-based URLs. Users can join with Community tier access and request upgrades.
+- **Notification System**: Opt-in email notifications for 14 event types, configurable by users, with role-sensitive defaults (e.g., admin/primary receive unclaim notifications by default).
+- **Reminder System**: Personal reminders for upcoming needs and events with seven preset time options, processed by a background job.
+- **Profile Pictures**: User avatar upload system with object storage integration.
+- **Error Monitoring**: Production error tracking and performance monitoring with Sentry integration.
 
 ### System Design Choices
-- **Security & Privacy Architecture**: Production-ready with a centralized visibility system (`server/visibilityHelpers.ts`) ensuring zero information leakage.
-    - A "Five-Step Security Pattern" is enforced across all endpoints to validate resource existence, household access, visibility, and permissions.
-    - Visibility enforcement filters all list and get endpoints and validates mutations.
-    - Performance is optimized by caching group membership per request.
-    - 17 automated security tests ensure no regressions.
-    - `CONTRIBUTING.md` documents security patterns for future development.
-- **Database Management**: Uses Drizzle ORM's **push workflow** for schema management. Schema changes are defined in `drizzle/schema.ts` and applied via `npm run db:push`, eliminating manual SQL migrations.
+- **Security & Privacy Architecture**: Production-ready, centralized visibility system (`server/visibilityHelpers.ts`) with a "Five-Step Security Pattern" for endpoint validation. Security is optimized by caching group membership and validated by 17 automated tests.
+- **Database Management**: Uses Drizzle ORM's **push workflow** for schema management, defining changes in `drizzle/schema.ts` and applying via `npm run db:push`.
 
 ## External Dependencies
-- **Database**: PostgreSQL (managed by Replit, accessed via Drizzle ORM)
+- **Database**: PostgreSQL
 - **Authentication**: Replit Auth (OpenID Connect via Passport.js)
-- **Session Store**: PostgreSQL (using `connect-pg-simple`)
-- **Email Service**: Resend (transactional emails with custom domain `notifications.obkapp.com`)
-- **Error Monitoring**: Sentry (production error tracking, session replay, and performance monitoring)
+- **Session Store**: PostgreSQL (`connect-pg-simple`)
+- **Email Service**: Resend
+- **Error Monitoring**: Sentry
 - **Frontend Framework**: React
 - **Build Tool**: Vite
 - **Styling**: Tailwind CSS
