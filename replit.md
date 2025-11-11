@@ -58,6 +58,7 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
     - Dual-layer privacy and dietary preference management.
 - **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
 - **Needs Board**: Community support requests with group filtering.
+    - **Unclaim Functionality**: Users can release claimed needs if they can no longer fulfill them, with immediate email notifications to admin/primary users
 - **Events Calendar**: Event scheduling and coordination with Important Dates feature (navigation labeled "Events" to distinguish from Needs board).
     - **Important Dates**: Admin/primary-only feature for tracking birthdays, anniversaries, milestones, and holidays.
     - Supports yearly recurring dates for birthdays and anniversaries.
@@ -86,7 +87,9 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
         - Approve or deny access tier upgrade requests
         - Configure auto-promotion settings (enable/disable, hours threshold)
 - **Invitation System**: Secure supporter onboarding.
-- **Notification System**: Opt-in email notifications for 11 event types, configurable by users.
+- **Notification System**: Opt-in email notifications for 12 event types, configurable by users.
+    - Role-sensitive defaults: Admin/primary users automatically receive unclaim notifications with email enabled by default
+    - Supporters must opt in to all notification types
 - **Profile Pictures**: User avatar upload system with object storage integration for easy recognition of community members.
     - Upload profile pictures (images up to 5MB)
     - Display avatars with fallback to initials

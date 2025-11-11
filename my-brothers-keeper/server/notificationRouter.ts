@@ -26,11 +26,15 @@ export const notificationRouter = router({
       .limit(1);
 
     if (prefs.length === 0) {
+      const isAdminOrPrimary = ctx.user.role === 'admin' || ctx.user.role === 'primary';
+      
       const defaultPrefs = await db
         .insert(notificationPreferences)
         .values({
           userId: ctx.user.id,
           householdId: ctx.user.householdId,
+          emailNeedUnclaimed: isAdminOrPrimary,
+          emailEnabled: isAdminOrPrimary,
         })
         .returning();
 
@@ -46,6 +50,7 @@ export const notificationRouter = router({
         emailEnabled: z.boolean().optional(),
         emailNeedCreated: z.boolean().optional(),
         emailNeedClaimed: z.boolean().optional(),
+        emailNeedUnclaimed: z.boolean().optional(),
         emailNeedCompleted: z.boolean().optional(),
         emailEventCreated: z.boolean().optional(),
         emailEventRsvp: z.boolean().optional(),
@@ -76,11 +81,15 @@ export const notificationRouter = router({
         .limit(1);
 
       if (existing.length === 0) {
+        const isAdminOrPrimary = ctx.user.role === 'admin' || ctx.user.role === 'primary';
+        
         const created = await db
           .insert(notificationPreferences)
           .values({
             userId: ctx.user.id,
             householdId: ctx.user.householdId,
+            emailNeedUnclaimed: isAdminOrPrimary,
+            emailEnabled: input.emailEnabled !== undefined ? input.emailEnabled : isAdminOrPrimary,
             ...input,
           })
           .returning();
