@@ -66,6 +66,8 @@ export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "rec
 export const eventTypeEnum = pgEnum("event_type", ["regular", "birthday", "anniversary", "milestone", "holiday"]);
 export const accessTierEnum = pgEnum("access_tier", ["community", "friend", "family"]);
 export const dashboardDisplayTypeEnum = pgEnum("dashboard_display_type", ["none", "photo", "slideshow", "quote", "memory"]);
+export const tourStatusEnum = pgEnum("tour_status", ["not_started", "in_progress", "completed", "dismissed"]);
+export const tourScopeEnum = pgEnum("tour_scope", ["household", "feature", "help"]);
 
 /**
  * Core user table backing auth flow.
@@ -718,3 +720,47 @@ export const giftRegistry = pgTable("gift_registry", {
 
 export type GiftRegistryItem = typeof giftRegistry.$inferSelect;
 export type InsertGiftRegistryItem = typeof giftRegistry.$inferInsert;
+
+/**
+ * Onboarding Tours - Lookup table for available tours
+ */
+export const onboardingTours = pgTable("onboarding_tours", {
+  id: serial("id").primaryKey(),
+  slug: varchar("slug", { length: 255 }).unique().notNull(), // e.g., "household.setup.v1", "needs.board.admin.v1"
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  scope: tourScopeEnum("scope").notNull(), // household, feature, help
+  roleAccess: jsonb("role_access").$type<string[]>().default(["admin", "primary", "supporter"]).notNull(), // Which roles can see this tour
+  version: integer("version").default(1).notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  slugIdx: index("onboarding_tours_slug_idx").on(table.slug),
+  scopeIdx: index("onboarding_tours_scope_idx").on(table.scope),
+}));
+
+export type OnboardingTour = typeof onboardingTours.$inferSelect;
+export type InsertOnboardingTour = typeof onboardingTours.$inferInsert;
+
+/**
+ * User Tour Progress - Tracks which tours users have completed
+ */
+export const userTourProgress = pgTable("user_tour_progress", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  householdId: integer("household_id").notNull(),
+  tourId: integer("tour_id").notNull(),
+  status: tourStatusEnum("status").default("not_started").notNull(),
+  lastStep: integer("last_step").default(0),
+  completedAt: timestamp("completed_at"),
+  dismissedAt: timestamp("dismissed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userTourIdx: uniqueIndex("user_tour_progress_user_tour_idx").on(table.userId, table.householdId, table.tourId),
+  statusIdx: index("user_tour_progress_status_idx").on(table.status),
+}));
+
+export type UserTourProgress = typeof userTourProgress.$inferSelect;
+export type InsertUserTourProgress = typeof userTourProgress.$inferInsert;
