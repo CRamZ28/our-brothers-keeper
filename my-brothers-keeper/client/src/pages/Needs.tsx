@@ -23,6 +23,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -114,6 +124,8 @@ export default function Needs() {
   const [selectedDayNeeds, setSelectedDayNeeds] = useState<typeof openNeeds>([]);
   const [selectedDayDate, setSelectedDayDate] = useState<Date | null>(null);
   const [todayNeedsDialogOpen, setTodayNeedsDialogOpen] = useState(false);
+  const [unclaimDialogOpen, setUnclaimDialogOpen] = useState(false);
+  const [unclaimClaimId, setUnclaimClaimId] = useState<number | null>(null);
 
   const createNeedMutation = trpc.needs.create.useMutation({
     onSuccess: () => {
@@ -142,6 +154,8 @@ export default function Needs() {
   const unclaimNeedMutation = trpc.needs.releaseClaim.useMutation({
     onSuccess: () => {
       toast.success("Claim released successfully.");
+      setUnclaimDialogOpen(false);
+      setUnclaimClaimId(null);
       refetchNeeds();
     },
     onError: (error) => {
@@ -292,6 +306,17 @@ export default function Needs() {
     const dayName = days[date.getDay()];
     const dateStr = date.toLocaleDateString();
     return `${dayName}, ${dateStr}`;
+  };
+
+  const handleUnclaimClick = (claimId: number) => {
+    setUnclaimClaimId(claimId);
+    setUnclaimDialogOpen(true);
+  };
+
+  const handleConfirmUnclaim = () => {
+    if (unclaimClaimId) {
+      unclaimNeedMutation.mutate({ claimId: unclaimClaimId });
+    }
   };
 
   const openDetailsDialog = (need: any) => {
@@ -1097,11 +1122,7 @@ export default function Needs() {
                         {statusConfig.showButton && need.status === "claimed" && (
                           <Button
                             className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
-                            onClick={() => {
-                              if (confirm("Are you sure you want to release this claim? This will make the need available for others to claim.")) {
-                                unclaimNeedMutation.mutate({ claimId: need.currentUserClaimId });
-                              }
-                            }}
+                            onClick={() => handleUnclaimClick(need.currentUserClaimId)}
                             disabled={unclaimNeedMutation.isPending}
                           >
                             <X className="w-4 h-4 mr-2" />
@@ -1307,11 +1328,7 @@ export default function Needs() {
                         {need.currentUserClaimId && (
                           <Button
                             className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
-                            onClick={() => {
-                              if (confirm("Are you sure you want to release this claim? This will make the need available for others to claim.")) {
-                                unclaimNeedMutation.mutate({ claimId: need.currentUserClaimId });
-                              }
-                            }}
+                            onClick={() => handleUnclaimClick(need.currentUserClaimId)}
                             disabled={unclaimNeedMutation.isPending}
                           >
                             <X className="w-4 h-4 mr-2" />
@@ -1687,6 +1704,28 @@ export default function Needs() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Unclaim Confirmation Dialog */}
+        <AlertDialog open={unclaimDialogOpen} onOpenChange={setUnclaimDialogOpen}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Release Claim</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to release this claim? This will make the need available for others to claim.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction 
+                onClick={handleConfirmUnclaim}
+                disabled={unclaimNeedMutation.isPending}
+                className="bg-[#B08CA7] hover:bg-[#9a7a91]"
+              >
+                {unclaimNeedMutation.isPending ? "Releasing..." : "Release Claim"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         </div>
       </GlassPageLayout>
     </DashboardLayout>
