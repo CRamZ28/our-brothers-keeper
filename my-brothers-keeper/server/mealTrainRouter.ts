@@ -3,68 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { notifyVisibleUsers } from "./notificationHelpers";
-
-// Helper function to check if user can view meal train
-async function checkMealTrainVisibility(
-  userId: string,
-  userRole: string,
-  userAccessTier: string,
-  householdId: number,
-  mealTrain: any
-): Promise<boolean> {
-  const isPrimaryOrAdmin = userRole === "primary" || userRole === "admin";
-  if (isPrimaryOrAdmin) {
-    return true;
-  }
-
-  // Check access tier first - community tier needs explicit inclusion
-  if (userAccessTier === "community" && !mealTrain.includeCommunityTier) {
-    return false;
-  }
-
-  // Family and Friend tier can see meal trains by default
-  // Community tier can see if includeCommunityTier is true
-  if (mealTrain.visibilityScope === "all_supporters") {
-    return true;
-  } else if (mealTrain.visibilityScope === "role") {
-    return userRole === "admin" || userRole === "primary";
-  } else if (mealTrain.visibilityScope === "group" && mealTrain.visibilityGroupIds && mealTrain.visibilityGroupIds.length > 0) {
-    const userGroups = await db.getUserGroups(userId, householdId);
-    const userGroupIds = userGroups.map((g) => g.id);
-    return mealTrain.visibilityGroupIds.some((groupId: number) => userGroupIds.includes(groupId));
-  } else if (mealTrain.visibilityScope === "private") {
-    return false;
-  }
-
-  return false;
-}
-
-// Helper function to check if user can see the address
-async function checkAddressVisibility(
-  userId: string,
-  userRole: string,
-  householdId: number,
-  mealTrain: any
-): Promise<boolean> {
-  const isPrimaryOrAdmin = userRole === "primary" || userRole === "admin";
-  if (isPrimaryOrAdmin) {
-    return true;
-  }
-
-  if (mealTrain.addressVisibilityScope === "all_supporters") {
-    return true;
-  } else if (mealTrain.addressVisibilityScope === "role") {
-    return userRole === "admin" || userRole === "primary";
-  } else if (mealTrain.addressVisibilityScope === "group" && mealTrain.addressVisibilityGroupIds && mealTrain.addressVisibilityGroupIds.length > 0) {
-    const userGroups = await db.getUserGroups(userId, householdId);
-    const userGroupIds = userGroups.map((g) => g.id);
-    return mealTrain.addressVisibilityGroupIds.some((groupId: number) => userGroupIds.includes(groupId));
-  } else if (mealTrain.addressVisibilityScope === "private") {
-    return false;
-  }
-
-  return false;
-}
+import { filterByVisibility } from "./visibilityHelpers";
 
 export const mealTrainRouter = router({
   // Get the meal train configuration for the household

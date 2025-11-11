@@ -16,6 +16,8 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MealTrainDayScheduler } from "@/components/MealTrainDayScheduler";
 import { QuestionDialog } from "@/components/QuestionDialog";
+import { VisibilitySelect, visibilityToBackend, backendToVisibility } from "@/components/VisibilitySelect";
+import type { VisibilityOption } from "@/const";
 import { trpc } from "@/lib/trpc";
 import { Calendar as CalendarIcon, List, MapPin, Users, ChefHat, AlertCircle, Settings, X } from "lucide-react";
 import { format, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, addMonths, subMonths } from "date-fns";
@@ -710,14 +712,9 @@ function MealTrainConfigDialog({
   const [allergies, setAllergies] = useState(mealTrain?.allergies || "");
   const [dislikes, setDislikes] = useState(mealTrain?.dislikes || "");
   const [specialInstructions, setSpecialInstructions] = useState(mealTrain?.specialInstructions || "");
-  const [visibilityScope, setVisibilityScope] = useState(
-    mealTrain?.visibilityScope || "all_supporters"
-  );
+  const [visibilityOption, setVisibilityOption] = useState<VisibilityOption>("everyone");
   const [visibilityGroupIds, setVisibilityGroupIds] = useState<string[]>([]);
-  const [addressVisibilityScope, setAddressVisibilityScope] = useState(
-    mealTrain?.addressVisibilityScope || "all_supporters"
-  );
-  const [addressVisibilityGroupIds, setAddressVisibilityGroupIds] = useState<string[]>([]);
+  const [customUserIds, setCustomUserIds] = useState<string[]>([]);
   const [includeCommunityTier, setIncludeCommunityTier] = useState(mealTrain?.includeCommunityTier ?? false);
   const [enabled, setEnabled] = useState(mealTrain?.enabled ?? true);
   const [selectedDates, setSelectedDates] = useState<Date[]>([]);
@@ -732,22 +729,25 @@ function MealTrainConfigDialog({
   useEffect(() => {
     if (open) {
       if (mealTrain?.id) {
-        setVisibilityScope(mealTrain.visibilityScope || "all_supporters");
-        setAddressVisibilityScope(mealTrain.addressVisibilityScope || "all_supporters");
+        const visibility = backendToVisibility(
+          mealTrain.visibilityScope || "all_supporters",
+          mealTrain.visibilityGroupIds || [],
+          mealTrain.customUserIds || []
+        );
+        setVisibilityOption(visibility.option);
+        setVisibilityGroupIds(visibility.groupIds);
+        setCustomUserIds(visibility.customUserIds);
         setDaysAheadOpen(mealTrain.daysAheadOpen || 30);
         setIncludeCommunityTier(mealTrain.includeCommunityTier ?? false);
-        setVisibilityGroupIds(mealTrain.visibilityGroupIds?.map((id: number) => id.toString()) || []);
-        setAddressVisibilityGroupIds(mealTrain.addressVisibilityGroupIds?.map((id: number) => id.toString()) || []);
         if (existingDays.length > 0) {
           const dates = existingDays.map((day: any) => new Date(day.date));
           setSelectedDates(dates);
         }
       } else {
-        setVisibilityScope("all_supporters");
-        setAddressVisibilityScope("all_supporters");
-        setIncludeCommunityTier(false);
+        setVisibilityOption("everyone");
         setVisibilityGroupIds([]);
-        setAddressVisibilityGroupIds([]);
+        setCustomUserIds([]);
+        setIncludeCommunityTier(false);
       }
     }
   }, [open, mealTrain, existingDays]);
@@ -760,15 +760,17 @@ function MealTrainConfigDialog({
   });
 
   const handleSave = () => {
-    if (visibilityScope === "group" && visibilityGroupIds.length === 0) {
+    if (visibilityOption === "groups" && visibilityGroupIds.length === 0) {
       alert("Please select at least one group for visibility");
       return;
     }
 
-    if (addressVisibilityScope === "group" && addressVisibilityGroupIds.length === 0) {
-      alert("Please select at least one group for address visibility");
+    if (visibilityOption === "custom" && customUserIds.length === 0) {
+      alert("Please select at least one person for visibility");
       return;
     }
+
+    const visibilityData = visibilityToBackend(visibilityOption, visibilityGroupIds, customUserIds);
 
     upsertMutation.mutate({
       location,
@@ -778,10 +780,9 @@ function MealTrainConfigDialog({
       allergies,
       dislikes,
       specialInstructions,
-      visibilityScope: visibilityScope as any,
-      visibilityGroupIds: visibilityGroupIds.length > 0 ? visibilityGroupIds.map(id => parseInt(id)) : undefined,
-      addressVisibilityScope: addressVisibilityScope as any,
-      addressVisibilityGroupIds: addressVisibilityGroupIds.length > 0 ? addressVisibilityGroupIds.map(id => parseInt(id)) : undefined,
+      visibilityScope: visibilityData.visibilityScope as any,
+      visibilityGroupIds: visibilityData.visibilityGroupIds,
+      customUserIds: visibilityData.customUserIds,
       includeCommunityTier,
       enabled,
       daysAheadOpen,
@@ -801,66 +802,16 @@ function MealTrainConfigDialog({
         </DialogHeader>
 
         <div className="space-y-4">
-          <div>
-            <Label htmlFor="visibilityScope">Who Can See This Meal Train</Label>
-            <Select 
-              value={includeCommunityTier ? "all_supporters_plus_community" : visibilityScope} 
-              onValueChange={(value) => {
-                if (value === "all_supporters_plus_community") {
-                  setVisibilityScope("all_supporters");
-                  setIncludeCommunityTier(true);
-                } else {
-                  setVisibilityScope(value);
-                  setIncludeCommunityTier(false);
-                }
-              }}
-            >
-              <SelectTrigger id="visibilityScope">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all_supporters">Family + Friends</SelectItem>
-                <SelectItem value="all_supporters_plus_community">Family + Friends + Community</SelectItem>
-                <SelectItem value="group">Specific Groups</SelectItem>
-                <SelectItem value="role">Admin/Primary Only</SelectItem>
-                <SelectItem value="private">Private</SelectItem>
-              </SelectContent>
-            </Select>
-            <p className="text-xs text-muted-foreground mt-1">
-              Control who can see and volunteer for this meal train
-            </p>
-          </div>
-          {visibilityScope === "group" && (
-            <div className="space-y-2">
-              <Label>Select Groups (you can select multiple)</Label>
-              <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
-                {groups && groups.length > 0 ? (
-                  groups.map((group: { id: number; name: string }) => (
-                    <div key={group.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id={`visibility-group-${group.id}`}
-                        checked={visibilityGroupIds.includes(group.id.toString())}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setVisibilityGroupIds([...visibilityGroupIds, group.id.toString()]);
-                          } else {
-                            setVisibilityGroupIds(visibilityGroupIds.filter(id => id !== group.id.toString()));
-                          }
-                        }}
-                        className="rounded border-gray-300"
-                      />
-                      <label htmlFor={`visibility-group-${group.id}`} className="text-sm cursor-pointer">
-                        {group.name}
-                      </label>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
-                )}
-              </div>
-            </div>
-          )}
+          <VisibilitySelect
+            value={visibilityOption}
+            onChange={setVisibilityOption}
+            groupIds={visibilityGroupIds}
+            onGroupIdsChange={setVisibilityGroupIds}
+            customUserIds={customUserIds}
+            onCustomUserIdsChange={setCustomUserIds}
+            label="Who Can See This Meal Train"
+            description="Control who can see and volunteer for this meal train"
+          />
 
           <div>
             <Label htmlFor="location">Drop-Off Location</Label>
@@ -871,56 +822,10 @@ function MealTrainConfigDialog({
               placeholder="123 Main St, Anytown, USA 12345"
               rows={2}
             />
-          </div>
-
-          <div>
-            <Label htmlFor="addressVisibilityScope">Address Visibility</Label>
-            <Select value={addressVisibilityScope} onValueChange={setAddressVisibilityScope}>
-              <SelectTrigger id="addressVisibilityScope">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all_supporters">Same as Meal Train</SelectItem>
-                <SelectItem value="group">Specific Groups</SelectItem>
-                <SelectItem value="role">Admin/Primary Only</SelectItem>
-                <SelectItem value="private">Private (No One)</SelectItem>
-              </SelectContent>
-            </Select>
             <p className="text-xs text-muted-foreground mt-1">
-              Control who can see the delivery address
+              Anyone who can see the meal train will see the address
             </p>
           </div>
-          {addressVisibilityScope === "group" && (
-            <div className="space-y-2">
-              <Label>Select Groups for Address Access (you can select multiple)</Label>
-              <div className="space-y-2 rounded-md border p-3 max-h-48 overflow-y-auto">
-                {groups && groups.length > 0 ? (
-                  groups.map((group: { id: number; name: string }) => (
-                    <div key={group.id} className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id={`address-visibility-group-${group.id}`}
-                        checked={addressVisibilityGroupIds.includes(group.id.toString())}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setAddressVisibilityGroupIds([...addressVisibilityGroupIds, group.id.toString()]);
-                          } else {
-                            setAddressVisibilityGroupIds(addressVisibilityGroupIds.filter(id => id !== group.id.toString()));
-                          }
-                        }}
-                        className="rounded border-gray-300"
-                      />
-                      <label htmlFor={`address-visibility-group-${group.id}`} className="text-sm cursor-pointer">
-                        {group.name}
-                      </label>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-sm text-gray-500">No groups available. Create groups in the People page.</p>
-                )}
-              </div>
-            </div>
-          )}
 
           <div>
             <Label htmlFor="peopleCount">Number of People to Cook For</Label>
