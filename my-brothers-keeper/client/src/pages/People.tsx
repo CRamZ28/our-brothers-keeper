@@ -440,8 +440,7 @@ export default function People() {
                 <DialogHeader>
                   <DialogTitle>Invite a Supporter</DialogTitle>
                   <DialogDescription>
-                    Send an invitation to join your support network. They'll need to be approved
-                    before gaining access.
+                    Send an invitation to join your support network. They'll gain immediate Community access and can request upgrades to Friend or Family tier.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4 py-4">
