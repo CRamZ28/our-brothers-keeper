@@ -1004,7 +1004,7 @@ export default function Calendar() {
                     <div className="flex items-start justify-between gap-4">
                       <DialogTitle className="text-2xl">{event.title}</DialogTitle>
                       {(user && (event.createdById === user.id || isPrimaryOrAdmin)) && (
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 mr-8">
                           <Button
                             variant="outline"
                             size="sm"
