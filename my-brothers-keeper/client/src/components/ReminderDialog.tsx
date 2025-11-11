@@ -156,16 +156,30 @@ export function ReminderDialog({
                     key={reminder.id}
                     className="flex items-center justify-between p-3 border rounded-lg"
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1">
                       <Bell className="w-4 h-4 text-muted-foreground" />
                       <span className="text-sm">
                         {formatReminderTime(reminder.reminderOffsetMinutes)}
                       </span>
+                      {reminder.status === "queued" && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                          Scheduled
+                        </span>
+                      )}
                       {reminder.status === "sent" && (
-                        <span className="text-xs text-muted-foreground">(sent)</span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">
+                          Sent
+                        </span>
                       )}
                       {reminder.status === "failed" && (
-                        <span className="text-xs text-red-500">(failed)</span>
+                        <span className="text-xs px-2 py-0.5 rounded bg-red-100 text-red-700">
+                          Failed
+                        </span>
+                      )}
+                      {reminder.status === "cancelled" && (
+                        <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
+                          Cancelled
+                        </span>
                       )}
                     </div>
                     <Button
@@ -173,7 +187,7 @@ export function ReminderDialog({
                       size="sm"
                       onClick={() => handleDelete(reminder.id)}
                       disabled={
-                        deleteMutation.isPending || reminder.status === "sent"
+                        deleteMutation.isPending || reminder.status !== "queued"
                       }
                     >
                       <Trash2 className="w-4 h-4" />

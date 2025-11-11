@@ -2,7 +2,6 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { GlassCard } from "@/components/ui/glass";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { Bell, Calendar, Trash2, AlertCircle } from "lucide-react";
@@ -83,26 +82,31 @@ export default function Reminders() {
                       <GlassCard key={reminder.id} className="p-4">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <Bell className="w-4 h-4 text-primary" />
                               <h3 className="font-medium">
                                 {reminder.targetTitle || "Untitled Need"}
                               </h3>
+                              {reminder.status === "queued" && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                                  Scheduled
+                                </span>
+                              )}
                               {reminder.status === "sent" && (
-                                <Badge variant="secondary" className="text-xs">
+                                <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">
                                   Sent
-                                </Badge>
+                                </span>
                               )}
                               {reminder.status === "failed" && (
-                                <Badge variant="destructive" className="text-xs">
-                                  <AlertCircle className="w-3 h-3 mr-1" />
+                                <span className="text-xs px-2 py-0.5 rounded bg-red-100 text-red-700 flex items-center gap-1">
+                                  <AlertCircle className="w-3 h-3" />
                                   Failed
-                                </Badge>
+                                </span>
                               )}
                               {reminder.status === "cancelled" && (
-                                <Badge variant="outline" className="text-xs">
+                                <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
                                   Cancelled
-                                </Badge>
+                                </span>
                               )}
                             </div>
                             <div className="text-sm text-muted-foreground space-y-1">
@@ -126,7 +130,7 @@ export default function Reminders() {
                               </div>
                             </div>
                           </div>
-                          {reminder.status !== "sent" && (
+                          {reminder.status === "queued" && (
                             <Button
                               variant="ghost"
                               size="sm"
@@ -151,26 +155,31 @@ export default function Reminders() {
                       <GlassCard key={reminder.id} className="p-4">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
+                            <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <Bell className="w-4 h-4 text-primary" />
                               <h3 className="font-medium">
                                 {reminder.targetTitle || "Untitled Event"}
                               </h3>
+                              {reminder.status === "queued" && (
+                                <span className="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-700">
+                                  Scheduled
+                                </span>
+                              )}
                               {reminder.status === "sent" && (
-                                <Badge variant="secondary" className="text-xs">
+                                <span className="text-xs px-2 py-0.5 rounded bg-green-100 text-green-700">
                                   Sent
-                                </Badge>
+                                </span>
                               )}
                               {reminder.status === "failed" && (
-                                <Badge variant="destructive" className="text-xs">
-                                  <AlertCircle className="w-3 h-3 mr-1" />
+                                <span className="text-xs px-2 py-0.5 rounded bg-red-100 text-red-700 flex items-center gap-1">
+                                  <AlertCircle className="w-3 h-3" />
                                   Failed
-                                </Badge>
+                                </span>
                               )}
                               {reminder.status === "cancelled" && (
-                                <Badge variant="outline" className="text-xs">
+                                <span className="text-xs px-2 py-0.5 rounded bg-gray-100 text-gray-600">
                                   Cancelled
-                                </Badge>
+                                </span>
                               )}
                             </div>
                             <div className="text-sm text-muted-foreground space-y-1">
@@ -194,7 +203,7 @@ export default function Reminders() {
                               </div>
                             </div>
                           </div>
-                          {reminder.status !== "sent" && (
+                          {reminder.status === "queued" && (
                             <Button
                               variant="ghost"
                               size="sm"
