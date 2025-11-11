@@ -47,8 +47,10 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "need_claimed",
   "need_unclaimed",
   "need_completed",
+  "need_reminder",
   "event_created",
   "event_rsvp",
+  "event_reminder",
   "meal_train_signup",
   "meal_train_cancelled",
   "new_message",
@@ -57,6 +59,8 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "invite_sent"
 ]);
 export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
+export const reminderTargetTypeEnum = pgEnum("reminder_target_type", ["need", "event"]);
+export const reminderStatusEnum = pgEnum("reminder_status", ["queued", "sent", "cancelled", "failed"]);
 export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer", "picture"]);
 export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
 export const eventTypeEnum = pgEnum("event_type", ["regular", "birthday", "anniversary", "milestone", "holiday"]);
@@ -551,8 +555,10 @@ export const notificationPreferences = pgTable("notification_preferences", {
   emailNeedClaimed: boolean("email_need_claimed").default(false).notNull(),
   emailNeedUnclaimed: boolean("email_need_unclaimed").default(false).notNull(),
   emailNeedCompleted: boolean("email_need_completed").default(false).notNull(),
+  emailNeedReminder: boolean("email_need_reminder").default(true).notNull(),
   emailEventCreated: boolean("email_event_created").default(false).notNull(),
   emailEventRsvp: boolean("email_event_rsvp").default(false).notNull(),
+  emailEventReminder: boolean("email_event_reminder").default(true).notNull(),
   emailMealTrainSignup: boolean("email_meal_train_signup").default(false).notNull(),
   emailMealTrainCancelled: boolean("email_meal_train_cancelled").default(false).notNull(),
   emailNewMessage: boolean("email_new_message").default(false).notNull(),
@@ -565,8 +571,10 @@ export const notificationPreferences = pgTable("notification_preferences", {
   pushNeedClaimed: boolean("push_need_claimed").default(false).notNull(),
   pushNeedUnclaimed: boolean("push_need_unclaimed").default(false).notNull(),
   pushNeedCompleted: boolean("push_need_completed").default(false).notNull(),
+  pushNeedReminder: boolean("push_need_reminder").default(false).notNull(),
   pushEventCreated: boolean("push_event_created").default(false).notNull(),
   pushEventRsvp: boolean("push_event_rsvp").default(false).notNull(),
+  pushEventReminder: boolean("push_event_reminder").default(false).notNull(),
   pushMealTrainSignup: boolean("push_meal_train_signup").default(false).notNull(),
   pushMealTrainCancelled: boolean("push_meal_train_cancelled").default(false).notNull(),
   pushNewMessage: boolean("push_new_message").default(false).notNull(),
@@ -628,6 +636,34 @@ export const notificationLogs = pgTable("notification_logs", {
 
 export type NotificationLog = typeof notificationLogs.$inferSelect;
 export type InsertNotificationLog = typeof notificationLogs.$inferInsert;
+
+/**
+ * Reminders - User-specific reminders for needs and events
+ * Stores reminder preferences and tracks sent status
+ */
+export const reminders = pgTable("reminders", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  householdId: integer("household_id").notNull(),
+  targetType: reminderTargetTypeEnum("target_type").notNull(),
+  targetId: integer("target_id").notNull(),
+  reminderOffsetMinutes: integer("reminder_offset_minutes").notNull(),
+  triggerAt: timestamp("trigger_at").notNull(),
+  status: reminderStatusEnum("status").default("queued").notNull(),
+  sentAt: timestamp("sent_at"),
+  retryAt: timestamp("retry_at"),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userIdx: index("reminders_user_idx").on(table.userId),
+  householdIdx: index("reminders_household_idx").on(table.householdId),
+  targetIdx: index("reminders_target_idx").on(table.targetType, table.targetId),
+  statusTriggerIdx: index("reminders_status_trigger_idx").on(table.status, table.triggerAt),
+}));
+
+export type Reminder = typeof reminders.$inferSelect;
+export type InsertReminder = typeof reminders.$inferInsert;
 
 /**
  * Memory Wall - Collage of memories, stories, encouragement, prayers, and pictures
