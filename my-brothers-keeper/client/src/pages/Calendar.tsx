@@ -356,7 +356,7 @@ export default function Calendar() {
                 onClick={() => setView("calendar")}
                 style={view === "calendar" ? {
                   background: 'rgba(176, 140, 167, 0.7)',
-                  color: '#0d9488'
+                  color: '#000000'
                 } : undefined}
                 className={view === "calendar" ? "hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
@@ -369,7 +369,7 @@ export default function Calendar() {
                 onClick={() => setView("list")}
                 style={view === "list" ? {
                   background: 'rgba(176, 140, 167, 0.7)',
-                  color: '#0d9488'
+                  color: '#000000'
                 } : undefined}
                 className={view === "list" ? "hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
