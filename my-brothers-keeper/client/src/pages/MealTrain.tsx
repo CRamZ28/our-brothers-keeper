@@ -582,8 +582,8 @@ function VolunteerForm({
   const [notes, setNotes] = useState("");
 
   return (
-    <div className="space-y-4">
-      <div>
+    <div className="space-y-6">
+      <div className="space-y-2">
         <Label htmlFor="notes">Notes (Optional)</Label>
         <Textarea
           id="notes"
@@ -593,7 +593,7 @@ function VolunteerForm({
           rows={3}
         />
       </div>
-      <div className="flex gap-2 justify-end">
+      <div className="flex gap-3 justify-end">
         <Button 
           type="button" 
           variant="outline" 
