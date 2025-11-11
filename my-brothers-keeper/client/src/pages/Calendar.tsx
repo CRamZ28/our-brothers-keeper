@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/select";
 import { UserSelector } from "@/components/UserSelector";
 import { QuestionDialog } from "@/components/QuestionDialog";
+import { ReminderDialog } from "@/components/ReminderDialog";
 import { trpc } from "@/lib/trpc";
 import {
   Calendar as CalendarIcon,
@@ -1070,48 +1071,51 @@ export default function Calendar() {
                       <p className="text-sm text-muted-foreground">{event.description}</p>
                     </div>
                   )}
-                  <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:justify-between">
-                    <Button
-                      variant="default"
-                      onClick={() => {
-                        handleRsvp(event.id, "going");
-                        setEventDetailOpen(false);
-                      }}
-                      disabled={
-                        rsvpMutation.isPending ||
-                        (event.capacity && event.goingCount >= event.capacity) ||
-                        (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)
-                      }
-                      className="flex-1 whitespace-nowrap"
-                    >
-                      <Check className="w-4 h-4 mr-2" />
-                      {event.capacity && event.goingCount >= event.capacity ? "Full" : 
-                       (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "I'm Going"}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        handleRsvp(event.id, "maybe");
-                        setEventDetailOpen(false);
-                      }}
-                      disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
-                      className="flex-1 whitespace-nowrap"
-                    >
-                      Maybe
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        handleRsvp(event.id, "declined");
-                        setEventDetailOpen(false);
-                      }}
-                      disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
-                      className="flex-1 whitespace-nowrap"
-                    >
-                      <X className="w-4 h-4 mr-2" />
-                      Can't Go
-                    </Button>
-                  </DialogFooter>
+                  <div className="space-y-3">
+                    <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:justify-between">
+                      <Button
+                        variant="default"
+                        onClick={() => {
+                          handleRsvp(event.id, "going");
+                          setEventDetailOpen(false);
+                        }}
+                        disabled={
+                          rsvpMutation.isPending ||
+                          (event.capacity && event.goingCount >= event.capacity) ||
+                          (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)
+                        }
+                        className="flex-1 whitespace-nowrap"
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        {event.capacity && event.goingCount >= event.capacity ? "Full" : 
+                         (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "I'm Going"}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          handleRsvp(event.id, "maybe");
+                          setEventDetailOpen(false);
+                        }}
+                        disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
+                        className="flex-1 whitespace-nowrap"
+                      >
+                        Maybe
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          handleRsvp(event.id, "declined");
+                          setEventDetailOpen(false);
+                        }}
+                        disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
+                        className="flex-1 whitespace-nowrap"
+                      >
+                        <X className="w-4 h-4 mr-2" />
+                        Can't Go
+                      </Button>
+                    </DialogFooter>
+                    <ReminderDialog targetType="event" targetId={event.id} />
+                  </div>
                 </>
               );
             })()}
