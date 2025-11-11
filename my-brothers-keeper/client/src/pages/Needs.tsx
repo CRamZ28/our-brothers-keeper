@@ -509,7 +509,7 @@ export default function Needs() {
             {isPrimaryOrAdmin && (
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="shrink-0">
+                <Button size="sm" className="shrink-0 bg-[#B08CA7] hover:bg-[#9a7a91]">
                   <Plus className="w-4 h-4 md:mr-2" />
                   <span className="hidden md:inline">Add Need</span>
                 </Button>
@@ -869,8 +869,8 @@ export default function Needs() {
                             const isPastNeed = needDate && needDate < new Date() && !isSameDay(needDate, new Date());
                             
                             const statusColors = {
-                              open: { bg: 'rgba(45, 181, 168, 0.7)', text: 'text-white' },
-                              claimed: { bg: 'rgba(176, 140, 167, 0.7)', text: 'text-white' },
+                              open: { bg: 'rgba(176, 140, 167, 0.7)', text: 'text-white' },
+                              claimed: { bg: 'rgba(45, 181, 168, 0.7)', text: 'text-white' },
                               completed: { bg: 'rgba(156, 163, 175, 0.5)', text: 'text-gray-600' }
                             };
                             const statusColor = statusColors[need.status as keyof typeof statusColors] || statusColors.open;
@@ -1002,13 +1002,13 @@ export default function Needs() {
                   }> = {
                     open: {
                       badge: "Available",
-                      badgeClass: "bg-[#2DB5A8]/20 text-foreground border-[#2DB5A8]/40",
+                      badgeClass: "bg-[#B08CA7]/30 text-white border-[#B08CA7]/50",
                       buttonText: "I Can Help",
                       showButton: true
                     },
                     claimed: {
                       badge: "Claimed",
-                      badgeClass: "bg-[#B08CA7]/30 text-white border-[#B08CA7]/50",
+                      badgeClass: "bg-[#2DB5A8]/30 text-white border-[#2DB5A8]/50",
                       buttonText: "Claimed",
                       showButton: user?.id === need.claimedById || isPrimaryOrAdmin
                     },
@@ -1092,7 +1092,7 @@ export default function Needs() {
                         {statusConfig.showButton && need.status === "open" && (
                           <>
                             <Button
-                              className="w-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm"
+                              className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
                               onClick={() => openClaimDialog(need.id)}
                               disabled={
                                 user?.role === "primary" ||
@@ -1121,7 +1121,7 @@ export default function Needs() {
                         )}
                         {statusConfig.showButton && need.status === "claimed" && (
                           <Button
-                            className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
+                            className="w-full bg-[#2DB5A8] hover:bg-[#28a89c] text-white shadow-sm"
                             onClick={() => handleUnclaimClick(need.currentUserClaimId)}
                             disabled={unclaimNeedMutation.isPending}
                           >
@@ -1212,7 +1212,7 @@ export default function Needs() {
                       </CardContent>
                       <CardFooter className="flex-col gap-3 pt-4 pb-6">
                         <Button
-                          className="w-full bg-teal-600 hover:bg-teal-700 text-white shadow-sm"
+                          className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
                           onClick={() => openClaimDialog(need.id)}
                           disabled={
                             user?.role === "primary" ||
@@ -1268,7 +1268,7 @@ export default function Needs() {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1 flex-wrap">
                                 <span className="text-xs font-medium text-foreground/70 uppercase tracking-wide">{need.category}</span>
-                                <Badge variant="outline" className="bg-[#B08CA7]/30 text-white border-[#B08CA7]/50">
+                                <Badge variant="outline" className="bg-[#2DB5A8]/30 text-white border-[#2DB5A8]/50">
                                   Claimed
                                 </Badge>
                                 {need.priority === "urgent" && (
@@ -1327,7 +1327,7 @@ export default function Needs() {
                       <CardFooter className="flex-col gap-3 pt-4 pb-6">
                         {need.currentUserClaimId && (
                           <Button
-                            className="w-full bg-[#B08CA7] hover:bg-[#9a7a91] text-white shadow-sm"
+                            className="w-full bg-[#2DB5A8] hover:bg-[#28a89c] text-white shadow-sm"
                             onClick={() => handleUnclaimClick(need.currentUserClaimId)}
                             disabled={unclaimNeedMutation.isPending}
                           >
