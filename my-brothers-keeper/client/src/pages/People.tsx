@@ -899,7 +899,7 @@ export default function People() {
                 <div className="grid md:grid-cols-3 gap-4">
                   {groups.map((group) => (
                     <div key={group.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors relative group/card">
-                      <div className="pr-8">
+                      <div className="pr-28">
                         <h3 className="font-medium text-base sm:text-lg overflow-hidden line-clamp-2">{group.name}</h3>
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{group.description}</p>
                         <p className="text-xs text-muted-foreground mt-2">
