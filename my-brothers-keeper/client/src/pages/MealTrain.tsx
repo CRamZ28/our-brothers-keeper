@@ -34,6 +34,10 @@ export default function MealTrain() {
 
   const { data: mealTrain, refetch: refetchMealTrain } = trpc.mealTrain.get.useQuery();
   const { data: signups = [], refetch: refetchSignups } = trpc.mealTrain.listSignups.useQuery();
+  const { data: configuredDays = [] } = trpc.mealTrain.getDays.useQuery(
+    { mealTrainId: mealTrain?.id || 0 },
+    { enabled: !!mealTrain?.id }
+  );
 
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
 
@@ -67,18 +71,23 @@ export default function MealTrain() {
     });
   };
 
-  // Check if a date has capacity available
+  // Check if a date has capacity available and is configured
   const getDateCapacityInfo = (date: Date) => {
     const dateKey = format(date, "yyyy-MM-dd");
     const dateSignups = signupsByDate[dateKey]?.filter(s => s.status !== "cancelled") || [];
     const capacity = mealTrain?.dailyCapacity || 1;
     const remaining = capacity - dateSignups.length;
+    const isConfigured = configuredDays.some(
+      (day: { date: string; isAvailable: boolean }) => 
+        format(new Date(day.date), "yyyy-MM-dd") === dateKey && day.isAvailable
+    );
     return {
       signups: dateSignups,
       capacity,
       remaining,
       isFull: remaining <= 0,
-      isAvailable: remaining > 0,
+      isAvailable: remaining > 0 && isConfigured,
+      isConfigured,
     };
   };
 
