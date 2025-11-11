@@ -747,7 +747,7 @@ export default function Settings() {
                 />
                 <Button
                   variant="outline"
-                  className="border-[#6BC4B8] text-[#6BC4B8] hover:bg-[#6BC4B8]/10"
+                  className="border-2 border-[#2DB5A8] text-[#2DB5A8] bg-[#2DB5A8]/5 hover:bg-[#2DB5A8]/15 hover:border-[#2DB5A8] font-semibold"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                 >
