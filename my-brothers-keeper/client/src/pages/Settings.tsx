@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 
 export default function Settings() {
@@ -52,6 +52,10 @@ export default function Settings() {
   const [emailNewMessage, setEmailNewMessage] = useState(false);
   const [emailNewAnnouncement, setEmailNewAnnouncement] = useState(false);
   const [emailNewUpdate, setEmailNewUpdate] = useState(false);
+
+  const [uploading, setUploading] = useState(false);
+  const [profileImageUrl, setProfileImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (household) {
@@ -127,6 +131,17 @@ export default function Settings() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update dashboard display settings");
+    },
+  });
+
+  const updateProfileMutation = trpc.user.updateProfile.useMutation({
+    onSuccess: () => {
+      toast.success("Profile picture updated successfully!");
+      setProfileImageUrl("");
+      window.location.reload(); // Reload to update the auth context
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update profile picture");
     },
   });
 
@@ -217,6 +232,47 @@ export default function Settings() {
       quoteAttribution: dashboardDisplayType === "quote" ? dashboardQuoteAttribution : undefined,
       featuredMemoryId: dashboardDisplayType === "memory" && dashboardFeaturedMemoryId ? dashboardFeaturedMemoryId : undefined,
     });
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    try {
+      setUploading(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      
+      // Update profile with new image URL
+      updateProfileMutation.mutate({ profileImageUrl: data.url });
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload image");
+      setUploading(false);
+    }
   };
 
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
@@ -675,19 +731,28 @@ export default function Settings() {
               <CardDescription>Your account information and avatar</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Profile Picture Section - To be implemented */}
+              {/* Profile Picture Section */}
               <div className="flex items-center gap-4 p-4 border rounded-lg bg-white/5">
                 <UserAvatar user={user || undefined} size="xl" />
                 <div className="flex-1">
                   <Label className="font-medium">Profile Picture</Label>
                   <p className="text-sm text-muted-foreground">Upload your photo to personalize your profile</p>
                 </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
                 <Button
                   variant="outline"
                   className="border-[#6BC4B8] text-[#6BC4B8] hover:bg-[#6BC4B8]/10"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
                 >
                   <Upload className="mr-2 h-4 w-4" />
-                  Upload
+                  {uploading ? "Uploading..." : "Upload"}
                 </Button>
               </div>
               
