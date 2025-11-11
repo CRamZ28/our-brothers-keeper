@@ -74,6 +74,16 @@ export default function People() {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Auto-open invite dialog from URL query parameter
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('invite') === 'true') {
+      setInviteDialogOpen(true);
+      // Clean up URL
+      window.history.replaceState({}, '', '/people');
+    }
+  }, []);
+
   const updateProfileMutation = trpc.user.updateProfile.useMutation({
     onSuccess: () => {
       toast.success("Profile updated successfully!");

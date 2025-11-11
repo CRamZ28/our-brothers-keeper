@@ -123,19 +123,34 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Button at bottom */}
-            <Link href="/people">
-              <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
-                style={{
-                  backgroundColor: '#B08CA7',
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
-              >
-                View All
-              </button>
-            </Link>
+            {/* Buttons at bottom */}
+            <div className="space-y-2">
+              <Link href="/people?invite=true">
+                <button 
+                  className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+                  style={{
+                    backgroundColor: '#2DB5A8',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#26a399'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2DB5A8'}
+                >
+                  <Plus className="w-4 h-4" />
+                  Invite Supporters
+                </button>
+              </Link>
+              <Link href="/people">
+                <button 
+                  className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                  style={{
+                    backgroundColor: '#B08CA7',
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+                >
+                  View All
+                </button>
+              </Link>
+            </div>
           </div>
 
           {/* Card 2: Open Needs */}
