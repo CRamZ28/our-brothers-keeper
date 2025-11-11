@@ -10,17 +10,18 @@ function generateInviteToken(): string {
   return crypto.randomBytes(32).toString("hex");
 }
 
-// Helper to send invite notification (placeholder for now)
+// Helper to send invite notification
 async function sendInviteNotification(
   email: string | null,
   phone: string | null,
-  token: string,
+  householdSlug: string,
   householdName: string,
   inviterName: string
 ) {
-  // TODO: Implement actual email/SMS sending
-  const inviteLink = `${process.env.VITE_APP_URL || "http://localhost:3000"}/invite/${token}`;
+  // Build public household join link using slug (e.g., /theramseys)
+  const inviteLink = `${process.env.VITE_APP_URL || "http://localhost:5000"}/${householdSlug}`;
   console.log(`[Invite] Would send to ${email || phone}: ${inviteLink}`);
+  // TODO: Implement actual email/SMS sending via Resend
   return inviteLink;
 }
 
@@ -110,11 +111,11 @@ export const inviteRouter = router({
         expiresAt,
       });
 
-      // Send notification
+      // Send notification with household slug instead of token
       const inviteLink = await sendInviteNotification(
         input.email || null,
         input.phone || null,
-        token,
+        household.slug || "family", // Fallback to "family" if no slug
         household.name,
         ctx.user.name || "A friend"
       );
@@ -297,21 +298,20 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Invite belongs to different household" });
       }
 
-      // Generate new token and extend expiration
-      const newToken = generateInviteToken();
+      // Update invite status (no longer using tokens, just marking as resent)
       const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
 
       await db.updateInvite(input.inviteId, {
-        token: newToken,
+        token: generateInviteToken(), // Keep token for backward compatibility but not used
         expiresAt: newExpiresAt,
         status: "sent",
       });
 
-      // Send notification with new link
+      // Send notification with household page link
       await sendInviteNotification(
         invite.invitedEmail,
         invite.invitedPhone,
-        newToken,
+        household.slug || "family", // Use household slug instead of token
         household.name,
         ctx.user.name || "Someone"
       );
