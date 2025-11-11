@@ -17,16 +17,17 @@ export async function processReminders() {
   }
 
   try {
-    // Get all reminders that are queued and due to be sent
+    // Get all reminders that are queued and due to be sent, OR failed and ready for retry
     const now = new Date();
     const pendingReminders = await db
       .select()
       .from(reminders)
       .where(
-        and(
-          eq(reminders.status, "queued"),
-          lte(reminders.triggerAt, now)
-        )
+        sql`(
+          (${reminders.status} = 'queued' AND ${reminders.triggerAt} <= ${now})
+          OR
+          (${reminders.status} = 'failed' AND ${reminders.retryAt} IS NOT NULL AND ${reminders.retryAt} <= ${now})
+        )`
       )
       .limit(100); // Process max 100 reminders per run
 
@@ -34,6 +35,14 @@ export async function processReminders() {
 
     for (const reminder of pendingReminders) {
       try {
+        // Reset failed reminders to queued for retry
+        if (reminder.status === "failed") {
+          await db
+            .update(reminders)
+            .set({ status: "queued", updatedAt: new Date() })
+            .where(eq(reminders.id, reminder.id));
+        }
+
         // Get user details
         const user = await db
           .select()
