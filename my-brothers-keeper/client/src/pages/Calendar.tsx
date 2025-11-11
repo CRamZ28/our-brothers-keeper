@@ -379,7 +379,7 @@ export default function Calendar() {
             {isPrimaryOrAdmin && (
               <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button>
+                  <Button className="bg-[#B08CA7] hover:bg-[#9a7a91]">
                     <Plus className="w-4 h-4 mr-2" />
                     Create Event
                   </Button>

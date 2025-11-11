@@ -465,7 +465,7 @@ export async function createEvent(event: InsertEvent) {
   return result[0].id;
 }
 
-export async function getEventsByHousehold(householdId: number) {
+export async function getEventsByHousehold(householdId: number, userId?: string) {
   const db = await getDb();
   if (!db) return [];
 
@@ -479,7 +479,7 @@ export async function getEventsByHousehold(householdId: number) {
     .leftJoin(eventRsvps, eq(events.id, eventRsvps.eventId))
     .where(eq(events.householdId, householdId));
 
-  // Group by event and count "going" RSVPs
+  // Group by event and count "going" RSVPs, track user's RSVP status
   const eventsMap = new Map();
   for (const row of eventsWithRsvps) {
     const eventId = row.event.id;
@@ -487,10 +487,15 @@ export async function getEventsByHousehold(householdId: number) {
       eventsMap.set(eventId, {
         ...row.event,
         goingCount: 0,
+        userRsvpStatus: null as string | null,
       });
     }
     if (row.rsvp?.status === "going") {
       eventsMap.get(eventId).goingCount++;
+    }
+    // Track current user's RSVP status
+    if (userId && row.rsvp?.userId === userId) {
+      eventsMap.get(eventId).userRsvpStatus = row.rsvp.status;
     }
   }
 

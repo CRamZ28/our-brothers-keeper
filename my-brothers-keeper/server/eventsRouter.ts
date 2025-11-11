@@ -12,7 +12,7 @@ export const eventsRouter = router({
       return [];
     }
 
-    const allEvents = await db.getEventsByHousehold(ctx.user.householdId);
+    const allEvents = await db.getEventsByHousehold(ctx.user.householdId, ctx.user.id);
 
     // Filter based on visibility scope, groups, and custom user lists
     const visibleEvents = await filterByVisibility(
