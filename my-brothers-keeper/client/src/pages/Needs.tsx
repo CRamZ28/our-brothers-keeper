@@ -455,21 +455,29 @@ export default function Needs() {
         actions={
           <div className="flex items-center gap-2">
             {/* View Toggle */}
-            <div className="flex items-center gap-1 bg-white/10 backdrop-blur-sm rounded-lg p-1">
+            <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
               <Button
-                variant={viewMode === "list" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setViewMode("list")}
-                className={viewMode === "list" ? "" : "hover:bg-white/20"}
+                style={viewMode === "list" ? {
+                  background: 'rgba(176, 140, 167, 0.7)',
+                  color: '#000000'
+                } : undefined}
+                className={viewMode === "list" ? "hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
                 <List className="w-4 h-4 md:mr-2" />
                 <span className="hidden md:inline">List</span>
               </Button>
               <Button
-                variant={viewMode === "calendar" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setViewMode("calendar")}
-                className={viewMode === "calendar" ? "" : "hover:bg-white/20"}
+                style={viewMode === "calendar" ? {
+                  background: 'rgba(176, 140, 167, 0.7)',
+                  color: '#000000'
+                } : undefined}
+                className={viewMode === "calendar" ? "hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
                 <CalendarDays className="w-4 h-4 md:mr-2" />
                 <span className="hidden md:inline">Calendar</span>
