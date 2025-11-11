@@ -521,7 +521,7 @@ export default function People() {
       >
         {/* Pending Tier Requests */}
         {isPrimaryOrAdmin && pendingTierRequests && pendingTierRequests.length > 0 && (
-          <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
               <CardTitle className="text-2xl bg-gradient-to-r from-[#6BC4B8] to-[#B08CA7] bg-clip-text text-transparent">
                 Pending Access Tier Requests
@@ -567,7 +567,7 @@ export default function People() {
         )}
 
         {/* My Profile */}
-        <Card className="bg-white/90 backdrop-blur-md">
+        <Card className="bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
@@ -683,7 +683,7 @@ export default function People() {
 
         {/* Pending Approvals */}
         {canManageUsers && pendingUsers.length > 0 && (
-          <Card className="border-primary/50 bg-white/90 backdrop-blur-md">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
               <CardTitle>Pending Approvals</CardTitle>
               <CardDescription>

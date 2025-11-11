@@ -566,7 +566,7 @@ export default function FamilyUpdates() {
               <h2 className="text-lg font-semibold">Recent Updates</h2>
             )}
             {regularPosts.length === 0 && pinnedPosts.length === 0 ? (
-              <Card className="card-elevated-lg bg-white/90 backdrop-blur-md">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-12 text-center">
                   <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-lg font-semibold mb-2">No updates yet</h3>

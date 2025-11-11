@@ -387,7 +387,7 @@ export default function GiftRegistry() {
             </h2>
 
             {neededItems.length === 0 ? (
-              <Card className="border border-gray-200 bg-white">
+              <Card className="bg-white/10 backdrop-blur-sm border-white/20">
                 <CardContent className="p-8 text-center">
                   <Gift className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                   <p className="text-gray-500">No items in the registry yet</p>
@@ -399,7 +399,7 @@ export default function GiftRegistry() {
                   const priorityStyle = priorityConfig[item.priority as keyof typeof priorityConfig];
 
                   return (
-                    <Card key={item.id} className="border border-gray-200 bg-white hover:shadow-md transition-all">
+                    <Card key={item.id} className="bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/15 transition-all">
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
