@@ -17,6 +17,7 @@ import AdminTools from "./pages/AdminTools";
 import MealTrain from "./pages/MealTrain";
 import MemoryWall from "./pages/MemoryWall";
 import GiftRegistry from "./pages/GiftRegistry";
+import Reminders from "./pages/Reminders";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -38,6 +39,7 @@ function Router() {
       <Route path={"/meal-train"} component={MealTrain} />
       <Route path={"/memory-wall"} component={MemoryWall} />
       <Route path={"/gift-registry"} component={GiftRegistry} />
+      <Route path={"/reminders"} component={Reminders} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/invite/:token"} component={AcceptInvite} />
       <Route path={"/admin"} component={AdminTools} />

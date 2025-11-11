@@ -10,6 +10,7 @@ import {
   Users,
   Settings,
   LogOut,
+  Bell,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -28,6 +29,7 @@ const navigationItems = [
   { icon: MessageSquare, label: "Family Updates", path: "/family-updates" },
   { icon: BookHeart, label: "Memory Wall", path: "/memory-wall" },
   { icon: Gift, label: "Gift Registry", path: "/gift-registry" },
+  { icon: Bell, label: "Reminders", path: "/reminders" },
   { icon: Users, label: "People", path: "/people" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
