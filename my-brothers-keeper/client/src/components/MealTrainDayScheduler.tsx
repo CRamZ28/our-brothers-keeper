@@ -117,7 +117,7 @@ export function MealTrainDayScheduler({
               Select Available Days
             </CardTitle>
             <CardDescription className="mt-2">
-              Choose which days you're available to provide meals
+              Choose which days you're available to receive meals
             </CardDescription>
           </div>
           <div className="text-sm">

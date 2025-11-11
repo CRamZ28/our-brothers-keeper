@@ -28,6 +28,7 @@ export default function Settings() {
   );
 
   const [householdName, setHouseholdName] = useState("");
+  const [householdSlug, setHouseholdSlug] = useState("");
   const [autoPromoteEnabled, setAutoPromoteEnabled] = useState(false);
   const [autoPromoteHours, setAutoPromoteHours] = useState(48);
 
@@ -46,6 +47,7 @@ export default function Settings() {
   useEffect(() => {
     if (household) {
       setHouseholdName(household.name);
+      setHouseholdSlug(household.slug || "");
       setAutoPromoteEnabled(household.autoPromoteEnabled || false);
       setAutoPromoteHours(household.autoPromoteHours || 48);
     }
@@ -95,6 +97,16 @@ export default function Settings() {
     },
   });
 
+  const updateSlugMutation = trpc.household.updateSlug.useMutation({
+    onSuccess: (data) => {
+      toast.success("Household page URL updated!");
+      setHouseholdSlug(data.slug);
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update household page URL");
+    },
+  });
+
   const handleSaveHousehold = () => {
     if (!householdName.trim()) {
       toast.error("Household name is required");
@@ -134,6 +146,27 @@ export default function Settings() {
     });
   };
 
+  const handleSaveSlug = () => {
+    const slugValue = householdSlug.trim().toLowerCase();
+
+    if (!slugValue) {
+      toast.error("Page URL is required");
+      return;
+    }
+
+    if (slugValue.length < 3) {
+      toast.error("Page URL must be at least 3 characters");
+      return;
+    }
+
+    if (!/^[a-z0-9-]+$/.test(slugValue)) {
+      toast.error("Page URL can only contain lowercase letters, numbers, and hyphens");
+      return;
+    }
+
+    updateSlugMutation.mutate({ slug: slugValue });
+  };
+
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
 
   return (
@@ -149,7 +182,7 @@ export default function Settings() {
                 </div>
                 <CardDescription>Update your household information</CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="householdName">Household Name *</Label>
                   <Input
@@ -166,6 +199,40 @@ export default function Settings() {
                 >
                   {updateHouseholdMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
+
+                <div className="border-t pt-6 space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="householdSlug">Public Join Page URL</Label>
+                    <p className="text-sm text-muted-foreground">
+                      This is the link people use to join your household (e.g., www.obkapp.com/<strong>{householdSlug || "your-family"}</strong>)
+                    </p>
+                    <div className="flex gap-2">
+                      <div className="flex-1 flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground px-3 py-2 bg-muted/50 rounded-md">
+                          www.obkapp.com/
+                        </span>
+                        <Input
+                          id="householdSlug"
+                          placeholder="your-family-name"
+                          value={householdSlug}
+                          onChange={(e) => setHouseholdSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Only lowercase letters, numbers, and hyphens allowed (min 3 characters)
+                    </p>
+                  </div>
+                  <Button
+                    onClick={handleSaveSlug}
+                    disabled={updateSlugMutation.isPending}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {updateSlugMutation.isPending ? "Updating..." : "Update Page URL"}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}

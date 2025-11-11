@@ -270,6 +270,11 @@ export async function createHousehold(household: InsertHousehold) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
+  // Auto-generate a slug if not provided
+  if (!household.slug) {
+    household.slug = await generateUniqueSlug(household.name);
+  }
+
   const result = await db.insert(households).values(household).returning({ id: households.id });
   return result[0].id;
 }

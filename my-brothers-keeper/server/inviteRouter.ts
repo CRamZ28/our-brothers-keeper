@@ -67,6 +67,14 @@ export const inviteRouter = router({
         });
       }
 
+      // Ensure household has a slug before creating invite
+      if (!household.slug) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Please set a household page URL in Settings before sending invites",
+        });
+      }
+
       // Generate AI-powered invite message if personalMessage is provided
       let enhancedMessage = input.personalMessage;
       if (input.personalMessage && input.relationship) {
@@ -111,11 +119,11 @@ export const inviteRouter = router({
         expiresAt,
       });
 
-      // Send notification with household slug instead of token
+      // Send notification with household slug
       const inviteLink = await sendInviteNotification(
         input.email || null,
         input.phone || null,
-        household.slug || "family", // Fallback to "family" if no slug
+        household.slug,
         household.name,
         ctx.user.name || "A friend"
       );
@@ -298,6 +306,14 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "FORBIDDEN", message: "Invite belongs to different household" });
       }
 
+      // Ensure household has a slug before resending invite
+      if (!household.slug) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Please set a household page URL in Settings before sending invites",
+        });
+      }
+
       // Update invite status (no longer using tokens, just marking as resent)
       const newExpiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days from now
 
@@ -311,7 +327,7 @@ export const inviteRouter = router({
       await sendInviteNotification(
         invite.invitedEmail,
         invite.invitedPhone,
-        household.slug || "family", // Use household slug instead of token
+        household.slug, // Use household slug
         household.name,
         ctx.user.name || "Someone"
       );
