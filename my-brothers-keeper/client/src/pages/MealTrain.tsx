@@ -532,6 +532,7 @@ export default function MealTrain() {
                 date={selectedDate}
                 onSubmit={(notes) => selectedDate && handleVolunteer(selectedDate, notes)}
                 onCancel={() => setShowVolunteerDialog(false)}
+                isLoading={volunteerMutation.isPending}
               />
             </DialogContent>
           </Dialog>
@@ -556,10 +557,12 @@ function VolunteerForm({
   date,
   onSubmit,
   onCancel,
+  isLoading,
 }: {
   date: Date | undefined;
   onSubmit: (notes: string) => void;
   onCancel: () => void;
+  isLoading?: boolean;
 }) {
   const [notes, setNotes] = useState("");
 
@@ -576,10 +579,22 @@ function VolunteerForm({
         />
       </div>
       <div className="flex gap-2 justify-end">
-        <Button variant="outline" onClick={onCancel}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          disabled={isLoading}
+        >
           Cancel
         </Button>
-        <Button onClick={() => onSubmit(notes)}>Volunteer</Button>
+        <Button 
+          type="button" 
+          onClick={() => onSubmit(notes)}
+          disabled={isLoading}
+          className="bg-[#2DB5A8] hover:bg-[#28a89c] text-white"
+        >
+          {isLoading ? "Submitting..." : "Volunteer"}
+        </Button>
       </div>
     </div>
   );
