@@ -354,7 +354,11 @@ export default function Calendar() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setView("calendar")}
-                className={view === "calendar" ? "bg-[rgba(176,140,167,0.7)] !text-white hover:bg-[rgba(176,140,167,0.8)] hover:!text-white" : ""}
+                style={view === "calendar" ? {
+                  background: 'rgba(176, 140, 167, 0.7)',
+                  color: 'white'
+                } : undefined}
+                className={view === "calendar" ? "hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
                 <CalendarDays className="w-4 h-4 mr-2" />
                 Calendar
@@ -363,7 +367,11 @@ export default function Calendar() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setView("list")}
-                className={view === "list" ? "bg-[rgba(176,140,167,0.7)] !text-white hover:bg-[rgba(176,140,167,0.8)] hover:!text-white" : ""}
+                style={view === "list" ? {
+                  background: 'rgba(176, 140, 167, 0.7)',
+                  color: 'white'
+                } : undefined}
+                className={view === "list" ? "hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
                 <List className="w-4 h-4 mr-2" />
                 List
