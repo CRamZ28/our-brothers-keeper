@@ -1,6 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { GlassPageLayout } from "@/components/GlassPageLayout";
+import { UserAvatar } from "@/components/UserAvatar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Bell, Home, User, LogOut, Mail, Users, Image, Quote } from "lucide-react";
+import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -432,74 +433,8 @@ export default function Settings() {
             </Card>
           )}
 
-          {/* Access Tier Auto-Promotion Settings */}
-          {isPrimaryOrAdmin && (
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-foreground/60" />
-                  <CardTitle>Access Tier Auto-Promotion</CardTitle>
-                </div>
-                <CardDescription>
-                  Automatically promote users to higher access tiers based on time
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Master Toggle */}
-                <div className="flex items-center justify-between p-4 border rounded-lg bg-gradient-to-r from-[#6BC4B8]/5 to-[#B08CA7]/5">
-                  <div className="space-y-1">
-                    <Label htmlFor="autoPromoteEnabled" className="font-semibold text-base">
-                      Enable Auto-Promotion
-                    </Label>
-                    <p className="text-sm text-muted-foreground">
-                      Automatically promote active users to higher access tiers
-                    </p>
-                  </div>
-                  <Switch
-                    id="autoPromoteEnabled"
-                    checked={autoPromoteEnabled}
-                    onCheckedChange={setAutoPromoteEnabled}
-                    className="data-[state=checked]:bg-[#B08CA7]"
-                  />
-                </div>
-
-                {/* Hours Input */}
-                {autoPromoteEnabled && (
-                  <div className="space-y-2 pl-4 border-l-2 border-[#B08CA7]/30">
-                    <Label htmlFor="autoPromoteHours" className="font-medium">
-                      Promotion Delay (hours)
-                    </Label>
-                    <p className="text-sm text-muted-foreground mb-2">
-                      How long to wait before auto-promoting users (1-168 hours)
-                    </p>
-                    <Input
-                      id="autoPromoteHours"
-                      type="number"
-                      min={1}
-                      max={168}
-                      value={autoPromoteHours}
-                      onChange={(e) => setAutoPromoteHours(parseInt(e.target.value) || 48)}
-                      className="max-w-xs"
-                    />
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Default: 48 hours (2 days) • Max: 168 hours (7 days)
-                    </p>
-                  </div>
-                )}
-
-                <Button
-                  onClick={handleSaveAutoPromoteSettings}
-                  disabled={updateAutoPromoteSettingsMutation.isPending}
-                  className="w-full bg-[#B08CA7] hover:bg-[#9F7B96] text-white"
-                >
-                  {updateAutoPromoteSettingsMutation.isPending ? "Saving..." : "Save Auto-Promotion Settings"}
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
           {/* Email Notification Preferences */}
-          <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Mail className="w-5 h-5 text-[#6BC4B8]" />
@@ -731,15 +666,31 @@ export default function Settings() {
           </Card>
 
           {/* User Profile */}
-          <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <User className="w-5 h-5 text-[#6BC4B8]" />
                 <CardTitle>Your Profile</CardTitle>
               </div>
-              <CardDescription>Your account information</CardDescription>
+              <CardDescription>Your account information and avatar</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-4">
+              {/* Profile Picture Section - To be implemented */}
+              <div className="flex items-center gap-4 p-4 border rounded-lg bg-white/5">
+                <UserAvatar user={user || undefined} size="xl" />
+                <div className="flex-1">
+                  <Label className="font-medium">Profile Picture</Label>
+                  <p className="text-sm text-muted-foreground">Upload your photo to personalize your profile</p>
+                </div>
+                <Button
+                  variant="outline"
+                  className="border-[#6BC4B8] text-[#6BC4B8] hover:bg-[#6BC4B8]/10"
+                >
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload
+                </Button>
+              </div>
+              
               <div>
                 <Label className="text-sm text-muted-foreground">Name</Label>
                 <p className="font-medium">{user?.name || "Not set"}</p>
