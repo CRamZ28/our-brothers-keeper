@@ -1,8 +1,9 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
-import { Users, Plus, Heart, Calendar } from "lucide-react";
+import { Users, Plus, Heart, Calendar, Quote as QuoteIcon } from "lucide-react";
 import { Link } from "wouter";
+import { useState, useEffect, useRef } from "react";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -67,19 +68,8 @@ export default function Dashboard() {
             </h1>
           </div>
 
-          {/* Optional Family Photo Placeholder - 16:9 */}
-          <div 
-            className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center"
-            style={{
-              backdropFilter: 'blur(8px)',
-              WebkitBackdropFilter: 'blur(8px)',
-              background: 'rgba(255, 255, 255, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.4)',
-              aspectRatio: '16 / 9'
-            }}
-          >
-            <p className="text-foreground/70 text-sm italic">Family photo placeholder</p>
-          </div>
+          {/* Dashboard Display - Conditional Rendering */}
+          <DashboardDisplay household={household} />
         </div>
 
         {/* Three Square Cards Grid */}
@@ -294,5 +284,152 @@ export default function Dashboard() {
         </div>
       </div>
     </DashboardLayout>
+  );
+}
+
+// Dashboard Display Components
+function DashboardDisplay({ household }: { household: any }) {
+  const displayType = household.dashboardDisplayType || "none";
+  
+  if (displayType === "none") return null;
+  
+  return (
+    <div 
+      className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center"
+      style={{
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        background: 'rgba(255, 255, 255, 0.3)',
+        border: '1px solid rgba(255, 255, 255, 0.4)',
+        aspectRatio: '16 / 9',
+        minHeight: '300px'
+      }}
+    >
+      {displayType === "photo" && <SinglePhoto photoUrl={household.photoUrl} />}
+      {displayType === "slideshow" && <PhotoSlideshow photos={household.dashboardPhotos || []} />}
+      {displayType === "quote" && (
+        <QuoteBlock 
+          quote={household.dashboardQuote} 
+          attribution={household.dashboardQuoteAttribution} 
+        />
+      )}
+      {displayType === "memory" && <FeaturedMemory memoryId={household.dashboardFeaturedMemoryId} />}
+    </div>
+  );
+}
+
+function SinglePhoto({ photoUrl }: { photoUrl?: string | null }) {
+  if (!photoUrl) {
+    return (
+      <p className="text-foreground/70 text-sm italic px-6 text-center">
+        No family photo uploaded. Add one in Settings → Household Settings.
+      </p>
+    );
+  }
+  
+  return (
+    <img 
+      src={photoUrl} 
+      alt="Family" 
+      className="w-full h-full object-cover"
+    />
+  );
+}
+
+function PhotoSlideshow({ photos }: { photos: string[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Reset state when photos array changes
+  useEffect(() => {
+    setCurrentIndex(0);
+    setIsTransitioning(false);
+  }, [photos]);
+  
+  useEffect(() => {
+    // Don't rotate if fewer than 2 photos
+    if (!photos || photos.length < 2) return;
+    
+    const interval = setInterval(() => {
+      setIsTransitioning(true);
+      timeoutRef.current = setTimeout(() => {
+        setCurrentIndex((prev) => (prev + 1) % photos.length);
+        setIsTransitioning(false);
+      }, 300); // Match transition duration
+    }, 5000); // Rotate every 5 seconds
+    
+    return () => {
+      clearInterval(interval);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [photos]);
+  
+  if (!photos || photos.length === 0) {
+    return (
+      <p className="text-foreground/70 text-sm italic px-6 text-center">
+        No slideshow photos configured. Add 3-5 photos in Settings → Dashboard Display.
+      </p>
+    );
+  }
+  
+  return (
+    <div className="w-full h-full relative">
+      <img 
+        src={photos[currentIndex]} 
+        alt={`Slideshow ${currentIndex + 1}`} 
+        className="w-full h-full object-cover transition-opacity duration-300"
+        style={{ opacity: isTransitioning ? 0.3 : 1 }}
+      />
+      {photos.length > 1 && (
+        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+          {photos.map((_, idx) => (
+            <div 
+              key={idx}
+              className="w-2 h-2 rounded-full transition-all duration-300"
+              style={{
+                backgroundColor: idx === currentIndex ? '#2DB5A8' : 'rgba(255, 255, 255, 0.5)'
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function QuoteBlock({ quote, attribution }: { quote?: string | null; attribution?: string | null }) {
+  if (!quote) {
+    return (
+      <p className="text-foreground/70 text-sm italic px-6 text-center">
+        No memorial quote configured. Add one in Settings → Dashboard Display.
+      </p>
+    );
+  }
+  
+  return (
+    <div className="px-8 py-6 text-center max-w-xl">
+      <QuoteIcon className="w-8 h-8 text-[#2DB5A8] mx-auto mb-4 opacity-60" />
+      <p className="text-foreground text-lg italic leading-relaxed mb-3">
+        "{quote}"
+      </p>
+      {attribution && (
+        <p className="text-foreground/70 text-sm font-medium">
+          — {attribution}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function FeaturedMemory({ memoryId }: { memoryId?: number | null }) {
+  // TODO: Integrate with Memory Wall to fetch and display the selected memory
+  // For now, show a placeholder message
+  return (
+    <p className="text-foreground/70 text-sm italic px-6 text-center">
+      Featured memory display coming soon. This will show a selected memory from your Memory Wall.
+    </p>
   );
 }

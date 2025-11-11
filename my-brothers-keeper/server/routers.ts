@@ -385,6 +385,76 @@ export const appRouter = router({
           slug: input.slug,
         };
       }),
+
+    // Update dashboard display settings (admin/primary only)
+    updateDashboardDisplay: protectedProcedure
+      .input(
+        z.object({
+          displayType: z.enum(["none", "photo", "slideshow", "quote", "memory"]),
+          photos: z.array(z.string()).optional(),
+          quote: z.string().optional(),
+          quoteAttribution: z.string().optional(),
+          featuredMemoryId: z.number().optional(),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No household found",
+          });
+        }
+
+        // Only admin/primary can update dashboard display
+        await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        // Validate slideshow requires 3-5 photos
+        if (input.displayType === "slideshow") {
+          if (!input.photos || input.photos.length < 3 || input.photos.length > 5) {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message: "Slideshow requires 3-5 photos",
+            });
+          }
+        }
+
+        // Validate quote requires quote text
+        if (input.displayType === "quote" && !input.quote) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Quote display requires quote text",
+          });
+        }
+
+        // Validate memory requires memory ID
+        if (input.displayType === "memory" && !input.featuredMemoryId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Memory display requires a selected memory",
+          });
+        }
+
+        // Update dashboard display settings
+        await db.updateHousehold(ctx.user.householdId, {
+          dashboardDisplayType: input.displayType,
+          dashboardPhotos: input.photos || [],
+          dashboardQuote: input.quote || null,
+          dashboardQuoteAttribution: input.quoteAttribution || null,
+          dashboardFeaturedMemoryId: input.featuredMemoryId || null,
+        });
+
+        // Create audit log
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "dashboard_display_updated",
+          targetType: "household",
+          targetId: ctx.user.householdId,
+          metadata: { displayType: input.displayType },
+        });
+
+        return { success: true };
+      }),
   }),
 
   user: router({

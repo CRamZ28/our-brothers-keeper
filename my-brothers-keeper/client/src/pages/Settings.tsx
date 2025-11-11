@@ -12,8 +12,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Bell, Home, User, LogOut, Mail, Users } from "lucide-react";
+import { Bell, Home, User, LogOut, Mail, Users, Image, Quote } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -31,6 +33,12 @@ export default function Settings() {
   const [householdSlug, setHouseholdSlug] = useState("");
   const [autoPromoteEnabled, setAutoPromoteEnabled] = useState(false);
   const [autoPromoteHours, setAutoPromoteHours] = useState(48);
+
+  const [dashboardDisplayType, setDashboardDisplayType] = useState<"none" | "photo" | "slideshow" | "quote" | "memory">("none");
+  const [dashboardPhotos, setDashboardPhotos] = useState<string[]>([]);
+  const [dashboardQuote, setDashboardQuote] = useState("");
+  const [dashboardQuoteAttribution, setDashboardQuoteAttribution] = useState("");
+  const [dashboardFeaturedMemoryId, setDashboardFeaturedMemoryId] = useState<number | null>(null);
 
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [emailNeedCreated, setEmailNeedCreated] = useState(false);
@@ -50,6 +58,11 @@ export default function Settings() {
       setHouseholdSlug(household.slug || "");
       setAutoPromoteEnabled(household.autoPromoteEnabled || false);
       setAutoPromoteHours(household.autoPromoteHours || 48);
+      setDashboardDisplayType(household.dashboardDisplayType || "none");
+      setDashboardPhotos(household.dashboardPhotos || []);
+      setDashboardQuote(household.dashboardQuote || "");
+      setDashboardQuoteAttribution(household.dashboardQuoteAttribution || "");
+      setDashboardFeaturedMemoryId(household.dashboardFeaturedMemoryId || null);
     }
   }, [household]);
 
@@ -104,6 +117,15 @@ export default function Settings() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update household page URL");
+    },
+  });
+
+  const updateDashboardDisplayMutation = trpc.household.updateDashboardDisplay.useMutation({
+    onSuccess: () => {
+      toast.success("Dashboard display settings updated!");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update dashboard display settings");
     },
   });
 
@@ -165,6 +187,35 @@ export default function Settings() {
     }
 
     updateSlugMutation.mutate({ slug: slugValue });
+  };
+
+  const handleSaveDashboardDisplay = () => {
+    // Validate based on display type
+    if (dashboardDisplayType === "slideshow") {
+      if (dashboardPhotos.length < 3 || dashboardPhotos.length > 5) {
+        toast.error("Slideshow requires 3-5 photo URLs");
+        return;
+      }
+    }
+
+    if (dashboardDisplayType === "quote" && !dashboardQuote.trim()) {
+      toast.error("Quote text is required");
+      return;
+    }
+
+    if (dashboardDisplayType === "memory" && !dashboardFeaturedMemoryId) {
+      toast.error("Please select a memory to feature");
+      return;
+    }
+
+    // Build payload based on display type
+    updateDashboardDisplayMutation.mutate({
+      displayType: dashboardDisplayType,
+      photos: dashboardDisplayType === "slideshow" ? dashboardPhotos : undefined,
+      quote: dashboardDisplayType === "quote" ? dashboardQuote : undefined,
+      quoteAttribution: dashboardDisplayType === "quote" ? dashboardQuoteAttribution : undefined,
+      featuredMemoryId: dashboardDisplayType === "memory" && dashboardFeaturedMemoryId ? dashboardFeaturedMemoryId : undefined,
+    });
   };
 
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
@@ -233,6 +284,150 @@ export default function Settings() {
                     {updateSlugMutation.isPending ? "Updating..." : "Update Page URL"}
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Dashboard Display Settings */}
+          {isPrimaryOrAdmin && (
+            <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Image className="w-5 h-5 text-[#6BC4B8]" />
+                  <CardTitle>Dashboard Display</CardTitle>
+                </div>
+                <CardDescription>
+                  Customize what appears at the top of your dashboard
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <RadioGroup
+                  value={dashboardDisplayType}
+                  onValueChange={(value: any) => {
+                    setDashboardDisplayType(value);
+                    // Clear dependent state when type changes
+                    if (value !== "slideshow") setDashboardPhotos([]);
+                    if (value !== "quote") {
+                      setDashboardQuote("");
+                      setDashboardQuoteAttribution("");
+                    }
+                    if (value !== "memory") setDashboardFeaturedMemoryId(null);
+                  }}
+                  className="space-y-3"
+                >
+                  <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/20 transition-colors">
+                    <RadioGroupItem value="none" id="display-none" className="mt-1" />
+                    <div>
+                      <Label htmlFor="display-none" className="font-medium cursor-pointer">
+                        None
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Hide this section entirely (grief-sensitive option)
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/20 transition-colors">
+                    <RadioGroupItem value="photo" id="display-photo" className="mt-1" />
+                    <div>
+                      <Label htmlFor="display-photo" className="font-medium cursor-pointer">
+                        Single Photo
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Display the family photo from Household Settings
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/20 transition-colors">
+                    <RadioGroupItem value="slideshow" id="display-slideshow" className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor="display-slideshow" className="font-medium cursor-pointer">
+                        Photo Slideshow
+                      </Label>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Rotating collection of 3-5 photos (auto-rotates every 5 seconds)
+                      </p>
+                      {dashboardDisplayType === "slideshow" && (
+                        <div className="space-y-2 mt-3">
+                          <Label className="text-sm">Photo URLs (3-5 required)</Label>
+                          {[0, 1, 2, 3, 4].map((index) => (
+                            <Input
+                              key={index}
+                              placeholder={`Photo ${index + 1} URL${index >= 3 ? " (optional)" : ""}`}
+                              value={dashboardPhotos[index] || ""}
+                              onChange={(e) => {
+                                const newPhotos = [...dashboardPhotos];
+                                if (e.target.value) {
+                                  newPhotos[index] = e.target.value;
+                                } else {
+                                  newPhotos.splice(index, 1);
+                                }
+                                setDashboardPhotos(newPhotos.filter(Boolean));
+                              }}
+                              className="text-sm"
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/20 transition-colors">
+                    <RadioGroupItem value="quote" id="display-quote" className="mt-1" />
+                    <div className="flex-1">
+                      <Label htmlFor="display-quote" className="font-medium cursor-pointer">
+                        Memorial Quote
+                      </Label>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Display a Bible verse, quote, or meaningful message
+                      </p>
+                      {dashboardDisplayType === "quote" && (
+                        <div className="space-y-3 mt-3">
+                          <div className="space-y-2">
+                            <Label className="text-sm">Quote Text *</Label>
+                            <Textarea
+                              placeholder="Enter your quote or verse..."
+                              value={dashboardQuote}
+                              onChange={(e) => setDashboardQuote(e.target.value)}
+                              rows={3}
+                              className="text-sm"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-sm">Attribution (Optional)</Label>
+                            <Input
+                              placeholder="e.g., Psalm 23:4"
+                              value={dashboardQuoteAttribution}
+                              onChange={(e) => setDashboardQuoteAttribution(e.target.value)}
+                              className="text-sm"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/20 transition-colors">
+                    <RadioGroupItem value="memory" id="display-memory" className="mt-1" />
+                    <div>
+                      <Label htmlFor="display-memory" className="font-medium cursor-pointer">
+                        Featured Memory
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Display a selected memory from your Memory Wall (Coming soon)
+                      </p>
+                    </div>
+                  </div>
+                </RadioGroup>
+
+                <Button
+                  onClick={handleSaveDashboardDisplay}
+                  disabled={updateDashboardDisplayMutation.isPending}
+                  className="w-full bg-[#6BC4B8] hover:bg-[#5AB3A8] text-white"
+                >
+                  {updateDashboardDisplayMutation.isPending ? "Saving..." : "Save Dashboard Display"}
+                </Button>
               </CardContent>
             </Card>
           )}
