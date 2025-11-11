@@ -307,7 +307,7 @@ export default function FamilyUpdates() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   {post.pinned && <Pin className="w-4 h-4 text-primary" />}
-                  <CardTitle className="text-base sm:text-lg break-words line-clamp-2">{post.title}</CardTitle>
+                  <CardTitle className="text-base sm:text-lg overflow-hidden line-clamp-2">{post.title}</CardTitle>
                   <Badge variant="secondary" className="text-xs">
                     {config.label}
                   </Badge>

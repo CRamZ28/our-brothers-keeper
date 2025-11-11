@@ -18,32 +18,43 @@ export const adminMessageRouter = router({
   // Send message to supporters
   send: adminProcedure
     .input(
-      z.object({
-        recipientType: z.enum(["individual", "group", "all"]),
-        recipientId: z.number().optional(),
-        subject: z.string().min(1),
-        body: z.string().min(1),
-        includePrimary: z.boolean(),
-      })
+      z.discriminatedUnion("recipientType", [
+        z.object({
+          recipientType: z.literal("individual"),
+          recipientUserId: z.string(),
+          subject: z.string().min(1),
+          body: z.string().min(1),
+          includePrimary: z.boolean(),
+        }),
+        z.object({
+          recipientType: z.literal("group"),
+          recipientGroupId: z.number(),
+          subject: z.string().min(1),
+          body: z.string().min(1),
+          includePrimary: z.boolean(),
+        }),
+        z.object({
+          recipientType: z.literal("all"),
+          subject: z.string().min(1),
+          body: z.string().min(1),
+          includePrimary: z.boolean(),
+        }),
+      ])
     )
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user.householdId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
       }
 
-      // Determine recipient user IDs
-      let recipientIds: number[] = [];
+      // Determine recipient user IDs and group ID for storage
+      let recipientIds: string[] = [];
+      let recipientGroupId: number | null = null;
 
       if (input.recipientType === "individual") {
-        if (!input.recipientId) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Recipient ID required" });
-        }
-        recipientIds = [input.recipientId];
+        recipientIds = [input.recipientUserId];
       } else if (input.recipientType === "group") {
-        if (!input.recipientId) {
-          throw new TRPCError({ code: "BAD_REQUEST", message: "Group ID required" });
-        }
-        const members = await db.getAdminGroupMembers(input.recipientId);
+        recipientGroupId = input.recipientGroupId;
+        const members = await db.getAdminGroupMembers(input.recipientGroupId);
         recipientIds = members.map((m) => m.userId);
       } else {
         // All supporters
@@ -69,7 +80,7 @@ export const adminMessageRouter = router({
         subject: input.subject,
         body: input.body,
         recipientType: input.recipientType,
-        recipientGroupId: input.recipientId || null,
+        recipientGroupId,
         includedPrimary: input.includePrimary,
       });
 
@@ -116,7 +127,7 @@ export const adminGroupRouter = router({
       z.object({
         name: z.string().min(1),
         description: z.string().optional(),
-        memberIds: z.array(z.number()).min(1),
+        memberIds: z.array(z.string()).min(1),
       })
     )
     .mutation(async ({ ctx, input }) => {

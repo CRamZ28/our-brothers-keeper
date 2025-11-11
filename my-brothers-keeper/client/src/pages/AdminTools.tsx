@@ -50,7 +50,8 @@ export default function AdminTools() {
   // Message dialog state
   const [messageDialogOpen, setMessageDialogOpen] = useState(false);
   const [messageRecipientType, setMessageRecipientType] = useState<"individual" | "group" | "all">("all");
-  const [messageRecipientId, setMessageRecipientId] = useState<number | null>(null);
+  const [messageRecipientUserId, setMessageRecipientUserId] = useState<string | null>(null);
+  const [messageRecipientGroupId, setMessageRecipientGroupId] = useState<number | null>(null);
   const [messageSubject, setMessageSubject] = useState("");
   const [messageBody, setMessageBody] = useState("");
   const [includePrimary, setIncludePrimary] = useState(false);
@@ -59,7 +60,7 @@ export default function AdminTools() {
   const [groupDialogOpen, setGroupDialogOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
-  const [selectedMembers, setSelectedMembers] = useState<number[]>([]);
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
 
   // Redirect if not admin
   if (user?.role !== "admin") {
@@ -102,7 +103,8 @@ export default function AdminTools() {
 
   const resetMessageForm = () => {
     setMessageRecipientType("all");
-    setMessageRecipientId(null);
+    setMessageRecipientUserId(null);
+    setMessageRecipientGroupId(null);
     setMessageSubject("");
     setMessageBody("");
     setIncludePrimary(false);
@@ -120,13 +122,38 @@ export default function AdminTools() {
       return;
     }
 
-    sendMessageMutation.mutate({
-      recipientType: messageRecipientType,
-      recipientId: messageRecipientId || undefined,
-      subject: messageSubject,
-      body: messageBody,
-      includePrimary,
-    });
+    if (messageRecipientType === "individual") {
+      if (!messageRecipientUserId) {
+        toast.error("Please select a supporter");
+        return;
+      }
+      sendMessageMutation.mutate({
+        recipientType: "individual",
+        recipientUserId: messageRecipientUserId,
+        subject: messageSubject,
+        body: messageBody,
+        includePrimary,
+      });
+    } else if (messageRecipientType === "group") {
+      if (!messageRecipientGroupId) {
+        toast.error("Please select a group");
+        return;
+      }
+      sendMessageMutation.mutate({
+        recipientType: "group",
+        recipientGroupId: messageRecipientGroupId,
+        subject: messageSubject,
+        body: messageBody,
+        includePrimary,
+      });
+    } else {
+      sendMessageMutation.mutate({
+        recipientType: "all",
+        subject: messageSubject,
+        body: messageBody,
+        includePrimary,
+      });
+    }
   };
 
   const handleCreateGroup = () => {
@@ -147,7 +174,7 @@ export default function AdminTools() {
     });
   };
 
-  const toggleMemberSelection = (userId: number) => {
+  const toggleMemberSelection = (userId: string) => {
     setSelectedMembers((prev) =>
       prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]
     );
@@ -203,7 +230,8 @@ export default function AdminTools() {
                         value={messageRecipientType}
                         onValueChange={(value: "individual" | "group" | "all") => {
                           setMessageRecipientType(value);
-                          setMessageRecipientId(null);
+                          setMessageRecipientUserId(null);
+                          setMessageRecipientGroupId(null);
                         }}
                       >
                         <SelectTrigger>
@@ -222,15 +250,15 @@ export default function AdminTools() {
                       <div className="space-y-2">
                         <Label>Select Supporter</Label>
                         <Select
-                          value={messageRecipientId?.toString() || ""}
-                          onValueChange={(value) => setMessageRecipientId(parseInt(value))}
+                          value={messageRecipientUserId || ""}
+                          onValueChange={(value) => setMessageRecipientUserId(value)}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Choose a supporter..." />
                           </SelectTrigger>
                           <SelectContent>
                             {activeUsers.map((u) => (
-                              <SelectItem key={u.id} value={u.id.toString()}>
+                              <SelectItem key={u.id} value={u.id}>
                                 {u.name || u.email}
                               </SelectItem>
                             ))}
@@ -244,8 +272,8 @@ export default function AdminTools() {
                       <div className="space-y-2">
                         <Label>Select Group</Label>
                         <Select
-                          value={messageRecipientId?.toString() || ""}
-                          onValueChange={(value) => setMessageRecipientId(parseInt(value))}
+                          value={messageRecipientGroupId?.toString() || ""}
+                          onValueChange={(value) => setMessageRecipientGroupId(parseInt(value))}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Choose a group..." />
@@ -418,7 +446,7 @@ export default function AdminTools() {
                     className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium break-words line-clamp-2">{group.name}</p>
+                      <p className="font-medium overflow-hidden line-clamp-2">{group.name}</p>
                       <p className="text-sm text-muted-foreground line-clamp-1">
                         {group.memberCount} member{group.memberCount !== 1 ? "s" : ""}
                         {group.description && ` • ${group.description}`}
@@ -434,7 +462,7 @@ export default function AdminTools() {
                         <DropdownMenuItem
                           onClick={() => {
                             setMessageRecipientType("group");
-                            setMessageRecipientId(group.id);
+                            setMessageRecipientGroupId(group.id);
                             setMessageDialogOpen(true);
                           }}
                         >

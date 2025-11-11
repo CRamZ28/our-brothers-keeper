@@ -49,7 +49,7 @@ export default function Dashboard() {
             }}
           >
             <h1 
-              className="text-2xl sm:text-3xl lg:text-[36px] font-semibold tracking-wide text-center break-words px-2"
+              className="text-2xl sm:text-3xl lg:text-[36px] font-semibold tracking-wide text-center overflow-hidden px-2"
               style={{
                 fontFamily: "'Cinzel', serif",
                 color: '#0fa9a7',

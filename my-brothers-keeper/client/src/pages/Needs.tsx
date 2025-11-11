@@ -1041,7 +1041,7 @@ export default function Needs() {
                                   </Badge>
                                 )}
                               </div>
-                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug break-words line-clamp-2">{need.title}</CardTitle>
+                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug overflow-hidden line-clamp-2">{need.title}</CardTitle>
                               {need.status === "claimed" && need.claimedByName && (
                                 <p className="text-sm text-muted-foreground mt-1">
                                   by <span className="font-medium text-foreground">{need.claimedByName}</span>
@@ -1168,7 +1168,7 @@ export default function Needs() {
                                   </Badge>
                                 )}
                               </div>
-                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug break-words line-clamp-2">{need.title}</CardTitle>
+                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug overflow-hidden line-clamp-2">{need.title}</CardTitle>
                             </div>
                           </div>
                           {(user && (need.createdById === user.id || isPrimaryOrAdmin)) && (
@@ -1277,7 +1277,7 @@ export default function Needs() {
                                   </Badge>
                                 )}
                               </div>
-                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug break-words line-clamp-2">{need.title}</CardTitle>
+                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug overflow-hidden line-clamp-2">{need.title}</CardTitle>
                               {need.claimedByName && (
                                 <p className="text-sm text-muted-foreground mt-1">
                                   by <span className="font-medium text-foreground">{need.claimedByName}</span>
@@ -1375,7 +1375,7 @@ export default function Needs() {
                                   </Badge>
                                 )}
                               </div>
-                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug break-words line-clamp-2">{need.title}</CardTitle>
+                              <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug overflow-hidden line-clamp-2">{need.title}</CardTitle>
                               {need.completedAt && (
                                 <p className="text-sm text-muted-foreground mt-1">
                                   Completed {new Date(need.completedAt).toLocaleDateString()}
