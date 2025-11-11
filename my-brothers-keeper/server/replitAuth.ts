@@ -11,6 +11,13 @@ import connectPg from "connect-pg-simple";
 import { upsertUser, getUser } from "./db";
 import type { UpsertUser } from "../drizzle/schema";
 
+// Extend Express session to include returnTo property
+declare module "express-session" {
+  interface SessionData {
+    returnTo?: string;
+  }
+}
+
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
 }
@@ -129,6 +136,18 @@ export async function setupAuth(app: Express) {
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
   app.get("/api/login", (req, res, next) => {
+    // Store intended redirect path in session if provided (e.g., /theramseys for household join)
+    // Security: Only allow same-origin relative paths (must start with /)
+    if (req.query.redirect && typeof req.query.redirect === "string") {
+      const redirect = req.query.redirect;
+      
+      // Validate redirect is a safe, same-origin path
+      // Must start with '/' and not contain '//' (to prevent protocol-relative URLs)
+      if (redirect.startsWith("/") && !redirect.includes("//")) {
+        req.session.returnTo = redirect;
+      }
+    }
+    
     const domain = getDomainForHost(req.hostname);
     passport.authenticate(`replitauth:${domain}`, {
       prompt: "login consent",
@@ -139,9 +158,18 @@ export async function setupAuth(app: Express) {
   app.get("/api/callback", (req, res, next) => {
     const domain = getDomainForHost(req.hostname);
     passport.authenticate(`replitauth:${domain}`, {
-      successReturnToOrRedirect: "/",
       failureRedirect: "/api/login",
-    })(req, res, next);
+    })(req, res, (err: any) => {
+      if (err) {
+        return next(err);
+      }
+      
+      // Check for stored redirect path in session
+      const redirectTo = req.session.returnTo || "/";
+      delete req.session.returnTo; // Clean up session
+      
+      res.redirect(redirectTo);
+    });
   });
 
   app.get("/api/logout", (req, res) => {

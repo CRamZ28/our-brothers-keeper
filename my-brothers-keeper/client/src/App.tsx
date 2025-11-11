@@ -18,6 +18,7 @@ import MealTrain from "./pages/MealTrain";
 import MemoryWall from "./pages/MemoryWall";
 import GiftRegistry from "./pages/GiftRegistry";
 import Reminders from "./pages/Reminders";
+import JoinHousehold from "./pages/JoinHousehold";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -44,6 +45,8 @@ function Router() {
       <Route path={"/invite/:token"} component={AcceptInvite} />
       <Route path={"/admin"} component={AdminTools} />
       <Route path={"/404"} component={NotFound} />
+      {/* Public household join page - must be near end to avoid matching other routes */}
+      <Route path={"/:slug"} component={JoinHousehold} />
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
