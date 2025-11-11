@@ -475,7 +475,7 @@ export default function People() {
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-600">
                       Admins can help manage events and needs
                     </p>
                   </div>
@@ -497,7 +497,7 @@ export default function People() {
                       onChange={(e) => setInviteMessage(e.target.value)}
                       rows={3}
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-600">
                       AI will help enhance your message to make it warm and welcoming
                     </p>
                   </div>
