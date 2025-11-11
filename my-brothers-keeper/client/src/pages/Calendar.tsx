@@ -699,7 +699,7 @@ export default function Calendar() {
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
                               <div className="flex items-center gap-2 mb-2">
-                                <CardTitle className="text-xl">{event.title}</CardTitle>
+                                <CardTitle className="text-lg sm:text-xl break-words line-clamp-2">{event.title}</CardTitle>
                                 {isTodayEvent && (
                                   <Badge variant="default" className="bg-primary">
                                     Today
@@ -816,7 +816,7 @@ export default function Calendar() {
                   {pastEvents.map((event) => (
                     <GlassCard key={event.id} className="opacity-75">
                       <CardHeader>
-                        <CardTitle className="text-lg">{event.title}</CardTitle>
+                        <CardTitle className="text-base sm:text-lg break-words line-clamp-2">{event.title}</CardTitle>
                         <CardDescription>
                           {new Date(event.startAt).toLocaleDateString("en-US", {
                             weekday: "long",

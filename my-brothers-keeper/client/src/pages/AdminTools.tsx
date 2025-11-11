@@ -417,9 +417,9 @@ export default function AdminTools() {
                     key={group.id}
                     className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                   >
-                    <div className="flex-1">
-                      <p className="font-medium">{group.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium break-words line-clamp-2">{group.name}</p>
+                      <p className="text-sm text-muted-foreground line-clamp-1">
                         {group.memberCount} member{group.memberCount !== 1 ? "s" : ""}
                         {group.description && ` • ${group.description}`}
                       </p>

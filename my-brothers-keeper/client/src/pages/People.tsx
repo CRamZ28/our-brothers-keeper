@@ -900,8 +900,8 @@ export default function People() {
                   {groups.map((group) => (
                     <div key={group.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors relative group/card">
                       <div className="pr-8">
-                        <h3 className="font-medium">{group.name}</h3>
-                        <p className="text-sm text-muted-foreground mt-1">{group.description}</p>
+                        <h3 className="font-medium text-base sm:text-lg break-words line-clamp-2">{group.name}</h3>
+                        <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{group.description}</p>
                         <p className="text-xs text-muted-foreground mt-2">
                           {group.memberCount || 0} {group.memberCount === 1 ? "member" : "members"}
                         </p>

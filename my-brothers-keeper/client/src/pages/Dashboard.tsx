@@ -49,7 +49,7 @@ export default function Dashboard() {
             }}
           >
             <h1 
-              className="text-[36px] font-semibold tracking-wide"
+              className="text-2xl sm:text-3xl lg:text-[36px] font-semibold tracking-wide text-center break-words px-2"
               style={{
                 fontFamily: "'Cinzel', serif",
                 color: '#0fa9a7',
@@ -59,7 +59,7 @@ export default function Dashboard() {
               {household.name.split(' ').map((word, idx) => (
                 <span key={idx}>
                   {idx > 0 && ' '}
-                  <span className="text-[48px]" style={{ color: '#1fb5b0' }}>
+                  <span className="text-3xl sm:text-4xl lg:text-[48px]" style={{ color: '#1fb5b0' }}>
                     {word.charAt(0).toUpperCase()}
                   </span>
                   {word.slice(1).toLowerCase()}
