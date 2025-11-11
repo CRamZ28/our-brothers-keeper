@@ -359,8 +359,8 @@ export default function Calendar() {
                   : "hover:bg-white/20"
                 }
               >
-                <CalendarDays className="w-4 h-4 mr-2" />
-                Calendar
+                <CalendarDays className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">Calendar</span>
               </Button>
               <Button
                 variant="ghost"
@@ -371,8 +371,8 @@ export default function Calendar() {
                   : "hover:bg-white/20"
                 }
               >
-                <List className="w-4 h-4 mr-2" />
-                List
+                <List className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">List</span>
               </Button>
             </div>
 
@@ -614,6 +614,7 @@ export default function Calendar() {
                           {dayEvents.slice(0, 3).map((event) => {
                             const eventDate = new Date(event.startAt);
                             const isPastEvent = eventDate < new Date();
+                            const userIsGoing = event.userRsvpStatus === 'going';
                             
                             return (
                               <div
@@ -624,7 +625,7 @@ export default function Calendar() {
                                     : "text-white"
                                 }`}
                                 style={isPastEvent ? undefined : {
-                                  background: 'rgba(176, 140, 167, 0.7)'
+                                  background: userIsGoing ? 'rgba(45, 181, 168, 0.7)' : 'rgba(176, 140, 167, 0.7)'
                                 }}
                                 title={event.title}
                                 onClick={(e) => {
@@ -690,8 +691,10 @@ export default function Calendar() {
                       format(startDate, "yyyy-MM-dd") ===
                       format(addMonths(new Date(), 0).setDate(new Date().getDate() + 1), "yyyy-MM-dd");
 
+                    const userIsGoing = event.userRsvpStatus === 'going';
+                    
                     return (
-                      <GlassCard key={event.id} className={`card-elevated hover-lift ${isTodayEvent ? "border-primary border-2 accent-bar-teal relative" : ""}`}>
+                      <GlassCard key={event.id} className={`card-elevated hover-lift ${isTodayEvent ? "border-primary border-2 relative" : ""} ${userIsGoing ? "accent-bar-teal" : ""}`}>
                         <CardHeader>
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1">
@@ -703,6 +706,11 @@ export default function Calendar() {
                                   </Badge>
                                 )}
                                 {isTomorrow && <Badge variant="secondary">Tomorrow</Badge>}
+                                {userIsGoing && (
+                                  <Badge className="bg-[#2DB5A8] hover:bg-[#2DB5A8]">
+                                    You're Going
+                                  </Badge>
+                                )}
                                 {event.capacity && (
                                   <Badge variant="outline" className="gap-1">
                                     <Users className="w-3 h-3" />
@@ -849,8 +857,10 @@ export default function Calendar() {
                   <p>No events scheduled for today. Enjoy your day!</p>
                 </div>
               ) : (
-                getTodaysEvents().map(event => (
-                  <GlassCard key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                getTodaysEvents().map(event => {
+                  const userIsGoing = event.userRsvpStatus === 'going';
+                  return (
+                  <GlassCard key={event.id} className={`card-elevated hover-lift cursor-pointer ${userIsGoing ? 'accent-bar-teal' : ''}`} onClick={() => {
                     setTodayEventsDialogOpen(false);
                     setSelectedEvent(event.id);
                     setEventDetailOpen(true);
@@ -890,8 +900,9 @@ export default function Calendar() {
                       </CardContent>
                     )}
                   </GlassCard>
-                ))
-              )}
+                  );
+                }))
+              }
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setTodayEventsDialogOpen(false)}>
@@ -933,8 +944,11 @@ export default function Calendar() {
                   )}
                 </div>
               ) : (
-                selectedDayDate && getEventsForDay(selectedDayDate).map(event => (
-                  <GlassCard key={event.id} className="card-elevated hover-lift accent-bar-teal cursor-pointer" onClick={() => {
+                selectedDayDate && getEventsForDay(selectedDayDate).map(event => {
+                  const userIsGoing = event.userRsvpStatus === 'going';
+                  const isPastEvent = new Date(event.startAt) < new Date();
+                  return (
+                  <GlassCard key={event.id} className={`card-elevated hover-lift cursor-pointer ${!isPastEvent && userIsGoing ? 'accent-bar-teal' : ''}`} onClick={() => {
                     setDayEventsDialogOpen(false);
                     setSelectedEvent(event.id);
                     setEventDetailOpen(true);
@@ -974,8 +988,9 @@ export default function Calendar() {
                       </CardContent>
                     )}
                   </GlassCard>
-                ))
-              )}
+                  );
+                }))
+              }
             </div>
             <DialogFooter>
               {isPrimaryOrAdmin && selectedDayDate && (

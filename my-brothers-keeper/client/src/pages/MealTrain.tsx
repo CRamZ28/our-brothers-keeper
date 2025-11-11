@@ -168,20 +168,30 @@ export default function MealTrain() {
                 }
               />
             )}
-            <div className="flex bg-muted p-1 rounded-md">
+            <div className="flex items-center gap-2 bg-muted/30 p-1 rounded-lg">
               <Button
-                variant={view === "calendar" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setView("calendar")}
+                className={view === "calendar" 
+                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  : "hover:bg-white/20"
+                }
               >
-                <CalendarIcon className="w-4 h-4" />
+                <CalendarIcon className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">Calendar</span>
               </Button>
               <Button
-                variant={view === "list" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setView("list")}
+                className={view === "list" 
+                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  : "hover:bg-white/20"
+                }
               >
-                <List className="w-4 h-4" />
+                <List className="w-4 h-4 md:mr-2" />
+                <span className="hidden md:inline">List</span>
               </Button>
             </div>
           </div>
@@ -233,6 +243,7 @@ export default function MealTrain() {
                   {daysInMonth.map((date) => {
                     const capacityInfo = getDateCapacityInfo(date);
                     const isPast = date < new Date() && !isSameDay(date, new Date());
+                    const userHasSignedUp = capacityInfo.signups.some(s => s.userId === user?.id);
 
                     return (
                       <div
@@ -248,7 +259,7 @@ export default function MealTrain() {
                             <Badge 
                               variant="outline" 
                               className="text-xs border-white text-white font-medium"
-                              style={{ background: 'rgba(176, 140, 167, 0.7)' }}
+                              style={{ background: userHasSignedUp ? 'rgba(45, 181, 168, 0.7)' : 'rgba(176, 140, 167, 0.7)' }}
                             >
                               {capacityInfo.capacity > 1
                                 ? `${capacityInfo.remaining} of ${capacityInfo.capacity} left`
@@ -263,7 +274,7 @@ export default function MealTrain() {
                                     : "text-white"
                                 }`}
                                 style={isPast ? undefined : {
-                                  background: 'rgba(176, 140, 167, 0.7)'
+                                  background: userHasSignedUp ? 'rgba(45, 181, 168, 0.7)' : 'rgba(176, 140, 167, 0.7)'
                                 }}
                               >
                                 {capacityInfo.capacity > 1 ? "Full" : "Filled"}
