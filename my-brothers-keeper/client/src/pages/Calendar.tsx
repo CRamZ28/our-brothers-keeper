@@ -351,17 +351,19 @@ export default function Calendar() {
             {/* View Toggle */}
             <div className="flex items-center gap-1 bg-muted p-1 rounded-lg">
               <Button
-                variant={view === "calendar" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setView("calendar")}
+                className={view === "calendar" ? "bg-[rgba(176,140,167,0.7)] text-white hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
                 <CalendarDays className="w-4 h-4 mr-2" />
                 Calendar
               </Button>
               <Button
-                variant={view === "list" ? "default" : "ghost"}
+                variant="ghost"
                 size="sm"
                 onClick={() => setView("list")}
+                className={view === "list" ? "bg-[rgba(176,140,167,0.7)] text-white hover:bg-[rgba(176,140,167,0.8)]" : ""}
               >
                 <List className="w-4 h-4 mr-2" />
                 List
