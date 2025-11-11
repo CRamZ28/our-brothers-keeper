@@ -45,6 +45,7 @@ export const mealSignupStatusEnum = pgEnum("meal_signup_status", ["pending", "co
 export const notificationTypeEnum = pgEnum("notification_type", [
   "need_created",
   "need_claimed",
+  "need_unclaimed",
   "need_completed",
   "event_created",
   "event_rsvp",
@@ -548,6 +549,7 @@ export const notificationPreferences = pgTable("notification_preferences", {
   emailEnabled: boolean("email_enabled").default(false).notNull(),
   emailNeedCreated: boolean("email_need_created").default(false).notNull(),
   emailNeedClaimed: boolean("email_need_claimed").default(false).notNull(),
+  emailNeedUnclaimed: boolean("email_need_unclaimed").default(false).notNull(),
   emailNeedCompleted: boolean("email_need_completed").default(false).notNull(),
   emailEventCreated: boolean("email_event_created").default(false).notNull(),
   emailEventRsvp: boolean("email_event_rsvp").default(false).notNull(),
@@ -561,6 +563,7 @@ export const notificationPreferences = pgTable("notification_preferences", {
   pushEnabled: boolean("push_enabled").default(false).notNull(),
   pushNeedCreated: boolean("push_need_created").default(false).notNull(),
   pushNeedClaimed: boolean("push_need_claimed").default(false).notNull(),
+  pushNeedUnclaimed: boolean("push_need_unclaimed").default(false).notNull(),
   pushNeedCompleted: boolean("push_need_completed").default(false).notNull(),
   pushEventCreated: boolean("push_event_created").default(false).notNull(),
   pushEventRsvp: boolean("push_event_rsvp").default(false).notNull(),

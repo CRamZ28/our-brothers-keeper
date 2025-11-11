@@ -53,6 +53,7 @@ import {
   Trash2,
   Truck,
   Utensils,
+  X,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -134,6 +135,16 @@ export default function Needs() {
     },
     onError: (error) => {
       toast.error(error.message || "Failed to claim need");
+    },
+  });
+
+  const unclaimNeedMutation = trpc.needs.releaseClaim.useMutation({
+    onSuccess: () => {
+      toast.success("Claim released successfully.");
+      refetchNeeds();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to release claim");
     },
   });
 
@@ -1268,10 +1279,25 @@ export default function Needs() {
                           <p className="text-sm text-muted-foreground">{need.details}</p>
                         </CardContent>
                       )}
-                      <CardFooter>
+                      <CardFooter className="flex gap-2">
+                        {need.currentUserClaimId && (
+                          <Button
+                            variant="outline"
+                            className="flex-1"
+                            onClick={() => {
+                              if (confirm("Are you sure you want to release this claim? This will make the need available for others to claim.")) {
+                                unclaimNeedMutation.mutate({ claimId: need.currentUserClaimId });
+                              }
+                            }}
+                            disabled={unclaimNeedMutation.isPending}
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            Unclaim
+                          </Button>
+                        )}
                         <Button
                           variant="outline"
-                          className="w-full"
+                          className={need.currentUserClaimId ? "flex-1" : "w-full"}
                           onClick={() => {
                             setSelectedNeedId(need.id);
                             setCompleteDialogOpen(true);

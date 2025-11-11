@@ -38,6 +38,7 @@ export async function notifyVisibleUsers(
     const notificationTypePreferenceMap: Record<NotificationType, string> = {
       need_created: 'emailNeedCreated',
       need_claimed: 'emailNeedClaimed',
+      need_unclaimed: 'emailNeedUnclaimed',
       need_completed: 'emailNeedCompleted',
       event_created: 'emailEventCreated',
       event_rsvp: 'emailEventRsvp',

@@ -557,10 +557,19 @@ export async function getNeedsByHousehold(householdId: number) {
         claimedByName: row.claimer?.name || null,
         claimedByUserId: row.claimer?.id || null,
         claimCount: 0,
+        claims: [], // Store all claims for this need
       });
     }
     if (row.claim) {
       needsMap.get(needId).claimCount++;
+      // Store the claim details
+      needsMap.get(needId).claims.push({
+        id: row.claim.id,
+        userId: row.claim.userId,
+        status: row.claim.status,
+        note: row.claim.note,
+        createdAt: row.claim.createdAt,
+      });
       // For single-claim needs, store the claimer name
       if (!needsMap.get(needId).claimedByName && row.claimer) {
         needsMap.get(needId).claimedByName = row.claimer.name;

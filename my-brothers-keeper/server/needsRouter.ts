@@ -23,7 +23,16 @@ export const needsRouter = router({
       ctx.user.householdId
     );
 
-    return visibleNeeds;
+    // Add currentUserClaimId for each need
+    const needsWithUserClaim = visibleNeeds.map(need => {
+      const userClaim = need.claims?.find((claim: any) => claim.userId === ctx.user.id && claim.status === 'claimed');
+      return {
+        ...need,
+        currentUserClaimId: userClaim?.id || null,
+      };
+    });
+
+    return needsWithUserClaim;
   }),
 
   // Get a single need with claims
@@ -586,6 +595,24 @@ export const needsRouter = router({
         targetId: input.claimId,
         metadata: {},
       });
+
+      // Send notification to primary/admin users immediately
+      const allMembers = await db.getUsersByHousehold(ctx.user.householdId);
+      const adminUserIds = allMembers
+        .filter(m => m.role === "primary" || m.role === "admin")
+        .map(m => m.id);
+
+      notifyVisibleUsers(
+        ctx.user.householdId,
+        adminUserIds,
+        "need_unclaimed",
+        {
+          needTitle: need.title,
+          unclaimerName: ctx.user.name,
+          actionUrl: `${process.env.REPL_HOME || ""}/needs`,
+        },
+        [ctx.user.id]
+      ).catch((err: Error) => console.error("Failed to send need_unclaimed notification:", err));
 
       return { success: true };
     }),

@@ -8,6 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 export type NotificationType =
   | 'need_created'
   | 'need_claimed'
+  | 'need_unclaimed'
   | 'need_completed'
   | 'event_created'
   | 'event_rsvp'
@@ -65,6 +66,17 @@ function getEmailTemplate(type: NotificationType, context: EmailContext): { subj
           <h3 style="margin: 0 0 10px 0; color: #6BC4B8;">${context.needTitle}</h3>
         </div>
         <p>Thank you for being part of this caring community!</p>
+      `
+    },
+    need_unclaimed: {
+      subject: `⚠️ Support Request Available Again: ${context.needTitle}`,
+      body: `
+        <p>Hi ${context.recipientName},</p>
+        <p><strong>${context.unclaimerName}</strong> has released their claim on the following support request:</p>
+        <div style="background: #fff4e6; padding: 15px; border-left: 4px solid #f59e0b; margin: 20px 0;">
+          <h3 style="margin: 0 0 10px 0; color: #f59e0b;">${context.needTitle}</h3>
+        </div>
+        <p>This request is now available again if someone else would like to help. Thank you for your flexibility and understanding!</p>
       `
     },
     need_completed: {
