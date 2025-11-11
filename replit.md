@@ -89,7 +89,15 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
         - Manage all household settings and configurations
         - Approve or deny access tier upgrade requests
         - Configure auto-promotion settings (enable/disable, hours threshold)
-- **Invitation System**: Secure supporter onboarding.
+- **Invitation System**: Secure supporter onboarding with public household pages.
+    - **Public Household Pages**: Each household has a customizable slug-based URL (e.g., `www.obkapp.com/theramseys`)
+    - **Slug Management**: Admin/primary users can customize household slugs in Settings (alphanumeric + hyphens, min 3 chars)
+    - **Auto-Generated Slugs**: New households automatically receive slugs based on household name during creation
+    - **Join Flow**: Anyone can visit a household page, view basic info (name, description, photo), and join with Community tier access
+    - **Tier Selection**: Users select their relationship (Family/Friend/Community) when joining, creating a tier upgrade request if needed
+    - **Login Redirect**: Unauthenticated visitors can click "Join" and are redirected back to the household page after authentication
+    - **Invite Links**: Email/phone invitations now send household page URLs instead of token-based links for easy sharing
+    - **Security**: Login redirect validates paths to prevent open redirect attacks; public endpoint only exposes safe household data
 - **Notification System**: Opt-in email notifications for 14 event types, configurable by users.
     - Role-sensitive defaults: Admin/primary users automatically receive unclaim notifications with email enabled by default
     - Supporters must opt in to all notification types
