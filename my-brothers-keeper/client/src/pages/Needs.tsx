@@ -35,6 +35,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { QuestionDialog } from "@/components/QuestionDialog";
+import { ReminderDialog } from "@/components/ReminderDialog";
 import { trpc } from "@/lib/trpc";
 import {
   AlertCircle,
@@ -1547,12 +1548,20 @@ export default function Needs() {
                 </>
               )}
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
-                Close
-              </Button>
+            <DialogFooter className="flex-col sm:flex-row gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button variant="outline" onClick={() => setDetailsDialogOpen(false)}>
+                  Close
+                </Button>
+                {selectedNeedDetails && selectedNeedDetails.dueAt && (
+                  <ReminderDialog
+                    targetType="need"
+                    targetId={selectedNeedDetails.id}
+                  />
+                )}
+              </div>
               {selectedNeedDetails && (
-                <>
+                <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
                   {user && (selectedNeedDetails.createdById === user.id || isPrimaryOrAdmin) && (
                     <Button
                       variant="secondary"
@@ -1583,7 +1592,7 @@ export default function Needs() {
                       ? "Past Due"
                       : "I Can Help"}
                   </Button>
-                </>
+                </div>
               )}
             </DialogFooter>
           </DialogContent>
