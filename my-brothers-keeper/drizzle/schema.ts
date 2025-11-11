@@ -65,6 +65,7 @@ export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story",
 export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
 export const eventTypeEnum = pgEnum("event_type", ["regular", "birthday", "anniversary", "milestone", "holiday"]);
 export const accessTierEnum = pgEnum("access_tier", ["community", "friend", "family"]);
+export const dashboardDisplayTypeEnum = pgEnum("dashboard_display_type", ["none", "photo", "slideshow", "quote", "memory"]);
 
 /**
  * Core user table backing auth flow.
@@ -117,6 +118,11 @@ export const households = pgTable("households", {
   delegateAdminApprovals: boolean("delegate_admin_approvals").default(false).notNull(),
   autoPromoteEnabled: boolean("auto_promote_enabled").default(false).notNull(),
   autoPromoteHours: integer("auto_promote_hours").default(48).notNull(),
+  dashboardDisplayType: dashboardDisplayTypeEnum("dashboard_display_type").default("none").notNull(),
+  dashboardPhotos: jsonb("dashboard_photos").$type<string[]>().default([]),
+  dashboardQuote: text("dashboard_quote"),
+  dashboardQuoteAttribution: text("dashboard_quote_attribution"),
+  dashboardFeaturedMemoryId: integer("dashboard_featured_memory_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
