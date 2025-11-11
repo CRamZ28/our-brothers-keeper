@@ -108,6 +108,7 @@ export type InsertUser = typeof users.$inferInsert;
 export const households = pgTable("households", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
   photoUrl: text("photo_url"),
   description: text("description"),
   primaryUserId: varchar("primary_user_id").notNull(),
@@ -120,6 +121,7 @@ export const households = pgTable("households", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   primaryUserIdx: index("households_primary_user_idx").on(table.primaryUserId),
+  slugIdx: uniqueIndex("households_slug_idx").on(table.slug),
 }));
 
 export type Household = typeof households.$inferSelect;
