@@ -10,8 +10,10 @@ export type NotificationType =
   | 'need_claimed'
   | 'need_unclaimed'
   | 'need_completed'
+  | 'need_reminder'
   | 'event_created'
   | 'event_rsvp'
+  | 'event_reminder'
   | 'meal_train_signup'
   | 'meal_train_cancelled'
   | 'new_message'
@@ -168,6 +170,33 @@ function getEmailTemplate(type: NotificationType, context: EmailContext): { subj
           ${context.updateTitle ? `<h3 style="margin: 0 0 10px 0; color: #B08CA7;">${context.updateTitle}</h3>` : ''}
           <p style="margin: 0;">${context.updateBody}</p>
         </div>
+      `
+    },
+    need_reminder: {
+      subject: `🔔 Reminder: ${context.needTitle} is coming up`,
+      body: `
+        <p>Hi ${context.recipientName},</p>
+        <p>This is a friendly reminder about an upcoming support need you set a reminder for:</p>
+        <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #6BC4B8; margin: 20px 0;">
+          <h3 style="margin: 0 0 10px 0; color: #6BC4B8;">${context.needTitle}</h3>
+          <p style="margin: 0;">${context.needDescription}</p>
+          <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;"><strong>Due:</strong> ${context.needDueDate}</p>
+        </div>
+        <p>Click the button below to view the details.</p>
+      `
+    },
+    event_reminder: {
+      subject: `🔔 Reminder: ${context.eventTitle} is coming up`,
+      body: `
+        <p>Hi ${context.recipientName},</p>
+        <p>This is a friendly reminder about an upcoming event you set a reminder for:</p>
+        <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #B08CA7; margin: 20px 0;">
+          <h3 style="margin: 0 0 10px 0; color: #B08CA7;">${context.eventTitle}</h3>
+          ${context.eventDescription ? `<p style="margin: 0;">${context.eventDescription}</p>` : ''}
+          <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;"><strong>When:</strong> ${context.eventStartTime}</p>
+          ${context.eventLocation ? `<p style="margin: 5px 0 0 0; color: #666; font-size: 14px;"><strong>Where:</strong> ${context.eventLocation}</p>` : ''}
+        </div>
+        <p>Click the button below to view the event details.</p>
       `
     },
     invite_sent: {
