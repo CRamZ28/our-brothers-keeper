@@ -225,7 +225,7 @@ export default function Settings() {
       <GlassPageLayout title="Settings">
         {/* Household Settings */}
           {isPrimaryOrAdmin && (
-            <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Home className="w-5 h-5 text-[#6BC4B8]" />
@@ -290,7 +290,7 @@ export default function Settings() {
 
           {/* Dashboard Display Settings */}
           {isPrimaryOrAdmin && (
-            <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Image className="w-5 h-5 text-[#6BC4B8]" />
@@ -434,7 +434,7 @@ export default function Settings() {
 
           {/* Access Tier Auto-Promotion Settings */}
           {isPrimaryOrAdmin && (
-            <Card className="bg-white/90 backdrop-blur-md shadow-lg border-white/50">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-foreground/60" />
