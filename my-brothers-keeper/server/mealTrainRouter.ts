@@ -17,32 +17,21 @@ export const mealTrainRouter = router({
       return null;
     }
 
-    // Check if user can see the meal train
-    const canViewMealTrain = await checkMealTrainVisibility(
+    // Check if user can see the meal train using unified visibility helper
+    const visibleMealTrains = await filterByVisibility(
+      [mealTrain],
       ctx.user.id,
       ctx.user.role,
       ctx.user.accessTier,
-      ctx.user.householdId,
-      mealTrain
+      ctx.user.householdId
     );
 
-    if (!canViewMealTrain) {
+    if (visibleMealTrains.length === 0) {
       return null;
     }
 
-    // Check if user can see the address
-    const canSeeAddress = await checkAddressVisibility(
-      ctx.user.id,
-      ctx.user.role,
-      ctx.user.householdId,
-      mealTrain
-    );
-
-    // Return meal train with address only if user has permission
-    return {
-      ...mealTrain,
-      location: canSeeAddress ? mealTrain.location : null,
-    };
+    // Return meal train with full location - address is visible to anyone who can see the meal train
+    return visibleMealTrains[0];
   }),
 
   // Get all meal signups for the household's meal train
@@ -56,16 +45,16 @@ export const mealTrainRouter = router({
       return [];
     }
 
-    // Check if user can see the meal train
-    const canViewMealTrain = await checkMealTrainVisibility(
+    // Check if user can see the meal train using unified visibility helper
+    const visibleMealTrains = await filterByVisibility(
+      [mealTrain],
       ctx.user.id,
       ctx.user.role,
       ctx.user.accessTier,
-      ctx.user.householdId,
-      mealTrain
+      ctx.user.householdId
     );
 
-    if (!canViewMealTrain) {
+    if (visibleMealTrains.length === 0) {
       throw new TRPCError({
         code: "FORBIDDEN",
         message: "You do not have permission to view this meal train",
@@ -213,16 +202,16 @@ export const mealTrainRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Meal train not configured" });
       }
 
-      // Check if user can see the meal train
-      const canViewMealTrain = await checkMealTrainVisibility(
+      // Check if user can see the meal train using unified visibility helper
+      const visibleMealTrains = await filterByVisibility(
+        [mealTrain],
         ctx.user.id,
         ctx.user.role,
         ctx.user.accessTier,
-        ctx.user.householdId,
-        mealTrain
+        ctx.user.householdId
       );
 
-      if (!canViewMealTrain) {
+      if (visibleMealTrains.length === 0) {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "You do not have permission to volunteer for this meal train",

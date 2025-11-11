@@ -19,11 +19,12 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Family Name Font**: Cinzel serif with large cap first letters (48px #1fb5b0) and small caps for remaining letters (36px #0fa9a7), wide tracking with enhanced teal drop-shadow glow for prominent focal point display
 - **Glass Components**: Reusable glass primitives (GlassCard, GlassButton, GlassBadge) in `client/src/components/ui/glass.tsx` with teal/mauve color tokens
 - **Page Layout**: GlassPageLayout wrapper (`client/src/components/GlassPageLayout.tsx`) provides consistent structure with PageHeader, title, and actions slots
-- **Visibility Controls**: Standardized 3-option model across all features (Needs, Events, Messages):
+- **Visibility Controls**: Standardized 3-option model across all features (Needs, Events, Messages, Meal Train):
   - **Everyone**: Share with all supporters (all family/friend/community tier members)
   - **Specific Groups**: Select from any custom household groups (group names don't affect functionality)
   - **Custom**: Select specific people individually
   - Group names are fully customizable - the dropdown shows all groups created on the People page
+  - Meal Train: Address/location visibility follows meal train visibility - anyone who can see the meal train can see the location
 
 ## System Architecture
 The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
@@ -55,7 +56,9 @@ The UI/UX features a glassmorphism design system with consistent teal gradient:
     - Day scheduling system with quick selection options.
     - Configurable "Days Ahead Control" for sign-ups.
     - Daily capacity controls and per-day overrides.
-    - Dual-layer privacy and dietary preference management.
+    - Standardized 3-option visibility model (Everyone/Specific Groups/Custom) matching Needs/Events/Messages.
+    - Address visibility follows meal train visibility - anyone who can see the meal train can see the location.
+    - Dietary preference management.
 - **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
 - **Needs Board**: Community support requests with group filtering.
     - **Unclaim Functionality**: Users can release claimed needs if they can no longer fulfill them, with immediate email notifications to admin/primary users
