@@ -111,46 +111,41 @@ export default function Dashboard() {
 
             {/* Preview items */}
             <div className="flex-1 space-y-3 mb-6">
-              <div 
-                className="p-4 rounded-lg text-center"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.3)'
-                }}
-              >
-                <Users className="w-8 h-8 text-foreground/60 mx-auto mb-2" />
-                <p className="text-sm font-medium text-foreground">Invite friends & family</p>
-                <p className="text-xs text-foreground/70 mt-1">Build your support network</p>
-              </div>
+              <Link href="/people?invite=true">
+                <div 
+                  className="p-4 rounded-lg text-center cursor-pointer transition-all duration-200"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.45)';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <Users className="w-8 h-8 text-foreground/60 mx-auto mb-2" />
+                  <p className="text-sm font-medium text-foreground">Invite friends & family</p>
+                  <p className="text-xs text-foreground/70 mt-1">Build your support network</p>
+                </div>
+              </Link>
             </div>
 
-            {/* Buttons at bottom */}
-            <div className="space-y-2">
-              <Link href="/people?invite=true">
-                <button 
-                  className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-                  style={{
-                    backgroundColor: '#2DB5A8',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#26a399'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2DB5A8'}
-                >
-                  <Plus className="w-4 h-4" />
-                  Invite Supporters
-                </button>
-              </Link>
-              <Link href="/people">
-                <button 
-                  className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
-                  style={{
-                    backgroundColor: '#B08CA7',
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
-                >
-                  View All
-                </button>
-              </Link>
-            </div>
+            {/* Button at bottom */}
+            <Link href="/people">
+              <button 
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#B08CA7',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+              >
+                View All
+              </button>
+            </Link>
           </div>
 
           {/* Card 2: Open Needs */}
