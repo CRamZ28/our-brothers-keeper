@@ -10,6 +10,7 @@ import { serveStatic, setupVite } from "./vite";
 import uploadRouter from "../uploadRouter";
 import { getUser } from "../db";
 import { processAutoPromotions } from "../autoPromotion";
+import { processReminders } from "../reminderProcessor";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -102,13 +103,34 @@ async function startServer() {
         });
     }, 3600000);
     
-    // Clean up interval on server shutdown
+    // Set up reminder processing background job
+    // Run once on startup to catch any pending reminders
+    processReminders()
+      .then(() => {
+        console.log("[Reminders] Initial reminder check completed");
+      })
+      .catch((error) => {
+        console.error("[Reminders] Error during initial reminder check:", error);
+      });
+    
+    // Run every 15 minutes (900000ms) for timely reminder delivery
+    const reminderInterval = setInterval(() => {
+      processReminders()
+        .catch((error) => {
+          console.error("[Reminders] Error during scheduled reminder processing:", error);
+        });
+    }, 900000);
+    
+    // Clean up intervals on server shutdown
     process.on('SIGTERM', () => {
       console.log('[AutoPromotion] Cleaning up auto-promotion interval');
+      console.log('[Reminders] Cleaning up reminder interval');
       clearInterval(autoPromotionInterval);
+      clearInterval(reminderInterval);
     });
     
     console.log("[AutoPromotion] Background job scheduled to run every hour");
+    console.log("[Reminders] Background job scheduled to run every 15 minutes");
   });
 }
 
