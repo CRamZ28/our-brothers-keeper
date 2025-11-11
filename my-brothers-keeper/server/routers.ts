@@ -67,6 +67,29 @@ export const appRouter = router({
   }),
 
   household: router({
+    // Public endpoint to get household info by slug (for public join page)
+    getBySlug: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        const household = await db.getHouseholdBySlug(input.slug);
+
+        if (!household) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Household not found",
+          });
+        }
+
+        // Return only public-safe information
+        return {
+          id: household.id,
+          name: household.name,
+          description: household.description,
+          photoUrl: household.photoUrl,
+          slug: household.slug,
+        };
+      }),
+
     // Get current user's household
     getMy: protectedProcedure.query(async ({ ctx }) => {
       if (!ctx.user.householdId) {
@@ -311,6 +334,56 @@ export const appRouter = router({
         });
 
         return { success: true };
+      }),
+
+    // Update household slug (admin/primary only)
+    updateSlug: protectedProcedure
+      .input(
+        z.object({
+          slug: z
+            .string()
+            .min(3, "Slug must be at least 3 characters")
+            .max(255, "Slug cannot exceed 255 characters")
+            .regex(/^[a-z0-9-]+$/, "Slug can only contain lowercase letters, numbers, and hyphens"),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "No household found",
+          });
+        }
+
+        // Only admin/primary can update slug
+        await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        // Check if slug is available
+        const isAvailable = await db.isSlugAvailable(input.slug, ctx.user.householdId);
+        if (!isAvailable) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "This slug is already taken",
+          });
+        }
+
+        // Update slug
+        await db.updateHousehold(ctx.user.householdId, { slug: input.slug });
+
+        // Create audit log
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "household_slug_updated",
+          targetType: "household",
+          targetId: ctx.user.householdId,
+          metadata: { slug: input.slug },
+        });
+
+        return {
+          success: true,
+          slug: input.slug,
+        };
       }),
   }),
 
