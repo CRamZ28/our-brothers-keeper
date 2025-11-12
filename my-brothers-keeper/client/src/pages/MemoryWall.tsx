@@ -20,8 +20,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const typeConfig = {
   memory: {
@@ -56,6 +58,182 @@ const typeConfig = {
 
 type EntryType = keyof typeof typeConfig;
 
+// Helper: Generate deterministic rotation for a memory ID
+function getRotationForId(id: number): number {
+  const rotations = [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
+  return rotations[id % rotations.length];
+}
+
+// Helper: Generate deterministic initial position for new cards (staggered grid)
+function getInitialPosition(index: number): { x: number; y: number } {
+  const cols = 4;
+  const row = Math.floor(index / cols);
+  const col = index % cols;
+  const cardWidth = 320;
+  const cardHeight = 400;
+  const gap = 40;
+  
+  return {
+    x: 50 + col * (cardWidth + gap),
+    y: 50 + row * (cardHeight + gap),
+  };
+}
+
+interface CardPosition {
+  memoryId: number;
+  x: number;
+  y: number;
+  rotation: number;
+}
+
+interface DragItem {
+  id: number;
+  x: number;
+  y: number;
+}
+
+interface DragCollected {
+  opacity: number;
+}
+
+interface DraggableCardProps {
+  entry: any;
+  position: CardPosition;
+  config: any;
+  canDelete: boolean;
+  onPositionUpdate: (memoryId: number, x: number, y: number, rotation: number) => void;
+  onDelete: (id: number) => void;
+  onImageClick: (images: string[], index: number) => void;
+}
+
+const DraggableMemoryCard = ({ entry, position, config, canDelete, onPositionUpdate, onDelete, onImageClick }: DraggableCardProps) => {
+  const [isDragging, setIsDragging] = useState(false);
+  const Icon = config.icon;
+
+  const [{ opacity }, drag] = useDrag<DragItem, unknown, DragCollected>({
+    type: 'MEMORY_CARD',
+    item: () => {
+      setIsDragging(true);
+      return { id: entry.id, x: position.x, y: position.y };
+    },
+    end: (item, monitor) => {
+      setIsDragging(false);
+      const delta = monitor.getDifferenceFromInitialOffset();
+      if (delta) {
+        const newX = Math.round(position.x + delta.x);
+        const newY = Math.round(position.y + delta.y);
+        onPositionUpdate(entry.id, newX, newY, position.rotation);
+      }
+    },
+    collect: (monitor) => ({
+      opacity: monitor.isDragging() ? 0.5 : 1,
+    }),
+  });
+
+  return (
+    <div
+      ref={drag as any}
+      className="absolute transition-all duration-200"
+      style={{
+        left: position.x,
+        top: position.y,
+        transform: `rotate(${position.rotation}deg)`,
+        opacity,
+        zIndex: isDragging ? 1000 : 1,
+        cursor: isDragging ? 'grabbing' : 'grab',
+        width: '320px',
+      }}
+    >
+      <div
+        className="rounded-2xl p-5 shadow-2xl border-2 transition-all duration-300"
+        style={{
+          background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
+          backdropFilter: 'blur(20px)',
+          borderColor: `${config.color}40`,
+          boxShadow: isDragging 
+            ? `0 20px 60px rgba(0,0,0,0.4), 0 0 20px ${config.color}40`
+            : `0 10px 30px rgba(0,0,0,0.2), 0 0 10px ${config.color}20`,
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: `${config.color}20` }}
+            >
+              <Icon className="w-4 h-4" style={{ color: config.color }} />
+            </div>
+            <span className="text-sm font-semibold" style={{ color: config.color }}>
+              {config.label}
+            </span>
+          </div>
+          {canDelete && (
+            <button
+              onClick={() => onDelete(entry.id)}
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:bg-red-100"
+              style={{ color: '#EF4444' }}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        {/* Images */}
+        {entry.imageUrls && entry.imageUrls.length > 0 ? (
+          <div className="grid grid-cols-2 gap-2 mb-4">
+            {entry.imageUrls.map((url: string, i: number) => (
+              <div key={i} className="relative group/image">
+                <img
+                  src={url}
+                  alt={`Memory ${i + 1}`}
+                  className="w-full rounded-lg object-cover aspect-square cursor-pointer"
+                  onClick={() => onImageClick(entry.imageUrls, i)}
+                />
+                <div 
+                  className="absolute inset-0 rounded-lg bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
+                  onClick={() => onImageClick(entry.imageUrls, i)}
+                >
+                  <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : entry.imageUrl ? (
+          <div className="mb-4 relative group/image">
+            <img
+              src={entry.imageUrl}
+              alt="Memory"
+              className="w-full rounded-xl object-cover cursor-pointer"
+              style={{ maxHeight: '300px' }}
+              onClick={() => onImageClick([entry.imageUrl], 0)}
+            />
+            <div 
+              className="absolute inset-0 rounded-xl bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
+              onClick={() => onImageClick([entry.imageUrl], 0)}
+            >
+              <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+            </div>
+          </div>
+        ) : null}
+
+        {/* Content */}
+        {entry.content && (
+          <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-3">
+            {entry.content}
+          </p>
+        )}
+
+        {/* Footer */}
+        <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-300/30">
+          <span className="font-medium">{entry.authorName || "Anonymous"}</span>
+          <span>{new Date(entry.createdAt).toLocaleDateString()}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function MemoryWall() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<EntryType | "all">("all");
@@ -66,12 +244,17 @@ export default function MemoryWall() {
   const [uploadingImages, setUploadingImages] = useState(false);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [positions, setPositions] = useState<Record<number, CardPosition>>({});
+  const stageRef = useRef<HTMLDivElement>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
   );
+  const { data: savedPositions } = trpc.memoryWall.getPositions.useQuery(undefined);
   const createMutation = trpc.memoryWall.create.useMutation();
   const deleteMutation = trpc.memoryWall.delete.useMutation();
+  const savePositionMutation = trpc.memoryWall.savePosition.useMutation();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -147,6 +330,76 @@ export default function MemoryWall() {
       toast.error(error.message || "Failed to add entry");
     }
   };
+
+  // Hydrate positions from saved data on mount/update
+  useEffect(() => {
+    if (!entries || !savedPositions) return;
+
+    const newPositions: Record<number, CardPosition> = {};
+    
+    entries.forEach((entry, index) => {
+      const saved = savedPositions.find((p: any) => p.memoryId === entry.id);
+      
+      if (saved) {
+        // Use saved position
+        newPositions[entry.id] = {
+          memoryId: entry.id,
+          x: saved.x,
+          y: saved.y,
+          rotation: saved.rotation,
+        };
+      } else {
+        // Generate initial position for new cards
+        const initial = getInitialPosition(index);
+        newPositions[entry.id] = {
+          memoryId: entry.id,
+          x: initial.x,
+          y: initial.y,
+          rotation: getRotationForId(entry.id),
+        };
+      }
+    });
+
+    setPositions(newPositions);
+  }, [entries, savedPositions]);
+
+  // Save position with debouncing
+  const handlePositionUpdate = (memoryId: number, x: number, y: number, rotation: number) => {
+    // Boundary clamping
+    const maxX = (stageRef.current?.clientWidth || 1600) - 350; // Card width + padding
+    const maxY = (stageRef.current?.clientHeight || 2000) - 450; // Card height + padding
+    const clampedX = Math.max(20, Math.min(x, maxX));
+    const clampedY = Math.max(20, Math.min(y, maxY));
+
+    // Optimistic update
+    setPositions(prev => ({
+      ...prev,
+      [memoryId]: { memoryId, x: clampedX, y: clampedY, rotation },
+    }));
+
+    // Debounced save - ACTUALLY CALL THE MUTATION
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      savePositionMutation.mutate(
+        { memoryId, x: clampedX, y: clampedY, rotation },
+        {
+          onError: (error) => {
+            console.error("Failed to save position:", error);
+            toast.error("Failed to save card position");
+          },
+        }
+      );
+    }, 400);
+  };
+
+  // useDrop for the stage to make it a valid drop target
+  const [, drop] = useDrop({
+    accept: 'MEMORY_CARD',
+    drop: () => undefined,
+  });
 
   const handleDelete = async (entryId: number) => {
     if (!confirm("Are you sure you want to delete this entry?")) return;
@@ -345,7 +598,7 @@ export default function MemoryWall() {
           })}
         </div>
 
-        {/* Masonry Grid */}
+        {/* Vision Board Stage */}
         {!entries || entries.length === 0 ? (
           <div 
             className="rounded-2xl p-12 text-center"
@@ -363,126 +616,47 @@ export default function MemoryWall() {
             </p>
           </div>
         ) : (
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-            {entries.map((entry) => {
-              const config = typeConfig[entry.type as EntryType];
-              const Icon = config.icon;
-              const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
-              
-              return (
-                <div
-                  key={entry.id}
-                  className="break-inside-avoid mb-6"
-                >
-                  <div
-                    className="rounded-2xl p-5 transition-all duration-300 hover:shadow-xl group"
-                    style={{
-                      backdropFilter: 'blur(12px)',
-                      WebkitBackdropFilter: 'blur(12px)',
-                      background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
-                      border: `1px solid ${config.color}40`,
-                      boxShadow: `0 4px 12px ${config.color}15`,
+          <DndProvider backend={HTML5Backend}>
+            <div 
+              ref={(node) => {
+                stageRef.current = node;
+                drop(node);
+              }}
+              className="relative overflow-auto rounded-2xl p-4"
+              style={{
+                minHeight: '800px',
+                height: 'calc(100vh - 300px)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              {entries.map((entry) => {
+                const position = positions[entry.id];
+                if (!position) return null;
+                
+                const config = typeConfig[entry.type as EntryType];
+                const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
+                
+                return (
+                  <DraggableMemoryCard
+                    key={entry.id}
+                    entry={entry}
+                    position={position}
+                    config={config}
+                    canDelete={canDelete}
+                    onPositionUpdate={handlePositionUpdate}
+                    onDelete={handleDelete}
+                    onImageClick={(images, index) => {
+                      setLightboxImages(images);
+                      setLightboxIndex(index);
                     }}
-                  >
-                    {/* Header */}
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className="w-10 h-10 rounded-full flex items-center justify-center"
-                          style={{
-                            background: `${config.color}20`,
-                            border: `2px solid ${config.color}40`,
-                          }}
-                        >
-                          <Icon className="w-5 h-5" style={{ color: config.color }} />
-                        </div>
-                        <div>
-                          <div className="text-sm font-bold text-gray-800">
-                            {config.label}
-                          </div>
-                          <div className="text-xs text-gray-600">{entry.authorName}</div>
-                        </div>
-                      </div>
-                      {canDelete && (
-                        <button
-                          onClick={() => handleDelete(entry.id)}
-                          className="h-8 w-8 rounded-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
-                          style={{
-                            background: 'rgba(239, 68, 68, 0.1)',
-                            border: '1px solid rgba(239, 68, 68, 0.2)',
-                          }}
-                        >
-                          <X className="w-4 h-4 text-red-600" />
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Images */}
-                    {entry.imageUrls && entry.imageUrls.length > 0 ? (
-                      <div className="grid grid-cols-2 gap-2 mb-4">
-                        {entry.imageUrls.map((url, i) => (
-                          <div key={i} className="relative group/image">
-                            <img
-                              src={url}
-                              alt={`Memory ${i + 1}`}
-                              className="w-full rounded-lg object-cover aspect-square cursor-pointer"
-                              onClick={() => {
-                                setLightboxImages(entry.imageUrls!);
-                                setLightboxIndex(i);
-                              }}
-                            />
-                            <div 
-                              className="absolute inset-0 rounded-lg bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
-                              onClick={() => {
-                                setLightboxImages(entry.imageUrls!);
-                                setLightboxIndex(i);
-                              }}
-                            >
-                              <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : entry.imageUrl ? (
-                      <div className="mb-4 relative group/image">
-                        <img
-                          src={entry.imageUrl}
-                          alt="Memory"
-                          className="w-full rounded-xl object-cover cursor-pointer"
-                          style={{ maxHeight: '400px' }}
-                          onClick={() => {
-                            setLightboxImages([entry.imageUrl!]);
-                            setLightboxIndex(0);
-                          }}
-                        />
-                        <div 
-                          className="absolute inset-0 rounded-xl bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
-                          onClick={() => {
-                            setLightboxImages([entry.imageUrl!]);
-                            setLightboxIndex(0);
-                          }}
-                        >
-                          <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
-                        </div>
-                      </div>
-                    ) : null}
-
-                    {/* Content */}
-                    {entry.content && (
-                      <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-3">
-                        {entry.content}
-                      </p>
-                    )}
-
-                    {/* Timestamp */}
-                    <div className="text-xs text-gray-500 mt-4 pt-3 border-t border-gray-200">
-                      {formatDate(entry.createdAt)}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  />
+                );
+              })}
+            </div>
+          </DndProvider>
         )}
       </GlassPageLayout>
 
