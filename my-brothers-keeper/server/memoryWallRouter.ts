@@ -103,4 +103,40 @@ export const memoryWallRouter = router({
 
       return { success: true };
     }),
+
+  // Get user-specific positions for memory wall cards
+  getPositions: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user.householdId) {
+      return [];
+    }
+
+    return await db.getMemoryWallPositions(ctx.user.id, ctx.user.householdId);
+  }),
+
+  // Save/update position for a memory wall card
+  savePosition: protectedProcedure
+    .input(
+      z.object({
+        memoryId: z.number(),
+        x: z.number(),
+        y: z.number(),
+        rotation: z.number().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      await db.saveMemoryWallPosition({
+        userId: ctx.user.id,
+        householdId: ctx.user.householdId,
+        memoryId: input.memoryId,
+        x: input.x,
+        y: input.y,
+        rotation: input.rotation || 0,
+      });
+
+      return { success: true };
+    }),
 });

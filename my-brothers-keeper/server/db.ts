@@ -47,6 +47,8 @@ import {
   InsertMealTrainDay,
   memoryWall,
   InsertMemoryWallEntry,
+  memoryWallPositions,
+  InsertMemoryWallPosition,
   giftRegistry,
   InsertGiftRegistryItem,
 } from "../drizzle/schema";
@@ -1293,6 +1295,57 @@ export async function deleteMemoryWallEntry(entryId: number) {
   if (!db) throw new Error("Database not connected");
 
   await db.delete(memoryWall).where(eq(memoryWall.id, entryId));
+}
+
+// Get user-specific positions for memory wall cards
+export async function getMemoryWallPositions(userId: string, householdId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(memoryWallPositions)
+    .where(
+      and(
+        eq(memoryWallPositions.userId, userId),
+        eq(memoryWallPositions.householdId, householdId)
+      )
+    );
+}
+
+// Save or update memory wall card position
+export async function saveMemoryWallPosition(position: InsertMemoryWallPosition) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  // Check if position already exists
+  const existing = await db
+    .select()
+    .from(memoryWallPositions)
+    .where(
+      and(
+        eq(memoryWallPositions.userId, position.userId),
+        eq(memoryWallPositions.householdId, position.householdId),
+        eq(memoryWallPositions.memoryId, position.memoryId)
+      )
+    )
+    .limit(1);
+
+  if (existing.length > 0) {
+    // Update existing position
+    await db
+      .update(memoryWallPositions)
+      .set({
+        x: position.x,
+        y: position.y,
+        rotation: position.rotation,
+        updatedAt: new Date(),
+      })
+      .where(eq(memoryWallPositions.id, existing[0].id));
+  } else {
+    // Insert new position
+    await db.insert(memoryWallPositions).values(position);
+  }
 }
 
 // ============================================================================
