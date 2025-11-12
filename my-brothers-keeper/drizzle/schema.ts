@@ -12,6 +12,7 @@ import {
   uniqueIndex,
   integer,
   date,
+  real,
 } from "drizzle-orm/pg-core";
 
 // Replit Auth: Session storage table
@@ -704,7 +705,7 @@ export const memoryWallPositions = pgTable("memory_wall_positions", {
   memoryId: integer("memory_id").notNull(),
   x: integer("x").notNull(), // X position in pixels
   y: integer("y").notNull(), // Y position in pixels
-  rotation: integer("rotation").default(0).notNull(), // Rotation angle in degrees
+  rotation: real("rotation").default(0).notNull(), // Rotation angle in degrees
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
