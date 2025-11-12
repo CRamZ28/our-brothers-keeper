@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn, Image } from "lucide-react";
+import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn, Image, Pencil } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { DndContext, useDraggable, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
@@ -102,12 +102,14 @@ interface VisionBoardCardProps {
   entry: any;
   position: CardPosition;
   config: any;
+  canEdit: boolean;
   canDelete: boolean;
+  onEdit: (entry: any) => void;
   onDelete: (id: number) => void;
   onImageClick: (images: string[], index: number) => void;
 }
 
-const VisionBoardCard = ({ entry, position, config, canDelete, onDelete, onImageClick }: VisionBoardCardProps) => {
+const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, onDelete, onImageClick }: VisionBoardCardProps) => {
   const Icon = config.icon;
   
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -155,15 +157,34 @@ const VisionBoardCard = ({ entry, position, config, canDelete, onDelete, onImage
               {config.label}
             </span>
           </div>
-          {canDelete && (
-            <button
-              onClick={() => onDelete(entry.id)}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:bg-red-100"
-              style={{ color: '#EF4444' }}
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+          <div className="flex items-center gap-1">
+            {canEdit && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onEdit(entry);
+                }}
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:bg-blue-100"
+                style={{ color: '#3B82F6' }}
+                title="Edit"
+              >
+                <Pencil className="w-4 h-4" />
+              </button>
+            )}
+            {canDelete && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDelete(entry.id);
+                }}
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:bg-red-100"
+                style={{ color: '#EF4444' }}
+                title="Delete"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Images */}
@@ -232,12 +253,15 @@ export default function MemoryWall() {
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [positions, setPositions] = useState<Record<number, CardPosition>>({});
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [selectedEntryForEdit, setSelectedEntryForEdit] = useState<any>(null);
 
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
   );
   const { data: persistedPositions } = trpc.memoryWall.getPositions.useQuery();
   const createMutation = trpc.memoryWall.create.useMutation();
+  const updateMutation = trpc.memoryWall.update.useMutation();
   const deleteMutation = trpc.memoryWall.delete.useMutation();
   const savePositionMutation = trpc.memoryWall.savePosition.useMutation();
 
@@ -300,29 +324,89 @@ export default function MemoryWall() {
     }
   };
 
+  const handleEdit = (entry: any) => {
+    setSelectedEntryForEdit(entry);
+    setSelectedType(entry.type);
+    setContent(entry.content || "");
+    setImageFiles([]);
+    setEditDialogOpen(true);
+  };
+
   const handleSubmit = async () => {
     try {
-      if (!content.trim() && imageFiles.length === 0) {
+      if (!content.trim() && imageFiles.length === 0 && !selectedEntryForEdit) {
         toast.error("Please enter some content or add at least one image");
         return;
       }
 
       const uploadedUrls = await uploadImageFiles();
 
-      await createMutation.mutateAsync({
-        type: selectedType,
-        content: content.trim() || undefined,
-        imageUrl: uploadedUrls.length > 0 ? uploadedUrls[0] : undefined,
-        imageUrls: uploadedUrls.length > 1 ? uploadedUrls : undefined,
-      });
+      if (selectedEntryForEdit) {
+        // Validate: non-picture types require content
+        if (selectedType !== "picture" && !content.trim() && uploadedUrls.length === 0) {
+          toast.error(`${typeConfig[selectedType].label} entries require content`);
+          return;
+        }
 
-      toast.success(`${typeConfig[selectedType].label} added to memory wall!`);
+        // Update existing entry - only send fields that changed
+        const updateData: any = {
+          entryId: selectedEntryForEdit.id,
+        };
+
+        // Only update type if it changed
+        if (selectedType !== selectedEntryForEdit.type) {
+          updateData.type = selectedType;
+        }
+
+        // Only update content if it changed
+        const trimmedContent = content.trim();
+        const originalContent = selectedEntryForEdit.content || "";
+        if (trimmedContent !== originalContent) {
+          // For picture type, allow clearing content (send empty string)
+          // For other types, only send if content is non-empty
+          if (selectedType === "picture") {
+            updateData.content = trimmedContent; // Can be empty for pictures
+          } else if (trimmedContent) {
+            updateData.content = trimmedContent; // Only send non-empty content for required types
+          }
+          // If emptied for non-picture, validation above catches it
+        }
+
+        // Handle images: only update if new images are uploaded
+        if (uploadedUrls.length > 0) {
+          if (uploadedUrls.length === 1) {
+            // Single image: set imageUrl and explicitly clear imageUrls array
+            updateData.imageUrl = uploadedUrls[0];
+            updateData.imageUrls = [];  // Clear the array to remove old gallery
+          } else {
+            // Multiple images: set both imageUrl (first) and imageUrls (all)
+            updateData.imageUrl = uploadedUrls[0];
+            updateData.imageUrls = uploadedUrls;
+          }
+        }
+        // If no new images uploaded, don't send image fields (preserves existing)
+
+        await updateMutation.mutateAsync(updateData);
+        toast.success("Entry updated successfully!");
+        setEditDialogOpen(false);
+      } else {
+        // Create new entry
+        await createMutation.mutateAsync({
+          type: selectedType,
+          content: content.trim() || undefined,
+          imageUrl: uploadedUrls.length > 0 ? uploadedUrls[0] : undefined,
+          imageUrls: uploadedUrls.length > 1 ? uploadedUrls : undefined,
+        });
+        toast.success(`${typeConfig[selectedType].label} added to memory wall!`);
+        setDialogOpen(false);
+      }
+
       setContent("");
       setImageFiles([]);
-      setDialogOpen(false);
+      setSelectedEntryForEdit(null);
       refetch();
     } catch (error: any) {
-      toast.error(error.message || "Failed to add entry");
+      toast.error(error.message || `Failed to ${selectedEntryForEdit ? 'update' : 'add'} entry`);
     }
   };
 
@@ -552,6 +636,134 @@ export default function MemoryWall() {
           </Dialog>
         }
       >
+        {/* Edit Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={(open) => {
+          setEditDialogOpen(open);
+          if (!open) {
+            setSelectedEntryForEdit(null);
+            setContent("");
+            setImageFiles([]);
+          }
+        }}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Edit Entry</DialogTitle>
+              <DialogDescription className="text-gray-600">
+                Update your {selectedEntryForEdit ? typeConfig[selectedEntryForEdit.type as EntryType].label.toLowerCase() : 'entry'}
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Type</label>
+                <Select value={selectedType} onValueChange={(v) => setSelectedType(v as EntryType)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(typeConfig).map(([key, config]) => (
+                      <SelectItem key={key} value={key}>
+                        <div className="flex items-center gap-2">
+                          {config.icon && <config.icon className="w-4 h-4" style={{ color: config.color }} />}
+                          <span>{config.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {selectedType !== "picture" && (
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Content</label>
+                  <Textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder={`Share your ${typeConfig[selectedType].label.toLowerCase()}...`}
+                    rows={6}
+                    className="resize-none"
+                  />
+                </div>
+              )}
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  {selectedType === "picture" ? "Images (required)" : "Images (optional)"}
+                </label>
+                <div className="flex items-center gap-2">
+                  <label 
+                    htmlFor="edit-file-input"
+                    className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-teal-500 cursor-pointer transition-colors"
+                  >
+                    <Image className="w-5 h-5 text-gray-500" />
+                    <span className="text-sm text-gray-600">
+                      {imageFiles.length > 0 ? `${imageFiles.length} image(s) selected` : 'Choose images'}
+                    </span>
+                  </label>
+                  <input
+                    id="edit-file-input"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
+                
+                {selectedEntryForEdit && (selectedEntryForEdit.imageUrls || selectedEntryForEdit.imageUrl) && imageFiles.length === 0 && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Current images will be kept. Upload new images to replace them.
+                  </p>
+                )}
+
+                {imageFiles.length > 0 && (
+                  <div className="mt-3 grid grid-cols-3 gap-2">
+                    {imageFiles.map((file, index) => (
+                      <div key={index} className="relative group">
+                        <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => removeImageFile(index)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  onClick={() => setEditDialogOpen(false)}
+                  disabled={uploadingImages || updateMutation.isPending}
+                  className="px-4 py-2 rounded-lg font-medium transition-colors border border-gray-300 hover:bg-gray-50 text-gray-700"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={updateMutation.isPending || uploadingImages}
+                  className="px-4 py-2 rounded-lg font-medium text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                  style={{
+                    background: 'linear-gradient(135deg, #2DB5A8, #4DD0C4)',
+                  }}
+                >
+                  {uploadingImages ? "Uploading..." : updateMutation.isPending ? "Updating..." : "Update Entry"}
+                </button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         <p className="text-gray-600 mb-6">Share memories, stories, encouragement, and prayers</p>
         
         {/* Glass Filter Pills */}
@@ -637,6 +849,7 @@ export default function MemoryWall() {
                 if (!position) return null;
                 
                 const config = typeConfig[entry.type as EntryType];
+                const canEdit = entry.authorId === user?.id || isPrimaryOrAdmin;
                 const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
                 
                 return (
@@ -645,7 +858,9 @@ export default function MemoryWall() {
                     entry={entry}
                     position={position}
                     config={config}
+                    canEdit={canEdit}
                     canDelete={canDelete}
+                    onEdit={handleEdit}
                     onDelete={handleDelete}
                     onImageClick={(images, index) => {
                       setLightboxImages(images);

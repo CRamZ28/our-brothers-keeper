@@ -104,6 +104,72 @@ export const memoryWallRouter = router({
       return { success: true };
     }),
 
+  // Update memory wall entry
+  update: protectedProcedure
+    .input(
+      z.object({
+        entryId: z.number(),
+        type: z.enum(["memory", "story", "encouragement", "prayer", "picture"]).optional(),
+        content: z.string().optional(),
+        imageUrl: z.string().optional(),
+        imageUrls: z.array(z.string()).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Get entry to verify ownership
+      const entry = await db.getMemoryWallEntry(input.entryId);
+      if (!entry) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Entry not found" });
+      }
+
+      if (entry.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Entry belongs to different household" });
+      }
+
+      // Only author, admin, or primary can edit
+      if (entry.authorId !== ctx.user.id && ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Only the author, admin, or primary can edit" });
+      }
+
+      // Validate input based on type (if type is being changed)
+      const newType = input.type || entry.type;
+      const finalImageUrl = input.imageUrl !== undefined ? input.imageUrl : entry.imageUrl;
+      const finalImageUrls = input.imageUrls !== undefined ? input.imageUrls : entry.imageUrls;
+      const finalContent = input.content !== undefined ? input.content : entry.content;
+
+      // Picture entries must have at least one image (check final state)
+      if (newType === "picture" && !finalImageUrl && (!finalImageUrls || finalImageUrls.length === 0)) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Picture entries must have at least one image" });
+      }
+
+      // Non-picture entries must have non-empty content (check final state)
+      if (newType !== "picture" && (!finalContent || finalContent.trim() === "")) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "This entry type requires content" });
+      }
+
+      await db.updateMemoryWallEntry(input.entryId, {
+        type: input.type,
+        content: input.content,
+        imageUrl: input.imageUrl,
+        imageUrls: input.imageUrls,
+      });
+
+      await db.createAuditLog({
+        householdId: ctx.user.householdId,
+        actorUserId: ctx.user.id,
+        action: "memory_wall_updated",
+        targetType: "memory_wall",
+        targetId: input.entryId,
+        metadata: { type: newType },
+      });
+
+      return { success: true };
+    }),
+
   // Get user-specific positions for memory wall cards
   getPositions: protectedProcedure.query(async ({ ctx }) => {
     if (!ctx.user.householdId) {

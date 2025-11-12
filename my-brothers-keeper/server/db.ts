@@ -1297,6 +1297,32 @@ export async function deleteMemoryWallEntry(entryId: number) {
   await db.delete(memoryWall).where(eq(memoryWall.id, entryId));
 }
 
+// Update memory wall entry
+export async function updateMemoryWallEntry(
+  entryId: number, 
+  updates: {
+    type?: "memory" | "story" | "encouragement" | "prayer" | "picture";
+    content?: string;
+    imageUrl?: string;
+    imageUrls?: string[];
+  }
+) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not connected");
+
+  const updateData: any = { updatedAt: new Date() };
+  
+  if (updates.type !== undefined) updateData.type = updates.type;
+  if (updates.content !== undefined) updateData.content = updates.content;
+  if (updates.imageUrl !== undefined) updateData.imageUrl = updates.imageUrl;
+  if (updates.imageUrls !== undefined) updateData.imageUrls = updates.imageUrls;
+
+  await db
+    .update(memoryWall)
+    .set(updateData)
+    .where(eq(memoryWall.id, entryId));
+}
+
 // Get user-specific positions for memory wall cards
 export async function getMemoryWallPositions(userId: string, householdId: number) {
   const db = await getDb();
