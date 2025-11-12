@@ -2,7 +2,6 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Heart, MessageSquare, BookOpen, Sparkles, Image, Plus, X, Upload } from "lucide-react";
+import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -28,89 +27,31 @@ const typeConfig = {
   memory: {
     label: "Memory",
     icon: Heart,
-    color: "#14B8A6", // Vibrant teal (border/accent color)
-    bgColor: "bg-teal-100",
-    borderColor: "border-teal-400",
-    iconBgColor: "bg-teal-200",
-    textColor: "text-foreground",
+    color: "#2DB5A8",
+    gradientFrom: "rgba(45, 181, 168, 0.15)",
+    gradientTo: "rgba(45, 181, 168, 0.05)",
   },
   story: {
     label: "Story",
     icon: BookOpen,
-    color: "#3B82F6", // Vibrant blue (border/accent color)
-    bgColor: "bg-blue-100",
-    borderColor: "border-blue-400",
-    iconBgColor: "bg-blue-200",
-    textColor: "text-foreground",
+    color: "#3B82F6",
+    gradientFrom: "rgba(59, 130, 246, 0.15)",
+    gradientTo: "rgba(59, 130, 246, 0.05)",
   },
   encouragement: {
     label: "Encouragement",
     icon: Sparkles,
-    color: "#F59E0B", // Vibrant amber (border/accent color)
-    bgColor: "bg-amber-100",
-    borderColor: "border-amber-400",
-    iconBgColor: "bg-amber-200",
-    textColor: "text-foreground",
+    color: "#F59E0B",
+    gradientFrom: "rgba(245, 158, 11, 0.15)",
+    gradientTo: "rgba(245, 158, 11, 0.05)",
   },
   prayer: {
     label: "Prayer/Verse",
     icon: MessageSquare,
-    color: "#EC4899", // Vibrant pink (border/accent color)
-    bgColor: "bg-pink-100",
-    borderColor: "border-pink-400",
-    iconBgColor: "bg-pink-200",
-    textColor: "text-foreground",
+    color: "#B08CA7",
+    gradientFrom: "rgba(176, 140, 167, 0.15)",
+    gradientTo: "rgba(176, 140, 167, 0.05)",
   },
-};
-
-// Seeded random number generator for consistent placement
-const seededRandom = (seed: number) => {
-  const x = Math.sin(seed) * 10000;
-  return x - Math.floor(x);
-};
-
-// Generate deterministic collage layout for a card
-const getCollageLayout = (entryId: number, index: number) => {
-  const seed = entryId + index * 1000;
-  
-  // Random position (0-100%)
-  const top = seededRandom(seed) * 80 + 5; // 5-85% to avoid edges
-  const left = seededRandom(seed + 1) * 80 + 5; // 5-85% to avoid edges
-  
-  // Random rotation (-18° to +18°)
-  const rotation = seededRandom(seed + 2) * 36 - 18;
-  
-  // Random size (multiple tiers) - using vw for responsiveness
-  const sizeRand = seededRandom(seed + 3);
-  let sizeClass = 'w-[280px] max-w-[85vw]'; // Responsive width
-  
-  if (sizeRand < 0.15) {
-    // Tiny (15%)
-    sizeClass = 'w-[200px] max-w-[60vw]';
-  } else if (sizeRand < 0.4) {
-    // Small (25%)
-    sizeClass = 'w-[240px] max-w-[70vw]';
-  } else if (sizeRand < 0.75) {
-    // Medium (35%)
-    sizeClass = 'w-[280px] max-w-[85vw]';
-  } else if (sizeRand < 0.92) {
-    // Large (17%)
-    sizeClass = 'w-[340px] max-w-[90vw]';
-  } else {
-    // Extra large (8%)
-    sizeClass = 'w-[400px] max-w-[95vw]';
-  }
-  
-  // Random z-index for layering (but boost on hover/focus)
-  const zIndex = Math.floor(seededRandom(seed + 4) * 50) + 1;
-  
-  return {
-    top: `${top}%`,
-    left: `${left}%`,
-    transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
-    sizeClass,
-    zIndex,
-  };
 };
 
 type EntryType = keyof typeof typeConfig;
@@ -123,6 +64,8 @@ export default function MemoryWall() {
   const [content, setContent] = useState("");
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
@@ -186,7 +129,6 @@ export default function MemoryWall() {
         return;
       }
 
-      // Upload images first if any
       const uploadedUrls = await uploadImageFiles();
 
       await createMutation.mutateAsync({
@@ -220,6 +162,23 @@ export default function MemoryWall() {
 
   const isPrimaryOrAdmin = user?.role === "primary" || user?.role === "admin";
 
+  const formatDate = (dateInput: string | Date) => {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0 || diffDays === 1) {
+      return "Today";
+    } else if (diffDays === 2) {
+      return "Yesterday";
+    } else if (diffDays <= 7) {
+      return `${diffDays - 1} days ago`;
+    } else {
+      return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    }
+  };
+
   return (
     <DashboardLayout>
       <GlassPageLayout 
@@ -227,258 +186,386 @@ export default function MemoryWall() {
         actions={
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white">
-                <Plus className="w-4 h-4 mr-2" />
+              <button 
+                className="px-4 py-2 text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                style={{
+                  background: 'linear-gradient(135deg, #2DB5A8, #4DD0C4)',
+                }}
+              >
+                <Plus className="w-4 h-4 inline mr-2" />
                 Add to Wall
-              </Button>
+              </button>
             </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Add to Memory Wall</DialogTitle>
-                  <DialogDescription>
-                    Share a memory, story, encouragement, prayer, or picture
-                  </DialogDescription>
-                </DialogHeader>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add to Memory Wall</DialogTitle>
+                <DialogDescription className="text-gray-600">
+                  Share a memory, story, encouragement, prayer, or picture
+                </DialogDescription>
+              </DialogHeader>
 
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Type</label>
-                    <Select value={selectedType} onValueChange={(v) => setSelectedType(v as EntryType)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(typeConfig).map(([key, config]) => (
-                          <SelectItem key={key} value={key}>
-                            <div className="flex items-center gap-2">
-                              <config.icon className="w-4 h-4" />
-                              {config.label}
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">Content</label>
-                    <Textarea
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder={`Share your ${typeConfig[selectedType].label.toLowerCase()}...`}
-                      rows={6}
-                      className="resize-none"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-medium mb-2 block">
-                      Images (Optional)
-                    </label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleFileSelect}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer"
-                    />
-                    {imageFiles.length > 0 && (
-                      <div className="grid grid-cols-3 gap-2 mt-3">
-                        {imageFiles.map((file, index) => (
-                          <div key={index} className="relative group">
-                            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                              <img
-                                src={URL.createObjectURL(file)}
-                                alt={file.name}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                            <Button
-                              variant="destructive"
-                              size="sm"
-                              className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={() => removeImageFile(index)}
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Type</label>
+                  <Select value={selectedType} onValueChange={(v) => setSelectedType(v as EntryType)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Object.entries(typeConfig).map(([key, config]) => (
+                        <SelectItem key={key} value={key}>
+                          <div className="flex items-center gap-2">
+                            <config.icon className="w-4 h-4" style={{ color: config.color }} />
+                            {config.label}
                           </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setDialogOpen(false)} disabled={uploadingImages || createMutation.isPending}>
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleSubmit}
-                      disabled={createMutation.isPending || uploadingImages}
-                      className="bg-[#6BC4B8] hover:bg-[#6BC4B8]/90 text-white shadow-md font-semibold"
-                    >
-                      {uploadingImages ? "Uploading..." : createMutation.isPending ? "Adding..." : "Add to Wall"}
-                    </Button>
-                  </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-              </DialogContent>
-            </Dialog>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Content</label>
+                  <Textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    placeholder={`Share your ${typeConfig[selectedType].label.toLowerCase()}...`}
+                    rows={6}
+                    className="resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Images (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer text-sm"
+                  />
+                  {imageFiles.length > 0 && (
+                    <div className="grid grid-cols-3 gap-2 mt-3">
+                      {imageFiles.map((file, index) => (
+                        <div key={index} className="relative group">
+                          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={file.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => removeImageFile(index)}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2">
+                  <button
+                    onClick={() => setDialogOpen(false)}
+                    disabled={uploadingImages || createMutation.isPending}
+                    className="px-4 py-2 rounded-lg font-medium transition-colors border border-gray-300 hover:bg-gray-50 text-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSubmit}
+                    disabled={createMutation.isPending || uploadingImages}
+                    className="px-4 py-2 rounded-lg font-medium text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                    style={{
+                      background: 'linear-gradient(135deg, #2DB5A8, #4DD0C4)',
+                    }}
+                  >
+                    {uploadingImages ? "Uploading..." : createMutation.isPending ? "Adding..." : "Add to Wall"}
+                  </button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         }
       >
         <p className="text-gray-600 mb-6">Share memories, stories, encouragement, and prayers</p>
-        <div className="space-y-6">
-          {/* Filter */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
-            <Button
-              variant={filter === "all" ? "default" : "outline"}
-              size="sm"
-              onClick={() => setFilter("all")}
-              className={filter === "all" ? "bg-gray-800" : ""}
-            >
-              All
-            </Button>
-            {Object.entries(typeConfig).map(([key, config]) => {
+        
+        {/* Glass Filter Pills */}
+        <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2">
+          <button
+            onClick={() => setFilter("all")}
+            className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200"
+            style={{
+              background: filter === "all" 
+                ? 'rgba(255, 255, 255, 0.4)' 
+                : 'rgba(255, 255, 255, 0.15)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              border: filter === "all" 
+                ? '2px solid rgba(45, 181, 168, 0.4)' 
+                : '2px solid rgba(255, 255, 255, 0.2)',
+              color: filter === "all" ? '#2DB5A8' : '#666',
+              boxShadow: filter === "all" ? '0 4px 12px rgba(45, 181, 168, 0.15)' : 'none',
+            }}
+          >
+            All
+          </button>
+          {Object.entries(typeConfig).map(([key, config]) => {
+            const Icon = config.icon;
+            const isActive = filter === key;
+            return (
+              <button
+                key={key}
+                onClick={() => setFilter(key as EntryType)}
+                className="px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 flex items-center gap-2"
+                style={{
+                  background: isActive 
+                    ? 'rgba(255, 255, 255, 0.4)' 
+                    : 'rgba(255, 255, 255, 0.15)',
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
+                  border: isActive 
+                    ? `2px solid ${config.color}40` 
+                    : '2px solid rgba(255, 255, 255, 0.2)',
+                  color: isActive ? config.color : '#666',
+                  boxShadow: isActive ? `0 4px 12px ${config.color}25` : 'none',
+                }}
+              >
+                <Icon className="w-4 h-4" />
+                {config.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Masonry Grid */}
+        {!entries || entries.length === 0 ? (
+          <div 
+            className="rounded-2xl p-12 text-center"
+            style={{
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+            }}
+          >
+            <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-600 font-medium">No entries yet</p>
+            <p className="text-sm text-gray-500 mt-1">
+              Start sharing memories, stories, and encouragement
+            </p>
+          </div>
+        ) : (
+          <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+            {entries.map((entry) => {
+              const config = typeConfig[entry.type as EntryType];
               const Icon = config.icon;
-              const isActive = filter === key;
+              const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
+              
               return (
-                <Button
-                  key={key}
-                  variant={isActive ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setFilter(key as EntryType)}
-                  className={isActive ? "" : ""}
-                  style={isActive ? { backgroundColor: config.color, color: "white" } : {}}
+                <div
+                  key={entry.id}
+                  className="break-inside-avoid mb-6"
                 >
-                  <Icon className="w-4 h-4 mr-1" />
-                  {config.label}
-                </Button>
+                  <div
+                    className="rounded-2xl p-5 transition-all duration-300 hover:shadow-xl group"
+                    style={{
+                      backdropFilter: 'blur(12px)',
+                      WebkitBackdropFilter: 'blur(12px)',
+                      background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
+                      border: `1px solid ${config.color}40`,
+                      boxShadow: `0 4px 12px ${config.color}15`,
+                    }}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-10 h-10 rounded-full flex items-center justify-center"
+                          style={{
+                            background: `${config.color}20`,
+                            border: `2px solid ${config.color}40`,
+                          }}
+                        >
+                          <Icon className="w-5 h-5" style={{ color: config.color }} />
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-gray-800">
+                            {config.label}
+                          </div>
+                          <div className="text-xs text-gray-600">{entry.authorName}</div>
+                        </div>
+                      </div>
+                      {canDelete && (
+                        <button
+                          onClick={() => handleDelete(entry.id)}
+                          className="h-8 w-8 rounded-lg flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                          style={{
+                            background: 'rgba(239, 68, 68, 0.1)',
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                          }}
+                        >
+                          <X className="w-4 h-4 text-red-600" />
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Images */}
+                    {entry.imageUrls && entry.imageUrls.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        {entry.imageUrls.map((url, i) => (
+                          <div key={i} className="relative group/image">
+                            <img
+                              src={url}
+                              alt={`Memory ${i + 1}`}
+                              className="w-full rounded-lg object-cover aspect-square cursor-pointer"
+                              onClick={() => {
+                                setLightboxImages(entry.imageUrls!);
+                                setLightboxIndex(i);
+                              }}
+                            />
+                            <div 
+                              className="absolute inset-0 rounded-lg bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
+                              onClick={() => {
+                                setLightboxImages(entry.imageUrls!);
+                                setLightboxIndex(i);
+                              }}
+                            >
+                              <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : entry.imageUrl ? (
+                      <div className="mb-4 relative group/image">
+                        <img
+                          src={entry.imageUrl}
+                          alt="Memory"
+                          className="w-full rounded-xl object-cover cursor-pointer"
+                          style={{ maxHeight: '400px' }}
+                          onClick={() => {
+                            setLightboxImages([entry.imageUrl!]);
+                            setLightboxIndex(0);
+                          }}
+                        />
+                        <div 
+                          className="absolute inset-0 rounded-xl bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
+                          onClick={() => {
+                            setLightboxImages([entry.imageUrl!]);
+                            setLightboxIndex(0);
+                          }}
+                        >
+                          <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    ) : null}
+
+                    {/* Content */}
+                    {entry.content && (
+                      <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed mb-3">
+                        {entry.content}
+                      </p>
+                    )}
+
+                    {/* Timestamp */}
+                    <div className="text-xs text-gray-500 mt-4 pt-3 border-t border-gray-200">
+                      {formatDate(entry.createdAt)}
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </div>
+        )}
+      </GlassPageLayout>
 
-          {/* Collage Canvas */}
-          {!entries || entries.length === 0 ? (
-            <Card className="border border-gray-200 bg-white">
-              <CardContent className="p-12 text-center">
-                <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 font-medium">No entries yet</p>
-                <p className="text-sm text-gray-400 mt-1">
-                  Start sharing memories, stories, and encouragement
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="relative w-full overflow-auto rounded-xl bg-gradient-to-br from-gray-50 via-white to-gray-50" style={{ minHeight: '150vh' }}>
-              {/* Background Logo */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <img
-                  src="/obk-logo.png"
-                  alt="Our Brother's Keeper"
-                  className="w-96 h-96 md:w-[500px] md:h-[500px] opacity-[0.06] select-none"
-                  style={{ filter: 'grayscale(20%)' }}
-                />
-              </div>
+      {/* Image Lightbox */}
+      {lightboxImages.length > 0 && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{
+            background: 'rgba(0, 0, 0, 0.85)',
+            backdropFilter: 'blur(8px)',
+          }}
+          onClick={() => setLightboxImages([])}
+        >
+          {/* Close Button */}
+          <button
+            className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all z-10"
+            style={{
+              background: 'rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+            }}
+            onClick={() => setLightboxImages([])}
+          >
+            <X className="w-6 h-6" />
+          </button>
 
-              {entries.map((entry, index) => {
-                const config = typeConfig[entry.type as EntryType];
-                const Icon = config.icon;
-                const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
-                const layout = getCollageLayout(entry.id, index);
+          {/* Navigation Arrows (only show if multiple images) */}
+          {lightboxImages.length > 1 && (
+            <>
+              <button
+                className="absolute left-4 w-12 h-12 rounded-full flex items-center justify-center text-white transition-all z-10"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex((prev) => (prev === 0 ? lightboxImages.length - 1 : prev - 1));
+                }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                className="absolute right-4 w-12 h-12 rounded-full flex items-center justify-center text-white transition-all z-10"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setLightboxIndex((prev) => (prev === lightboxImages.length - 1 ? 0 : prev + 1));
+                }}
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
 
-                // Add tape decoration randomly
-                const hasTape = seededRandom(entry.id + 999) > 0.5;
-                const tapeRotation = seededRandom(entry.id + 888) * 10 - 5;
-                
-                return (
-                  <Card
-                    key={entry.id}
-                    tabIndex={0}
-                    className={`absolute border-2 ${config.borderColor} ${config.bgColor} ${layout.sizeClass} transition-all duration-300 hover:shadow-2xl focus:shadow-2xl cursor-pointer group shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-${config.color.replace('#', '')}`}
-                    style={{
-                      top: layout.top,
-                      left: layout.left,
-                      transform: layout.transform,
-                      zIndex: layout.zIndex,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.zIndex = '100';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.zIndex = String(layout.zIndex);
-                    }}
-                    onFocus={(e) => {
-                      e.currentTarget.style.zIndex = '100';
-                    }}
-                    onBlur={(e) => {
-                      e.currentTarget.style.zIndex = String(layout.zIndex);
-                    }}
-                  >
-                    {/* Decorative Tape */}
-                    {hasTape && (
-                      <div 
-                        className="absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-6 bg-yellow-200/60 backdrop-blur-sm border-t border-b border-yellow-300/40 shadow-sm"
-                        style={{ transform: `translateX(-50%) rotate(${tapeRotation}deg)` }}
-                      />
-                    )}
-                    <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className={`w-10 h-10 rounded-full ${config.iconBgColor} flex items-center justify-center shadow-sm`}>
-                              <Icon className={`w-5 h-5 ${config.textColor}`} />
-                            </div>
-                            <div>
-                              <div className={`text-sm font-bold ${config.textColor}`}>
-                                {config.label}
-                              </div>
-                              <div className="text-xs text-gray-600 font-medium">{entry.authorName}</div>
-                            </div>
-                          </div>
-                          {canDelete && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(entry.id)}
-                              className="h-7 w-7 p-0 hover:bg-red-100"
-                            >
-                              <X className="w-4 h-4 text-foreground/60" />
-                            </Button>
-                          )}
-                        </div>
-
-                        {entry.imageUrl && (
-                          <img
-                            src={entry.imageUrl}
-                            alt="Memory"
-                            className="w-full rounded-lg mb-3 object-cover shadow-md"
-                            style={{ maxHeight: '300px' }}
-                          />
-                        )}
-
-                        {entry.imageUrls && entry.imageUrls.length > 0 && (
-                          <div className="grid grid-cols-2 gap-2 mb-3">
-                            {entry.imageUrls.map((url, i) => (
-                              <img
-                                key={i}
-                              src={url}
-                              alt={`Memory ${i + 1}`}
-                              className="w-full rounded-lg object-cover aspect-square"
-                            />
-                          ))}
-                        </div>
-                      )}
-
-                      {entry.content && (
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                          {entry.content}
-                        </p>
-                      )}
-                    </CardContent>
-                  </Card>
-                );
-              })}
+          {/* Image Counter (only show if multiple images) */}
+          {lightboxImages.length > 1 && (
+            <div 
+              className="absolute top-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-full text-white text-sm font-medium"
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+              }}
+            >
+              {lightboxIndex + 1} / {lightboxImages.length}
             </div>
           )}
+
+          {/* Image */}
+          <img
+            src={lightboxImages[lightboxIndex]}
+            alt="Full size"
+            className="max-w-full max-h-full rounded-xl shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
         </div>
-      </GlassPageLayout>
+      )}
     </DashboardLayout>
   );
 }
