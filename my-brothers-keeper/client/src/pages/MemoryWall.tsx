@@ -234,6 +234,65 @@ const DraggableMemoryCard = ({ entry, position, config, canDelete, onPositionUpd
   );
 };
 
+// Vision Board Stage component (must be inside DndProvider)
+const VisionBoardStage: React.FC<{
+  stageRef: React.RefObject<HTMLDivElement>;
+  entries: any[];
+  positions: Record<number, CardPosition>;
+  handlePositionUpdate: (memoryId: number, x: number, y: number, rotation: number) => void;
+  handleDelete: (entryId: number) => void;
+  onImageClick: (images: string[], index: number) => void;
+  isPrimaryOrAdmin: boolean;
+  userId?: number;
+}> = ({ stageRef, entries, positions, handlePositionUpdate, handleDelete, onImageClick, isPrimaryOrAdmin, userId }) => {
+  // useDrop hook MUST be inside a component wrapped by DndProvider
+  const [, drop] = useDrop(() => ({
+    accept: 'MEMORY_CARD',
+    drop: () => undefined,
+  }));
+
+  return (
+    <div 
+      ref={(node) => {
+        if (stageRef) {
+          (stageRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        }
+        drop(node);
+      }}
+      className="relative overflow-auto rounded-2xl p-4"
+      style={{
+        minHeight: '800px',
+        height: 'calc(100vh - 300px)',
+        backdropFilter: 'blur(6px)',
+        WebkitBackdropFilter: 'blur(6px)',
+        background: 'rgba(255, 255, 255, 0.05)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+      }}
+    >
+      {entries.map((entry) => {
+        const position = positions[entry.id];
+        if (!position) return null;
+        
+        const config = typeConfig[entry.type as EntryType];
+        const canDelete = entry.authorId === userId || isPrimaryOrAdmin;
+        
+        return (
+          <DraggableMemoryCard
+            key={entry.id}
+            entry={entry}
+            position={position}
+            config={config}
+            canDelete={canDelete}
+            onPositionUpdate={handlePositionUpdate}
+            onDelete={handleDelete}
+            onImageClick={onImageClick}
+          />
+        );
+      })}
+    </div>
+  );
+};
+
 export default function MemoryWall() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<EntryType | "all">("all");
@@ -394,12 +453,6 @@ export default function MemoryWall() {
       );
     }, 400);
   };
-
-  // useDrop for the stage to make it a valid drop target
-  const [, drop] = useDrop(() => ({
-    accept: 'MEMORY_CARD',
-    drop: () => undefined,
-  }));
 
   const handleDelete = async (entryId: number) => {
     if (!confirm("Are you sure you want to delete this entry?")) return;
@@ -617,45 +670,19 @@ export default function MemoryWall() {
           </div>
         ) : (
           <DndProvider backend={HTML5Backend}>
-            <div 
-              ref={(node) => {
-                stageRef.current = node;
-                drop(node);
+            <VisionBoardStage
+              stageRef={stageRef}
+              entries={entries}
+              positions={positions}
+              handlePositionUpdate={handlePositionUpdate}
+              handleDelete={handleDelete}
+              onImageClick={(images, index) => {
+                setLightboxImages(images);
+                setLightboxIndex(index);
               }}
-              className="relative overflow-auto rounded-2xl p-4"
-              style={{
-                minHeight: '800px',
-                height: 'calc(100vh - 300px)',
-                backdropFilter: 'blur(6px)',
-                WebkitBackdropFilter: 'blur(6px)',
-                background: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
-              }}
-            >
-              {entries.map((entry) => {
-                const position = positions[entry.id];
-                if (!position) return null;
-                
-                const config = typeConfig[entry.type as EntryType];
-                const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
-                
-                return (
-                  <DraggableMemoryCard
-                    key={entry.id}
-                    entry={entry}
-                    position={position}
-                    config={config}
-                    canDelete={canDelete}
-                    onPositionUpdate={handlePositionUpdate}
-                    onDelete={handleDelete}
-                    onImageClick={(images, index) => {
-                      setLightboxImages(images);
-                      setLightboxIndex(index);
-                    }}
-                  />
-                );
-              })}
-            </div>
+              isPrimaryOrAdmin={isPrimaryOrAdmin}
+              userId={user?.id}
+            />
           </DndProvider>
         )}
       </GlassPageLayout>
