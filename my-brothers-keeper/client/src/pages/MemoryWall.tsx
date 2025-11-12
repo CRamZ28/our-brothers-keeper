@@ -71,18 +71,23 @@ function getRotationForId(id: number): number {
   return rotations[id % rotations.length];
 }
 
-// Helper: Generate deterministic initial position for new cards (staggered grid)
+// Helper: Generate deterministic initial position for new cards (compact overlapping layout)
 function getInitialPosition(index: number): { x: number; y: number } {
-  const cols = 4;
+  const cols = 5; // More columns for compact layout
   const row = Math.floor(index / cols);
   const col = index % cols;
-  const cardWidth = 320;
-  const cardHeight = 400;
-  const gap = 40;
+  
+  // Compact spacing for overlapping effect
+  const horizontalSpacing = 180; // Cards overlap significantly
+  const verticalSpacing = 200;   // Cards overlap vertically too
+  
+  // Add deterministic "random" offset for organic Pinterest feel
+  const randomOffsetX = ((index * 37) % 60) - 30; // -30 to +30px
+  const randomOffsetY = ((index * 53) % 80) - 40; // -40 to +40px
   
   return {
-    x: 50 + col * (cardWidth + gap),
-    y: 50 + row * (cardHeight + gap),
+    x: 40 + col * horizontalSpacing + randomOffsetX,
+    y: 40 + row * verticalSpacing + randomOffsetY,
   };
 }
 
