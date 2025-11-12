@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
-import { Users, Plus, Heart, Calendar, Quote as QuoteIcon } from "lucide-react";
+import { Users, Plus, Heart, Calendar, Quote as QuoteIcon, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 
@@ -11,6 +11,8 @@ export default function Dashboard() {
   const { data: users } = trpc.user.listInHousehold.useQuery();
   const { data: needs } = trpc.needs.list.useQuery();
   const { data: events } = trpc.events.list.useQuery();
+  const { data: userClaims } = trpc.needs.listUserClaims.useQuery();
+  const { data: userMealSignups } = trpc.mealTrain.listUserSignups.useQuery();
 
   if (!household) {
     return (
@@ -31,6 +33,8 @@ export default function Dashboard() {
     const eventDate = new Date(e.startAt);
     return eventDate >= now && eventDate <= oneWeekFromNow;
   }) || [];
+
+  const totalCommitments = (userClaims?.length || 0) + (userMealSignups?.length || 0);
 
   return (
     <DashboardLayout>
@@ -72,8 +76,8 @@ export default function Dashboard() {
           <DashboardDisplay household={household} />
         </div>
 
-        {/* Three Square Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Four Square Cards Grid - 2x2 on desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
           {/* Card 1: Supporters */}
           <div 
@@ -266,6 +270,68 @@ export default function Dashboard() {
                 onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
               >
                 View Calendar
+              </button>
+            </Link>
+          </div>
+
+          {/* Card 4: My Commitments */}
+          <div 
+            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
+            style={{
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
+                <CheckCircle2 className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-lg font-semibold text-foreground">My Commitments</h2>
+            </div>
+
+            {/* Large number with teal accent bar */}
+            <div className="mb-6">
+              <div className="text-5xl font-bold text-foreground mb-2">{totalCommitments}</div>
+              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
+            </div>
+
+            {/* Preview items */}
+            <div className="flex-1 space-y-3 mb-6">
+              {totalCommitments === 0 ? (
+                <div 
+                  className="p-3 rounded-lg text-center text-sm text-foreground/70 italic"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  No active commitments
+                </div>
+              ) : (
+                <>
+                  {userClaims?.slice(0, 2).map((need) => (
+                    <CommitmentCard key={`need-${need.id}`} item={need} type="need" />
+                  ))}
+                  {userMealSignups?.slice(0, 2 - (userClaims?.length || 0)).map((signup) => (
+                    <CommitmentCard key={`meal-${signup.id}`} item={signup} type="meal" />
+                  ))}
+                </>
+              )}
+            </div>
+
+            {/* Button at bottom */}
+            <Link href="/needs">
+              <button 
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                style={{
+                  backgroundColor: '#B08CA7',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+              >
+                View All
               </button>
             </Link>
           </div>
@@ -494,6 +560,108 @@ function NeedCard({ need }: { need: any }) {
                   year: "numeric"
                 })}
               </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  if (type === 'need') {
+    return (
+      <div 
+        className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
+        style={{
+          background: 'rgba(255, 255, 255, 0.3)',
+          maxHeight: isHovered ? '200px' : '70px',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2">
+              {item.title}
+            </p>
+          </div>
+          <div className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium" style={{
+            background: 'rgba(45, 181, 168, 0.2)',
+            color: '#2DB5A8'
+          }}>
+            Need
+          </div>
+        </div>
+        
+        {isHovered && (
+          <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+            {item.category && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-foreground/80">Category:</span>
+                <span className="text-xs text-foreground/70 capitalize">{item.category}</span>
+              </div>
+            )}
+            {item.dueAt && (
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-foreground/80">Due:</span>
+                <span className="text-xs text-foreground/70">
+                  {new Date(item.dueAt).toLocaleDateString("en-US", { 
+                    month: "short", 
+                    day: "numeric",
+                    year: "numeric"
+                  })}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }
+  
+  return (
+    <div 
+      className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
+      style={{
+        background: 'rgba(255, 255, 255, 0.3)',
+        maxHeight: isHovered ? '200px' : '70px',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2">
+            Meal Delivery
+          </p>
+        </div>
+        <div className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium" style={{
+          background: 'rgba(176, 140, 167, 0.2)',
+          color: '#B08CA7'
+        }}>
+          Meal
+        </div>
+      </div>
+      
+      {isHovered && (
+        <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-foreground/80">Date:</span>
+            <span className="text-xs text-foreground/70">
+              {new Date(item.date).toLocaleDateString("en-US", { 
+                month: "short", 
+                day: "numeric",
+                year: "numeric"
+              })}
+            </span>
+          </div>
+          {item.note && (
+            <div>
+              <p className="text-xs font-medium text-foreground/80 mb-1">Note:</p>
+              <p className="text-xs text-foreground/70 line-clamp-2">{item.note}</p>
             </div>
           )}
         </div>

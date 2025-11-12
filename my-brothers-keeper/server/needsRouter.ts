@@ -35,6 +35,33 @@ export const needsRouter = router({
     return needsWithUserClaim;
   }),
 
+  // List needs claimed by the current user
+  listUserClaims: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user.householdId) {
+      return [];
+    }
+
+    const allNeeds = await db.getNeedsByHousehold(ctx.user.householdId);
+
+    // Filter to only needs with active claims by this user
+    const userClaimedNeeds = allNeeds.filter(need => {
+      return need.claims?.some((claim: any) => 
+        claim.userId === ctx.user.id && claim.status === 'claimed'
+      );
+    });
+
+    // Filter by visibility (user should see needs they claimed even if visibility changed)
+    const visibleNeeds = await filterByVisibility(
+      userClaimedNeeds,
+      ctx.user.id,
+      ctx.user.role,
+      ctx.user.accessTier,
+      ctx.user.householdId
+    );
+
+    return visibleNeeds;
+  }),
+
   // Get a single need with claims
   get: protectedProcedure
     .input(z.object({ id: z.number() }))

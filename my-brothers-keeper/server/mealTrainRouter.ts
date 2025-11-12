@@ -64,6 +64,36 @@ export const mealTrainRouter = router({
     return await db.getMealSignupsByMealTrain(mealTrain.id);
   }),
 
+  // Get meal signups for the current user
+  listUserSignups: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.user.householdId) {
+      return [];
+    }
+
+    const mealTrain = await db.getMealTrainByHousehold(ctx.user.householdId);
+    if (!mealTrain) {
+      return [];
+    }
+
+    // Check if user can see the meal train
+    const visibleMealTrains = await filterByVisibility(
+      [mealTrain],
+      ctx.user.id,
+      ctx.user.role,
+      ctx.user.accessTier,
+      ctx.user.householdId
+    );
+
+    if (visibleMealTrains.length === 0) {
+      return [];
+    }
+
+    const allSignups = await db.getMealSignupsByMealTrain(mealTrain.id);
+    
+    // Filter to only signups by this user
+    return allSignups.filter(signup => signup.userId === ctx.user.id);
+  }),
+
   // Get meal train days
   getDays: protectedProcedure
     .input(z.object({ mealTrainId: z.number() }))
