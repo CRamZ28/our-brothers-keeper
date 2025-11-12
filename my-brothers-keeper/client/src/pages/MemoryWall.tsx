@@ -376,8 +376,11 @@ export default function MemoryWall() {
 
     saveTimeoutRef.current = setTimeout(() => {
       savePositionMutation.mutate(
-        { memoryId, x: newX, y: newY, rotation: currentPosition.rotation },
+        { memoryId, x: newX, y: newY, rotation: currentPosition.rotation ?? 0 },
         {
+          onSuccess: () => {
+            console.log("Position saved successfully");
+          },
           onError: (error) => {
             console.error("Failed to save position:", error);
             toast.error("Failed to save card position");
