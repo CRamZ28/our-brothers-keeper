@@ -175,18 +175,7 @@ export default function Dashboard() {
                 </div>
               ) : (
                 openNeeds.slice(0, 2).map((need) => (
-                  <div 
-                    key={need.id}
-                    className="p-3 rounded-lg"
-                    style={{
-                      background: 'rgba(255, 255, 255, 0.3)'
-                    }}
-                  >
-                    <p className="text-sm font-medium text-foreground truncate">{need.title}</p>
-                    {need.description && (
-                      <p className="text-xs text-foreground/70 truncate mt-1">{need.description}</p>
-                    )}
-                  </div>
+                  <NeedCard key={need.id} need={need} />
                 ))
               )}
             </div>
@@ -431,5 +420,84 @@ function FeaturedMemory({ memoryId }: { memoryId?: number | null }) {
     <p className="text-foreground/70 text-sm italic px-6 text-center">
       Featured memory display coming soon. This will show a selected memory from your Memory Wall.
     </p>
+  );
+}
+
+function NeedCard({ need }: { need: any }) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const claimCount = need.claimCount || 0;
+  const capacity = need.capacity;
+  const hasCapacity = capacity !== null && capacity !== undefined;
+  
+  return (
+    <div 
+      className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
+      style={{
+        background: 'rgba(255, 255, 255, 0.3)',
+        maxHeight: isHovered ? '300px' : '80px',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2 flex-1">
+          {need.title}
+        </p>
+        {hasCapacity && (
+          <div className="flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap" style={{
+            background: claimCount >= capacity ? '#B08CA7' : '#2DB5A8',
+            color: 'white'
+          }}>
+            {claimCount} of {capacity}
+          </div>
+        )}
+      </div>
+      
+      {isHovered && (
+        <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          {need.details && (
+            <div>
+              <p className="text-xs font-medium text-foreground/80 mb-1">Details:</p>
+              <p className="text-xs text-foreground/70 line-clamp-3">{need.details}</p>
+            </div>
+          )}
+          {need.category && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-foreground/80">Category:</span>
+              <span className="text-xs px-2 py-0.5 rounded" style={{
+                background: 'rgba(45, 181, 168, 0.2)',
+                color: '#2DB5A8'
+              }}>
+                {need.category}
+              </span>
+            </div>
+          )}
+          {need.priority && need.priority !== 'normal' && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-foreground/80">Priority:</span>
+              <span className="text-xs px-2 py-0.5 rounded capitalize" style={{
+                background: need.priority === 'urgent' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(251, 191, 36, 0.2)',
+                color: need.priority === 'urgent' ? '#ef4444' : '#f59e0b'
+              }}>
+                {need.priority}
+              </span>
+            </div>
+          )}
+          {need.dueAt && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-foreground/80">Due:</span>
+              <span className="text-xs text-foreground/70">
+                {new Date(need.dueAt).toLocaleDateString("en-US", { 
+                  month: "short", 
+                  day: "numeric",
+                  year: "numeric"
+                })}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
