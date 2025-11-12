@@ -375,18 +375,28 @@ export default function MemoryWall() {
     }
 
     saveTimeoutRef.current = setTimeout(() => {
-      savePositionMutation.mutate(
-        { memoryId, x: newX, y: newY, rotation: currentPosition.rotation ?? 0 },
-        {
-          onSuccess: () => {
-            console.log("Position saved successfully");
-          },
-          onError: (error) => {
-            console.error("Failed to save position:", error);
-            toast.error("Failed to save card position");
-          },
-        }
-      );
+      const payload = { 
+        memoryId, 
+        x: Math.round(newX), 
+        y: Math.round(newY), 
+        rotation: currentPosition.rotation ?? 0 
+      };
+      console.log("Saving position:", payload);
+      
+      savePositionMutation.mutate(payload, {
+        onSuccess: (data) => {
+          console.log("Position saved successfully:", data);
+        },
+        onError: (error: any) => {
+          console.error("Failed to save position:", {
+            error,
+            message: error?.message,
+            data: error?.data,
+            payload,
+          });
+          toast.error(`Failed to save card position: ${error?.message || 'Unknown error'}`);
+        },
+      });
     }, 500);
   };
 

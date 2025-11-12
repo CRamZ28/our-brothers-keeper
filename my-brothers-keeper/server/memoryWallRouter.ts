@@ -124,19 +124,37 @@ export const memoryWallRouter = router({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      if (!ctx.user.householdId) {
-        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      try {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        console.log("[MemoryWall] Saving position:", {
+          userId: ctx.user.id,
+          householdId: ctx.user.householdId,
+          memoryId: input.memoryId,
+          x: input.x,
+          y: input.y,
+          rotation: input.rotation || 0,
+        });
+
+        await db.saveMemoryWallPosition({
+          userId: ctx.user.id,
+          householdId: ctx.user.householdId,
+          memoryId: input.memoryId,
+          x: input.x,
+          y: input.y,
+          rotation: input.rotation || 0,
+        });
+
+        console.log("[MemoryWall] Position saved successfully");
+        return { success: true };
+      } catch (error) {
+        console.error("[MemoryWall] Error saving position:", error);
+        throw new TRPCError({ 
+          code: "INTERNAL_SERVER_ERROR", 
+          message: `Failed to save position: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        });
       }
-
-      await db.saveMemoryWallPosition({
-        userId: ctx.user.id,
-        householdId: ctx.user.householdId,
-        memoryId: input.memoryId,
-        x: input.x,
-        y: input.y,
-        rotation: input.rotation || 0,
-      });
-
-      return { success: true };
     }),
 });
