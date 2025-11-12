@@ -22,8 +22,6 @@ import { trpc } from "@/lib/trpc";
 import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
-import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
 
 const typeConfig = {
   memory: {
@@ -86,73 +84,36 @@ interface CardPosition {
   rotation: number;
 }
 
-interface DragItem {
-  id: number;
-  x: number;
-  y: number;
-}
-
-interface DragCollected {
-  opacity: number;
-}
-
-interface DraggableCardProps {
+interface VisionBoardCardProps {
   entry: any;
   position: CardPosition;
   config: any;
   canDelete: boolean;
-  onPositionUpdate: (memoryId: number, x: number, y: number, rotation: number) => void;
   onDelete: (id: number) => void;
   onImageClick: (images: string[], index: number) => void;
 }
 
-const DraggableMemoryCard = ({ entry, position, config, canDelete, onPositionUpdate, onDelete, onImageClick }: DraggableCardProps) => {
-  const [isDragging, setIsDragging] = useState(false);
+const VisionBoardCard = ({ entry, position, config, canDelete, onDelete, onImageClick }: VisionBoardCardProps) => {
   const Icon = config.icon;
-
-  const [{ opacity }, drag] = useDrag<DragItem, unknown, DragCollected>({
-    type: 'MEMORY_CARD',
-    item: () => {
-      setIsDragging(true);
-      return { id: entry.id, x: position.x, y: position.y };
-    },
-    end: (item, monitor) => {
-      setIsDragging(false);
-      const delta = monitor.getDifferenceFromInitialOffset();
-      if (delta) {
-        const newX = Math.round(position.x + delta.x);
-        const newY = Math.round(position.y + delta.y);
-        onPositionUpdate(entry.id, newX, newY, position.rotation);
-      }
-    },
-    collect: (monitor) => ({
-      opacity: monitor.isDragging() ? 0.5 : 1,
-    }),
-  });
 
   return (
     <div
-      ref={drag as any}
       className="absolute transition-all duration-200"
       style={{
         left: position.x,
         top: position.y,
         transform: `rotate(${position.rotation}deg)`,
-        opacity,
-        zIndex: isDragging ? 1000 : 1,
-        cursor: isDragging ? 'grabbing' : 'grab',
+        zIndex: 1,
         width: '320px',
       }}
     >
       <div
-        className="rounded-2xl p-5 shadow-2xl border-2 transition-all duration-300"
+        className="rounded-2xl p-5 shadow-2xl border-2"
         style={{
           background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
           backdropFilter: 'blur(20px)',
           borderColor: `${config.color}40`,
-          boxShadow: isDragging 
-            ? `0 20px 60px rgba(0,0,0,0.4), 0 0 20px ${config.color}40`
-            : `0 10px 30px rgba(0,0,0,0.2), 0 0 10px ${config.color}20`,
+          boxShadow: `0 10px 30px rgba(0,0,0,0.2), 0 0 10px ${config.color}20`,
         }}
       >
         {/* Header */}
@@ -234,65 +195,6 @@ const DraggableMemoryCard = ({ entry, position, config, canDelete, onPositionUpd
   );
 };
 
-// Vision Board Stage component (must be inside DndProvider)
-const VisionBoardStage: React.FC<{
-  stageRef: React.RefObject<HTMLDivElement>;
-  entries: any[];
-  positions: Record<number, CardPosition>;
-  handlePositionUpdate: (memoryId: number, x: number, y: number, rotation: number) => void;
-  handleDelete: (entryId: number) => void;
-  onImageClick: (images: string[], index: number) => void;
-  isPrimaryOrAdmin: boolean;
-  userId?: number;
-}> = ({ stageRef, entries, positions, handlePositionUpdate, handleDelete, onImageClick, isPrimaryOrAdmin, userId }) => {
-  // useDrop hook MUST be inside a component wrapped by DndProvider
-  const [, drop] = useDrop(() => ({
-    accept: 'MEMORY_CARD',
-    drop: () => undefined,
-  }));
-
-  return (
-    <div 
-      ref={(node) => {
-        if (stageRef) {
-          (stageRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
-        }
-        drop(node);
-      }}
-      className="relative overflow-auto rounded-2xl p-4"
-      style={{
-        minHeight: '800px',
-        height: 'calc(100vh - 300px)',
-        backdropFilter: 'blur(6px)',
-        WebkitBackdropFilter: 'blur(6px)',
-        background: 'rgba(255, 255, 255, 0.05)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-      }}
-    >
-      {entries.map((entry) => {
-        const position = positions[entry.id];
-        if (!position) return null;
-        
-        const config = typeConfig[entry.type as EntryType];
-        const canDelete = entry.authorId === userId || isPrimaryOrAdmin;
-        
-        return (
-          <DraggableMemoryCard
-            key={entry.id}
-            entry={entry}
-            position={position}
-            config={config}
-            canDelete={canDelete}
-            onPositionUpdate={handlePositionUpdate}
-            onDelete={handleDelete}
-            onImageClick={onImageClick}
-          />
-        );
-      })}
-    </div>
-  );
-};
-
 export default function MemoryWall() {
   const { user } = useAuth();
   const [filter, setFilter] = useState<EntryType | "all">("all");
@@ -304,16 +206,12 @@ export default function MemoryWall() {
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [positions, setPositions] = useState<Record<number, CardPosition>>({});
-  const stageRef = useRef<HTMLDivElement>(null);
-  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
   );
-  const { data: savedPositions } = trpc.memoryWall.getPositions.useQuery(undefined);
   const createMutation = trpc.memoryWall.create.useMutation();
   const deleteMutation = trpc.memoryWall.delete.useMutation();
-  const savePositionMutation = trpc.memoryWall.savePosition.useMutation();
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -390,69 +288,24 @@ export default function MemoryWall() {
     }
   };
 
-  // Hydrate positions from saved data on mount/update
+  // Generate deterministic positions for vision board layout
   useEffect(() => {
-    if (!entries || !savedPositions) return;
+    if (!entries) return;
 
     const newPositions: Record<number, CardPosition> = {};
     
     entries.forEach((entry, index) => {
-      const saved = savedPositions.find((p: any) => p.memoryId === entry.id);
-      
-      if (saved) {
-        // Use saved position
-        newPositions[entry.id] = {
-          memoryId: entry.id,
-          x: saved.x,
-          y: saved.y,
-          rotation: saved.rotation,
-        };
-      } else {
-        // Generate initial position for new cards
-        const initial = getInitialPosition(index);
-        newPositions[entry.id] = {
-          memoryId: entry.id,
-          x: initial.x,
-          y: initial.y,
-          rotation: getRotationForId(entry.id),
-        };
-      }
+      const { x, y } = getInitialPosition(index);
+      newPositions[entry.id] = {
+        memoryId: entry.id,
+        x,
+        y,
+        rotation: getRotationForId(entry.id),
+      };
     });
 
     setPositions(newPositions);
-  }, [entries, savedPositions]);
-
-  // Save position with debouncing
-  const handlePositionUpdate = (memoryId: number, x: number, y: number, rotation: number) => {
-    // Boundary clamping
-    const maxX = (stageRef.current?.clientWidth || 1600) - 350; // Card width + padding
-    const maxY = (stageRef.current?.clientHeight || 2000) - 450; // Card height + padding
-    const clampedX = Math.max(20, Math.min(x, maxX));
-    const clampedY = Math.max(20, Math.min(y, maxY));
-
-    // Optimistic update
-    setPositions(prev => ({
-      ...prev,
-      [memoryId]: { memoryId, x: clampedX, y: clampedY, rotation },
-    }));
-
-    // Debounced save - ACTUALLY CALL THE MUTATION
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      savePositionMutation.mutate(
-        { memoryId, x: clampedX, y: clampedY, rotation },
-        {
-          onError: (error) => {
-            console.error("Failed to save position:", error);
-            toast.error("Failed to save card position");
-          },
-        }
-      );
-    }, 400);
-  };
+  }, [entries]);
 
   const handleDelete = async (entryId: number) => {
     if (!confirm("Are you sure you want to delete this entry?")) return;
@@ -669,21 +522,40 @@ export default function MemoryWall() {
             </p>
           </div>
         ) : (
-          <DndProvider backend={HTML5Backend}>
-            <VisionBoardStage
-              stageRef={stageRef}
-              entries={entries}
-              positions={positions}
-              handlePositionUpdate={handlePositionUpdate}
-              handleDelete={handleDelete}
-              onImageClick={(images, index) => {
-                setLightboxImages(images);
-                setLightboxIndex(index);
-              }}
-              isPrimaryOrAdmin={isPrimaryOrAdmin}
-              userId={user?.id}
-            />
-          </DndProvider>
+          <div 
+            className="relative overflow-auto rounded-2xl p-4"
+            style={{
+              minHeight: '800px',
+              height: 'calc(100vh - 300px)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              background: 'rgba(255, 255, 255, 0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            {entries.map((entry) => {
+              const position = positions[entry.id];
+              if (!position) return null;
+              
+              const config = typeConfig[entry.type as EntryType];
+              const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
+              
+              return (
+                <VisionBoardCard
+                  key={entry.id}
+                  entry={entry}
+                  position={position}
+                  config={config}
+                  canDelete={canDelete}
+                  onDelete={handleDelete}
+                  onImageClick={(images, index) => {
+                    setLightboxImages(images);
+                    setLightboxIndex(index);
+                  }}
+                />
+              );
+            })}
+          </div>
         )}
       </GlassPageLayout>
 
