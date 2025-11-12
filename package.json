@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/utilities": "^3.2.2",
     "@google-cloud/storage": "^7.17.3",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/express-session": "^1.18.2",
