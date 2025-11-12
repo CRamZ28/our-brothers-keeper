@@ -695,6 +695,27 @@ export type MemoryWallEntry = typeof memoryWall.$inferSelect;
 export type InsertMemoryWallEntry = typeof memoryWall.$inferInsert;
 
 /**
+ * Memory Wall Positions - User-specific card positions for vision board layout
+ */
+export const memoryWallPositions = pgTable("memory_wall_positions", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id").notNull(),
+  householdId: integer("household_id").notNull(),
+  memoryId: integer("memory_id").notNull(),
+  x: integer("x").notNull(), // X position in pixels
+  y: integer("y").notNull(), // Y position in pixels
+  rotation: integer("rotation").default(0).notNull(), // Rotation angle in degrees
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+}, (table) => ({
+  userMemoryIdx: uniqueIndex("memory_wall_positions_user_memory_idx").on(table.userId, table.householdId, table.memoryId),
+  householdIdx: index("memory_wall_positions_household_idx").on(table.householdId),
+}));
+
+export type MemoryWallPosition = typeof memoryWallPositions.$inferSelect;
+export type InsertMemoryWallPosition = typeof memoryWallPositions.$inferInsert;
+
+/**
  * Gift Registry - Wishlist for family to share needed items
  */
 export const giftRegistry = pgTable("gift_registry", {
