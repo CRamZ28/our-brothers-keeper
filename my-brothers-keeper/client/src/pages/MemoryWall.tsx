@@ -396,10 +396,10 @@ export default function MemoryWall() {
   };
 
   // useDrop for the stage to make it a valid drop target
-  const [, drop] = useDrop({
+  const [, drop] = useDrop(() => ({
     accept: 'MEMORY_CARD',
     drop: () => undefined,
-  });
+  }));
 
   const handleDelete = async (entryId: number) => {
     if (!confirm("Are you sure you want to delete this entry?")) return;
