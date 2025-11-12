@@ -35,7 +35,7 @@ The UI/UX features a consistent glassmorphism design system with teal gradients 
 - **Dashboard**: Centered family name, customizable display area (photo, slideshow, quote, memory), and three equal square cards for Supporters, Open Needs, and Upcoming Events. Cards feature white icons on a solid teal background, large numbers, teal gradient accent bars, and Mauve Purple action buttons with hover effects.
 - **Responsive Design**: Adapts glass containers and mobile headers across breakpoints.
 - **Calendar UI Consistency**: Uniform transparent glassmorphism styling across Events, Needs, and Meal Train calendars, with distinct color coding for upcoming (mauve purple) and past (grayscale) entries.
-- **Memory Wall**: Vision board aesthetic with overlapping cards, random rotations, varied sizes, decorative tape, and vibrant color coding.
+- **Memory Wall**: Interactive drag-and-drop vision board with overlapping cards, random rotations, and vibrant color coding. Cards are freely draggable with position persistence, using dnd-kit for smooth interactions.
 
 ### Technical Implementations & Feature Specifications
 - **Meal Train Management**: Comprehensive meal coordination with day scheduling, configurable "Days Ahead Control," daily capacity controls, and dietary preference management. Includes the standardized 3-option visibility model.
@@ -43,7 +43,7 @@ The UI/UX features a consistent glassmorphism design system with teal gradients 
 - **Needs Board**: Community support requests with group filtering and an "Unclaim Functionality" for users to release claimed needs, triggering email notifications to admin/primary users.
 - **Events Calendar**: Event scheduling and coordination, including an "Important Dates" feature for tracking recurring dates like birthdays and anniversaries, restricted to admin/primary users.
 - **Family Updates**: A unified timeline for announcements and personal updates (Announcement, General Update, Gratitude, Memory, Milestone) supporting media uploads and pinned announcements.
-- **Memory Wall**: A community collage for memories, stories, encouragement, and prayers with image uploads and filtering.
+- **Memory Wall**: Interactive drag-and-drop community collage for memories, stories, encouragement, prayers, and pictures with image uploads, filtering, and position persistence via dnd-kit.
 - **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
 - **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.
 - **Access Tier System**: Three-tier access control (Community/Friend/Family) with invisible tiering. Users select their tier upon joining, and admin/primary users can approve upgrades. Includes optional auto-promotion after a configurable duration.
@@ -66,6 +66,7 @@ The UI/UX features a consistent glassmorphism design system with teal gradients 
 ### System Design Choices
 - **Security & Privacy Architecture**: Production-ready, centralized visibility system (`server/visibilityHelpers.ts`) with a "Five-Step Security Pattern" for endpoint validation. Security is optimized by caching group membership and validated by 17 automated tests.
 - **Database Management**: Uses Drizzle ORM's **push workflow** for schema management, defining changes in `drizzle/schema.ts` and applying via `npm run db:push`.
+- **React Deduplication**: Vite config includes `dedupe: ["react", "react-dom"]` to prevent "Invalid hook call" errors caused by multiple React instances in node_modules.
 
 ## External Dependencies
 - **Database**: PostgreSQL
