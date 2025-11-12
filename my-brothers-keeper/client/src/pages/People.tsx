@@ -633,7 +633,7 @@ export default function People() {
                       <Camera className="w-4 h-4 mr-2" />
                       {uploading ? "Uploading..." : "Change Photo"}
                     </Button>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-600">
                       Max 5MB. JPG, PNG, or GIF
                     </p>
                   </div>

@@ -822,7 +822,7 @@ function MealTrainConfigDialog({
               placeholder="123 Main St, Anytown, USA 12345"
               rows={2}
             />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               Anyone who can see the meal train will see the address
             </p>
           </div>
@@ -836,7 +836,7 @@ function MealTrainConfigDialog({
               onChange={(e) => setPeopleCount(e.target.value)}
               placeholder="4"
             />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               How many people should each meal serve?
             </p>
           </div>
@@ -852,7 +852,7 @@ function MealTrainConfigDialog({
               onChange={(e) => setDailyCapacity(parseInt(e.target.value) || 1)}
               placeholder="1"
             />
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               Maximum number of volunteers allowed per day (1-10)
             </p>
           </div>

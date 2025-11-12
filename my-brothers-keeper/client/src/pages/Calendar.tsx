@@ -430,7 +430,7 @@ export default function Calendar() {
                         value={capacity}
                         onChange={(e) => setCapacity(e.target.value)}
                       />
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-gray-600">
                         Set a limit for RSVPs (e.g., "Dinner for 6"). Leave empty for open attendance.
                       </p>
                     </div>
@@ -448,7 +448,7 @@ export default function Calendar() {
                           <SelectItem value="holiday">Holiday</SelectItem>
                         </SelectContent>
                       </Select>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-gray-600">
                         Important dates (birthdays, anniversaries, etc.) will appear prominently on the calendar
                       </p>
                     </div>
@@ -466,7 +466,7 @@ export default function Calendar() {
                             Recurring (repeats yearly)
                           </Label>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-600">
                           Enable for birthdays and anniversaries to automatically repeat each year
                         </p>
                       </div>
@@ -478,7 +478,7 @@ export default function Calendar() {
                           selectedUserIds={associatedUserId ? [associatedUserId] : []}
                           onChange={(ids) => setAssociatedUserId(ids[0] || "")}
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-600">
                           Link this date to a specific person (e.g., whose birthday it is)
                         </p>
                       </div>
@@ -1193,7 +1193,7 @@ export default function Calendar() {
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   Set a limit for RSVPs (e.g., "Dinner for 6"). Leave empty for open attendance.
                 </p>
               </div>
@@ -1211,7 +1211,7 @@ export default function Calendar() {
                     <SelectItem value="holiday">Holiday</SelectItem>
                   </SelectContent>
                 </Select>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   Important dates (birthdays, anniversaries, etc.) will appear prominently on the calendar
                 </p>
               </div>
@@ -1229,7 +1229,7 @@ export default function Calendar() {
                       Recurring (repeats yearly)
                     </Label>
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-600">
                     Enable for birthdays and anniversaries to automatically repeat each year
                   </p>
                 </div>
@@ -1241,7 +1241,7 @@ export default function Calendar() {
                     selectedUserIds={associatedUserId ? [associatedUserId] : []}
                     onChange={(ids) => setAssociatedUserId(ids[0] || "")}
                   />
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-gray-600">
                     Link this date to a specific person (e.g., whose birthday it is)
                   </p>
                 </div>

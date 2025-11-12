@@ -406,7 +406,7 @@ export default function AdminTools() {
                           ))
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-gray-600">
                         {selectedMembers.length} member{selectedMembers.length !== 1 ? "s" : ""}{" "}
                         selected
                       </p>

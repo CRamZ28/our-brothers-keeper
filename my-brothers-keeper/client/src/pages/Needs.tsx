@@ -589,7 +589,7 @@ export default function Needs() {
                       value={capacity}
                       onChange={(e) => setCapacity(e.target.value)}
                     />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-600">
                       Set how many people can claim this (e.g., "1" for grocery run, "3" for moving help). Leave empty for unlimited.
                     </p>
                   </div>
@@ -708,7 +708,7 @@ export default function Needs() {
                   value={capacity}
                   onChange={(e) => setCapacity(e.target.value)}
                 />
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600">
                   Set how many people can claim this (e.g., "1" for grocery run, "3" for moving help). Leave empty for unlimited.
                 </p>
               </div>
