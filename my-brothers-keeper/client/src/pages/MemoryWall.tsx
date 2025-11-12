@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn } from "lucide-react";
+import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn, Image } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { DndContext, useDraggable, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
@@ -53,6 +53,13 @@ const typeConfig = {
     color: "#B08CA7",
     gradientFrom: "rgba(176, 140, 167, 0.15)",
     gradientTo: "rgba(176, 140, 167, 0.05)",
+  },
+  picture: {
+    label: "Picture",
+    icon: Image,
+    color: "#EC4899",
+    gradientFrom: "rgba(236, 72, 153, 0.15)",
+    gradientTo: "rgba(236, 72, 153, 0.05)",
   },
 };
 
