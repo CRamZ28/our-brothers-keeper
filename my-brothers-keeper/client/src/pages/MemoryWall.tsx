@@ -22,6 +22,8 @@ import { trpc } from "@/lib/trpc";
 import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { DndContext, useDraggable, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
+import { CSS } from "@dnd-kit/utilities";
 
 const typeConfig = {
   memory: {
@@ -95,17 +97,29 @@ interface VisionBoardCardProps {
 
 const VisionBoardCard = ({ entry, position, config, canDelete, onDelete, onImageClick }: VisionBoardCardProps) => {
   const Icon = config.icon;
+  
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `memory-${entry.id}`,
+    data: { memoryId: entry.id, position },
+  });
+
+  const style = {
+    left: position.x,
+    top: position.y,
+    transform: CSS.Transform.toString(transform) + ` rotate(${position.rotation}deg)`,
+    zIndex: isDragging ? 1000 : 1,
+    width: '320px',
+    cursor: isDragging ? 'grabbing' : 'grab',
+    opacity: isDragging ? 0.8 : 1,
+  };
 
   return (
     <div
-      className="absolute transition-all duration-200"
-      style={{
-        left: position.x,
-        top: position.y,
-        transform: `rotate(${position.rotation}deg)`,
-        zIndex: 1,
-        width: '320px',
-      }}
+      ref={setNodeRef}
+      className="absolute transition-opacity duration-200"
+      style={style}
+      {...attributes}
+      {...listeners}
     >
       <div
         className="rounded-2xl p-5 shadow-2xl border-2"
@@ -210,8 +224,20 @@ export default function MemoryWall() {
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
   );
+  const { data: persistedPositions } = trpc.memoryWall.getPositions.useQuery();
   const createMutation = trpc.memoryWall.create.useMutation();
   const deleteMutation = trpc.memoryWall.delete.useMutation();
+  const savePositionMutation = trpc.memoryWall.savePosition.useMutation();
+
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    })
+  );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -288,24 +314,71 @@ export default function MemoryWall() {
     }
   };
 
-  // Generate deterministic positions for vision board layout
+  // Merge persisted positions with deterministic defaults
   useEffect(() => {
     if (!entries) return;
 
     const newPositions: Record<number, CardPosition> = {};
     
     entries.forEach((entry, index) => {
-      const { x, y } = getInitialPosition(index);
-      newPositions[entry.id] = {
-        memoryId: entry.id,
-        x,
-        y,
-        rotation: getRotationForId(entry.id),
-      };
+      const persisted = persistedPositions?.find((p: any) => p.memoryId === entry.id);
+      
+      if (persisted) {
+        newPositions[entry.id] = {
+          memoryId: entry.id,
+          x: persisted.x,
+          y: persisted.y,
+          rotation: persisted.rotation || getRotationForId(entry.id),
+        };
+      } else {
+        const { x, y } = getInitialPosition(index);
+        newPositions[entry.id] = {
+          memoryId: entry.id,
+          x,
+          y,
+          rotation: getRotationForId(entry.id),
+        };
+      }
     });
 
     setPositions(newPositions);
-  }, [entries]);
+  }, [entries, persistedPositions]);
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, delta } = event;
+    const memoryId = parseInt(active.id.toString().replace('memory-', ''));
+    const currentPosition = positions[memoryId];
+    
+    if (!currentPosition) return;
+
+    const newX = currentPosition.x + delta.x;
+    const newY = currentPosition.y + delta.y;
+
+    setPositions(prev => ({
+      ...prev,
+      [memoryId]: {
+        ...prev[memoryId],
+        x: newX,
+        y: newY,
+      },
+    }));
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      savePositionMutation.mutate(
+        { memoryId, x: newX, y: newY, rotation: currentPosition.rotation },
+        {
+          onError: (error) => {
+            console.error("Failed to save position:", error);
+            toast.error("Failed to save card position");
+          },
+        }
+      );
+    }, 500);
+  };
 
   const handleDelete = async (entryId: number) => {
     if (!confirm("Are you sure you want to delete this entry?")) return;
@@ -522,40 +595,42 @@ export default function MemoryWall() {
             </p>
           </div>
         ) : (
-          <div 
-            className="relative overflow-auto rounded-2xl p-4"
-            style={{
-              minHeight: '800px',
-              height: 'calc(100vh - 300px)',
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              background: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-            }}
-          >
-            {entries.map((entry) => {
-              const position = positions[entry.id];
-              if (!position) return null;
-              
-              const config = typeConfig[entry.type as EntryType];
-              const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
-              
-              return (
-                <VisionBoardCard
-                  key={entry.id}
-                  entry={entry}
-                  position={position}
-                  config={config}
-                  canDelete={canDelete}
-                  onDelete={handleDelete}
-                  onImageClick={(images, index) => {
-                    setLightboxImages(images);
-                    setLightboxIndex(index);
-                  }}
-                />
-              );
-            })}
-          </div>
+          <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+            <div 
+              className="relative overflow-auto rounded-2xl p-4"
+              style={{
+                minHeight: '800px',
+                height: 'calc(100vh - 300px)',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+              }}
+            >
+              {entries.map((entry) => {
+                const position = positions[entry.id];
+                if (!position) return null;
+                
+                const config = typeConfig[entry.type as EntryType];
+                const canDelete = entry.authorId === user?.id || isPrimaryOrAdmin;
+                
+                return (
+                  <VisionBoardCard
+                    key={entry.id}
+                    entry={entry}
+                    position={position}
+                    config={config}
+                    canDelete={canDelete}
+                    onDelete={handleDelete}
+                    onImageClick={(images, index) => {
+                      setLightboxImages(images);
+                      setLightboxIndex(index);
+                    }}
+                  />
+                );
+              })}
+            </div>
+          </DndContext>
         )}
       </GlassPageLayout>
 
