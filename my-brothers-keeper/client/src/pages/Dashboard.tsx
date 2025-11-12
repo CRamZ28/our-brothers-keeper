@@ -235,27 +235,9 @@ export default function Dashboard() {
                   No events this week
                 </div>
               ) : (
-                upcomingEvents.slice(0, 2).map((event) => {
-                  const eventDate = new Date(event.startAt);
-                  return (
-                    <div 
-                      key={event.id}
-                      className="p-3 rounded-lg"
-                      style={{
-                        background: 'rgba(255, 255, 255, 0.3)'
-                      }}
-                    >
-                      <p className="text-sm font-medium text-foreground truncate">{event.title}</p>
-                      <p className="text-xs text-foreground/70 mt-1">
-                        {eventDate.toLocaleDateString("en-US", { 
-                          weekday: "short", 
-                          month: "short", 
-                          day: "numeric"
-                        })}
-                      </p>
-                    </div>
-                  );
-                })
+                upcomingEvents.slice(0, 2).map((event) => (
+                  <EventCard key={event.id} event={event} />
+                ))
               )}
             </div>
 
@@ -560,6 +542,69 @@ function NeedCard({ need }: { need: any }) {
                   year: "numeric"
                 })}
               </span>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function EventCard({ event }: { event: any }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const eventDate = new Date(event.startAt);
+  const eventEndDate = event.endAt ? new Date(event.endAt) : null;
+
+  return (
+    <div 
+      className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
+      style={{
+        background: 'rgba(255, 255, 255, 0.3)',
+        maxHeight: isHovered ? '250px' : '70px',
+      }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2 flex-1">
+          {event.title}
+        </p>
+      </div>
+      <p className="text-xs text-foreground/70 mt-1">
+        {eventDate.toLocaleDateString("en-US", { 
+          weekday: "short", 
+          month: "short", 
+          day: "numeric"
+        })}
+      </p>
+      
+      {isHovered && (
+        <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-foreground/80">Time:</span>
+            <span className="text-xs text-foreground/70">
+              {eventDate.toLocaleTimeString("en-US", { 
+                hour: "numeric", 
+                minute: "2-digit",
+                hour12: true
+              })}
+              {eventEndDate && ` - ${eventEndDate.toLocaleTimeString("en-US", { 
+                hour: "numeric", 
+                minute: "2-digit",
+                hour12: true
+              })}`}
+            </span>
+          </div>
+          {event.location && (
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-medium text-foreground/80">Location:</span>
+              <span className="text-xs text-foreground/70 line-clamp-1">{event.location}</span>
+            </div>
+          )}
+          {event.description && (
+            <div>
+              <p className="text-xs font-medium text-foreground/80 mb-1">Details:</p>
+              <p className="text-xs text-foreground/70 line-clamp-2">{event.description}</p>
             </div>
           )}
         </div>
