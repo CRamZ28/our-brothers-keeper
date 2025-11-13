@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import Joyride, { CallBackProps, STATUS, EVENTS, Step } from "react-joyride";
 import { trpc } from "@/lib/trpc";
 import { getTourById } from "@/lib/tourConfigs";
+import { useQueryClient } from "@tanstack/react-query";
 
 export interface UseTourOptions {
   tourDbId: number;
@@ -14,6 +15,8 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
   const [run, setRun] = useState(false);
   const [stepIndex, setStepIndex] = useState(0);
   const [steps, setSteps] = useState<Step[]>([]);
+  const queryClient = useQueryClient();
+  const hasManuallyClosedRef = useRef(false);
 
   const { data: progress } = trpc.onboarding.getProgress.useQuery(
     { tourId: tourDbId },
@@ -32,7 +35,7 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
   }, [tourSlug]);
 
   useEffect(() => {
-    if (autoStart && steps.length > 0 && progress?.status !== "completed") {
+    if (autoStart && steps.length > 0 && progress?.status !== "completed" && progress?.status !== "dismissed" && !hasManuallyClosedRef.current) {
       setStepIndex(progress?.lastStep || 0);
       setRun(true);
     }
@@ -55,6 +58,10 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
           });
         }
       } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+        hasManuallyClosedRef.current = true;
+        setRun(false);
+        setStepIndex(0);
+        
         if (status === STATUS.FINISHED) {
           await completeTour.mutateAsync({
             tourId: tourDbId,
@@ -64,14 +71,15 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
             tourId: tourDbId,
           });
         }
-        setRun(false);
-        setStepIndex(0);
+        
+        queryClient.invalidateQueries();
       }
     },
-    [tourDbId, steps.length, updateProgress, completeTour, dismissTour]
+    [tourDbId, steps.length, updateProgress, completeTour, dismissTour, queryClient]
   );
 
   const startTour = useCallback(() => {
+    hasManuallyClosedRef.current = false;
     setStepIndex(progress?.lastStep || 0);
     setRun(true);
   }, [progress]);
