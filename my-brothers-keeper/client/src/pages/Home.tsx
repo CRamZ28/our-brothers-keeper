@@ -24,16 +24,17 @@ export default function Home() {
   // Not authenticated - show landing page
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col relative overflow-hidden">
-        {/* Wavy Teal Background */}
+      <div className="min-h-screen flex flex-col relative">
+        {/* Wavy Teal Background - Fixed */}
         <div 
-          className="absolute inset-0"
+          className="fixed inset-0"
           style={{ 
             backgroundImage: 'url(/waves-bg.png)',
-            backgroundSize: 'contain',
+            backgroundSize: 'cover',
             backgroundPosition: 'center',
             backgroundRepeat: 'no-repeat',
-            backgroundColor: '#0f172a'
+            backgroundColor: '#0f172a',
+            zIndex: 0
           }}
         />
         
