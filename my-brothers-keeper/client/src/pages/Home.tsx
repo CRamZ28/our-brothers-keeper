@@ -27,9 +27,12 @@ export default function Home() {
       <div className="min-h-screen flex flex-col relative overflow-hidden">
         {/* Wavy Teal Background */}
         <div 
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0"
           style={{ 
             backgroundImage: 'url(/waves-bg.png)',
+            backgroundSize: 'contain',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
             backgroundColor: '#0f172a'
           }}
         />
