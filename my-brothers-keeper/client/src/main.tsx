@@ -77,16 +77,12 @@ createRoot(document.getElementById("root")!).render(
   </trpc.Provider>
 );
 
-// Register PWA service worker
+// Unregister any existing service workers to prevent caching issues
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').then(
-      (registration) => {
-        console.log('[PWA] Service Worker registered:', registration);
-      },
-      (error) => {
-        console.log('[PWA] Service Worker registration failed:', error);
-      }
-    );
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => {
+      registration.unregister();
+      console.log('[PWA] Service Worker unregistered');
+    });
   });
 }
