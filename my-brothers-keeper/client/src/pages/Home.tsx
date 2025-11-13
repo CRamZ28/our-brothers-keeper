@@ -642,5 +642,12 @@ export default function Home() {
   }
 
   // User is authenticated - redirect to dashboard
-  return <Link to="/dashboard" />;
+  if (household) {
+    window.location.href = "/dashboard";
+    return null;
+  }
+
+  // User is authenticated but has no household - redirect to onboarding
+  window.location.href = "/onboarding";
+  return null;
 }
