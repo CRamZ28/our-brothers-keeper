@@ -478,16 +478,17 @@ export default function Needs() {
       <GlassPageLayout 
         title={
           <span style={{ 
-            fontSize: '2rem',
-            fontWeight: '700',
+            fontFamily: "'Cinzel', serif",
+            fontWeight: '600',
             letterSpacing: '0.05em',
-            textShadow: '0 0 15px rgba(45, 181, 168, 0.4), 0 0 30px rgba(45, 181, 168, 0.2)',
+            color: '#0fa9a7',
+            filter: 'drop-shadow(0 0 8px rgba(15,169,167,0.7))'
           }}>
-            <span style={{ fontSize: '2rem' }}>N</span>
-            <span style={{ fontVariant: 'small-caps', fontSize: '1.75rem' }}>eeds</span>
+            <span style={{ fontSize: '48px', color: '#1fb5b0' }}>N</span>
+            <span style={{ fontSize: '36px' }}>EEDS</span>
             {' '}
-            <span style={{ fontSize: '2rem' }}>B</span>
-            <span style={{ fontVariant: 'small-caps', fontSize: '1.75rem' }}>oard</span>
+            <span style={{ fontSize: '48px', color: '#1fb5b0' }}>B</span>
+            <span style={{ fontSize: '36px' }}>OARD</span>
           </span>
         }
         actions={
