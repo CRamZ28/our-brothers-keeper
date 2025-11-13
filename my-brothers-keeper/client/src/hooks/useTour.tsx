@@ -45,6 +45,20 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
     async (data: CallBackProps) => {
       const { status, type, index, action } = data;
 
+      // Handle close button click
+      if (action === "close") {
+        hasManuallyClosedRef.current = true;
+        setRun(false);
+        setStepIndex(0);
+        
+        await dismissTour.mutateAsync({
+          tourId: tourDbId,
+        });
+        
+        queryClient.invalidateQueries();
+        return;
+      }
+
       if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type as any)) {
         const nextStepIndex = index + (action === "prev" ? -1 : 1);
         
@@ -141,18 +155,26 @@ export function TourProvider({ tourDbId, tourSlug, autoStart = false, continuous
         },
         tooltip: {
           borderRadius: "16px",
-          padding: "24px",
+          padding: "24px 50px 24px 24px",
           backdropFilter: "blur(20px) saturate(180%)",
           WebkitBackdropFilter: "blur(20px) saturate(180%)",
           background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))",
           border: "2px solid rgba(45, 181, 168, 0.3)",
           boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
+          maxWidth: "500px",
         },
         tooltipContainer: {
           textAlign: "left",
         },
         tooltipContent: {
           padding: "8px 0",
+          fontSize: "15px",
+          lineHeight: "1.6",
+        },
+        tooltipTitle: {
+          fontSize: "18px",
+          fontWeight: "600",
+          marginBottom: "8px",
         },
         buttonNext: {
           backgroundColor: "#2DB5A8",
@@ -176,6 +198,10 @@ export function TourProvider({ tourDbId, tourSlug, autoStart = false, continuous
           color: "#6b7280",
           width: "32px",
           height: "32px",
+          position: "absolute",
+          top: "20px",
+          right: "16px",
+          padding: "4px",
         },
       }}
       locale={{
