@@ -181,6 +181,7 @@ export function TourProvider({ tourDbId, tourSlug, autoStart = false, continuous
           WebkitBackdropFilter: "blur(40px) saturate(180%)",
           background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 248, 248, 0.93))",
           border: "2px solid rgba(176, 140, 167, 0.35)",
+          borderTop: "3px solid rgba(176, 140, 167, 0.5)",
           boxShadow: "0 12px 40px rgba(176, 140, 167, 0.2), 0 0 0 1px rgba(176, 140, 167, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)",
           maxWidth: "720px",
           minWidth: "500px",
@@ -197,6 +198,7 @@ export function TourProvider({ tourDbId, tourSlug, autoStart = false, continuous
           fontSize: "18px",
           fontWeight: "600",
           marginBottom: "8px",
+          color: "#B08CA7",
         },
         buttonNext: {
           backgroundColor: "#2DB5A8",
