@@ -22,16 +22,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const navigationItems = [
-  { icon: Home, label: "Dashboard", path: "/dashboard" },
-  { icon: Heart, label: "Needs", path: "/needs" },
-  { icon: Calendar, label: "Events", path: "/calendar" },
-  { icon: ChefHat, label: "Meal Train", path: "/meal-train" },
-  { icon: MessageSquare, label: "Family Updates", path: "/family-updates" },
-  { icon: BookHeart, label: "Memory Wall", path: "/memory-wall" },
-  { icon: Gift, label: "Gift Registry", path: "/gift-registry" },
-  { icon: Bell, label: "Reminders", path: "/reminders" },
-  { icon: Users, label: "People", path: "/people" },
-  { icon: Settings, label: "Settings", path: "/settings" },
+  { icon: Home, label: "Dashboard", path: "/dashboard", tourId: "dashboard" },
+  { icon: Heart, label: "Needs", path: "/needs", tourId: "needs-nav" },
+  { icon: Calendar, label: "Events", path: "/calendar", tourId: "events-nav" },
+  { icon: ChefHat, label: "Meal Train", path: "/meal-train", tourId: "meal-train-nav" },
+  { icon: MessageSquare, label: "Family Updates", path: "/family-updates", tourId: "updates-nav" },
+  { icon: BookHeart, label: "Memory Wall", path: "/memory-wall", tourId: "memory-wall-nav" },
+  { icon: Gift, label: "Gift Registry", path: "/gift-registry", tourId: "gift-registry-nav" },
+  { icon: Bell, label: "Reminders", path: "/reminders", tourId: "reminders-nav" },
+  { icon: Users, label: "People", path: "/people", tourId: "people-nav" },
+  { icon: Settings, label: "Settings", path: "/settings", tourId: "settings-nav" },
 ];
 
 interface SidebarProps {
@@ -70,6 +70,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
             <button
               key={item.path}
               onClick={() => handleNavigate(item.path)}
+              data-tour={item.tourId}
               className={`
                 relative flex items-center gap-3 h-11 pl-4 pr-4 rounded-xl w-full text-left
                 transition-all duration-200 ease-in-out
