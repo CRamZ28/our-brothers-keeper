@@ -33,24 +33,15 @@ export default function Home() {
         <div className="fixed bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
         <div className="fixed top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>
 
-        {/* Darkening overlay to improve text contrast while preserving glassmorphism */}
-        <div 
-          className="fixed inset-0 pointer-events-none"
-          style={{
-            background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(6, 78, 59, 0.10))',
-            zIndex: 1
-          }}
-        ></div>
-
         <div className="relative z-10">
           {/* Header with Glass Container */}
           <header className="px-10 py-6">
             <div 
-              className="max-w-7xl mx-auto rounded-3xl px-8 py-4 backdrop-blur-lg"
+              className="max-w-7xl mx-auto rounded-3xl px-8 py-4"
               style={{ 
-                background: 'rgba(15, 23, 42, 0.35)',
-                border: '1px solid rgba(255, 255, 255, 0.25)',
-                boxShadow: '0 0 30px rgba(0, 0, 0, 0.2)'
+                background: 'rgba(255, 255, 255, 0.03)',
+                border: '2px solid rgba(255, 255, 255, 0.25)',
+                boxShadow: '0 0 30px rgba(255, 255, 255, 0.1)'
               }}
             >
               <div className="flex items-center justify-between">
@@ -101,9 +92,10 @@ export default function Home() {
               {/* Hero Content */}
               <div className="text-center space-y-8">
                 <div 
-                  className="space-y-6 rounded-3xl p-8 md:p-12 backdrop-blur-lg"
+                  className="space-y-6 rounded-3xl p-8 md:p-12"
                   style={{
-                    background: 'rgba(15, 23, 42, 0.4)',
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(6px)',
                     border: '1px solid rgba(255, 255, 255, 0.2)'
                   }}
                 >
@@ -157,9 +149,10 @@ export default function Home() {
 
               {/* Why OBK Section */}
               <div 
-                className="rounded-3xl p-8 md:p-12 backdrop-blur-lg"
+                className="rounded-3xl p-8 md:p-12"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.4)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(6px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -241,9 +234,10 @@ export default function Home() {
 
               {/* Flexible Control Section */}
               <div 
-                className="rounded-3xl p-8 md:p-10 backdrop-blur-lg"
+                className="rounded-3xl p-8 md:p-10"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.4)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(6px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -336,9 +330,10 @@ export default function Home() {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
                   {/* Feature 1: Needs Board */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -373,9 +368,10 @@ export default function Home() {
 
                   {/* Feature 2: Shared Calendar */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -410,9 +406,10 @@ export default function Home() {
 
                   {/* Feature 3: Meal Train */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -447,9 +444,10 @@ export default function Home() {
 
                   {/* Feature 4: Family Updates */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -484,9 +482,10 @@ export default function Home() {
 
                   {/* Feature 5: Memory Wall */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -521,9 +520,10 @@ export default function Home() {
 
                   {/* Feature 6: Gift Registry */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -558,9 +558,10 @@ export default function Home() {
 
                   {/* Feature 7: People & Groups */}
                   <div 
-                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105 backdrop-blur-lg"
+                    className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      backdropFilter: 'blur(6px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
