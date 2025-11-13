@@ -27,7 +27,10 @@ export default function Dashboard() {
     isAdminOrPrimary ? t.slug === "household.setup.v1" : t.slug === "supporter.welcome.v1"
   );
   
-  const shouldAutoStart = householdTour && !householdTour.progress?.status && householdTour.progress?.status !== "completed" && householdTour.progress?.status !== "dismissed";
+  const shouldAutoStart = householdTour && (
+    !householdTour.progress?.status || 
+    householdTour.progress?.status === "not_started"
+  );
 
   if (!household) {
     return (
