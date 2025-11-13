@@ -4,6 +4,7 @@ import { trpc } from "@/lib/trpc";
 import { Users, Plus, Heart, Calendar, Quote as QuoteIcon, CheckCircle2 } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
+import { TourProvider } from "@/hooks/useTour";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -13,6 +14,20 @@ export default function Dashboard() {
   const { data: events } = trpc.events.list.useQuery();
   const { data: userClaims } = trpc.needs.listUserClaims.useQuery();
   const { data: userMealSignups } = trpc.mealTrain.listUserSignups.useQuery();
+  
+  const { data: availableTours } = trpc.onboarding.listAvailableTours.useQuery(
+    { scope: "household" },
+    { enabled: !!user?.householdId }
+  );
+  
+  const isAdminOrPrimary = user?.role === "admin" || user?.role === "primary";
+  const isSupporter = user?.role === "supporter";
+  
+  const householdTour = availableTours?.find(t => 
+    isAdminOrPrimary ? t.slug === "household.setup.v1" : t.slug === "supporter.welcome.v1"
+  );
+  
+  const shouldAutoStart = householdTour && !householdTour.progress?.status && householdTour.progress?.status !== "completed" && householdTour.progress?.status !== "dismissed";
 
   if (!household) {
     return (
@@ -38,7 +53,15 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+      {householdTour && (
+        <TourProvider
+          tourDbId={householdTour.id}
+          tourSlug={householdTour.slug}
+          autoStart={shouldAutoStart}
+          continuous={true}
+        />
+      )}
+      <div className="p-6 lg:p-8 max-w-6xl mx-auto" data-tour="dashboard">
         
         {/* Top Section - Centered Family Name & Photo */}
         <div className="flex flex-col items-center mb-8 space-y-4">

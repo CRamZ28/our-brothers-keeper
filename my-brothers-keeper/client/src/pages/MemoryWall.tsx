@@ -24,6 +24,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { DndContext, useDraggable, DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { CSS } from "@dnd-kit/utilities";
+import { HelpIcon } from "@/components/HelpIcon";
 
 const typeConfig = {
   memory: {

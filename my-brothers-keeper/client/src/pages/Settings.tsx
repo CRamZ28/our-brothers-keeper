@@ -16,9 +16,10 @@ import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload } from "lucide-react";
+import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload, HelpCircle, Play, CheckCircle2, XCircle } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
+import { useTour } from "@/hooks/useTour";
 
 export default function Settings() {
   const { user } = useAuth();
@@ -29,6 +30,17 @@ export default function Settings() {
     undefined,
     { enabled: !!user?.householdId }
   );
+  
+  const { data: availableTours, refetch: refetchTours } = trpc.onboarding.listAvailableTours.useQuery(
+    undefined,
+    { enabled: !!user?.householdId }
+  );
+  const resetTourMutation = trpc.onboarding.resetTour.useMutation({
+    onSuccess: () => {
+      toast.success("Tour reset! Redirecting to start the tour...");
+      refetchTours();
+    },
+  });
 
   const [householdName, setHouseholdName] = useState("");
   const [householdSlug, setHouseholdSlug] = useState("");
@@ -718,6 +730,78 @@ export default function Settings() {
               >
                 {updateNotificationPrefsMutation.isPending ? "Saving..." : "Save Preferences"}
               </Button>
+            </CardContent>
+          </Card>
+
+          {/* Guided Tours */}
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <HelpCircle className="w-5 h-5 text-[#6BC4B8]" />
+                <CardTitle>Guided Tours</CardTitle>
+              </div>
+              <CardDescription>Learn how to use features with interactive walkthroughs</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {availableTours && availableTours.length > 0 ? (
+                availableTours.map((tour) => {
+                  const isCompleted = tour.progress?.status === "completed";
+                  const isDismissed = tour.progress?.status === "dismissed";
+                  const inProgress = tour.progress?.status === "in_progress";
+                  
+                  return (
+                    <div 
+                      key={tour.id} 
+                      className="flex items-center justify-between p-4 border rounded-lg bg-white/5"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium">{tour.name}</p>
+                          {isCompleted && (
+                            <CheckCircle2 className="w-4 h-4 text-green-500" />
+                          )}
+                          {isDismissed && (
+                            <XCircle className="w-4 h-4 text-gray-400" />
+                          )}
+                          {inProgress && (
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400">
+                              In Progress
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{tour.description}</p>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-2 border-[#2DB5A8] text-[#2DB5A8] bg-[#2DB5A8]/5 hover:bg-[#2DB5A8]/15 hover:border-[#2DB5A8] font-semibold ml-4"
+                        onClick={async () => {
+                          if (isCompleted || isDismissed || inProgress) {
+                            await resetTourMutation.mutateAsync({ tourId: tour.id });
+                          }
+                          window.location.href = tour.slug.includes("household.setup") || tour.slug.includes("supporter.welcome")
+                            ? "/dashboard"
+                            : tour.slug.includes("needs")
+                            ? "/needs"
+                            : tour.slug.includes("meal")
+                            ? "/meal-train"
+                            : tour.slug.includes("event")
+                            ? "/calendar"
+                            : tour.slug.includes("gift")
+                            ? "/gift-registry"
+                            : "/dashboard";
+                        }}
+                        disabled={resetTourMutation.isPending}
+                      >
+                        <Play className="w-3 h-3 mr-1" />
+                        {isCompleted || isDismissed ? "Replay" : inProgress ? "Resume" : "Start"}
+                      </Button>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-sm text-muted-foreground">No tours available for your role.</p>
+              )}
             </CardContent>
           </Card>
 
