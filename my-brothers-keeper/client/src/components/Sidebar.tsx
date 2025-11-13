@@ -126,7 +126,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem
               onClick={logout}
-              className="cursor-pointer text-destructive focus:text-destructive"
+              className="cursor-pointer text-destructive focus:text-destructive focus:bg-red-50 hover:bg-red-50"
             >
               <LogOut className="mr-2 h-4 w-4" />
               <span>Sign out</span>
