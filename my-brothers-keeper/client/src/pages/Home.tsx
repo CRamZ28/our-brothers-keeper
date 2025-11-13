@@ -94,8 +94,8 @@ export default function Home() {
                 <div 
                   className="space-y-6 rounded-3xl p-8 md:p-12"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(6px)',
+                    background: 'rgba(15, 23, 42, 0.4)',
+                    backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.2)'
                   }}
                 >
@@ -122,8 +122,8 @@ export default function Home() {
                   <p 
                     className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed pt-6"
                     style={{ 
-                      color: '#ffffff',
-                      textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)'
+                      color: '#000000',
+                      textShadow: 'none'
                     }}
                   >
                     A compassionate platform that helps families and communities provide sustained,
@@ -151,8 +151,8 @@ export default function Home() {
               <div 
                 className="rounded-3xl p-8 md:p-12"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(6px)',
+                  background: 'rgba(15, 23, 42, 0.4)',
+                  backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -188,7 +188,7 @@ export default function Home() {
                     >
                       Turn Words Into Action
                     </h3>
-                    <p style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p style={{ color: '#000000' }}>
                       When someone says "let me know if you need anything," they mean it. 
                       We make it easy for them to follow through with specific, helpful actions.
                     </p>
@@ -206,7 +206,7 @@ export default function Home() {
                     >
                       Sustained Support
                     </h3>
-                    <p style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p style={{ color: '#000000' }}>
                       Grief doesn't end after the funeral. Our platform helps your community 
                       stay present through the weeks, months, and years ahead.
                     </p>
@@ -224,7 +224,7 @@ export default function Home() {
                     >
                       Privacy & Control
                     </h3>
-                    <p style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p style={{ color: '#000000' }}>
                       Share what you want, with who you want. Create custom groups and control 
                       visibility for every piece of information you share.
                     </p>
@@ -236,8 +236,8 @@ export default function Home() {
               <div 
                 className="rounded-3xl p-8 md:p-10"
                 style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(6px)',
+                  background: 'rgba(15, 23, 42, 0.4)',
+                  backdropFilter: 'blur(20px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
@@ -264,7 +264,7 @@ export default function Home() {
                       </h2>
                       <p 
                         className="text-lg leading-relaxed"
-                        style={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                        style={{ color: '#000000' }}
                       >
                         Every family is different. Some people want to manage everything themselves during grief. 
                         Others need to share the load. <span className="font-semibold">Our Brother's Keeper adapts to you.</span>
@@ -276,7 +276,7 @@ export default function Home() {
                             <h4 className="font-bold" style={{ color: '#ffffff' }}>
                               Handle It Yourself
                             </h4>
-                            <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                            <p className="text-sm" style={{ color: '#000000' }}>
                               As the primary person, you have complete control over every aspect 
                               of your support network if you prefer to manage it all.
                             </p>
@@ -288,7 +288,7 @@ export default function Home() {
                             <h4 className="font-bold" style={{ color: '#ffffff' }}>
                               Delegate to Admins
                             </h4>
-                            <p className="text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                            <p className="text-sm" style={{ color: '#000000' }}>
                               Designate trusted family members or friends as admins to help 
                               coordinate care, post updates, and manage the community.
                             </p>
@@ -297,7 +297,7 @@ export default function Home() {
                       </div>
                       <p 
                         className="text-base pt-2"
-                        style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                        style={{ color: '#000000' }}
                       >
                         Whatever feels right for your situation, OBK makes it easy. You decide 
                         how much help you want, and you can change it anytime.
@@ -332,8 +332,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -346,11 +346,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       Needs Board
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Post specific needs like grocery shopping, lawn care, childcare, or errands. 
                       Supporters can claim tasks and mark them complete.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#2DB5A8' }} />
                         <span>Claim and complete tasks</span>
@@ -370,8 +370,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -384,11 +384,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       Events Calendar
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Keep everyone informed about important dates, memorial services, court dates, 
                       and family gatherings. RSVP tracking included.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#2DB5A8' }} />
                         <span>RSVP for events</span>
@@ -408,8 +408,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -422,11 +422,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       Meal Train
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Coordinate meal delivery with a powerful scheduling system. Select specific days, 
                       set dietary preferences, and manage delivery details.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Select available days for meals</span>
@@ -446,8 +446,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -460,11 +460,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       Family Updates
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Share updates with your support network. Pin important announcements and 
                       attach photos or videos to bring everyone closer.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#2DB5A8' }} />
                         <span>Pin important announcements</span>
@@ -484,8 +484,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -498,11 +498,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       Memory Wall
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Create an interactive vision board of memories, stories, encouragement, and prayers. 
                       Drag and drop cards to arrange your own personal collage.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Share memories and photos</span>
@@ -522,8 +522,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -536,11 +536,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       Gift Registry
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Create a wishlist for practical items you need. Track purchases and deliveries 
                       so supporters know exactly how to help.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#2DB5A8' }} />
                         <span>Three-stage tracking system</span>
@@ -560,8 +560,8 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(6px)',
+                      background: 'rgba(15, 23, 42, 0.4)',
+                      backdropFilter: 'blur(20px)',
                       border: '1px solid rgba(255, 255, 255, 0.2)'
                     }}
                   >
@@ -574,11 +574,11 @@ export default function Home() {
                     <h3 className="text-xl font-bold mb-3" style={{ color: '#ffffff' }}>
                       People & Custom Groups
                     </h3>
-                    <p className="leading-relaxed mb-3" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <p className="leading-relaxed mb-3" style={{ color: '#000000' }}>
                       Organize your support network into custom groups like "Inner Circle," "Church Friends," 
                       or "Work Colleagues" for targeted sharing.
                     </p>
-                    <ul className="space-y-2 text-sm" style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                    <ul className="space-y-2 text-sm" style={{ color: '#000000' }}>
                       <li className="flex items-start gap-2">
                         <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#B08CA7' }} />
                         <span>Create unlimited groups</span>
