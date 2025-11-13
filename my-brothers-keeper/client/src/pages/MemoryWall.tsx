@@ -524,7 +524,21 @@ export default function MemoryWall() {
   return (
     <DashboardLayout>
       <GlassPageLayout 
-        title="Memory Wall"
+        title={
+          <span style={{ 
+            fontFamily: "'Cinzel', serif",
+            fontWeight: '600',
+            letterSpacing: '0.05em',
+            color: '#B08CA7',
+            filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
+          }}>
+            <span style={{ fontSize: '48px' }}>M</span>
+            <span style={{ fontSize: '36px' }}>EMORY</span>
+            {' '}
+            <span style={{ fontSize: '48px' }}>W</span>
+            <span style={{ fontSize: '36px' }}>ALL</span>
+          </span>
+        }
         actions={
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>

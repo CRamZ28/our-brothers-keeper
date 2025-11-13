@@ -345,7 +345,18 @@ export default function Calendar() {
   return (
     <DashboardLayout>
       <GlassPageLayout
-        title="Events"
+        title={
+          <span style={{ 
+            fontFamily: "'Cinzel', serif",
+            fontWeight: '600',
+            letterSpacing: '0.05em',
+            color: '#B08CA7',
+            filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
+          }}>
+            <span style={{ fontSize: '48px' }}>E</span>
+            <span style={{ fontSize: '36px' }}>VENTS</span>
+          </span>
+        }
         actions={
           <>
             {/* View Toggle */}
@@ -355,7 +366,7 @@ export default function Calendar() {
                 size="sm"
                 onClick={() => setView("calendar")}
                 className={view === "calendar" 
-                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  ? "bg-[#B08CA7] text-white hover:bg-[#9a7a91]" 
                   : "hover:bg-white/20"
                 }
               >
@@ -367,7 +378,7 @@ export default function Calendar() {
                 size="sm"
                 onClick={() => setView("list")}
                 className={view === "list" 
-                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  ? "bg-[#B08CA7] text-white hover:bg-[#9a7a91]" 
                   : "hover:bg-white/20"
                 }
               >
@@ -379,7 +390,7 @@ export default function Calendar() {
             {isPrimaryOrAdmin && (
               <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button className="bg-[#B08CA7] hover:bg-[#9a7a91]">
+                  <Button className="bg-[#B08CA7] text-white hover:bg-[#9a7a91]">
                     <Plus className="w-4 h-4 mr-2" />
                     Create Event
                   </Button>

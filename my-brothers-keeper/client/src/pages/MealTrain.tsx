@@ -161,7 +161,21 @@ export default function MealTrain() {
   return (
     <DashboardLayout>
       <GlassPageLayout 
-        title="Meal Calendar"
+        title={
+          <span style={{ 
+            fontFamily: "'Cinzel', serif",
+            fontWeight: '600',
+            letterSpacing: '0.05em',
+            color: '#B08CA7',
+            filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
+          }}>
+            <span style={{ fontSize: '48px' }}>M</span>
+            <span style={{ fontSize: '36px' }}>EAL</span>
+            {' '}
+            <span style={{ fontSize: '48px' }}>C</span>
+            <span style={{ fontSize: '36px' }}>ALENDAR</span>
+          </span>
+        }
         actions={
           <div className="flex gap-2">
             <Button
@@ -189,7 +203,7 @@ export default function MealTrain() {
                 size="sm"
                 onClick={() => setView("calendar")}
                 className={view === "calendar" 
-                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  ? "bg-[#B08CA7] text-white hover:bg-[#9a7a91]" 
                   : "hover:bg-white/20"
                 }
               >
@@ -201,7 +215,7 @@ export default function MealTrain() {
                 size="sm"
                 onClick={() => setView("list")}
                 className={view === "list" 
-                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  ? "bg-[#B08CA7] text-white hover:bg-[#9a7a91]" 
                   : "hover:bg-white/20"
                 }
               >

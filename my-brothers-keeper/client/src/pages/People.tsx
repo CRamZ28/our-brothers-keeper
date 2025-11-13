@@ -426,7 +426,18 @@ export default function People() {
   return (
     <DashboardLayout>
       <GlassPageLayout
-        title="People"
+        title={
+          <span style={{ 
+            fontFamily: "'Cinzel', serif",
+            fontWeight: '600',
+            letterSpacing: '0.05em',
+            color: '#B08CA7',
+            filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
+          }}>
+            <span style={{ fontSize: '48px' }}>P</span>
+            <span style={{ fontSize: '36px' }}>EOPLE</span>
+          </span>
+        }
         actions={
           isPrimaryOrAdmin ? (
             <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
