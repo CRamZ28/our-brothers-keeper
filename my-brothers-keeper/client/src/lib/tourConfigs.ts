@@ -23,11 +23,11 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Welcome, Primary User!"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "You have complete control of this household. Let's cover your 4 key powers:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Approve access tier requests"),
-            React.createElement("li", null, "Create groups & control privacy"),
-            React.createElement("li", null, "Delegate admin responsibilities"),
-            React.createElement("li", null, "Customize dashboard display")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Approve access tier requests"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Create groups & control privacy"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Delegate admin responsibilities"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Customize dashboard display")
           )
         ),
         placement: "center",
@@ -37,11 +37,11 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         target: '[data-tour="people-nav"]',
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "People Page"),
-          React.createElement("p", { style: { marginBottom: "12px" } }, "This is where you manage your supporter community."),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Approve/deny tier upgrade requests"),
-            React.createElement("li", null, "Create custom groups (e.g., 'Close Family')"),
-            React.createElement("li", null, "View all supporters by tier level")
+          React.createElement("p", { style: { marginBottom: "12px" } }, "This is where you manage your supporter community and privacy controls."),
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Approve/deny tier upgrade requests"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Create custom groups (e.g., 'Close Family')"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "View all supporters by tier level")
           )
         ),
         placement: "right",
@@ -51,9 +51,9 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Settings Page"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Two critical sections for household management:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, React.createElement("strong", null, "Dashboard Display:"), " Choose what supporters see first"),
-            React.createElement("li", null, React.createElement("strong", null, "Access Control:"), " Rename tier labels & delegate admins")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Dashboard Display:"), " Choose what supporters see first"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Access Control:"), " Rename tier labels & delegate admins")
           )
         ),
         placement: "right",
@@ -63,11 +63,11 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Dashboard Display Options"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Choose what appears at the top of your household page:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Single Photo or Photo Slideshow (3-5 images)"),
-            React.createElement("li", null, "Memorial Quote"),
-            React.createElement("li", null, "Featured Memory (coming soon)"),
-            React.createElement("li", null, "None (clean layout)")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Single Photo or Photo Slideshow (3-5 images)"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Memorial Quote"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Featured Memory (coming soon)"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "None (clean layout)")
           )
         ),
         placement: "top",
@@ -76,11 +76,11 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         target: "body",
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Privacy Controls"),
-          React.createElement("p", { style: { marginBottom: "12px" } }, "Every time you create content, choose who can see it:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, React.createElement("strong", null, "Everyone:"), " All supporters (any tier)"),
-            React.createElement("li", null, React.createElement("strong", null, "Specific Groups:"), " Only selected groups"),
-            React.createElement("li", null, React.createElement("strong", null, "Custom:"), " Hand-pick individual people")
+          React.createElement("p", { style: { marginBottom: "12px" } }, "Every time you create content, you decide who has access to view it:"),
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Everyone:"), " All supporters (any tier)"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Specific Groups:"), " Only selected groups"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Custom:"), " Hand-pick individual people")
           )
         ),
         placement: "center",
@@ -89,11 +89,11 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         target: "body",
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Admin Delegation"),
-          React.createElement("p", { style: { marginBottom: "12px" } }, "Share the workload without losing control:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Assign trusted supporters as Admins"),
-            React.createElement("li", null, "They create needs/events on your behalf"),
-            React.createElement("li", null, "You retain final control & can remove anytime")
+          React.createElement("p", { style: { marginBottom: "12px" } }, "Sometimes managing everything can become overwhelming during tough times. That's why we've designed a co-managed admin system to lighten your load:"),
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Admins can step in and share the workload"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "They can take over completely until you're ready"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "You have full control to delegate responsibilities")
           )
         ),
         placement: "center",
@@ -103,11 +103,11 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "You're All Set!"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Quick reference for key locations:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, React.createElement("strong", null, "People:"), " Tier requests & groups"),
-            React.createElement("li", null, React.createElement("strong", null, "Settings:"), " Dashboard & admin delegation"),
-            React.createElement("li", null, React.createElement("strong", null, "Privacy:"), " Available on every post"),
-            React.createElement("li", null, React.createElement("strong", null, "Help (?)"), " icons throughout the app")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "People:"), " Tier requests & groups"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Settings:"), " Dashboard & admin delegation"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Privacy:"), " Available on every post"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Help (?)"), " icons throughout the app")
           )
         ),
         placement: "center",
