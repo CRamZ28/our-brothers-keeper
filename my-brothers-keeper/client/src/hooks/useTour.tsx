@@ -65,6 +65,21 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
       if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type as any)) {
         const nextStepIndex = index + (action === "prev" ? -1 : 1);
         
+        // Check if user clicked "next" on the last step (finish button)
+        if (action === "next" && index === steps.length - 1) {
+          console.log("[TOUR] Last step completed - finishing tour");
+          hasManuallyClosedRef.current = true;
+          setRun(false);
+          setStepIndex(0);
+          
+          await completeTour.mutateAsync({
+            tourId: tourDbId,
+          });
+          
+          queryClient.invalidateQueries();
+          return;
+        }
+        
         if (nextStepIndex >= 0 && nextStepIndex < steps.length) {
           setStepIndex(nextStepIndex);
 
