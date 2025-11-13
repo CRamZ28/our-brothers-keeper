@@ -76,7 +76,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
                 transition-all duration-200 ease-in-out
                 ${isActive 
                   ? 'text-white shadow-[0_4px_15px_rgba(176,140,167,0.3)]' 
-                  : 'text-foreground hover:bg-white/40 hover:translate-x-1'
+                  : 'text-foreground hover:bg-white/40 hover:translate-x-1 active:bg-white/50 focus:bg-white/40'
                 }
                 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50
               `}
