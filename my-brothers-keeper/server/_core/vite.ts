@@ -25,16 +25,22 @@ export async function setupVite(app: Express, server: Server) {
     const url = req.originalUrl;
 
     // Don't serve index.html for module requests, static assets, or API calls
-    if (
+    const shouldSkip = 
       url.startsWith("/@") ||  // Vite internal modules
       url.startsWith("/src/") || // Source files
       url.startsWith("/node_modules/") || // Node modules
       url.startsWith("/api/") || // API routes
       url.includes("@react-refresh") || // React refresh
-      /\.(js|ts|jsx|tsx|css|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)(\?.*)?$/.test(url) // Static files
-    ) {
+      url.includes("@vite") || // Vite client
+      url.includes("/@fs/") || // File system access
+      /\.(js|ts|jsx|tsx|mjs|cjs|css|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)(\?.*)?$/.test(url); // Static files
+
+    if (shouldSkip) {
+      console.log(`[Vite] Skipping index.html for: ${url}`);
       return next();
     }
+
+    console.log(`[Vite] Serving index.html for: ${url}`);
 
     try {
       const clientTemplate = path.resolve(
