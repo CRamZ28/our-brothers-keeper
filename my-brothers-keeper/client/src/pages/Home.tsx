@@ -94,9 +94,9 @@ export default function Home() {
                 <div 
                   className="space-y-6 rounded-3xl p-8 md:p-12"
                   style={{
-                    background: 'rgba(15, 23, 42, 0.4)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                    background: 'rgba(255, 255, 255, 0.25)',
+                    backdropFilter: 'blur(40px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
                   }}
                 >
                   {/* Biblical Scripture */}
@@ -151,9 +151,9 @@ export default function Home() {
               <div 
                 className="rounded-3xl p-8 md:p-12"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  background: 'rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(40px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
                 <h2 
@@ -236,9 +236,9 @@ export default function Home() {
               <div 
                 className="rounded-3xl p-8 md:p-10"
                 style={{
-                  background: 'rgba(15, 23, 42, 0.4)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
+                  background: 'rgba(255, 255, 255, 0.25)',
+                  backdropFilter: 'blur(40px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)'
                 }}
               >
                 <div className="max-w-4xl mx-auto">
@@ -332,9 +332,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
@@ -370,9 +370,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
@@ -408,9 +408,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
@@ -446,9 +446,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
@@ -484,9 +484,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
@@ -522,9 +522,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
@@ -560,9 +560,9 @@ export default function Home() {
                   <div 
                     className="group rounded-2xl p-6 transition-all duration-300 hover:scale-105"
                     style={{
-                      background: 'rgba(15, 23, 42, 0.4)',
-                      backdropFilter: 'blur(20px)',
-                      border: '1px solid rgba(255, 255, 255, 0.2)'
+                      background: 'rgba(255, 255, 255, 0.25)',
+                      backdropFilter: 'blur(40px) saturate(180%)',
+                      border: '1px solid rgba(255, 255, 255, 0.3)'
                     }}
                   >
                     <div 
