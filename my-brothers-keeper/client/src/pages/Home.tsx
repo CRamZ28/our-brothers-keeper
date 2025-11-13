@@ -24,51 +24,14 @@ export default function Home() {
   // Not authenticated - show landing page
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex flex-col relative">
-        {/* Wavy Teal Background - Fixed */}
-        <div 
-          className="fixed inset-0"
-          style={{ 
-            backgroundImage: 'url(/waves-bg.png)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: '#0f172a',
-            zIndex: 0
-          }}
-        />
-        
-        {/* Large Decorative Blur Orbs */}
-        <div 
-          className="absolute rounded-full blur-[120px] opacity-40"
-          style={{
-            width: '600px',
-            height: '600px',
-            background: 'radial-gradient(circle, rgba(6, 182, 212, 0.6), transparent)',
-            top: '10%',
-            left: '5%'
-          }}
-        />
-        <div 
-          className="absolute rounded-full blur-[140px] opacity-40"
-          style={{
-            width: '700px',
-            height: '700px',
-            background: 'radial-gradient(circle, rgba(16, 185, 129, 0.5), transparent)',
-            top: '40%',
-            right: '-10%'
-          }}
-        />
-        <div 
-          className="absolute rounded-full blur-[100px] opacity-40"
-          style={{
-            width: '400px',
-            height: '400px',
-            background: 'radial-gradient(circle, rgba(20, 184, 166, 0.6), transparent)',
-            bottom: '10%',
-            left: '30%'
-          }}
-        />
+      <div 
+        className="min-h-screen flex flex-col relative overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url(/waves-bg.png)' }}
+      >
+        {/* Decorative circular orbs in background - add depth on top of waves */}
+        <div className="absolute top-[10%] right-[15%] w-[600px] h-[600px] bg-cyan-300/40 blur-[150px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
+        <div className="absolute top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>
 
         <div className="relative z-10">
           {/* Header with Glass Container */}
@@ -128,14 +91,21 @@ export default function Home() {
             <div className="max-w-7xl mx-auto space-y-16 py-12">
               {/* Hero Content */}
               <div className="text-center space-y-8">
-                <div className="space-y-6">
+                <div 
+                  className="space-y-6 rounded-3xl p-8 md:p-12"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    backdropFilter: 'blur(6px)',
+                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                  }}
+                >
                   {/* Biblical Scripture */}
                   <p 
                     className="text-4xl md:text-5xl lg:text-6xl font-normal mb-4 leading-relaxed" 
                     style={{ 
                       fontFamily: "'Pinyon Script', cursive",
                       color: '#ffffff',
-                      textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.5)'
+                      textShadow: '2px 2px 4px rgba(0, 0, 0, 0.3), 0 0 20px rgba(0, 0, 0, 0.2)'
                     }}
                   >
                     "Carry each other's burdens, and in this way you will fulfill the law of Christ"
@@ -144,7 +114,7 @@ export default function Home() {
                     className="text-xl font-medium"
                     style={{ 
                       color: '#ffffff',
-                      textShadow: '1px 1px 4px rgba(0, 0, 0, 0.8)'
+                      textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)'
                     }}
                   >
                     — Galatians 6:2
@@ -153,7 +123,7 @@ export default function Home() {
                     className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed pt-6"
                     style={{ 
                       color: '#ffffff',
-                      textShadow: '1px 1px 4px rgba(0, 0, 0, 0.7)'
+                      textShadow: '1px 1px 3px rgba(0, 0, 0, 0.3)'
                     }}
                   >
                     A compassionate platform that helps families and communities provide sustained,
@@ -266,8 +236,8 @@ export default function Home() {
               <div 
                 className="rounded-3xl p-8 md:p-10"
                 style={{
-                  background: 'rgba(176, 140, 167, 0.15)',
-                  backdropFilter: 'blur(10px)',
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(6px)',
                   border: '1px solid rgba(255, 255, 255, 0.2)'
                 }}
               >
