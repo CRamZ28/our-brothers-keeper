@@ -515,17 +515,28 @@ function NeedCard({ need }: { need: any }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2 flex-1">
-          {need.title}
-        </p>
-        {hasCapacity && (
-          <div className="flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap" style={{
-            background: claimCount >= capacity ? '#B08CA7' : '#2DB5A8',
-            color: 'white'
-          }}>
-            {claimCount} of {capacity}
-          </div>
+      <div>
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2 flex-1">
+            {need.title}
+          </p>
+          {hasCapacity && (
+            <div className="flex-shrink-0 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap" style={{
+              background: claimCount >= capacity ? '#B08CA7' : '#2DB5A8',
+              color: 'white'
+            }}>
+              {claimCount} of {capacity}
+            </div>
+          )}
+        </div>
+        {need.dueAt && (
+          <p className="text-xs text-foreground/70 mt-1">
+            {new Date(need.dueAt).toLocaleDateString("en-US", { 
+              weekday: "short", 
+              month: "short", 
+              day: "numeric"
+            })}
+          </p>
         )}
       </div>
       
@@ -654,18 +665,29 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2">
-              {item.title}
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2">
+                {item.title}
+              </p>
+            </div>
+            <div className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium" style={{
+              background: 'rgba(45, 181, 168, 0.2)',
+              color: '#2DB5A8'
+            }}>
+              Need
+            </div>
+          </div>
+          {item.dueAt && (
+            <p className="text-xs text-foreground/70 mt-1">
+              {new Date(item.dueAt).toLocaleDateString("en-US", { 
+                weekday: "short", 
+                month: "short", 
+                day: "numeric"
+              })}
             </p>
-          </div>
-          <div className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium" style={{
-            background: 'rgba(45, 181, 168, 0.2)',
-            color: '#2DB5A8'
-          }}>
-            Need
-          </div>
+          )}
         </div>
         
         {isHovered && (
@@ -704,18 +726,27 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2">
-            Meal Delivery
-          </p>
+      <div>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2">
+              Meal Delivery
+            </p>
+          </div>
+          <div className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium" style={{
+            background: 'rgba(176, 140, 167, 0.2)',
+            color: '#B08CA7'
+          }}>
+            Meal
+          </div>
         </div>
-        <div className="flex-shrink-0 px-2 py-0.5 rounded text-xs font-medium" style={{
-          background: 'rgba(176, 140, 167, 0.2)',
-          color: '#B08CA7'
-        }}>
-          Meal
-        </div>
+        <p className="text-xs text-foreground/70 mt-1">
+          {new Date(item.date).toLocaleDateString("en-US", { 
+            weekday: "short", 
+            month: "short", 
+            day: "numeric"
+          })}
+        </p>
       </div>
       
       {isHovered && (
