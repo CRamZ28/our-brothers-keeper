@@ -25,22 +25,17 @@ export default function Home() {
   if (!isAuthenticated) {
     return (
       <div 
-        className="min-h-screen flex flex-col relative overflow-hidden bg-teal-50"
-        style={{ 
-          backgroundImage: 'url(/waves-bg.png)',
-          backgroundSize: 'contain',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat'
-        }}
+        className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed relative"
+        style={{ backgroundImage: 'url(/waves-bg.png)' }}
       >
         {/* Decorative circular orbs in background - add depth on top of waves */}
-        <div className="absolute top-[10%] right-[15%] w-[600px] h-[600px] bg-cyan-300/40 blur-[150px] rounded-full pointer-events-none"></div>
-        <div className="absolute bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
-        <div className="absolute top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>
+        <div className="fixed top-[10%] right-[15%] w-[600px] h-[600px] bg-cyan-300/40 blur-[150px] rounded-full pointer-events-none"></div>
+        <div className="fixed bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
+        <div className="fixed top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>
 
         {/* Darkening overlay to improve text contrast while preserving glassmorphism */}
         <div 
-          className="absolute inset-0 pointer-events-none"
+          className="fixed inset-0 pointer-events-none"
           style={{
             background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(6, 78, 59, 0.10))',
             zIndex: 1
