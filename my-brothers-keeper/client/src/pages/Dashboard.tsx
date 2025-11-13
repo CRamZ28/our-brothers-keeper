@@ -75,7 +75,8 @@ export default function Dashboard() {
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
               background: 'rgba(255, 255, 255, 0.3)',
-              border: '1px solid rgba(255, 255, 255, 0.4)'
+              border: '1px solid rgba(255, 255, 255, 0.4)',
+              boxShadow: '0 0 20px rgba(45, 181, 168, 0.6), 0 0 40px rgba(45, 181, 168, 0.4), 0 12px 40px rgba(0, 0, 0, 0.1)'
             }}
           >
             <h1 
