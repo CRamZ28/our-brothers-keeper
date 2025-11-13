@@ -500,7 +500,7 @@ export default function Needs() {
                 size="sm"
                 onClick={() => setViewMode("list")}
                 className={viewMode === "list" 
-                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  ? "bg-[#B08CA7] text-white hover:bg-[#9a7a91]" 
                   : "hover:bg-white/20"
                 }
               >
@@ -512,7 +512,7 @@ export default function Needs() {
                 size="sm"
                 onClick={() => setViewMode("calendar")}
                 className={viewMode === "calendar" 
-                  ? "bg-[rgba(176,140,167,0.7)] text-black hover:bg-[rgba(176,140,167,0.8)]" 
+                  ? "bg-[#B08CA7] text-white hover:bg-[#9a7a91]" 
                   : "hover:bg-white/20"
                 }
               >
@@ -523,7 +523,7 @@ export default function Needs() {
             {isPrimaryOrAdmin && (
             <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" className="shrink-0 bg-[#B08CA7] hover:bg-[#9a7a91]">
+                <Button size="sm" className="shrink-0 bg-[#B08CA7] text-white hover:bg-[#9a7a91]">
                   <Plus className="w-4 h-4 md:mr-2" />
                   <span className="hidden md:inline">Add Need</span>
                 </Button>
