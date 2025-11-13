@@ -127,10 +127,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Welcome, Community Member!"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "You're starting at the Community tier with basic access. Let's explore the tier system:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, React.createElement("strong", null, "Community (you):"), " See public content"),
-            React.createElement("li", null, React.createElement("strong", null, "Friend:"), " See more private needs & events"),
-            React.createElement("li", null, React.createElement("strong", null, "Family:"), " See nearly everything")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Community (you):"), " See public content"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Friend:"), " See more private needs & events"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Family:"), " See nearly everything")
           )
         ),
         placement: "center",
@@ -141,10 +141,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "How Tiers Work"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "The Primary user controls tier access to protect privacy:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Request upgrades when you're ready"),
-            React.createElement("li", null, "Primary/Admin reviews and approves"),
-            React.createElement("li", null, "You'll be notified of the decision")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Request upgrades when you're ready"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Primary/Admin reviews and approves"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "You'll be notified of the decision")
           )
         ),
         placement: "center",
@@ -154,10 +154,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "People Page"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "View the supporter community:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "See your current tier status"),
-            React.createElement("li", null, "View other supporters"),
-            React.createElement("li", null, "Understand the access hierarchy")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "See your current tier status"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "View other supporters"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Understand the access hierarchy")
           )
         ),
         placement: "right",
@@ -167,10 +167,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Request Tier Upgrade"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Ready for more access?"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Go to Settings → Access Tier Request"),
-            React.createElement("li", null, "Explain why you'd like more access"),
-            React.createElement("li", null, "Primary/Admin will review your request")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Go to Settings → Access Tier Request"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Explain why you'd like more access"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Primary/Admin will review your request")
           )
         ),
         placement: "right",
@@ -180,10 +180,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "What Unlocks With Upgrades"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Higher tiers give you access to:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Private needs & events"),
-            React.createElement("li", null, "Personal family updates"),
-            React.createElement("li", null, "More opportunities to help")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Private needs & events"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Personal family updates"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "More opportunities to help")
           )
         ),
         placement: "center",
@@ -193,10 +193,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Start Helping Now!"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Even as Community tier, you can:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Claim public needs"),
-            React.createElement("li", null, "RSVP to events"),
-            React.createElement("li", null, "Show your support")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Claim public needs"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "RSVP to events"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Show your support")
           ),
           React.createElement("p", { style: { marginTop: "12px", fontSize: "14px", fontStyle: "italic" } }, "Your support means everything to this family!")
         ),
@@ -217,10 +217,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Welcome, Admin!"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "The Primary has trusted you to help manage this community. Your key responsibilities:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Create needs/events on their behalf"),
-            React.createElement("li", null, "Approve access tier requests"),
-            React.createElement("li", null, "Manage privacy controls")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Create needs/events on their behalf"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Approve access tier requests"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Manage privacy controls")
           )
         ),
         placement: "center",
@@ -231,10 +231,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "People Page"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Manage the supporter community:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Review tier upgrade requests"),
-            React.createElement("li", null, "Approve/deny Community → Friend/Family"),
-            React.createElement("li", null, "View groups created by Primary")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Review tier upgrade requests"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Approve/deny Community → Friend/Family"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "View groups created by Primary")
           )
         ),
         placement: "right",
@@ -244,10 +244,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Creating On Behalf"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "When you post content, it appears as from the household:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Posts show household name, not yours"),
-            React.createElement("li", null, "You're helping the Primary communicate"),
-            React.createElement("li", null, "All content types available to you")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Posts show household name, not yours"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "You're helping the Primary communicate"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "All content types available to you")
           )
         ),
         placement: "center",
@@ -257,10 +257,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Privacy Controls"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Protect the family's privacy when creating content:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, React.createElement("strong", null, "Everyone:"), " All supporters can see"),
-            React.createElement("li", null, React.createElement("strong", null, "Specific Groups:"), " Only selected groups"),
-            React.createElement("li", null, React.createElement("strong", null, "Custom:"), " Hand-pick individuals")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Everyone:"), " All supporters can see"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Specific Groups:"), " Only selected groups"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, React.createElement("strong", null, "Custom:"), " Hand-pick individuals")
           )
         ),
         placement: "center",
@@ -270,10 +270,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Settings Page"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "What you can and can't do here:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Manage your notification preferences"),
-            React.createElement("li", null, "Dashboard customization is Primary-only"),
-            React.createElement("li", null, "Primary can remove your admin role here")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Manage your notification preferences"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Dashboard customization is Primary-only"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Primary can remove your admin role here")
           )
         ),
         placement: "right",
@@ -283,10 +283,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Your Impact"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "You're making a difference during a difficult time:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Lightening the load for the Primary"),
-            React.createElement("li", null, "Helping coordinate community support"),
-            React.createElement("li", null, "Primary retains final control")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Lightening the load for the Primary"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Helping coordinate community support"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Primary retains final control")
           ),
           React.createElement("p", { style: { marginTop: "12px", fontSize: "14px", fontStyle: "italic" } }, "Thank you for stepping up!")
         ),
@@ -307,10 +307,10 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
         content: React.createElement("div", null,
           React.createElement("strong", { style: { fontSize: "16px", display: "block", marginBottom: "8px" } }, "Create a Need"),
           React.createElement("p", { style: { marginBottom: "12px" } }, "Post what help you need and when:"),
-          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px" } },
-            React.createElement("li", null, "Specify what you need"),
-            React.createElement("li", null, "Set the date/time"),
-            React.createElement("li", null, "Control who can see it")
+          React.createElement("ul", { style: { margin: "0", paddingLeft: "20px", listStyleType: "'• '" } },
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Specify what you need"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Set the date/time"),
+            React.createElement("li", { style: { paddingLeft: "8px" } }, "Control who can see it")
           )
         ),
         placement: "bottom",

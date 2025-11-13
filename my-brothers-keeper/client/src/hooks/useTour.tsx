@@ -45,8 +45,11 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
     async (data: CallBackProps) => {
       const { status, type, index, action } = data;
 
+      console.log("[TOUR DEBUG]", { status, type, index, action, stepsLength: steps.length });
+
       // Handle close button click
       if (action === "close") {
+        console.log("[TOUR] Close button clicked");
         hasManuallyClosedRef.current = true;
         setRun(false);
         setStepIndex(0);
@@ -72,15 +75,18 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
           });
         }
       } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+        console.log("[TOUR] Finish or skip detected", status);
         hasManuallyClosedRef.current = true;
         setRun(false);
         setStepIndex(0);
         
         if (status === STATUS.FINISHED) {
+          console.log("[TOUR] Completing tour");
           await completeTour.mutateAsync({
             tourId: tourDbId,
           });
         } else {
+          console.log("[TOUR] Dismissing tour");
           await dismissTour.mutateAsync({
             tourId: tourDbId,
           });
