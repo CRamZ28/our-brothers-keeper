@@ -381,7 +381,7 @@ function DashboardDisplay({ household }: { household: any }) {
         WebkitBackdropFilter: 'blur(8px)',
         background: 'rgba(255, 255, 255, 0.3)',
         border: '2px solid rgba(255, 255, 255, 0.3)',
-        boxShadow: '0 0 20px rgba(176, 140, 167, 0.6), 0 0 40px rgba(176, 140, 167, 0.4), 0 12px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
         aspectRatio: '16 / 9',
         minHeight: '300px'
       }}
