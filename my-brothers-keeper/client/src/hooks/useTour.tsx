@@ -54,21 +54,21 @@ export function useTour({ tourDbId, tourSlug, autoStart = false, continuous = tr
             status: "in_progress",
           });
         }
-      } else if ([STATUS.FINISHED].includes(status as any)) {
-        await completeTour.mutateAsync({
-          tourId: tourDbId,
-        });
-        setRun(false);
-        setStepIndex(0);
-      } else if ([STATUS.SKIPPED].includes(status as any)) {
-        await dismissTour.mutateAsync({
-          tourId: tourDbId,
-        });
+      } else if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status as any)) {
+        if (status === STATUS.FINISHED) {
+          await completeTour.mutateAsync({
+            tourId: tourDbId,
+          });
+        } else {
+          await dismissTour.mutateAsync({
+            tourId: tourDbId,
+          });
+        }
         setRun(false);
         setStepIndex(0);
       }
     },
-    [tourDbId, updateProgress, completeTour, dismissTour]
+    [tourDbId, steps.length, updateProgress, completeTour, dismissTour]
   );
 
   const startTour = useCallback(() => {
@@ -125,30 +125,49 @@ export function TourProvider({ tourDbId, tourSlug, autoStart = false, continuous
       styles={{
         options: {
           primaryColor: "#2DB5A8",
-          textColor: "#333",
-          backgroundColor: "#fff",
-          overlayColor: "rgba(0, 0, 0, 0.5)",
-          arrowColor: "#fff",
+          textColor: "#1f2937",
+          backgroundColor: "rgba(255, 255, 255, 0.95)",
+          overlayColor: "rgba(0, 0, 0, 0.4)",
+          arrowColor: "rgba(255, 255, 255, 0.95)",
           zIndex: 10000,
         },
         tooltip: {
-          borderRadius: "12px",
-          padding: "20px",
+          borderRadius: "16px",
+          padding: "24px",
+          backdropFilter: "blur(20px) saturate(180%)",
+          WebkitBackdropFilter: "blur(20px) saturate(180%)",
+          background: "linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85))",
+          border: "2px solid rgba(45, 181, 168, 0.3)",
+          boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.8)",
         },
         tooltipContainer: {
           textAlign: "left",
         },
+        tooltipContent: {
+          padding: "8px 0",
+        },
         buttonNext: {
           backgroundColor: "#2DB5A8",
-          borderRadius: "8px",
-          padding: "10px 20px",
+          borderRadius: "10px",
+          padding: "12px 24px",
+          fontSize: "15px",
+          fontWeight: "600",
+          boxShadow: "0 2px 8px rgba(45, 181, 168, 0.3)",
         },
         buttonBack: {
           color: "#2DB5A8",
-          marginRight: "10px",
+          marginRight: "12px",
+          fontSize: "15px",
+          fontWeight: "500",
         },
         buttonSkip: {
-          color: "#999",
+          color: "#6b7280",
+          fontSize: "14px",
+        },
+        buttonClose: {
+          color: "#6b7280",
+          width: "32px",
+          height: "32px",
         },
       }}
       locale={{
