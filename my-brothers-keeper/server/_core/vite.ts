@@ -24,6 +24,18 @@ export async function setupVite(app: Express, server: Server) {
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
 
+    // Don't serve index.html for module requests, static assets, or API calls
+    if (
+      url.startsWith("/@") ||  // Vite internal modules
+      url.startsWith("/src/") || // Source files
+      url.startsWith("/node_modules/") || // Node modules
+      url.startsWith("/api/") || // API routes
+      url.includes("@react-refresh") || // React refresh
+      /\.(js|ts|jsx|tsx|css|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)(\?.*)?$/.test(url) // Static files
+    ) {
+      return next();
+    }
+
     try {
       const clientTemplate = path.resolve(
         import.meta.dirname,
