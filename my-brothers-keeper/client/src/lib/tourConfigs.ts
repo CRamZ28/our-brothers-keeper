@@ -12,40 +12,50 @@ export interface TourConfig {
 export const TOUR_CONFIGS: Record<string, TourConfig> = {
   "household.setup.v1": {
     id: "household.setup.v1",
-    name: "Household Setup",
-    description: "Complete setup for your household including settings, people, and first features",
+    name: "Primary User Guide",
+    description: "Learn how to manage your support network, control privacy, delegate to admins, and customize your dashboard",
     scope: "household",
-    roleAccess: ["admin", "primary"],
+    roleAccess: ["primary"],
     steps: [
       {
         target: "body",
-        content: "Welcome to Our Brother's Keeper! Let's get you started with a quick tour of the essential features.",
+        content: "Welcome! As the Primary User, you have full control over your support community. Let me show you the key features that give you privacy, flexibility, and control.",
         placement: "center",
         disableBeacon: true,
       },
       {
-        target: '[data-tour="dashboard"]',
-        content: "This is your Dashboard - the heart of your support community. Here you'll see an overview of open needs, upcoming events, and your supporters.",
-        placement: "bottom",
-      },
-      {
         target: '[data-tour="settings-nav"]',
-        content: "Click Settings to customize your household information, notification preferences, and dashboard display.",
+        content: "Settings is your control center. This is where you'll find Dashboard Customization (photos, quotes, slideshows), Access Tier Requests from supporters, and options to delegate control to Admins.",
         placement: "right",
       },
       {
         target: '[data-tour="people-nav"]',
-        content: "The People page lets you manage your supporters, create groups for easy organization, and handle access tier requests.",
-        placement: "right",
-      },
-      {
-        target: '[data-tour="needs-nav"]',
-        content: "The Needs Board is where you can post specific ways your community can help - meals, rides, errands, and more.",
+        content: "The People page is crucial! Here you'll: 1) See access tier requests (Community → Friend or Family), 2) Create custom groups for organizing supporters, and 3) Manage who has access to what.",
         placement: "right",
       },
       {
         target: "body",
-        content: "You're all set! Take your time exploring. You can always access help icons throughout the app or replay this tour from Settings.",
+        content: "Understanding Access Tiers: Everyone starts as 'Community' (least access). They can request 'Friend' or 'Family' status for more visibility. You can rename these tiers to anything you want - they're just labels for organizing privacy levels.",
+        placement: "center",
+      },
+      {
+        target: "body",
+        content: "Groups & Privacy: On the People page, you create custom groups (like 'Church Friends' or 'Close Family'). When you post Needs, Events, or Updates, you choose: 'Everyone', 'Specific Groups', or 'Custom people'. This gives you complete privacy control.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="dashboard"]',
+        content: "Dashboard Customization: In Settings, you can choose what supporters see here - a family photo, rotating slideshow, inspirational quote, or nothing at all. It's your space to personalize.",
+        placement: "bottom",
+      },
+      {
+        target: "body",
+        content: "Primary vs Admin: You can assign trusted supporters as 'Admins' to help create needs, events, and manage the community. Admins create content 'on your behalf' but you always have final control. Remove admin access anytime in Settings → Access Control.",
+        placement: "center",
+      },
+      {
+        target: "body",
+        content: "You're in control! Remember: Access requests appear in Settings and People, Groups are created in People, and Privacy controls are on every Need/Event/Update you create. Questions? Look for (?) help icons throughout.",
         placement: "center",
       },
     ],
@@ -53,40 +63,86 @@ export const TOUR_CONFIGS: Record<string, TourConfig> = {
 
   "supporter.welcome.v1": {
     id: "supporter.welcome.v1",
-    name: "Supporter Welcome",
-    description: "Get started as a supporter and learn how to help",
+    name: "Community Member Guide",
+    description: "Learn about access tiers and how to request Friend or Family status for more visibility",
     scope: "household",
     roleAccess: ["supporter"],
     steps: [
       {
         target: "body",
-        content: "Welcome! Thank you for joining this support community. Let's show you how you can help.",
+        content: "Welcome! You've joined as a 'Community' member - the default tier with basic access. Let me explain how you can gain more access to help this family.",
         placement: "center",
         disableBeacon: true,
       },
       {
-        target: '[data-tour="dashboard"]',
-        content: "Your Dashboard shows open needs and upcoming events you can help with.",
-        placement: "bottom",
+        target: "body",
+        content: "Understanding Access Tiers: There are 3 levels - Community (you), Friend, and Family. Higher tiers see more content (private needs, events, updates). The family controls who gets upgraded for their privacy.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="settings-nav"]',
+        content: "To request Friend or Family access, go to Settings → Access Tier Request. Explain why you'd like more access, and the Primary user or Admin will review your request.",
+        placement: "right",
+      },
+      {
+        target: '[data-tour="people-nav"]',
+        content: "You can also see your tier status on the People page. Once approved for Friend or Family, you'll see more needs, events, and updates that were previously hidden.",
+        placement: "right",
       },
       {
         target: '[data-tour="needs-nav"]',
-        content: "Browse the Needs Board to find ways to help - you can claim needs that match your availability.",
-        placement: "right",
-      },
-      {
-        target: '[data-tour="events-nav"]',
-        content: "Check Events to see gatherings and important dates. RSVP to let the family know you'll be there.",
-        placement: "right",
-      },
-      {
-        target: '[data-tour="meal-train-nav"]',
-        content: "The Meal Train lets you sign up to provide meals on specific days.",
+        content: "As Community, you can already claim public needs. Higher tiers unlock private needs that the family shares only with trusted supporters.",
         placement: "right",
       },
       {
         target: "body",
-        content: "That's it! Your support means the world. Look for help icons (?) throughout the app for feature-specific guidance.",
+        content: "That's it! Request a tier upgrade when you're ready. Until then, browse what's available and help where you can. Your support means everything!",
+        placement: "center",
+      },
+    ],
+  },
+
+  "admin.guide.v1": {
+    id: "admin.guide.v1",
+    name: "Admin User Guide",
+    description: "Learn how to create content on behalf of the primary user and manage the support community",
+    scope: "household",
+    roleAccess: ["admin"],
+    steps: [
+      {
+        target: "body",
+        content: "Welcome, Admin! The Primary user has trusted you to help manage this support community. You can create needs, events, and updates on behalf of the family.",
+        placement: "center",
+        disableBeacon: true,
+      },
+      {
+        target: '[data-tour="settings-nav"]',
+        content: "Settings is where Access Tier Requests appear. You and the Primary user can both approve Community members requesting Friend or Family status.",
+        placement: "right",
+      },
+      {
+        target: '[data-tour="people-nav"]',
+        content: "On the People page, you can: 1) Review access tier requests, 2) See custom groups the Primary created, and 3) Manage supporters. Groups help organize privacy when creating content.",
+        placement: "right",
+      },
+      {
+        target: "body",
+        content: "Creating on Behalf: When you post a Need, Event, or Update, it appears as coming from the household - you're helping the Primary manage their community. They always have final control.",
+        placement: "center",
+      },
+      {
+        target: "body",
+        content: "Privacy Controls: Just like Primary, you choose who sees each post: 'Everyone' (all supporters), 'Specific Groups' (custom groups), or 'Custom' (hand-pick individuals). Use these to protect the family's privacy.",
+        placement: "center",
+      },
+      {
+        target: '[data-tour="dashboard"]',
+        content: "Dashboard settings are controlled by the Primary user. They can customize what appears here - photos, quotes, or nothing - in Settings.",
+        placement: "bottom",
+      },
+      {
+        target: "body",
+        content: "Your role matters! You're helping lighten the load while the Primary adjusts. They can remove admin access anytime, but your support makes a real difference.",
         placement: "center",
       },
     ],

@@ -359,7 +359,7 @@ export default function Settings() {
 
           {/* Dashboard Display Settings */}
           {isPrimaryOrAdmin && (
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20" data-tour="dashboard-display-settings">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Image className="w-5 h-5 text-[#6BC4B8]" />
@@ -372,6 +372,7 @@ export default function Settings() {
               <CardContent className="space-y-6">
                 <RadioGroup
                   value={dashboardDisplayType}
+                  data-tour="dashboard-display-options"
                   onValueChange={(value: any) => {
                     setDashboardDisplayType(value);
                     // Clear dependent state when type changes
