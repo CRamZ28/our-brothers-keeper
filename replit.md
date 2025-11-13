@@ -3,6 +3,14 @@
 ## Overview
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication for families in need by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking. The project's goal is to offer a robust and user-friendly experience for managing community support during difficult times.
 
+## Recent Changes
+- **November 13, 2025**: Fixed authentication flow and landing page issues:
+  - Removed broken service worker registration and disabled PWA plugin in development to prevent aggressive caching
+  - Fixed Vite routing middleware to properly skip module requests, preventing HTML from being served for JavaScript files
+  - Removed broken analytics script reference from index.html
+  - Fixed post-authentication redirect in Home.tsx - replaced empty Link component with proper window.location redirect
+  - Landing page now works correctly with fixed scroll background and WCAG-compliant text contrast
+
 ## User Preferences
 - **Design Style**: Glassmorphism architecture with abstract wave background image
 - **Background**: Abstract wavy teal background (`/waves-bg.png`) with large decorative blur orbs for added depth

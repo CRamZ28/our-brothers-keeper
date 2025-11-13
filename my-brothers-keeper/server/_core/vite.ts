@@ -36,11 +36,8 @@ export async function setupVite(app: Express, server: Server) {
       /\.(js|ts|jsx|tsx|mjs|cjs|css|json|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)(\?.*)?$/.test(url); // Static files
 
     if (shouldSkip) {
-      console.log(`[Vite] Skipping index.html for: ${url}`);
       return next();
     }
-
-    console.log(`[Vite] Serving index.html for: ${url}`);
 
     try {
       const clientTemplate = path.resolve(
