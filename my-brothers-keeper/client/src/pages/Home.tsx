@@ -131,20 +131,26 @@ export default function Home() {
                     style={{ 
                       fontFamily: "'Pinyon Script', cursive",
                       color: '#ffffff',
-                      textShadow: '0 0 20px rgba(255, 255, 255, 0.3)'
+                      textShadow: '2px 2px 8px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.5)'
                     }}
                   >
                     "Carry each other's burdens, and in this way you will fulfill the law of Christ"
                   </p>
                   <p 
                     className="text-xl font-medium"
-                    style={{ color: 'rgba(255, 255, 255, 0.8)' }}
+                    style={{ 
+                      color: '#ffffff',
+                      textShadow: '1px 1px 4px rgba(0, 0, 0, 0.8)'
+                    }}
                   >
                     — Galatians 6:2
                   </p>
                   <p 
                     className="text-xl md:text-2xl max-w-3xl mx-auto leading-relaxed pt-6"
-                    style={{ color: 'rgba(255, 255, 255, 0.9)' }}
+                    style={{ 
+                      color: '#ffffff',
+                      textShadow: '1px 1px 4px rgba(0, 0, 0, 0.7)'
+                    }}
                   >
                     A compassionate platform that helps families and communities provide sustained,
                     meaningful support to those who have lost a loved one.
