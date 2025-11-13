@@ -25,8 +25,13 @@ export default function Home() {
   if (!isAuthenticated) {
     return (
       <div 
-        className="min-h-screen flex flex-col relative overflow-hidden bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url(/waves-bg.png)' }}
+        className="min-h-screen flex flex-col relative overflow-hidden bg-teal-50"
+        style={{ 
+          backgroundImage: 'url(/waves-bg.png)',
+          backgroundSize: 'contain',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         {/* Decorative circular orbs in background - add depth on top of waves */}
         <div className="absolute top-[10%] right-[15%] w-[600px] h-[600px] bg-cyan-300/40 blur-[150px] rounded-full pointer-events-none"></div>
@@ -37,7 +42,7 @@ export default function Home() {
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.25), rgba(6, 78, 59, 0.20))',
+            background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.15), rgba(6, 78, 59, 0.10))',
             zIndex: 1
           }}
         ></div>
