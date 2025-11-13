@@ -476,7 +476,20 @@ export default function Needs() {
   return (
     <DashboardLayout>
       <GlassPageLayout 
-        title="Needs Board"
+        title={
+          <span style={{ 
+            fontSize: '2rem',
+            fontWeight: '700',
+            letterSpacing: '0.05em',
+            textShadow: '0 0 15px rgba(45, 181, 168, 0.4), 0 0 30px rgba(45, 181, 168, 0.2)',
+          }}>
+            <span style={{ fontSize: '2rem' }}>N</span>
+            <span style={{ fontVariant: 'small-caps', fontSize: '1.75rem' }}>eeds</span>
+            {' '}
+            <span style={{ fontSize: '2rem' }}>B</span>
+            <span style={{ fontVariant: 'small-caps', fontSize: '1.75rem' }}>oard</span>
+          </span>
+        }
         actions={
           <div className="flex items-center gap-2">
             {/* View Toggle */}
