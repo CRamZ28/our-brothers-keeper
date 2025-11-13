@@ -13,7 +13,9 @@ const plugins = [
   tailwindcss(),
   jsxLocPlugin(),
   vitePluginManusRuntime(),
-  VitePWA({
+  // PWA plugin disabled during development to prevent caching issues
+  // Re-enable for production builds if needed
+  ...(process.env.NODE_ENV === 'production' ? [VitePWA({
     registerType: "autoUpdate",
     includeAssets: ["favicon.ico", "apple-touch-icon.png", "mask-icon.svg"],
     manifest: {
@@ -63,7 +65,7 @@ const plugins = [
         }
       ]
     }
-  })
+  })] : [])
 ];
 
 export default defineConfig({
