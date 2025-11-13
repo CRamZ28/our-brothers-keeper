@@ -484,10 +484,10 @@ export default function Needs() {
             color: '#B08CA7',
             filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
           }}>
-            <span style={{ fontSize: '48px', color: '#C9A8BE' }}>N</span>
+            <span style={{ fontSize: '48px' }}>N</span>
             <span style={{ fontSize: '36px' }}>EEDS</span>
             {' '}
-            <span style={{ fontSize: '48px', color: '#C9A8BE' }}>B</span>
+            <span style={{ fontSize: '48px' }}>B</span>
             <span style={{ fontSize: '36px' }}>OARD</span>
           </span>
         }
