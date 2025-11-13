@@ -12,6 +12,7 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
   - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))` with `backdrop-filter: blur(40px) saturate(180%)` - white to silver gradient glassmorphism with enhanced frosting, neutral text colors
   - **Main Content**: `background: rgba(255, 255, 255, 0)` - fully transparent, no blur
   - **Cards**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(6px)`
+  - **Landing Page Glass**: Darker glass containers (`background: rgba(15, 23, 42, 0.4)` with `backdrop-blur-lg`) for WCAG-compliant text contrast, plus a darkening overlay (`linear-gradient(to bottom, rgba(15, 23, 42, 0.25), rgba(6, 78, 59, 0.20))`) for legibility while preserving glassmorphism aesthetic
 - **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) displayed directly on sidebar without background container
 - **Typography**: Neutral text colors only (black, white, gray shades) for optimal readability - all chromatic text colors removed except family name special styling
 - **Active Navigation**: `background: rgba(176, 140, 167, 0.7)` (Mauve Purple #B08CA7) with dark teal text
