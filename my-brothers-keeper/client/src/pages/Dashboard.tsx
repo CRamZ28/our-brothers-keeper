@@ -123,10 +123,14 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground">Supporters</h2>
             </div>
 
-            {/* Large number with teal accent bar */}
-            <div className="mb-6">
-              <div className="text-5xl font-bold text-foreground mb-2">{activeUsers.length}</div>
-              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
+            {/* Large number in mauve circle */}
+            <div className="mb-6 flex justify-center">
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+              >
+                <div className="text-4xl font-bold text-white">{activeUsers.length}</div>
+              </div>
             </div>
 
             {/* Preview items */}
@@ -186,10 +190,14 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground">Open Needs</h2>
             </div>
 
-            {/* Large number with teal accent bar */}
-            <div className="mb-6">
-              <div className="text-5xl font-bold text-foreground mb-2">{openNeeds.length}</div>
-              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
+            {/* Large number in mauve circle */}
+            <div className="mb-6 flex justify-center">
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+              >
+                <div className="text-4xl font-bold text-white">{openNeeds.length}</div>
+              </div>
             </div>
 
             {/* Preview items */}
@@ -243,10 +251,14 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground">Upcoming Events</h2>
             </div>
 
-            {/* Large number with teal accent bar */}
-            <div className="mb-6">
-              <div className="text-5xl font-bold text-foreground mb-2">{upcomingEvents.length}</div>
-              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
+            {/* Large number in mauve circle */}
+            <div className="mb-6 flex justify-center">
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+              >
+                <div className="text-4xl font-bold text-white">{upcomingEvents.length}</div>
+              </div>
             </div>
 
             {/* Preview items */}
@@ -300,10 +312,14 @@ export default function Dashboard() {
               <h2 className="text-lg font-semibold text-foreground">My Commitments</h2>
             </div>
 
-            {/* Large number with teal accent bar */}
-            <div className="mb-6">
-              <div className="text-5xl font-bold text-foreground mb-2">{totalCommitments}</div>
-              <div className="h-1 w-16 rounded-full" style={{ background: 'linear-gradient(to right, #2DB5A8, #4DD0C4)' }}></div>
+            {/* Large number in mauve circle */}
+            <div className="mb-6 flex justify-center">
+              <div 
+                className="w-24 h-24 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+              >
+                <div className="text-4xl font-bold text-white">{totalCommitments}</div>
+              </div>
             </div>
 
             {/* Preview items */}
