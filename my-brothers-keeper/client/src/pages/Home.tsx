@@ -119,8 +119,8 @@ export default function Home() {
             {/* Why Our Brother's Keeper - Three Differentiators */}
             <div className="mb-24 md:mb-32">
               <h3 
-                className="text-4xl md:text-5xl font-bold text-white text-center mb-6"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                className="text-4xl md:text-5xl font-bold text-center mb-6"
+                style={{ fontFamily: "'Cinzel', serif", color: '#B08CA7' }}
               >
                 Why Our Brother's Keeper
               </h3>
