@@ -46,11 +46,7 @@ externalPort = 3002
 localPort = 45159
 externalPort = 3000
 
-[[ports]]
-localPort = 46597
-externalPort = 3003
-
 [deployment]
-deploymentTarget = "vm"
-run = ["bash", "-c", "cd my-brothers-keeper && pnpm run start"]
-build = ["bash", "-c", "cd my-brothers-keeper && pnpm run build"]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd my-brothers-keeper && pnpm start"]
+build = ["bash", "-c", "cd my-brothers-keeper && pnpm install && pnpm run build"]
