@@ -50,6 +50,22 @@ export default function Home() {
       <div className="fixed top-[10%] right-[15%] w-[500px] h-[500px] bg-teal-300/20 blur-[120px] rounded-full pointer-events-none"></div>
       <div className="fixed bottom-[15%] left-[10%] w-[600px] h-[600px] bg-cyan-200/15 blur-[140px] rounded-full pointer-events-none"></div>
 
+      {/* Large Fixed Watermark Logo - Stays with background on scroll */}
+      <div 
+        className="fixed top-1/2 left-1/2 pointer-events-none"
+        style={{
+          transform: 'translate(-50%, -50%)',
+          opacity: 0.15,
+          zIndex: 1
+        }}
+      >
+        <img 
+          src="/obk-emblem.png" 
+          alt="" 
+          className="w-[700px] h-[700px] md:w-[900px] md:h-[900px]"
+        />
+      </div>
+
       <div className="relative z-10">
         {/* Header */}
         <header className="px-6 md:px-10 py-6">
@@ -81,22 +97,6 @@ export default function Home() {
           <div className="max-w-5xl mx-auto">
             {/* Hero Content - Single Column, Centered */}
             <div className="relative text-center space-y-8 mb-24 md:mb-32">
-              {/* Floating Watermark Logo */}
-              <div 
-                className="absolute top-1/2 left-1/2 pointer-events-none"
-                style={{
-                  transform: 'translate(-50%, -50%)',
-                  opacity: 0.18,
-                  zIndex: 0
-                }}
-              >
-                <img 
-                  src="/obk-emblem.png" 
-                  alt="" 
-                  className="w-[350px] h-[350px] md:w-[450px] md:h-[450px]"
-                />
-              </div>
-              
               <h2 
                 className="relative text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                 style={{ fontFamily: "'Cinzel', serif", zIndex: 10 }}
