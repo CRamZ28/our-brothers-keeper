@@ -4,16 +4,17 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication for families in need by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking. The project's goal is to offer a robust and user-friendly experience for managing community support during difficult times.
 
 ## Recent Changes
-- **November 14, 2025**: Complete landing page redesign for improved user experience:
-  - Redesigned hero section with two-column layout: value proposition on left, key benefits card on right
-  - Simplified glassmorphism system: removed nested overlay boxes, single-layer glass cards with lighter blur effects
-  - Reduced feature showcase from 7 to 5 core features (Needs Board, Events Calendar, Meal Train, Family Updates, Memory Wall)
-  - Standardized typography: Cinzel for headings only, Inter for body text, removed custom inline font sizes
-  - Added generous spacing and breathing room between sections for better visual hierarchy
-  - Consistent color usage: teal (#2DB5A8) as primary accent, mauve purple (#B08CA7) as secondary accent
-  - Moved scripture quote to subtle supporting role instead of hero position
-  - Fixed Sign Out button hover colors across Sidebar dropdown and Settings page (changed from orange to teal)
-  - Fixed Church/Community group card text truncation on People page
+- **November 14, 2025**: Narrative-driven landing page redesign for emotional impact and improved readability:
+  - **Hero Section**: "A Place Where Compassion Becomes Action" tagline with emotional positioning about sustained support beyond the funeral
+  - **Improved Readability**: Added 65%→45% dark gradient overlay plus stronger glass cards (rgba(15,23,42,0.72)) for significantly better text contrast
+  - **Narrative Structure**: Replaced feature-dump approach with story-driven content:
+    - "Why Our Brother's Keeper" section with three differentiators: Turn Words Into Action, Sustained Support, Privacy & Control
+    - "You're in Control—Always" section highlighting flexibility: Handle It Yourself vs Delegate to Admins
+  - **Typography Enhancement**: Larger hero typography (text-7xl), improved line-height (1.6), and better visual hierarchy
+  - **Generous Spacing**: Implemented mb-24/md:mb-32 vertical rhythm between sections for emotional pacing
+  - **Scripture Repositioned**: Moved biblical quote to subtle footer role instead of prominent hero placement
+  - **Simplified glassmorphism**: Single-layer glass cards with darker backgrounds for improved legibility
+  - Earlier fixes: Sign Out button hover colors (orange→teal), Church/Community group card text truncation
 - **November 13, 2025**: Fixed authentication flow and landing page issues:
   - Removed broken service worker registration and disabled PWA plugin in development to prevent aggressive caching
   - Fixed Vite routing middleware to properly skip module requests, preventing HTML from being served for JavaScript files
