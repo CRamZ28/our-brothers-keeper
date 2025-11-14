@@ -90,10 +90,10 @@ export default function Home() {
               </h2>
               <div className="space-y-6 max-w-3xl mx-auto">
                 <p 
-                  className="text-2xl md:text-3xl font-semibold text-white"
-                  style={{ lineHeight: 1.4 }}
+                  className="text-xl md:text-2xl text-white leading-relaxed"
+                  style={{ lineHeight: 1.6 }}
                 >
-                  Compassion, Organized. Support That Lasts.
+                  Compassion, organized into support that truly lasts.
                 </p>
                 <p 
                   className="text-xl md:text-2xl text-white leading-relaxed"
@@ -102,16 +102,10 @@ export default function Home() {
                   People want to help—they just need direction.
                 </p>
                 <p 
-                  className="text-xl md:text-2xl text-white/95 leading-relaxed"
+                  className="text-xl md:text-2xl text-white leading-relaxed"
                   style={{ lineHeight: 1.6 }}
                 >
-                  I built OBK after losing my brother, to make sure his family received care long after the world moved on.
-                </p>
-                <p 
-                  className="text-xl md:text-2xl text-white/95 leading-relaxed"
-                  style={{ lineHeight: 1.6 }}
-                >
-                  Now, OBK turns support into something simple, structured, and sustainable—so grieving families feel loved and cared for through every stage of grief.
+                  OBK turns care into something simple, structured, and sustainable—so grieving families feel supported through every stage of loss.
                 </p>
               </div>
               <div className="pt-4">

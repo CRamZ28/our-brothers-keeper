@@ -5,7 +5,7 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 
 ## Recent Changes
 - **November 14, 2025**: Narrative-driven landing page redesign for emotional impact and improved readability:
-  - **Hero Section**: "A Place Where Compassion Becomes Action" tagline with personal founder story ("Compassion, Organized. Support That Lasts" + narrative about building OBK after losing brother)
+  - **Hero Section**: "A Place Where Compassion Becomes Action" tagline with concise three-line brand message emphasizing organized compassion, direction, and sustainable support
   - **Scripture Font**: Changed from decorative Pinyon Script to readable Georgia serif for better legibility
   - **Improved Readability**: Added 65%→45% dark gradient overlay plus stronger glass cards (rgba(15,23,42,0.72)) for significantly better text contrast
   - **Narrative Structure**: Replaced feature-dump approach with story-driven content:
