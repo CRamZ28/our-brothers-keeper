@@ -135,7 +135,7 @@ export default function Home() {
                 }}
               >
                 <p 
-                  className="text-xl md:text-2xl leading-relaxed"
+                  className="text-xl md:text-2xl leading-relaxed font-bold"
                   style={{ 
                     lineHeight: 1.6,
                     color: '#7d5a75',
@@ -150,7 +150,7 @@ export default function Home() {
                   People want to help—they just need direction.
                 </p>
                 <p 
-                  className="text-xl md:text-2xl leading-relaxed"
+                  className="text-xl md:text-2xl leading-relaxed font-bold"
                   style={{ 
                     lineHeight: 1.6,
                     color: '#7d5a75',
