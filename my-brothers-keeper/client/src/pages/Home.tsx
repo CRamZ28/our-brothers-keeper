@@ -86,7 +86,7 @@ export default function Home() {
                 <img 
                   src="/obk-emblem.png" 
                   alt={APP_TITLE} 
-                  className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl"
+                  className="w-48 h-48 md:w-64 md:h-64 lg:w-72 lg:h-72 drop-shadow-2xl"
                 />
               </div>
               
