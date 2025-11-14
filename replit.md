@@ -89,13 +89,13 @@ The UI/UX features a consistent glassmorphism design system with teal gradients 
 - **Reminder System**: Personal reminders for upcoming needs and events with seven preset time options, processed by a background job.
 - **Profile Pictures**: User avatar upload system with object storage integration.
 - **Error Monitoring**: Production error tracking and performance monitoring with Sentry integration.
-- **Instructional/Onboarding System**: Comprehensive user guidance system with:
-  - **Interactive Tours**: Role-based walkthroughs using react-joyride for first-time users and feature-specific tutorials
+- **Instructional/Onboarding System**: Simplified onboarding system with:
+  - **Interactive Tour**: Single household setup tour using react-joyride for primary users covering dashboard personalization, supporter management, privacy controls, and admin delegation
   - **Tour Tracking**: Database-backed progress tracking per user/household with resume capability
   - **HelpIcon Component**: Contextual help tooltips throughout the app explaining complex features
-  - **Tour Library**: 6 predefined tours (household setup, supporter welcome, needs board, meal train, events, gift registry)
+  - **Tour Content**: Covers new Dashboard Personalization features including memorial subtitle, custom dashboard message, and Recent Updates card
   - **Security**: Tour access validated by role with proper authorization checks
-  - **Tour Definitions**: Stored in `client/src/lib/tourConfigs.ts` with step-by-step guidance for each feature
+  - **Tour Definitions**: Stored in `client/src/lib/tourConfigs.ts` with step-by-step guidance
   - **Tour Service**: Custom React hook (`useTour`) managing Joyride state and tRPC integration for progress persistence
   - **Database Schema**: `onboarding_tours` (tour definitions) and `user_tour_progress` (user completion tracking) tables
 
