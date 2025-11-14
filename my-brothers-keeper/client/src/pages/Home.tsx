@@ -67,8 +67,15 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
-        {/* Header */}
-        <header className="px-6 md:px-10 py-6">
+        {/* Header - Sticky with backdrop blur */}
+        <header 
+          className="sticky top-0 px-6 md:px-10 py-6 z-50"
+          style={{
+            background: 'rgba(15, 23, 42, 0.8)',
+            backdropFilter: 'blur(12px)',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
+        >
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
