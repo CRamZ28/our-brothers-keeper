@@ -81,6 +81,15 @@ export default function Home() {
           <div className="max-w-5xl mx-auto">
             {/* Hero Content - Single Column, Centered */}
             <div className="text-center space-y-8 mb-24 md:mb-32">
+              {/* Hero Logo Centerpiece */}
+              <div className="flex justify-center mb-8">
+                <img 
+                  src="/obk-emblem.png" 
+                  alt={APP_TITLE} 
+                  className="w-32 h-32 md:w-40 md:h-40 drop-shadow-2xl"
+                />
+              </div>
+              
               <h2 
                 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                 style={{ fontFamily: "'Cinzel', serif" }}
