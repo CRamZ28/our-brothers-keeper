@@ -99,7 +99,7 @@ export default function Home() {
             </div>
             <Button 
               onClick={() => (window.location.href = "/api/login")}
-              className="bg-[#B08CA7] hover:bg-[#9d7a94] text-white font-semibold px-5 py-2 shadow-lg"
+              className="bg-[#6d4a65] hover:bg-[#5d3a55] text-white font-semibold px-5 py-2 shadow-lg"
             >
               Sign In
             </Button>
@@ -151,7 +151,7 @@ export default function Home() {
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
                   size="lg"
-                  className="bg-[#2DB5A8] hover:bg-[#25a89a] text-white font-semibold px-12 py-7 text-xl shadow-2xl"
+                  className="bg-[#146b61] hover:bg-[#0f5b52] text-white font-semibold px-12 py-7 text-xl shadow-2xl"
                 >
                   Get Started
                   <ArrowRight className="ml-2 h-6 w-6" />
@@ -370,7 +370,7 @@ export default function Home() {
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
                   size="lg"
-                  className="bg-[#2DB5A8] hover:bg-[#25a89a] text-white font-semibold px-12 py-7 text-xl shadow-2xl"
+                  className="bg-[#146b61] hover:bg-[#0f5b52] text-white font-semibold px-12 py-7 text-xl shadow-2xl"
                 >
                   Get Started Free
                   <ArrowRight className="ml-2 h-6 w-6" />
