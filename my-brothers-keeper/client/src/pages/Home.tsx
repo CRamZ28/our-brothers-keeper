@@ -82,11 +82,12 @@ export default function Home() {
             {/* Hero Content - Single Column, Centered */}
             <div className="text-center space-y-8 mb-24 md:mb-32">
               {/* Hero Logo Centerpiece */}
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-center mb-12">
                 <img 
                   src="/obk-emblem.png" 
                   alt={APP_TITLE} 
-                  className="w-48 h-48 md:w-64 md:h-64 lg:w-72 lg:h-72 drop-shadow-2xl"
+                  className="drop-shadow-2xl"
+                  style={{ width: '576px', height: '576px', maxWidth: '90vw' }}
                 />
               </div>
               
