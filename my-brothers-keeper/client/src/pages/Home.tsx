@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { APP_TITLE } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Heart, Calendar, UtensilsCrossed, MessageCircle, BookHeart, ArrowRight } from "lucide-react";
+import { Heart, Shield, Clock, Settings, Users, ArrowRight } from "lucide-react";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -38,9 +38,17 @@ export default function Home() {
       className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed relative"
       style={{ backgroundImage: 'url(/waves-bg.png)' }}
     >
+      {/* Darker overlay for improved readability (60-70% opacity) */}
+      <div 
+        className="fixed inset-0 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to bottom, rgba(15, 23, 42, 0.65), rgba(6, 78, 59, 0.45))'
+        }}
+      ></div>
+
       {/* Subtle decorative orbs for depth */}
-      <div className="fixed top-[10%] right-[15%] w-[500px] h-[500px] bg-teal-300/30 blur-[120px] rounded-full pointer-events-none"></div>
-      <div className="fixed bottom-[15%] left-[10%] w-[600px] h-[600px] bg-cyan-200/25 blur-[140px] rounded-full pointer-events-none"></div>
+      <div className="fixed top-[10%] right-[15%] w-[500px] h-[500px] bg-teal-300/20 blur-[120px] rounded-full pointer-events-none"></div>
+      <div className="fixed bottom-[15%] left-[10%] w-[600px] h-[600px] bg-cyan-200/15 blur-[140px] rounded-full pointer-events-none"></div>
 
       <div className="relative z-10">
         {/* Header */}
@@ -70,231 +78,208 @@ export default function Home() {
 
         {/* Hero Section */}
         <main className="px-6 md:px-10 py-16 md:py-24">
-          <div className="max-w-7xl mx-auto">
-            {/* Hero Content - Two Column Layout */}
-            <div className="grid md:grid-cols-2 gap-12 items-center mb-24">
-              {/* Left Column - Value Proposition */}
-              <div className="space-y-8">
-                <h2 
-                  className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight"
-                  style={{ fontFamily: "'Cinzel', serif" }}
-                >
-                  Support Families Through
-                  <span className="text-[#2DB5A8] block mt-2">Difficult Times</span>
-                </h2>
-                <p className="text-lg md:text-xl text-white/90 leading-relaxed">
-                  A compassionate platform that helps families and communities provide sustained, 
-                  meaningful support to those who have lost a loved one.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    onClick={() => (window.location.href = "/api/login")}
-                    size="lg"
-                    className="bg-[#2DB5A8] hover:bg-[#25a89a] text-white font-semibold px-8 py-6 text-lg shadow-xl"
-                  >
-                    Get Started
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                  <Button 
-                    onClick={() => (window.location.href = "/api/login")}
-                    size="lg"
-                    variant="outline"
-                    className="border-2 border-white/30 text-white bg-white/10 hover:bg-white/20 backdrop-blur-md font-semibold px-8 py-6 text-lg"
-                  >
-                    Learn More
-                  </Button>
-                </div>
-              </div>
-
-              {/* Right Column - Key Benefits */}
-              <div 
-                className="rounded-3xl p-8 md:p-10 space-y-6"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.2)'
-                }}
-              >
-                <h3 className="text-2xl font-bold text-white mb-6" style={{ fontFamily: "'Cinzel', serif" }}>
-                  Everything You Need
-                </h3>
-                <div className="space-y-4">
-                  {[
-                    { icon: Heart, text: "Coordinate support with needs tracking" },
-                    { icon: Calendar, text: "Schedule events and important dates" },
-                    { icon: UtensilsCrossed, text: "Organize meal trains effortlessly" },
-                    { icon: MessageCircle, text: "Share updates with your community" },
-                    { icon: BookHeart, text: "Preserve memories together" }
-                  ].map((item, index) => (
-                    <div key={index} className="flex items-start gap-4">
-                      <div className="rounded-lg bg-[#2DB5A8] p-2 mt-1">
-                        <item.icon className="h-5 w-5 text-white" />
-                      </div>
-                      <p className="text-white/90 text-lg leading-relaxed">{item.text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Scripture Element - Subtle Supporting Role */}
-            <div className="text-center mb-24">
-              <p 
-                className="text-2xl md:text-3xl italic text-white/80 mb-2"
-                style={{ fontFamily: "'Pinyon Script', cursive" }}
-              >
-                "Carry each other's burdens, and in this way you will fulfill the law of Christ"
-              </p>
-              <p className="text-sm text-white/60">— Galatians 6:2</p>
-            </div>
-
-            {/* Feature Cards - Simplified to 5 Key Features */}
-            <div>
-              <h3 
-                className="text-3xl md:text-4xl font-bold text-white text-center mb-4"
+          <div className="max-w-5xl mx-auto">
+            {/* Hero Content - Single Column, Centered */}
+            <div className="text-center space-y-8 mb-24 md:mb-32">
+              <h2 
+                className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
-                Powerful Features
-              </h3>
-              <p className="text-lg text-white/80 text-center mb-12 max-w-2xl mx-auto">
-                Everything you need to organize community support in one beautiful platform
+                A Place Where Compassion
+                <span className="text-[#2DB5A8] block mt-3">Becomes Action</span>
+              </h2>
+              <p 
+                className="text-xl md:text-2xl text-white leading-relaxed max-w-3xl mx-auto"
+                style={{ lineHeight: 1.6 }}
+              >
+                Our Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one.
+                <span className="block mt-4 text-white/90">
+                  Born from loss, built from love—our mission is to make sure care continues long after the dust settles and life resumes its pace.
+                </span>
               </p>
+              <div className="pt-4">
+                <Button 
+                  onClick={() => (window.location.href = "/api/login")}
+                  size="lg"
+                  className="bg-[#2DB5A8] hover:bg-[#25a89a] text-white font-semibold px-12 py-7 text-xl shadow-2xl"
+                >
+                  Get Started
+                  <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+              </div>
+            </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {/* Feature 1: Needs Board */}
+            {/* Why Our Brother's Keeper - Three Differentiators */}
+            <div className="mb-24 md:mb-32">
+              <h3 
+                className="text-4xl md:text-5xl font-bold text-white text-center mb-6"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                Why Our Brother's Keeper
+              </h3>
+              
+              <div className="grid md:grid-cols-3 gap-8 md:gap-10 mt-16">
+                {/* Differentiator 1: Turn Words Into Action */}
                 <div 
-                  className="group rounded-2xl p-8 transition-all duration-300 hover:scale-105"
+                  className="rounded-3xl p-10 space-y-4"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center mb-4">
-                    <Heart className="w-7 h-7 text-white" />
+                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-4">
+                    <Heart className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                    Needs Board
+                  <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
+                    Turn Words Into Action
                   </h4>
-                  <p className="text-white/80 leading-relaxed">
-                    Post specific needs and let supporters claim tasks. 
-                    Track what's needed and who's helping.
+                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
+                    When someone says, "Let me know if you need anything," they mean it—our platform makes it easy for them to follow through with specific, helpful actions that truly lighten the load.
                   </p>
                 </div>
 
-                {/* Feature 2: Events Calendar */}
+                {/* Differentiator 2: Sustained Support */}
                 <div 
-                  className="group rounded-2xl p-8 transition-all duration-300 hover:scale-105"
+                  className="rounded-3xl p-10 space-y-4"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <div className="rounded-xl bg-[#B08CA7] w-14 h-14 flex items-center justify-center mb-4">
-                    <Calendar className="w-7 h-7 text-white" />
+                  <div className="rounded-xl bg-[#B08CA7] w-16 h-16 flex items-center justify-center mb-4">
+                    <Clock className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                    Events Calendar
+                  <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
+                    Sustained Support
                   </h4>
-                  <p className="text-white/80 leading-relaxed">
-                    Schedule memorial services, court dates, and family gatherings. 
-                    Track RSVPs and important dates.
+                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
+                    Grief doesn't end after the funeral. Our Brother's Keeper helps your community stay present—weeks, months, and even years later—because healing takes time, and love should too.
                   </p>
                 </div>
 
-                {/* Feature 3: Meal Train */}
+                {/* Differentiator 3: Privacy & Control */}
                 <div 
-                  className="group rounded-2xl p-8 transition-all duration-300 hover:scale-105"
+                  className="rounded-3xl p-10 space-y-4"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center mb-4">
-                    <UtensilsCrossed className="w-7 h-7 text-white" />
+                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-4">
+                    <Shield className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                    Meal Train
+                  <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
+                    Privacy & Control
                   </h4>
-                  <p className="text-white/80 leading-relaxed">
-                    Coordinate meal delivery with scheduling, dietary preferences, 
-                    and delivery instructions.
-                  </p>
-                </div>
-
-                {/* Feature 4: Family Updates */}
-                <div 
-                  className="group rounded-2xl p-8 transition-all duration-300 hover:scale-105"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                  }}
-                >
-                  <div className="rounded-xl bg-[#B08CA7] w-14 h-14 flex items-center justify-center mb-4">
-                    <MessageCircle className="w-7 h-7 text-white" />
-                  </div>
-                  <h4 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                    Family Updates
-                  </h4>
-                  <p className="text-white/80 leading-relaxed">
-                    Share announcements, milestones, and gratitude. 
-                    Keep your community informed and connected.
-                  </p>
-                </div>
-
-                {/* Feature 5: Memory Wall */}
-                <div 
-                  className="group rounded-2xl p-8 transition-all duration-300 hover:scale-105"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(255, 255, 255, 0.2)'
-                  }}
-                >
-                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center mb-4">
-                    <BookHeart className="w-7 h-7 text-white" />
-                  </div>
-                  <h4 className="text-xl font-bold text-white mb-3" style={{ fontFamily: "'Cinzel', serif" }}>
-                    Memory Wall
-                  </h4>
-                  <p className="text-white/80 leading-relaxed">
-                    Create an interactive collage of memories, stories, and photos. 
-                    Preserve precious moments together.
+                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
+                    Share what you want, with who you want. Create custom groups and manage visibility for every post, event, or update. You decide what's shared, and with whom.
                   </p>
                 </div>
               </div>
+            </div>
+
+            {/* You're in Control - Always */}
+            <div className="mb-24 md:mb-32">
+              <h3 
+                className="text-4xl md:text-5xl font-bold text-white text-center mb-6"
+                style={{ fontFamily: "'Cinzel', serif" }}
+              >
+                You're in Control—Always
+              </h3>
+              <p className="text-xl text-white/90 text-center mb-12 max-w-3xl mx-auto" style={{ lineHeight: 1.6 }}>
+                Every family grieves differently. Some prefer to manage everything themselves, while others need to share responsibilities. Our Brother's Keeper adapts to what feels right for you.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-8 md:gap-10">
+                {/* Handle It Yourself */}
+                <div 
+                  className="rounded-3xl p-10 space-y-4"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-4">
+                    <Settings className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
+                    Handle It Yourself
+                  </h4>
+                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
+                    Stay in full control of your support network. Manage every update, task, and group at your own pace.
+                  </p>
+                </div>
+
+                {/* Delegate to Admins */}
+                <div 
+                  className="rounded-3xl p-10 space-y-4"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    backdropFilter: 'blur(20px)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#B08CA7] w-16 h-16 flex items-center justify-center mb-4">
+                    <Users className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
+                    Delegate to Admins
+                  </h4>
+                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
+                    Invite trusted family members or friends to help coordinate care, post updates, or manage your community's activity.
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-lg text-white/80 text-center mt-10 italic">
+                However you choose to heal, OBK supports your way. You decide how much help you want—and can adjust it anytime.
+              </p>
             </div>
 
             {/* Final CTA */}
-            <div className="text-center mt-24 space-y-6">
+            <div className="text-center space-y-8">
               <h3 
-                className="text-3xl md:text-4xl font-bold text-white"
+                className="text-4xl md:text-5xl font-bold text-white"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
                 Ready to Get Started?
               </h3>
-              <p className="text-lg text-white/80 max-w-2xl mx-auto">
+              <p className="text-xl text-white/90 max-w-3xl mx-auto" style={{ lineHeight: 1.6 }}>
                 Create your family support network today and bring your community together.
               </p>
-              <Button 
-                onClick={() => (window.location.href = "/api/login")}
-                size="lg"
-                className="bg-[#2DB5A8] hover:bg-[#25a89a] text-white font-semibold px-12 py-6 text-lg shadow-2xl"
-              >
-                Get Started Free
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+              <div className="pt-4">
+                <Button 
+                  onClick={() => (window.location.href = "/api/login")}
+                  size="lg"
+                  className="bg-[#2DB5A8] hover:bg-[#25a89a] text-white font-semibold px-12 py-7 text-xl shadow-2xl"
+                >
+                  Get Started Free
+                  <ArrowRight className="ml-2 h-6 w-6" />
+                </Button>
+              </div>
             </div>
           </div>
         </main>
 
-        {/* Footer */}
-        <footer className="px-6 md:px-10 py-8 mt-16">
-          <div className="max-w-7xl mx-auto text-center text-white/60 text-sm">
-            <p>© 2025 Our Brother's Keeper. Supporting families through difficult times.</p>
+        {/* Footer with Scripture */}
+        <footer className="px-6 md:px-10 py-12 mt-16">
+          <div className="max-w-7xl mx-auto text-center space-y-6">
+            <p 
+              className="text-xl md:text-2xl italic text-white/70"
+              style={{ fontFamily: "'Pinyon Script', cursive" }}
+            >
+              "Carry each other's burdens, and in this way you will fulfill the law of Christ"
+            </p>
+            <p className="text-sm text-white/50">— Galatians 6:2</p>
+            <div className="pt-6 border-t border-white/10 mt-8">
+              <p className="text-white/60 text-sm">
+                © 2025 Our Brother's Keeper. Supporting families through difficult times.
+              </p>
+            </div>
           </div>
         </footer>
       </div>
