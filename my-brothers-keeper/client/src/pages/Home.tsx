@@ -72,10 +72,11 @@ export default function Home() {
           <div 
             className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
             style={{
-              background: 'rgba(15, 23, 42, 0.7)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+              background: 'rgba(15, 23, 42, 0.6)',
+              backdropFilter: 'blur(40px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
             }}
           >
             <div className="flex items-center gap-3">
