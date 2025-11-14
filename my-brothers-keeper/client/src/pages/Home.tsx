@@ -83,12 +83,21 @@ export default function Home() {
             <div className="text-center space-y-8 mb-24 md:mb-32">
               {/* Hero Logo Centerpiece */}
               <div className="flex justify-center mb-12">
-                <img 
-                  src="/obk-emblem.png" 
-                  alt={APP_TITLE} 
-                  className="drop-shadow-2xl"
-                  style={{ width: '576px', height: '576px', maxWidth: '90vw' }}
-                />
+                <div 
+                  className="rounded-full p-12 md:p-16"
+                  style={{
+                    background: 'rgba(15, 23, 42, 0.72)',
+                    backdropFilter: 'blur(20px)',
+                    border: '2px solid rgba(255, 255, 255, 0.2)',
+                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)'
+                  }}
+                >
+                  <img 
+                    src="/obk-emblem.png" 
+                    alt={APP_TITLE} 
+                    className="w-40 h-40 md:w-56 md:h-56 lg:w-64 lg:h-64"
+                  />
+                </div>
               </div>
               
               <h2 
