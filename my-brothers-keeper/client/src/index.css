@@ -312,4 +312,13 @@
   .animate-fade-in-up {
     animation: fade-in-up 0.8s ease-out;
   }
+  
+  /* Respect reduced motion preference for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in-up {
+      animation: none;
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
