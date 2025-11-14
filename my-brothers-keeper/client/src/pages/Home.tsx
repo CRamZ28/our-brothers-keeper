@@ -138,7 +138,7 @@ export default function Home() {
                   className="text-xl md:text-2xl leading-relaxed"
                   style={{ 
                     lineHeight: 1.6,
-                    color: '#1e5a56',
+                    color: '#7d5a75',
                     textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)'
                   }}
                 >
@@ -150,7 +150,7 @@ export default function Home() {
                   className="text-xl md:text-2xl leading-relaxed"
                   style={{ 
                     lineHeight: 1.6,
-                    color: '#1e5a56',
+                    color: '#7d5a75',
                     textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)'
                   }}
                 >
