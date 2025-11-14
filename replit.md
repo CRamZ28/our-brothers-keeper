@@ -4,13 +4,21 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication for families in need by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking. The project's goal is to offer a robust and user-friendly experience for managing community support during difficult times.
 
 ## Recent Changes
-- **November 14, 2025**: Comprehensive mobile responsiveness audit and optimization:
-  - **Mobile-First Responsive Design**: Verified all 12+ pages use mobile-first Tailwind patterns throughout
-  - **Responsive Grid Layouts**: All grids stack properly on mobile (grid-cols-1 md:grid-cols-2, etc.)
-  - **Responsive Typography**: All text scales appropriately (text-2xl sm:text-3xl lg:text-[36px], etc.)
-  - **Responsive Spacing**: Consistent adaptive padding and margins (px-6 md:px-10, py-16 md:py-24, etc.)
-  - **GlassPageLayout Enhancement**: Improved header stacking on narrow screens (flex-col sm:flex-row) for better mobile clarity
-  - **Pages Optimized**: Dashboard, Needs, Calendar, MealTrain, GiftRegistry, FamilyUpdates, MemoryWall, People, Settings, Reminders, AdminTools
+- **November 14, 2025**: Comprehensive Dashboard redesign and mobile optimization:
+  - **Dashboard UI Refresh**:
+    - Softened glass effects to match landing page aesthetic (reduced intense glow and shadows)
+    - Click/tap-to-expand cards replacing hover reveals for mobile accessibility
+    - Fifth "Recent Updates" card showing latest announcement/update/custom message
+    - Enhanced invite prompt with stronger visual weight and improved copy
+    - Optional memorial subtitle feature: "In Loving Memory of..." with dates
+    - Custom dashboard message support for admin/primary users
+    - Improved empty state messaging for dashboard display area
+  - **Mobile Responsiveness**: Complete audit across all pages
+    - Mobile-first Tailwind patterns verified throughout (grid-cols-1 md:grid-cols-2, etc.)
+    - Responsive typography, spacing, and grid layouts
+    - GlassPageLayout headers stack properly on narrow screens (flex-col sm:flex-row)
+  - **Permissions Update**: All supporters can now invite others (not just admin/primary)
+  - **Settings Page**: New controls for memorial subtitle and custom dashboard message
   - Earlier: Narrative-driven landing page redesign for emotional impact and improved readability
   - **Hero Section**: "A Place Where Compassion Becomes Action" tagline with concise three-line brand message emphasizing organized compassion, direction, and sustainable support
   - **Scripture Font**: Changed from decorative Pinyon Script to readable Georgia serif for better legibility
