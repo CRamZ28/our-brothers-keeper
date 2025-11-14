@@ -126,6 +126,11 @@ export const households = pgTable("households", {
   dashboardQuote: text("dashboard_quote"),
   dashboardQuoteAttribution: text("dashboard_quote_attribution"),
   dashboardFeaturedMemoryId: integer("dashboard_featured_memory_id"),
+  showMemorialSubtitle: boolean("show_memorial_subtitle").default(false).notNull(),
+  memorialName: varchar("memorial_name", { length: 255 }),
+  memorialBirthDate: date("memorial_birth_date"),
+  memorialPassingDate: date("memorial_passing_date"),
+  customDashboardMessage: text("custom_dashboard_message"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
