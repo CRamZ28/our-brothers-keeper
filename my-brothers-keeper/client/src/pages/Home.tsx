@@ -88,15 +88,32 @@ export default function Home() {
                 A Place Where Compassion
                 <span className="text-[#2DB5A8] block mt-3">Becomes Action</span>
               </h2>
-              <p 
-                className="text-xl md:text-2xl text-white leading-relaxed max-w-3xl mx-auto"
-                style={{ lineHeight: 1.6 }}
-              >
-                Our Brother's Keeper is a compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one.
-                <span className="block mt-4 text-white/90">
-                  Born from loss, built from love—our mission is to make sure care continues long after the dust settles and life resumes its pace.
-                </span>
-              </p>
+              <div className="space-y-6 max-w-3xl mx-auto">
+                <p 
+                  className="text-2xl md:text-3xl font-semibold text-white"
+                  style={{ lineHeight: 1.4 }}
+                >
+                  Compassion, Organized. Support That Lasts.
+                </p>
+                <p 
+                  className="text-xl md:text-2xl text-white leading-relaxed"
+                  style={{ lineHeight: 1.6 }}
+                >
+                  People want to help—they just need direction.
+                </p>
+                <p 
+                  className="text-xl md:text-2xl text-white/95 leading-relaxed"
+                  style={{ lineHeight: 1.6 }}
+                >
+                  I built OBK after losing my brother, to make sure his family received care long after the world moved on.
+                </p>
+                <p 
+                  className="text-xl md:text-2xl text-white/95 leading-relaxed"
+                  style={{ lineHeight: 1.6 }}
+                >
+                  Now, OBK turns support into something simple, structured, and sustainable—so grieving families feel loved and cared for through every stage of grief.
+                </p>
+              </div>
               <div className="pt-4">
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
