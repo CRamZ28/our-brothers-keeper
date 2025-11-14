@@ -123,7 +123,17 @@ export default function Home() {
                 A Place Where Compassion
                 <span className="text-[#2DB5A8] block mt-3" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 0.6)' }}>Becomes Action</span>
               </h2>
-              <div className="relative space-y-6 max-w-3xl mx-auto" style={{ zIndex: 10 }}>
+              <div 
+                className="relative space-y-6 max-w-3xl mx-auto rounded-3xl p-8 md:p-10"
+                style={{ 
+                  zIndex: 10,
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  backdropFilter: 'blur(20px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                }}
+              >
                 <p 
                   className="text-xl md:text-2xl leading-relaxed"
                   style={{ 
