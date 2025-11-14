@@ -67,24 +67,25 @@ export default function Home() {
       </div>
 
       <div className="relative z-10">
-        {/* Header - Sticky with backdrop blur */}
-        <header 
-          className="sticky top-0 px-6 md:px-10 py-6 z-50"
-          style={{
-            background: 'rgba(15, 23, 42, 0.8)',
-            backdropFilter: 'blur(12px)',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
-          }}
-        >
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
+        {/* Header - Sticky glassmorphic card */}
+        <header className="sticky top-0 px-6 md:px-10 py-4 z-50">
+          <div 
+            className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
+            style={{
+              background: 'rgba(15, 23, 42, 0.7)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)'
+            }}
+          >
             <div className="flex items-center gap-3">
               <img 
                 src="/obk-emblem.png" 
                 alt={APP_TITLE} 
-                className="h-12 w-12 md:h-14 md:w-14"
+                className="h-10 w-10 md:h-12 md:w-12"
               />
               <h1 
-                className="text-xl md:text-2xl font-bold text-white tracking-wide"
+                className="text-lg md:text-xl font-bold text-white tracking-wide"
                 style={{ fontFamily: "'Cinzel', serif" }}
               >
                 Our Brother's Keeper
@@ -92,7 +93,7 @@ export default function Home() {
             </div>
             <Button 
               onClick={() => (window.location.href = "/api/login")}
-              className="bg-[#B08CA7] hover:bg-[#9d7a94] text-white font-semibold px-6 shadow-lg"
+              className="bg-[#B08CA7] hover:bg-[#9d7a94] text-white font-semibold px-5 py-2 shadow-lg"
             >
               Sign In
             </Button>
