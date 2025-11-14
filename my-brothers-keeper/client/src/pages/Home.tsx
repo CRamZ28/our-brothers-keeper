@@ -269,12 +269,12 @@ export default function Home() {
         <footer className="px-6 md:px-10 py-12 mt-16">
           <div className="max-w-7xl mx-auto text-center space-y-6">
             <p 
-              className="text-xl md:text-2xl italic text-white/70"
-              style={{ fontFamily: "'Pinyon Script', cursive" }}
+              className="text-xl md:text-2xl italic text-white font-light"
+              style={{ fontFamily: "Georgia, serif" }}
             >
               "Carry each other's burdens, and in this way you will fulfill the law of Christ"
             </p>
-            <p className="text-sm text-white/50">— Galatians 6:2</p>
+            <p className="text-base text-white/70 font-medium">— Galatians 6:2</p>
             <div className="pt-6 border-t border-white/10 mt-8">
               <p className="text-white/60 text-sm">
                 © 2025 Our Brother's Keeper. Supporting families through difficult times.
