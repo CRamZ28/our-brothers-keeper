@@ -128,66 +128,104 @@ export default function Home() {
               <div className="grid md:grid-cols-3 gap-8 md:gap-10 mt-16">
                 {/* Differentiator 1: Turn Words Into Action */}
                 <div 
-                  className="rounded-3xl p-10 space-y-4"
+                  className="rounded-3xl p-10 space-y-5"
                   style={{
                     background: 'rgba(15, 23, 42, 0.72)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-4">
+                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-2">
                     <Heart className="w-8 h-8 text-white" />
                   </div>
                   <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                     Turn Words Into Action
                   </h4>
-                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
-                    When people say "Let me know if you need anything," they mean it—OBK simply shows them how.
-                    <br /><br />
-                    Clear, specific ways to help turn kind intentions into support that truly lightens the load.
+                  <p className="text-lg text-white/90 font-medium">
+                    Transform "Let me know if you need anything" into real help.
                   </p>
+                  <ul className="space-y-3 text-white/85 text-base">
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
+                      <span>Give helpers specific, actionable tasks</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
+                      <span>Match support to your actual needs</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
+                      <span>Turn kind words into meaningful action</span>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* Differentiator 2: Sustained Support */}
                 <div 
-                  className="rounded-3xl p-10 space-y-4"
+                  className="rounded-3xl p-10 space-y-5"
                   style={{
                     background: 'rgba(15, 23, 42, 0.72)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <div className="rounded-xl bg-[#B08CA7] w-16 h-16 flex items-center justify-center mb-4">
+                  <div className="rounded-xl bg-[#B08CA7] w-16 h-16 flex items-center justify-center mb-2">
                     <Clock className="w-8 h-8 text-white" />
                   </div>
                   <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                     Sustained Support
                   </h4>
-                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
-                    Grief doesn't follow a timeline. OBK helps your community stay present—weeks, months, and even years later—because healing takes time, and love should last just as long.
+                  <p className="text-lg text-white/90 font-medium">
+                    Grief doesn't follow a timeline—and neither does our support.
                   </p>
+                  <ul className="space-y-3 text-white/85 text-base">
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#B08CA7]">•</span>
+                      <span>Community stays present weeks, months, years later</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#B08CA7]">•</span>
+                      <span>Coordinate help beyond the first few weeks</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#B08CA7]">•</span>
+                      <span>Build lasting support that matches the healing journey</span>
+                    </li>
+                  </ul>
                 </div>
 
                 {/* Differentiator 3: Privacy & Control */}
                 <div 
-                  className="rounded-3xl p-10 space-y-4"
+                  className="rounded-3xl p-10 space-y-5"
                   style={{
                     background: 'rgba(15, 23, 42, 0.72)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-4">
+                  <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-2">
                     <Shield className="w-8 h-8 text-white" />
                   </div>
                   <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                     Privacy & Control
                   </h4>
-                  <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
+                  <p className="text-lg text-white/90 font-medium">
                     Share only what you want, with exactly who you choose.
-                    <br /><br />
-                    Create custom groups, manage visibility for every post or update, and stay in full control of your family's space.
                   </p>
+                  <ul className="space-y-3 text-white/85 text-base">
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
+                      <span>Create custom supporter groups</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
+                      <span>Control visibility for every post and update</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
+                      <span>Keep full control of your family's space</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
