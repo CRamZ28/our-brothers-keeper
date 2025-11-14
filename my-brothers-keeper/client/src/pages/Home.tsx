@@ -55,14 +55,14 @@ export default function Home() {
         className="fixed top-1/2 left-1/2 pointer-events-none"
         style={{
           transform: 'translate(-50%, -50%)',
-          opacity: 0.15,
+          opacity: 0.12,
           zIndex: 1
         }}
       >
         <img 
           src="/obk-emblem.png" 
           alt="" 
-          className="w-[700px] h-[700px] md:w-[900px] md:h-[900px]"
+          className="w-[500px] h-[500px] sm:w-[600px] sm:h-[600px] md:w-[750px] md:h-[750px] lg:w-[900px] lg:h-[900px]"
         />
       </div>
 
@@ -136,7 +136,11 @@ export default function Home() {
             <div className="mb-24 md:mb-32">
               <h3 
                 className="text-5xl md:text-6xl font-bold text-center mb-6"
-                style={{ fontFamily: "'Cinzel', serif", color: '#D4B5CD' }}
+                style={{ 
+                  fontFamily: "'Cinzel', serif", 
+                  color: '#E5D5E1',
+                  textShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+                }}
               >
                 Why Our Brother's Keeper
               </h3>
@@ -144,11 +148,13 @@ export default function Home() {
               <div className="grid md:grid-cols-3 gap-8 md:gap-10 mt-16">
                 {/* Differentiator 1: Turn Words Into Action */}
                 <div 
-                  className="rounded-3xl p-10 space-y-5"
+                  className="rounded-3xl p-10 space-y-5 animate-fade-in-up"
                   style={{
                     background: 'rgba(15, 23, 42, 0.72)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)'
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    animationDelay: '0.1s',
+                    animationFillMode: 'both'
                   }}
                 >
                   <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-2">
@@ -157,10 +163,10 @@ export default function Home() {
                   <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                     Turn Words Into Action
                   </h4>
-                  <p className="text-lg text-white/90 font-medium">
+                  <p className="text-lg text-white/95 font-medium">
                     Transform "Let me know if you need anything" into real help.
                   </p>
-                  <ul className="space-y-3 text-white/85 text-base">
+                  <ul className="space-y-3 text-white/90 text-base">
                     <li className="flex items-start">
                       <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
                       <span>Give helpers specific, actionable tasks</span>
@@ -178,11 +184,13 @@ export default function Home() {
 
                 {/* Differentiator 2: Sustained Support */}
                 <div 
-                  className="rounded-3xl p-10 space-y-5"
+                  className="rounded-3xl p-10 space-y-5 animate-fade-in-up"
                   style={{
                     background: 'rgba(15, 23, 42, 0.72)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)'
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    animationDelay: '0.2s',
+                    animationFillMode: 'both'
                   }}
                 >
                   <div className="rounded-xl bg-[#B08CA7] w-16 h-16 flex items-center justify-center mb-2">
@@ -191,10 +199,10 @@ export default function Home() {
                   <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                     Sustained Support
                   </h4>
-                  <p className="text-lg text-white/90 font-medium">
+                  <p className="text-lg text-white/95 font-medium">
                     Grief doesn't follow a timeline—and neither does our support.
                   </p>
-                  <ul className="space-y-3 text-white/85 text-base">
+                  <ul className="space-y-3 text-white/90 text-base">
                     <li className="flex items-start">
                       <span className="mr-3 mt-1 text-[#B08CA7]">•</span>
                       <span>Community stays present weeks, months, years later</span>
@@ -212,11 +220,13 @@ export default function Home() {
 
                 {/* Differentiator 3: Privacy & Control */}
                 <div 
-                  className="rounded-3xl p-10 space-y-5"
+                  className="rounded-3xl p-10 space-y-5 animate-fade-in-up"
                   style={{
                     background: 'rgba(15, 23, 42, 0.72)',
                     backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(255, 255, 255, 0.15)'
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    animationDelay: '0.3s',
+                    animationFillMode: 'both'
                   }}
                 >
                   <div className="rounded-xl bg-[#2DB5A8] w-16 h-16 flex items-center justify-center mb-2">
@@ -225,10 +235,10 @@ export default function Home() {
                   <h4 className="text-2xl font-bold text-white" style={{ fontFamily: "'Cinzel', serif" }}>
                     Privacy & Control
                   </h4>
-                  <p className="text-lg text-white/90 font-medium">
+                  <p className="text-lg text-white/95 font-medium">
                     Share only what you want, with exactly who you choose.
                   </p>
-                  <ul className="space-y-3 text-white/85 text-base">
+                  <ul className="space-y-3 text-white/90 text-base">
                     <li className="flex items-start">
                       <span className="mr-3 mt-1 text-[#2DB5A8]">•</span>
                       <span>Create custom supporter groups</span>
