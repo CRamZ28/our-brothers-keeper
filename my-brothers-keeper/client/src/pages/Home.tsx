@@ -80,34 +80,31 @@ export default function Home() {
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
             {/* Hero Content - Single Column, Centered */}
-            <div className="text-center space-y-8 mb-24 md:mb-32">
-              {/* Hero Logo Centerpiece */}
-              <div className="flex justify-center mb-12">
-                <div 
-                  className="rounded-full p-12 md:p-16"
-                  style={{
-                    background: 'rgba(15, 23, 42, 0.72)',
-                    backdropFilter: 'blur(20px)',
-                    border: '2px solid rgba(255, 255, 255, 0.2)',
-                    boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)'
-                  }}
-                >
-                  <img 
-                    src="/obk-emblem.png" 
-                    alt={APP_TITLE} 
-                    className="w-40 h-40 md:w-56 md:h-56 lg:w-64 lg:h-64"
-                  />
-                </div>
+            <div className="relative text-center space-y-8 mb-24 md:mb-32">
+              {/* Floating Watermark Logo */}
+              <div 
+                className="absolute top-1/2 left-1/2 pointer-events-none"
+                style={{
+                  transform: 'translate(-50%, -50%)',
+                  opacity: 0.18,
+                  zIndex: 0
+                }}
+              >
+                <img 
+                  src="/obk-emblem.png" 
+                  alt="" 
+                  className="w-[350px] h-[350px] md:w-[450px] md:h-[450px]"
+                />
               </div>
               
               <h2 
-                className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
-                style={{ fontFamily: "'Cinzel', serif" }}
+                className="relative text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
+                style={{ fontFamily: "'Cinzel', serif", zIndex: 10 }}
               >
                 A Place Where Compassion
                 <span className="text-[#2DB5A8] block mt-3">Becomes Action</span>
               </h2>
-              <div className="space-y-6 max-w-3xl mx-auto">
+              <div className="relative space-y-6 max-w-3xl mx-auto" style={{ zIndex: 10 }}>
                 <p 
                   className="text-xl md:text-2xl text-white leading-relaxed"
                   style={{ lineHeight: 1.6 }}
@@ -123,7 +120,7 @@ export default function Home() {
                   OBK turns care into something simple, structured, and sustainable so grieving families feel supported through every stage of loss.
                 </p>
               </div>
-              <div className="pt-4">
+              <div className="relative pt-4" style={{ zIndex: 10 }}>
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
                   size="lg"
