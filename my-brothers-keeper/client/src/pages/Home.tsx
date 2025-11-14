@@ -139,7 +139,10 @@ export default function Home() {
                   style={{ 
                     lineHeight: 1.6,
                     color: '#7d5a75',
-                    textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)'
+                    textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontSize: '1.125rem'
                   }}
                 >
                   Compassion, organized into support that truly lasts.
@@ -151,7 +154,10 @@ export default function Home() {
                   style={{ 
                     lineHeight: 1.6,
                     color: '#7d5a75',
-                    textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)'
+                    textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    fontSize: '1.125rem'
                   }}
                 >
                   OBK turns care into something simple, structured, and sustainable so grieving families feel supported through every stage of loss.
