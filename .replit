@@ -48,5 +48,5 @@ externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["bash", "-c", "cd my-brothers-keeper && pnpm start"]
-build = ["bash", "-c", "cd my-brothers-keeper && pnpm install && pnpm run build"]
+build = ["pnpm", "build"]
+run = ["pnpm", "start"]

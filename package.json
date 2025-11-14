@@ -4,6 +4,9 @@
   "description": "A compassionate platform that helps families and communities provide sustained, meaningful support to those who have lost a loved one.",
   "main": "index.js",
   "scripts": {
+    "build": "cd my-brothers-keeper && pnpm install && pnpm run build",
+    "start": "cd my-brothers-keeper && pnpm start",
+    "dev": "cd my-brothers-keeper && pnpm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
