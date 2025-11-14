@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { APP_TITLE } from "@/const";
 import { trpc } from "@/lib/trpc";
-import { Heart, Shield, Clock, Settings, Users, ArrowRight } from "lucide-react";
+import { Heart, Shield, Clock, Settings, Users, ArrowRight, ClipboardList, Calendar, UtensilsCrossed, Megaphone, Image, Gift, UserCircle, Check } from "lucide-react";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -349,6 +349,267 @@ export default function Home() {
               <p className="text-lg text-center mt-10 italic" style={{ color: '#5a8884' }}>
                 However you choose to heal, OBK supports your way. You decide how much help you want—and can adjust it anytime.
               </p>
+            </div>
+
+            {/* Everything You Need - Features Section */}
+            <div className="mb-24 md:mb-32">
+              <h3 
+                className="text-4xl md:text-5xl font-bold text-center mb-4"
+                style={{ 
+                  fontFamily: "'Cinzel', serif",
+                  color: '#1a5a56',
+                  textShadow: '0 2px 4px rgba(255, 255, 255, 0.8)'
+                }}
+              >
+                Everything You Need, All in One Place
+              </h3>
+
+              <div className="grid md:grid-cols-2 gap-8 md:gap-10 mt-16">
+                {/* Needs Board */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.35)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center">
+                    <ClipboardList className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#1a5a56' }}>
+                    Needs Board
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#2a6a66' }}>
+                    Turn compassion into action. Post specific needs—meals, childcare, errands, lawn care—and supporters can claim and complete tasks with ease.
+                  </p>
+                  <ul className="space-y-2 text-base pt-2" style={{ color: '#2a6a66' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Claim and complete tasks</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Set custom visibility per need</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Track who's helping with what</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Events Calendar */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4"
+                  style={{
+                    background: 'rgba(245, 235, 245, 0.4)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(176, 140, 167, 0.4)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#B08CA7] w-14 h-14 flex items-center justify-center">
+                    <Calendar className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#7d5a75' }}>
+                    Events Calendar
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#8d6a85' }}>
+                    Keep your circle informed about what matters most—memorial services, court dates, birthdays, or family gatherings. Includes RSVP tracking and reminders.
+                  </p>
+                  <ul className="space-y-2 text-base pt-2" style={{ color: '#8d6a85' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>RSVP for events</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Control who sees each event</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Track recurring important dates</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Meal Train */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.35)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center">
+                    <UtensilsCrossed className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#1a5a56' }}>
+                    Meal Train
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#2a6a66' }}>
+                    Coordinate meal deliveries seamlessly. Choose available dates, list dietary preferences, and include private delivery details.
+                  </p>
+                  <ul className="space-y-2 text-base pt-2" style={{ color: '#2a6a66' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Schedule meals with ease</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Set dietary preferences & allergies</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Manage delivery instructions privately</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Family Updates */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4"
+                  style={{
+                    background: 'rgba(245, 235, 245, 0.4)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(176, 140, 167, 0.4)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#B08CA7] w-14 h-14 flex items-center justify-center">
+                    <Megaphone className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#7d5a75' }}>
+                    Family Updates
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#8d6a85' }}>
+                    Keep everyone connected with updates, photos, and milestones. Pin important announcements to ensure no one misses what matters most.
+                  </p>
+                  <ul className="space-y-2 text-base pt-2" style={{ color: '#8d6a85' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Pin important announcements</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Upload photos & videos</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Share memories and moments</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Memory Wall */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.35)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center">
+                    <Image className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#1a5a56' }}>
+                    Memory Wall
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#2a6a66' }}>
+                    Celebrate a life beautifully. Build an interactive collage of photos, stories, prayers, and memories. Every shared post keeps their spirit alive.
+                  </p>
+                  <ul className="space-y-2 text-base pt-2" style={{ color: '#2a6a66' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Share memories and encouragement</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Drag-and-drop interactive layout</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Filter by memory type</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Gift Registry */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4"
+                  style={{
+                    background: 'rgba(245, 235, 245, 0.4)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(176, 140, 167, 0.4)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#B08CA7] w-14 h-14 flex items-center justify-center">
+                    <Gift className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#7d5a75' }}>
+                    Gift Registry
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#8d6a85' }}>
+                    Create a wishlist for practical needs—whether it's household items, school supplies, or memorial gifts. Supporters can purchase directly and track deliveries.
+                  </p>
+                  <ul className="space-y-2 text-base pt-2" style={{ color: '#8d6a85' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Three-stage tracking system</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Priority levels for items</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#B08CA7] flex-shrink-0" />
+                      <span>Prevent duplicate purchases</span>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* People & Custom Groups */}
+                <div 
+                  className="rounded-3xl p-8 space-y-4 md:col-span-2"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.35)',
+                    backdropFilter: 'blur(20px) saturate(180%)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
+                    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  }}
+                >
+                  <div className="rounded-xl bg-[#2DB5A8] w-14 h-14 flex items-center justify-center">
+                    <UserCircle className="w-7 h-7 text-white" />
+                  </div>
+                  <h4 className="text-2xl font-bold" style={{ fontFamily: "'Cinzel', serif", color: '#1a5a56' }}>
+                    People & Custom Groups
+                  </h4>
+                  <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#2a6a66' }}>
+                    Organize your community into custom groups—"Inner Circle," "Church Friends," "Work Family"—for personalized updates and controlled sharing.
+                  </p>
+                  <ul className="grid md:grid-cols-3 gap-4 text-base pt-2" style={{ color: '#2a6a66' }}>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Create unlimited groups</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Invite securely</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
+                      <span>Three-tier access system</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
             </div>
 
             {/* Final CTA */}
