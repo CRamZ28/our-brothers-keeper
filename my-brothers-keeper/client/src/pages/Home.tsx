@@ -120,11 +120,7 @@ export default function Home() {
             <div className="mb-24 md:mb-32">
               <h3 
                 className="text-4xl md:text-5xl font-bold text-center mb-6"
-                style={{ 
-                  fontFamily: "'Cinzel', serif", 
-                  color: '#B08CA7',
-                  textShadow: '0 0 20px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.3)'
-                }}
+                style={{ fontFamily: "'Cinzel', serif", color: '#B08CA7' }}
               >
                 Why Our Brother's Keeper
               </h3>
