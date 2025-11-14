@@ -909,15 +909,15 @@ export default function People() {
               {groups && groups.length > 0 ? (
                 <div className="grid md:grid-cols-3 gap-4">
                   {groups.map((group) => (
-                    <div key={group.id} className="p-4 border rounded-lg hover:bg-accent/50 transition-colors relative group/card">
-                      <div className="pr-28">
-                        <h3 className="font-medium text-base sm:text-lg overflow-hidden line-clamp-2">{group.name}</h3>
+                    <div key={group.id} className="p-4 border rounded-lg hover:bg-teal-50 transition-colors relative group/card">
+                      <div className="pr-10">
+                        <h3 className="font-medium text-base sm:text-lg break-words">{group.name}</h3>
                         <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{group.description}</p>
                         <p className="text-xs text-muted-foreground mt-2">
                           {group.memberCount || 0} {group.memberCount === 1 ? "member" : "members"}
                         </p>
                       </div>
-                      <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
+                      <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover/card:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
                           size="sm"
