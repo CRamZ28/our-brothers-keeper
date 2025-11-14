@@ -142,7 +142,9 @@ export default function Home() {
                     Turn Words Into Action
                   </h4>
                   <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
-                    When someone says, "Let me know if you need anything," they mean it—our platform makes it easy for them to follow through with specific, helpful actions that truly lighten the load.
+                    When people say "Let me know if you need anything," they mean it—OBK simply shows them how.
+                    <br /><br />
+                    Clear, specific ways to help turn kind intentions into support that truly lightens the load.
                   </p>
                 </div>
 
@@ -162,7 +164,7 @@ export default function Home() {
                     Sustained Support
                   </h4>
                   <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
-                    Grief doesn't end after the funeral. Our Brother's Keeper helps your community stay present—weeks, months, and even years later—because healing takes time, and love should too.
+                    Grief doesn't follow a timeline. OBK helps your community stay present—weeks, months, and even years later—because healing takes time, and love should last just as long.
                   </p>
                 </div>
 
@@ -182,7 +184,9 @@ export default function Home() {
                     Privacy & Control
                   </h4>
                   <p className="text-lg text-white/90 leading-relaxed" style={{ lineHeight: 1.6 }}>
-                    Share what you want, with who you want. Create custom groups and manage visibility for every post, event, or update. You decide what's shared, and with whom.
+                    Share only what you want, with exactly who you choose.
+                    <br /><br />
+                    Create custom groups, manage visibility for every post or update, and stay in full control of your family's space.
                   </p>
                 </div>
               </div>
