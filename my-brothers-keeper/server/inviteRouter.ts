@@ -48,10 +48,11 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Household not found" });
       }
 
+      // All supporters can now invite to expand the support network
       const canInvite =
         ctx.user.role === "primary" ||
         ctx.user.role === "admin" ||
-        (ctx.user.role === "supporter" && household.delegateAdminApprovals);
+        ctx.user.role === "supporter";
 
       if (!canInvite) {
         throw new TRPCError({
