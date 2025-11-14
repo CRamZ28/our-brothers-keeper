@@ -94,18 +94,14 @@ export default function Home() {
                   style={{ lineHeight: 1.6 }}
                 >
                   Compassion, organized into support that truly lasts.
-                </p>
-                <p 
-                  className="text-xl md:text-2xl text-white leading-relaxed"
-                  style={{ lineHeight: 1.6 }}
-                >
+                  <br />
                   People want to help—they just need direction.
                 </p>
                 <p 
                   className="text-xl md:text-2xl text-white leading-relaxed"
                   style={{ lineHeight: 1.6 }}
                 >
-                  OBK turns care into something simple, structured, and sustainable—so grieving families feel supported through every stage of loss.
+                  OBK turns care into something simple, structured, and sustainable so grieving families feel supported through every stage of loss.
                 </p>
               </div>
               <div className="pt-4">
