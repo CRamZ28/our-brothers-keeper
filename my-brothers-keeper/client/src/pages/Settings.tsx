@@ -399,7 +399,7 @@ export default function Settings() {
 
           {/* Dashboard Personalization */}
           {isPrimaryOrAdmin && (
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20" data-tour="dashboard-personalization-settings">
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <Users className="w-5 h-5 text-[#6BC4B8]" />
