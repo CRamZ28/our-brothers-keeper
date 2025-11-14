@@ -48,5 +48,5 @@ externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["sh", "-c", "pnpm install && pnpm --filter my-brothers-keeper build"]
-run = ["sh", "-c", "cd my-brothers-keeper && node dist/index.js"]
+build = ["pnpm", "run", "build"]
+run = ["pnpm", "run", "start"]
