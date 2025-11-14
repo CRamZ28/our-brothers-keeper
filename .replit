@@ -48,5 +48,5 @@ externalPort = 3000
 
 [deployment]
 deploymentTarget = "autoscale"
-build = ["pnpm", "build"]
-run = ["pnpm", "start"]
+build = ["bash", "-c", "cd my-brothers-keeper && pnpm install --frozen-lockfile && pnpm run build"]
+run = ["bash", "-c", "cd my-brothers-keeper && NODE_ENV=production node dist/index.js"]
