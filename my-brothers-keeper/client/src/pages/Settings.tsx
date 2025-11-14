@@ -869,7 +869,7 @@ export default function Settings() {
               <div className="pt-4 border-t">
                 <Button
                   variant="outline"
-                  className="w-full"
+                  className="w-full hover:bg-teal-50 hover:text-teal-700 hover:border-teal-300"
                   onClick={() => {
                     window.location.href = "/api/logout";
                   }}
