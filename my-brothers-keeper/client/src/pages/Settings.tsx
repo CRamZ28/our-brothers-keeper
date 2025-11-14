@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload, HelpCircle, Play, CheckCircle2, XCircle } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
@@ -47,6 +48,12 @@ export default function Settings() {
   const [autoPromoteEnabled, setAutoPromoteEnabled] = useState(false);
   const [autoPromoteHours, setAutoPromoteHours] = useState(48);
 
+  const [showMemorialSubtitle, setShowMemorialSubtitle] = useState(false);
+  const [memorialName, setMemorialName] = useState("");
+  const [memorialBirthDate, setMemorialBirthDate] = useState("");
+  const [memorialPassingDate, setMemorialPassingDate] = useState("");
+  const [customDashboardMessage, setCustomDashboardMessage] = useState("");
+
   const [dashboardDisplayType, setDashboardDisplayType] = useState<"none" | "photo" | "slideshow" | "quote" | "memory">("none");
   const [dashboardPhotos, setDashboardPhotos] = useState<string[]>([]);
   const [dashboardQuote, setDashboardQuote] = useState("");
@@ -75,6 +82,11 @@ export default function Settings() {
       setHouseholdSlug(household.slug || "");
       setAutoPromoteEnabled(household.autoPromoteEnabled || false);
       setAutoPromoteHours(household.autoPromoteHours || 48);
+      setShowMemorialSubtitle(household.showMemorialSubtitle || false);
+      setMemorialName(household.memorialName || "");
+      setMemorialBirthDate(household.memorialBirthDate || "");
+      setMemorialPassingDate(household.memorialPassingDate || "");
+      setCustomDashboardMessage(household.customDashboardMessage || "");
       setDashboardDisplayType(household.dashboardDisplayType || "none");
       setDashboardPhotos(household.dashboardPhotos || []);
       setDashboardQuote(household.dashboardQuote || "");
@@ -163,8 +175,23 @@ export default function Settings() {
       return;
     }
 
+    if (showMemorialSubtitle && !memorialName.trim()) {
+      toast.error("Memorial name is required when showing memorial subtitle");
+      return;
+    }
+
+    if (customDashboardMessage.length > 500) {
+      toast.error("Custom dashboard message cannot exceed 500 characters");
+      return;
+    }
+
     updateHouseholdMutation.mutate({
       name: householdName,
+      showMemorialSubtitle,
+      memorialName,
+      memorialBirthDate,
+      memorialPassingDate,
+      customDashboardMessage,
     });
   };
 
@@ -366,6 +393,112 @@ export default function Settings() {
                     {updateSlugMutation.isPending ? "Updating..." : "Update Page URL"}
                   </Button>
                 </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Dashboard Personalization */}
+          {isPrimaryOrAdmin && (
+            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <Users className="w-5 h-5 text-[#6BC4B8]" />
+                  <CardTitle>Dashboard Personalization</CardTitle>
+                </div>
+                <CardDescription>
+                  Customize how your dashboard appears to all supporters
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Memorial Subtitle Section */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label className="text-base font-semibold">Memorial Subtitle (Optional)</Label>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="showMemorialSubtitle"
+                        checked={showMemorialSubtitle}
+                        onCheckedChange={(checked) => setShowMemorialSubtitle(checked as boolean)}
+                      />
+                      <Label htmlFor="showMemorialSubtitle" className="font-normal cursor-pointer">
+                        Show memorial subtitle on dashboard
+                      </Label>
+                    </div>
+                  </div>
+
+                  {showMemorialSubtitle && (
+                    <div className="space-y-4 pl-6 border-l-2 border-[#6BC4B8]/30">
+                      <div className="space-y-2">
+                        <Label htmlFor="memorialName">Memorial Name *</Label>
+                        <Input
+                          id="memorialName"
+                          placeholder="Name of loved one"
+                          value={memorialName}
+                          onChange={(e) => setMemorialName(e.target.value)}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="memorialBirthDate">Birth Date</Label>
+                          <Input
+                            id="memorialBirthDate"
+                            type="date"
+                            value={memorialBirthDate}
+                            onChange={(e) => setMemorialBirthDate(e.target.value)}
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="memorialPassingDate">Passing Date</Label>
+                          <Input
+                            id="memorialPassingDate"
+                            type="date"
+                            value={memorialPassingDate}
+                            onChange={(e) => setMemorialPassingDate(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <p className="text-sm text-muted-foreground">
+                    This appears below your family name. Some families find comfort in seeing this, while others prefer not to. Choose what feels right for you.
+                  </p>
+                </div>
+
+                {/* Custom Welcome Message Section */}
+                <div className="space-y-4 border-t pt-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="customDashboardMessage" className="text-base font-semibold">
+                      Custom Welcome Message
+                    </Label>
+                    <Textarea
+                      id="customDashboardMessage"
+                      placeholder="Share a message, update, or encouragement that will appear in the Recent Updates section..."
+                      value={customDashboardMessage}
+                      onChange={(e) => setCustomDashboardMessage(e.target.value)}
+                      rows={4}
+                      className={customDashboardMessage.length > 500 ? "border-red-500" : ""}
+                    />
+                    <div className="flex justify-between items-center">
+                      <p className="text-sm text-muted-foreground">
+                        This message appears in your Recent Updates card when no recent announcements or family updates exist. You can update this anytime.
+                      </p>
+                      <span className={`text-sm ${customDashboardMessage.length > 500 ? "text-red-500" : "text-muted-foreground"}`}>
+                        {customDashboardMessage.length} / 500 characters
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleSaveHousehold}
+                  disabled={updateHouseholdMutation.isPending}
+                  className="w-full bg-[#6BC4B8] hover:bg-[#5AB3A8] text-white"
+                >
+                  {updateHouseholdMutation.isPending ? "Saving..." : "Save Personalization"}
+                </Button>
               </CardContent>
             </Card>
           )}

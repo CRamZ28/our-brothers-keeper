@@ -14,6 +14,8 @@ export default function Dashboard() {
   const { data: events } = trpc.events.list.useQuery();
   const { data: userClaims } = trpc.needs.listUserClaims.useQuery();
   const { data: userMealSignups } = trpc.mealTrain.listUserSignups.useQuery();
+  const { data: updates } = trpc.updates.list.useQuery();
+  const { data: announcements } = trpc.messages.listAnnouncements.useQuery();
   
   const { data: availableTours } = trpc.onboarding.listAvailableTours.useQuery(
     { scope: "household" },
@@ -76,7 +78,7 @@ export default function Dashboard() {
               WebkitBackdropFilter: 'blur(8px)',
               background: 'rgba(255, 255, 255, 0.3)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
-              boxShadow: '0 0 20px rgba(45, 181, 168, 0.6), 0 0 40px rgba(45, 181, 168, 0.4), 0 12px 40px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}
           >
             <h1 
@@ -84,7 +86,7 @@ export default function Dashboard() {
               style={{
                 fontFamily: "'Cinzel', serif",
                 color: '#0fa9a7',
-                filter: 'drop-shadow(0 0 8px rgba(15,169,167,0.7))'
+                filter: 'drop-shadow(0 2px 4px rgba(15,169,167,0.3))'
               }}
             >
               {household.name.split(' ').map((word, idx) => (
@@ -98,6 +100,30 @@ export default function Dashboard() {
               ))}
             </h1>
           </div>
+
+          {/* Memorial Subtitle - Optional */}
+          {household.showMemorialSubtitle && household.memorialName && (
+            <div className="text-center">
+              <p className="text-lg text-foreground/70" style={{ fontFamily: 'Georgia, serif' }}>
+                In Loving Memory of {household.memorialName}
+                {(household.memorialBirthDate || household.memorialPassingDate) && (
+                  <span>
+                    {household.memorialBirthDate && household.memorialPassingDate && (
+                      <span>
+                        {' '}({formatMemorialDate(household.memorialBirthDate)} - {formatMemorialDate(household.memorialPassingDate)})
+                      </span>
+                    )}
+                    {household.memorialBirthDate && !household.memorialPassingDate && (
+                      <span> (Born {formatMemorialDate(household.memorialBirthDate)})</span>
+                    )}
+                    {!household.memorialBirthDate && household.memorialPassingDate && (
+                      <span> (Passed {formatMemorialDate(household.memorialPassingDate)})</span>
+                    )}
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
 
           {/* Dashboard Display - Conditional Rendering */}
           <DashboardDisplay household={household} />
@@ -138,9 +164,10 @@ export default function Dashboard() {
             <div className="flex-1 space-y-3 mb-6">
               <Link href="/people?invite=true">
                 <div 
-                  className="p-4 rounded-lg text-center cursor-pointer transition-all duration-200"
+                  className="p-6 rounded-lg text-center cursor-pointer transition-all duration-200"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.3)'
+                    background: 'rgba(255, 255, 255, 0.3)',
+                    border: '2px solid rgba(255, 255, 255, 0.5)'
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background = 'rgba(255, 255, 255, 0.45)';
@@ -151,9 +178,12 @@ export default function Dashboard() {
                     e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
-                  <Users className="w-8 h-8 text-foreground/60 mx-auto mb-2" />
-                  <p className="text-sm font-medium text-foreground">Invite friends & family</p>
-                  <p className="text-xs text-foreground/70 mt-1">Build your support network</p>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Users className="w-8 h-8 text-foreground/60" />
+                    <Plus className="w-6 h-6 text-foreground/60" />
+                  </div>
+                  <p className="text-sm font-semibold text-foreground mb-1">Grow Your Support Circle</p>
+                  <p className="text-xs text-foreground/70 mt-1">Invite friends and family to help coordinate care and stay connected</p>
                 </div>
               </Link>
             </div>
@@ -361,17 +391,69 @@ export default function Dashboard() {
             </Link>
           </div>
 
+          {/* Card 5: Recent Updates - Full Width */}
+          <div 
+            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300 md:col-span-2"
+            style={{
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
+                <QuoteIcon className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-lg font-semibold text-foreground">Recent Updates</h2>
+            </div>
+
+            {/* Content */}
+            <RecentUpdatesContent 
+              announcements={announcements}
+              updates={updates}
+              household={household}
+              isAdminOrPrimary={isAdminOrPrimary}
+            />
+          </div>
+
         </div>
       </div>
     </DashboardLayout>
   );
 }
 
+// Helper function to format memorial dates
+function formatMemorialDate(dateString: string): string {
+  const date = new Date(dateString);
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 // Dashboard Display Components
 function DashboardDisplay({ household }: { household: any }) {
   const displayType = household.dashboardDisplayType || "none";
   
-  if (displayType === "none") return null;
+  if (displayType === "none") {
+    return (
+      <div 
+        className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center p-8"
+        style={{
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          background: 'rgba(255, 255, 255, 0.3)',
+          border: '2px solid rgba(255, 255, 255, 0.3)',
+          boxShadow: '0 12px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
+          minHeight: '120px'
+        }}
+      >
+        <p className="text-sm text-foreground/60 italic text-center">
+          Customize this space in Settings to show a photo, quote, or special memory
+        </p>
+      </div>
+    );
+  }
   
   return (
     <div 
@@ -516,7 +598,7 @@ function FeaturedMemory({ memoryId }: { memoryId?: number | null }) {
 }
 
 function NeedCard({ need }: { need: any }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   const claimCount = need.claimCount || 0;
   const capacity = need.capacity;
@@ -527,10 +609,9 @@ function NeedCard({ need }: { need: any }) {
       className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
       style={{
         background: 'rgba(255, 255, 255, 0.3)',
-        maxHeight: isHovered ? '300px' : '80px',
+        maxHeight: isExpanded ? '300px' : '80px',
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setIsExpanded(!isExpanded)}
     >
       <div>
         <div className="flex items-start justify-between gap-2">
@@ -557,7 +638,7 @@ function NeedCard({ need }: { need: any }) {
         )}
       </div>
       
-      {isHovered && (
+      {isExpanded && (
         <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
           {need.details && (
             <div>
@@ -606,7 +687,7 @@ function NeedCard({ need }: { need: any }) {
 }
 
 function EventCard({ event }: { event: any }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   const eventDate = new Date(event.startAt);
   const eventEndDate = event.endAt ? new Date(event.endAt) : null;
 
@@ -615,10 +696,9 @@ function EventCard({ event }: { event: any }) {
       className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
       style={{
         background: 'rgba(255, 255, 255, 0.3)',
-        maxHeight: isHovered ? '250px' : '70px',
+        maxHeight: isExpanded ? '250px' : '70px',
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setIsExpanded(!isExpanded)}
     >
       <div className="flex items-start justify-between gap-2">
         <p className="text-sm font-medium text-foreground overflow-hidden line-clamp-2 flex-1">
@@ -633,7 +713,7 @@ function EventCard({ event }: { event: any }) {
         })}
       </p>
       
-      {isHovered && (
+      {isExpanded && (
         <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-foreground/80">Time:</span>
@@ -669,7 +749,7 @@ function EventCard({ event }: { event: any }) {
 }
 
 function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
-  const [isHovered, setIsHovered] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
   
   if (type === 'need') {
     return (
@@ -677,10 +757,9 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
         className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
         style={{
           background: 'rgba(255, 255, 255, 0.3)',
-          maxHeight: isHovered ? '200px' : '70px',
+          maxHeight: isExpanded ? '200px' : '70px',
         }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onClick={() => setIsExpanded(!isExpanded)}
       >
         <div>
           <div className="flex items-start justify-between gap-2">
@@ -707,7 +786,7 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
           )}
         </div>
         
-        {isHovered && (
+        {isExpanded && (
           <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
             {item.category && (
               <div className="flex items-center gap-2">
@@ -738,10 +817,9 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
       className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
       style={{
         background: 'rgba(255, 255, 255, 0.3)',
-        maxHeight: isHovered ? '200px' : '70px',
+        maxHeight: isExpanded ? '200px' : '70px',
       }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setIsExpanded(!isExpanded)}
     >
       <div>
         <div className="flex items-start justify-between gap-2">
@@ -766,7 +844,7 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
         </p>
       </div>
       
-      {isHovered && (
+      {isExpanded && (
         <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
           <div className="flex items-center gap-2">
             <span className="text-xs font-medium text-foreground/80">Date:</span>
@@ -786,6 +864,121 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrimary }: { 
+  announcements: any; 
+  updates: any; 
+  household: any; 
+  isAdminOrPrimary: boolean;
+}) {
+  let displayContent = null;
+  let displayType = '';
+
+  if (announcements && announcements.length > 0) {
+    const latestAnnouncement = announcements[0];
+    displayContent = latestAnnouncement.content;
+    displayType = 'announcement';
+  } else if (updates && updates.length > 0) {
+    const latestUpdate = updates[0];
+    displayContent = latestUpdate.content || latestUpdate.message;
+    displayType = 'update';
+  } else if (household.customDashboardMessage) {
+    displayContent = household.customDashboardMessage;
+    displayType = 'custom';
+  }
+
+  const truncateText = (text: string, maxLength: number = 100) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  if (!displayContent) {
+    return (
+      <div className="flex-1 flex items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-sm text-foreground/70 italic mb-4">
+            No recent updates or announcements
+          </p>
+          {isAdminOrPrimary && (
+            <Link href="/settings">
+              <button 
+                className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+                style={{
+                  backgroundColor: '#2DB5A8',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#248f88'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2DB5A8'}
+              >
+                Add Custom Message
+              </button>
+            </Link>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex-1 flex flex-col">
+      <div 
+        className="p-4 rounded-lg flex-1 mb-4"
+        style={{
+          background: 'rgba(255, 255, 255, 0.3)'
+        }}
+      >
+        <p className="text-sm text-foreground/90">
+          {truncateText(displayContent, 150)}
+        </p>
+      </div>
+
+      <div className="flex gap-3">
+        {displayType === 'announcement' && (
+          <Link href="/family-updates">
+            <button 
+              className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+              style={{
+                backgroundColor: '#B08CA7',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+            >
+              See More
+            </button>
+          </Link>
+        )}
+        {displayType === 'update' && (
+          <Link href="/family-updates">
+            <button 
+              className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+              style={{
+                backgroundColor: '#B08CA7',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
+            >
+              See More
+            </button>
+          </Link>
+        )}
+        {isAdminOrPrimary && displayType === 'custom' && (
+          <Link href="/settings">
+            <button 
+              className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+              style={{
+                backgroundColor: '#2DB5A8',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#248f88'}
+              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2DB5A8'}
+            >
+              Edit Message
+            </button>
+          </Link>
+        )}
+      </div>
     </div>
   );
 }
