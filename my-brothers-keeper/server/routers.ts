@@ -228,6 +228,11 @@ export const appRouter = router({
           quietMode: z.boolean().optional(),
           timezone: z.string().optional(),
           delegateAdminApprovals: z.boolean().optional(),
+          showMemorialSubtitle: z.boolean().optional(),
+          memorialName: z.string().optional(),
+          memorialBirthDate: z.string().optional(),
+          memorialPassingDate: z.string().optional(),
+          customDashboardMessage: z.string().optional(),
         })
       )
       .mutation(async ({ ctx, input }) => {
