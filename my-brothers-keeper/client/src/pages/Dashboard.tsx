@@ -856,27 +856,36 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
   household: any; 
   isAdminOrPrimary: boolean;
 }) {
-  console.log('[RecentUpdatesContent] Props:', {
-    hasHousehold: !!household,
-    customDashboardMessage: household?.customDashboardMessage,
-    announcementsLength: announcements?.length || 0,
-    updatesLength: updates?.length || 0
+  console.log('[RecentUpdatesContent DEBUG]', {
+    announcements: announcements?.map((a: any) => ({ content: a.content, contentLength: a.content?.length })),
+    updates: updates?.map((u: any) => ({ content: u.content, message: u.message })),
+    customDashboardMessage: household?.customDashboardMessage
   });
-
+  
   let displayContent = null;
   let displayType = '';
 
   if (announcements && announcements.length > 0) {
     const latestAnnouncement = announcements[0];
-    displayContent = latestAnnouncement.content;
-    displayType = 'announcement';
-  } else if (updates && updates.length > 0) {
+    displayContent = latestAnnouncement.content?.trim();
+    if (displayContent) {
+      displayType = 'announcement';
+    }
+  }
+  
+  if (!displayContent && updates && updates.length > 0) {
     const latestUpdate = updates[0];
-    displayContent = latestUpdate.content || latestUpdate.message;
-    displayType = 'update';
-  } else if (household && household.customDashboardMessage) {
-    displayContent = household.customDashboardMessage;
-    displayType = 'custom';
+    displayContent = (latestUpdate.content || latestUpdate.message)?.trim();
+    if (displayContent) {
+      displayType = 'update';
+    }
+  }
+  
+  if (!displayContent && household && household.customDashboardMessage) {
+    displayContent = household.customDashboardMessage.trim();
+    if (displayContent) {
+      displayType = 'custom';
+    }
   }
 
   const truncateText = (text: string, maxLength: number = 100) => {
