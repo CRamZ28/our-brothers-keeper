@@ -604,7 +604,7 @@ export default function Home() {
                   <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#2a6a66' }}>
                     Organize your community into custom groups—"Inner Circle," "Church Friends," "Work Family"—for personalized updates and controlled sharing.
                   </p>
-                  <ul className="grid md:grid-cols-3 gap-4 text-base pt-2" style={{ color: '#2a6a66' }}>
+                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-base pt-2" style={{ color: '#2a6a66' }}>
                     <li className="flex items-start">
                       <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
                       <span>Create unlimited groups</span>
