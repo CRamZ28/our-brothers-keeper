@@ -604,20 +604,20 @@ export default function Home() {
                   <p className="text-base leading-relaxed" style={{ lineHeight: 1.6, color: '#2a6a66' }}>
                     Organize your community into custom groups—"Inner Circle," "Church Friends," "Work Family"—for personalized updates and controlled sharing.
                   </p>
-                  <ul className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 text-base pt-2" style={{ color: '#2a6a66' }}>
-                    <li className="flex items-start">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-8 text-base pt-2" style={{ color: '#2a6a66' }}>
+                    <div className="flex items-start md:justify-start flex-1">
                       <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
                       <span>Create unlimited groups</span>
-                    </li>
-                    <li className="flex items-start">
+                    </div>
+                    <div className="flex items-start md:justify-center flex-1">
                       <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
                       <span>Invite securely</span>
-                    </li>
-                    <li className="flex items-start">
+                    </div>
+                    <div className="flex items-start md:justify-end flex-1">
                       <Check className="w-4 h-4 mr-2 mt-0.5 text-[#2DB5A8] flex-shrink-0" />
                       <span>Three-tier access system</span>
-                    </li>
-                  </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
