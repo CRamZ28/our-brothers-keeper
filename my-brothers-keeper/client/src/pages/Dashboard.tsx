@@ -103,21 +103,38 @@ export default function Dashboard() {
 
           {/* Memorial Subtitle - Optional */}
           {household.showMemorialSubtitle && household.memorialName && (
-            <div className="text-center">
-              <p className="text-lg text-foreground/70" style={{ fontFamily: 'Georgia, serif' }}>
-                In Loving Memory of {household.memorialName}
+            <div className="text-center mt-3">
+              <p 
+                className="text-xl italic tracking-wide"
+                style={{ 
+                  fontFamily: 'Georgia, serif',
+                  color: '#4d7c7a',
+                  textShadow: '0 1px 3px rgba(45, 181, 168, 0.15)',
+                  letterSpacing: '0.02em'
+                }}
+              >
+                In Loving Memory of{' '}
+                <span 
+                  className="font-semibold not-italic"
+                  style={{ 
+                    color: '#2DB5A8',
+                    textShadow: '0 1px 4px rgba(45, 181, 168, 0.25)'
+                  }}
+                >
+                  {household.memorialName}
+                </span>
                 {(household.memorialBirthDate || household.memorialPassingDate) && (
-                  <span>
+                  <span className="block mt-1 text-base" style={{ color: '#5a8887' }}>
                     {household.memorialBirthDate && household.memorialPassingDate && (
                       <span>
-                        {' '}({formatMemorialDate(household.memorialBirthDate)} - {formatMemorialDate(household.memorialPassingDate)})
+                        {formatMemorialDate(household.memorialBirthDate)} - {formatMemorialDate(household.memorialPassingDate)}
                       </span>
                     )}
                     {household.memorialBirthDate && !household.memorialPassingDate && (
-                      <span> (Born {formatMemorialDate(household.memorialBirthDate)})</span>
+                      <span>Born {formatMemorialDate(household.memorialBirthDate)}</span>
                     )}
                     {!household.memorialBirthDate && household.memorialPassingDate && (
-                      <span> (Passed {formatMemorialDate(household.memorialPassingDate)})</span>
+                      <span>Passed {formatMemorialDate(household.memorialPassingDate)}</span>
                     )}
                   </span>
                 )}
@@ -856,12 +873,6 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
   household: any; 
   isAdminOrPrimary: boolean;
 }) {
-  console.log('[RecentUpdatesContent DEBUG]', {
-    announcements: announcements?.map((a: any) => ({ content: a.content, contentLength: a.content?.length })),
-    updates: updates?.map((u: any) => ({ content: u.content, message: u.message })),
-    customDashboardMessage: household?.customDashboardMessage
-  });
-  
   let displayContent = null;
   let displayType = '';
 
