@@ -24,6 +24,7 @@ import { useTour } from "@/hooks/useTour";
 
 export default function Settings() {
   const { user } = useAuth();
+  const utils = trpc.useUtils();
   const { data: household } = trpc.household.getMy.useQuery(undefined, {
     enabled: !!user?.householdId,
   });
@@ -119,6 +120,7 @@ export default function Settings() {
   const updateHouseholdMutation = trpc.household.update.useMutation({
     onSuccess: () => {
       toast.success("Household settings updated!");
+      utils.household.getMy.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update household settings");
@@ -157,6 +159,7 @@ export default function Settings() {
   const updateDashboardDisplayMutation = trpc.household.updateDashboardDisplay.useMutation({
     onSuccess: () => {
       toast.success("Dashboard display settings updated!");
+      utils.household.getMy.invalidate();
     },
     onError: (error) => {
       toast.error(error.message || "Failed to update dashboard display settings");
