@@ -103,9 +103,9 @@ export default function Dashboard() {
 
           {/* Memorial Subtitle - Optional */}
           {household.showMemorialSubtitle && household.memorialName && (
-            <div className="text-center mt-3">
+            <div className="text-center mt-3 px-4">
               <p 
-                className="text-xl italic tracking-wide"
+                className="text-base sm:text-lg md:text-xl italic tracking-wide"
                 style={{ 
                   fontFamily: 'Georgia, serif',
                   color: '#4d7c7a',
@@ -124,7 +124,7 @@ export default function Dashboard() {
                   {household.memorialName}
                 </span>
                 {(household.memorialBirthDate || household.memorialPassingDate) && (
-                  <span className="block mt-1 text-base" style={{ color: '#5a8887' }}>
+                  <span className="block mt-1 text-sm sm:text-base" style={{ color: '#5a8887' }}>
                     {household.memorialBirthDate && household.memorialPassingDate && (
                       <span>
                         {formatMemorialDate(household.memorialBirthDate)} - {formatMemorialDate(household.memorialPassingDate)}
@@ -942,7 +942,7 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
         </p>
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-wrap gap-3">
         {displayType === 'announcement' && (
           <Link href="/family-updates">
             <button 
