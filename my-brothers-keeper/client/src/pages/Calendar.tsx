@@ -504,7 +504,7 @@ export default function Calendar() {
                       label="Who Can See This"
                       description="Control who can view and RSVP to this event"
                     />
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="startDate">Start Date *</Label>
                         <Input
@@ -524,7 +524,7 @@ export default function Calendar() {
                         />
                       </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="space-y-2">
                         <Label htmlFor="endDate">End Date (optional)</Label>
                         <Input

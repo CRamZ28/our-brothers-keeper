@@ -486,7 +486,7 @@ export default function FamilyUpdates() {
                       </div>
 
                       {mediaFiles.length > 0 && (
-                        <div className="grid grid-cols-3 gap-3 mt-3">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-3">
                           {mediaFiles.map((file, index) => (
                             <div key={index} className="relative group">
                               {file.type.startsWith('image/') && mediaPreviewUrls[index] ? (

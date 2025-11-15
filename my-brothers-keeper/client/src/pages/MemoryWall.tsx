@@ -603,7 +603,7 @@ export default function MemoryWall() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-md cursor-pointer text-sm"
                   />
                   {imageFiles.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2 mt-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-3">
                       {imageFiles.map((file, index) => (
                         <div key={index} className="relative group">
                           <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
@@ -732,7 +732,7 @@ export default function MemoryWall() {
                 )}
 
                 {imageFiles.length > 0 && (
-                  <div className="mt-3 grid grid-cols-3 gap-2">
+                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-2">
                     {imageFiles.map((file, index) => (
                       <div key={index} className="relative group">
                         <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
