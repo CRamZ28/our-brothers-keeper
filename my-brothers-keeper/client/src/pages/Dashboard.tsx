@@ -435,7 +435,7 @@ function formatMemorialDate(dateString: string): string {
 function DashboardDisplay({ household }: { household: any }) {
   const displayType = household.dashboardDisplayType || "none";
   
-  if (displayType === "none") {
+  if (displayType === "none" || displayType === "photo" || displayType === "slideshow") {
     return (
       <div 
         className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center p-8"
@@ -449,7 +449,7 @@ function DashboardDisplay({ household }: { household: any }) {
         }}
       >
         <p className="text-sm text-foreground/60 italic text-center">
-          Customize this space in Settings to show a photo, quote, or special memory
+          Customize this space in Settings to show a meaningful quote or special memory
         </p>
       </div>
     );
@@ -468,8 +468,6 @@ function DashboardDisplay({ household }: { household: any }) {
         minHeight: '300px'
       }}
     >
-      {displayType === "photo" && <SinglePhoto photoUrl={household.photoUrl} />}
-      {displayType === "slideshow" && <PhotoSlideshow photos={household.dashboardPhotos || []} />}
       {displayType === "quote" && (
         <QuoteBlock 
           quote={household.dashboardQuote} 
