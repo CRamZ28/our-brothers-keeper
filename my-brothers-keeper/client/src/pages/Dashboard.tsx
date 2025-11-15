@@ -154,9 +154,9 @@ export default function Dashboard() {
             <div className="mb-6 flex justify-center">
               <div 
                 className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+                style={{ backgroundColor: '#B08CA7' }}
               >
-                <div className="text-4xl font-bold text-white">{activeUsers.length}</div>
+                <div className="text-4xl font-bold text-slate-900">{activeUsers.length}</div>
               </div>
             </div>
 
@@ -164,18 +164,10 @@ export default function Dashboard() {
             <div className="flex-1 space-y-3 mb-6">
               <Link href="/people?invite=true">
                 <div 
-                  className="p-6 rounded-lg text-center cursor-pointer transition-all duration-200"
+                  className="p-6 rounded-lg text-center cursor-pointer transition-all duration-200 hover:bg-white/45 hover:-translate-y-0.5 active:scale-[0.98]"
                   style={{
                     background: 'rgba(255, 255, 255, 0.3)',
                     border: '2px solid rgba(255, 255, 255, 0.5)'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.45)';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'rgba(255, 255, 255, 0.3)';
-                    e.currentTarget.style.transform = 'translateY(0)';
                   }}
                 >
                   <div className="flex items-center justify-center gap-2 mb-2">
@@ -191,12 +183,10 @@ export default function Dashboard() {
             {/* Button at bottom */}
             <Link href="/people">
               <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
                 style={{
                   backgroundColor: '#B08CA7',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
               >
                 View All
               </button>
@@ -225,9 +215,9 @@ export default function Dashboard() {
             <div className="mb-6 flex justify-center">
               <div 
                 className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+                style={{ backgroundColor: '#B08CA7' }}
               >
-                <div className="text-4xl font-bold text-white">{openNeeds.length}</div>
+                <div className="text-4xl font-bold text-slate-900">{openNeeds.length}</div>
               </div>
             </div>
 
@@ -252,12 +242,10 @@ export default function Dashboard() {
             {/* Button at bottom */}
             <Link href="/needs">
               <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
                 style={{
                   backgroundColor: '#B08CA7',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
               >
                 View All
               </button>
@@ -286,9 +274,9 @@ export default function Dashboard() {
             <div className="mb-6 flex justify-center">
               <div 
                 className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+                style={{ backgroundColor: '#B08CA7' }}
               >
-                <div className="text-4xl font-bold text-white">{upcomingEvents.length}</div>
+                <div className="text-4xl font-bold text-slate-900">{upcomingEvents.length}</div>
               </div>
             </div>
 
@@ -313,12 +301,10 @@ export default function Dashboard() {
             {/* Button at bottom */}
             <Link href="/calendar">
               <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
                 style={{
                   backgroundColor: '#B08CA7',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
               >
                 View Calendar
               </button>
@@ -347,9 +333,9 @@ export default function Dashboard() {
             <div className="mb-6 flex justify-center">
               <div 
                 className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: 'rgba(176, 140, 167, 0.35)' }}
+                style={{ backgroundColor: '#B08CA7' }}
               >
-                <div className="text-4xl font-bold text-white">{totalCommitments}</div>
+                <div className="text-4xl font-bold text-slate-900">{totalCommitments}</div>
               </div>
             </div>
 
@@ -379,12 +365,10 @@ export default function Dashboard() {
             {/* Button at bottom */}
             <Link href="/needs">
               <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-colors"
+                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
                 style={{
                   backgroundColor: '#B08CA7',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
               >
                 View All
               </button>
@@ -457,15 +441,13 @@ function DashboardDisplay({ household }: { household: any }) {
   
   return (
     <div 
-      className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center"
+      className="w-full max-w-2xl rounded-2xl overflow-hidden flex items-center justify-center min-h-[200px] max-h-[300px] md:aspect-[4/3] md:min-h-[300px] md:max-h-none"
       style={{
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
         background: 'rgba(255, 255, 255, 0.3)',
         border: '2px solid rgba(255, 255, 255, 0.3)',
-        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)',
-        aspectRatio: '16 / 9',
-        minHeight: '300px'
+        boxShadow: '0 12px 40px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.9)'
       }}
     >
       {displayType === "photo" && <SinglePhoto photoUrl={household.photoUrl} />}
@@ -906,12 +888,10 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
           {isAdminOrPrimary && (
             <Link href="/settings">
               <button 
-                className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+                className="py-2 px-4 text-white font-medium rounded-lg transition-all duration-200 text-sm hover:bg-[#248f88] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#2DB5A8] focus:ring-offset-2"
                 style={{
                   backgroundColor: '#2DB5A8',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#248f88'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2DB5A8'}
               >
                 Add Custom Message
               </button>
@@ -939,12 +919,10 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
         {displayType === 'announcement' && (
           <Link href="/family-updates">
             <button 
-              className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+              className="py-2 px-4 text-white font-medium rounded-lg transition-all duration-200 text-sm hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
               style={{
                 backgroundColor: '#B08CA7',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
             >
               See More
             </button>
@@ -953,12 +931,10 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
         {displayType === 'update' && (
           <Link href="/family-updates">
             <button 
-              className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+              className="py-2 px-4 text-white font-medium rounded-lg transition-all duration-200 text-sm hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
               style={{
                 backgroundColor: '#B08CA7',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#9A7890'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#B08CA7'}
             >
               See More
             </button>
@@ -967,12 +943,10 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
         {isAdminOrPrimary && displayType === 'custom' && (
           <Link href="/settings">
             <button 
-              className="py-2 px-4 text-white font-medium rounded-lg transition-colors text-sm"
+              className="py-2 px-4 text-white font-medium rounded-lg transition-all duration-200 text-sm hover:bg-[#248f88] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#2DB5A8] focus:ring-offset-2"
               style={{
                 backgroundColor: '#2DB5A8',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#248f88'}
-              onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#2DB5A8'}
             >
               Edit Message
             </button>
