@@ -127,38 +127,34 @@ export default function Home() {
                 className="relative space-y-6 max-w-3xl mx-auto rounded-3xl p-8 md:p-10"
                 style={{ 
                   zIndex: 10,
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(255, 255, 255, 0.3)',
                   backdropFilter: 'blur(20px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)'
+                  border: '1px solid rgba(255, 255, 255, 0.35)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5)'
                 }}
               >
                 <p 
-                  className="text-sm md:text-base lg:text-lg leading-relaxed font-bold"
+                  className="text-base md:text-lg lg:text-xl font-medium"
                   style={{ 
-                    lineHeight: 1.6,
-                    color: '#7d5a75',
-                    textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
+                    lineHeight: 1.8,
+                    color: '#1e3a3a',
+                    textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)',
+                    letterSpacing: '0.01em'
                   }}
                 >
-                  Compassion, organized into support that truly lasts.
-                  <br />
-                  People want to help—they just need direction.
+                  Compassion, organized into support that truly lasts. People want to help—they just need direction.
                 </p>
                 <p 
-                  className="text-sm md:text-base lg:text-lg leading-relaxed font-bold"
+                  className="text-base md:text-lg lg:text-xl font-medium"
                   style={{ 
-                    lineHeight: 1.6,
-                    color: '#7d5a75',
-                    textShadow: '0 1px 3px rgba(255, 255, 255, 0.9)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em'
+                    lineHeight: 1.8,
+                    color: '#1e3a3a',
+                    textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)',
+                    letterSpacing: '0.01em'
                   }}
                 >
-                  OBK turns care into something simple, structured, and sustainable so grieving families feel supported through every stage of loss.
+                  Our Brother's Keeper turns care into something simple, structured, and sustainable—so grieving families feel supported through every stage of loss.
                 </p>
               </div>
               <div className="relative pt-4" style={{ zIndex: 10 }}>
