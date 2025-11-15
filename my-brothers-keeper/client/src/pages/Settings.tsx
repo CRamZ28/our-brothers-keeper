@@ -54,7 +54,8 @@ export default function Settings() {
   const [memorialPassingDate, setMemorialPassingDate] = useState("");
   const [customDashboardMessage, setCustomDashboardMessage] = useState("");
 
-  const [dashboardDisplayType, setDashboardDisplayType] = useState<"none" | "quote" | "memory">("none");
+  const [dashboardDisplayType, setDashboardDisplayType] = useState<"none" | "photo" | "slideshow" | "quote" | "memory">("none");
+  const [dashboardPhotos, setDashboardPhotos] = useState<string[]>([]);
   const [dashboardQuote, setDashboardQuote] = useState("");
   const [dashboardQuoteAttribution, setDashboardQuoteAttribution] = useState("");
   const [dashboardFeaturedMemoryId, setDashboardFeaturedMemoryId] = useState<number | null>(null);
@@ -86,11 +87,8 @@ export default function Settings() {
       setMemorialBirthDate(household.memorialBirthDate || "");
       setMemorialPassingDate(household.memorialPassingDate || "");
       setCustomDashboardMessage(household.customDashboardMessage || "");
-      // Convert legacy photo/slideshow values to "none"
-      const displayType = household.dashboardDisplayType;
-      setDashboardDisplayType(
-        displayType === "photo" || displayType === "slideshow" ? "none" : (displayType || "none")
-      );
+      setDashboardDisplayType(household.dashboardDisplayType || "none");
+      setDashboardPhotos(household.dashboardPhotos || []);
       setDashboardQuote(household.dashboardQuote || "");
       setDashboardQuoteAttribution(household.dashboardQuoteAttribution || "");
       setDashboardFeaturedMemoryId(household.dashboardFeaturedMemoryId || null);
@@ -248,6 +246,13 @@ export default function Settings() {
 
   const handleSaveDashboardDisplay = () => {
     // Validate based on display type
+    if (dashboardDisplayType === "slideshow") {
+      if (dashboardPhotos.length < 3 || dashboardPhotos.length > 5) {
+        toast.error("Slideshow requires 3-5 photo URLs");
+        return;
+      }
+    }
+
     if (dashboardDisplayType === "quote" && !dashboardQuote.trim()) {
       toast.error("Quote text is required");
       return;
@@ -261,6 +266,7 @@ export default function Settings() {
     // Build payload based on display type
     updateDashboardDisplayMutation.mutate({
       displayType: dashboardDisplayType,
+      photos: dashboardDisplayType === "slideshow" ? dashboardPhotos : undefined,
       quote: dashboardDisplayType === "quote" ? dashboardQuote : undefined,
       quoteAttribution: dashboardDisplayType === "quote" ? dashboardQuoteAttribution : undefined,
       featuredMemoryId: dashboardDisplayType === "memory" && dashboardFeaturedMemoryId ? dashboardFeaturedMemoryId : undefined,
