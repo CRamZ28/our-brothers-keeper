@@ -74,7 +74,11 @@ export default function Settings() {
 
   const [uploading, setUploading] = useState(false);
   const [profileImageUrl, setProfileImageUrl] = useState("");
+  const [householdPhotoUrl, setHouseholdPhotoUrl] = useState("");
+  const [uploadingDashboardPhoto, setUploadingDashboardPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const dashboardPhotoInputRef = useRef<HTMLInputElement>(null);
+  const slideshowPhotoInputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (household) {
@@ -88,6 +92,7 @@ export default function Settings() {
       setMemorialPassingDate(household.memorialPassingDate || "");
       setCustomDashboardMessage(household.customDashboardMessage || "");
       setDashboardDisplayType(household.dashboardDisplayType || "none");
+      setHouseholdPhotoUrl(household.photoUrl || "");
       setDashboardPhotos(household.dashboardPhotos || []);
       setDashboardQuote(household.dashboardQuote || "");
       setDashboardQuoteAttribution(household.dashboardQuoteAttribution || "");
@@ -246,9 +251,14 @@ export default function Settings() {
 
   const handleSaveDashboardDisplay = () => {
     // Validate based on display type
+    if (dashboardDisplayType === "photo" && !householdPhotoUrl) {
+      toast.error("Please upload a photo first");
+      return;
+    }
+
     if (dashboardDisplayType === "slideshow") {
       if (dashboardPhotos.length < 3 || dashboardPhotos.length > 5) {
-        toast.error("Slideshow requires 3-5 photo URLs");
+        toast.error("Slideshow requires 3-5 photos");
         return;
       }
     }
@@ -266,6 +276,7 @@ export default function Settings() {
     // Build payload based on display type
     updateDashboardDisplayMutation.mutate({
       displayType: dashboardDisplayType,
+      photoUrl: dashboardDisplayType === "photo" ? householdPhotoUrl : undefined,
       photos: dashboardDisplayType === "slideshow" ? dashboardPhotos : undefined,
       quote: dashboardDisplayType === "quote" ? dashboardQuote : undefined,
       quoteAttribution: dashboardDisplayType === "quote" ? dashboardQuoteAttribution : undefined,
@@ -311,6 +322,89 @@ export default function Settings() {
       console.error("Upload error:", error);
       toast.error("Failed to upload image");
       setUploading(false);
+    }
+  };
+
+  const handleDashboardPhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    try {
+      setUploadingDashboardPhoto(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      setHouseholdPhotoUrl(data.url);
+      toast.success("Photo uploaded successfully!");
+      setUploadingDashboardPhoto(false);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload photo");
+      setUploadingDashboardPhoto(false);
+    }
+  };
+
+  const handleSlideshowPhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be less than 5MB");
+      return;
+    }
+
+    try {
+      setUploadingDashboardPhoto(true);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const data = await response.json();
+      
+      // Update the specific index in the photos array
+      const newPhotos = [...dashboardPhotos];
+      newPhotos[index] = data.url;
+      setDashboardPhotos(newPhotos);
+      
+      toast.success(`Photo ${index + 1} uploaded successfully!`);
+      setUploadingDashboardPhoto(false);
+    } catch (error) {
+      console.error("Upload error:", error);
+      toast.error("Failed to upload photo");
+      setUploadingDashboardPhoto(false);
     }
   };
 
@@ -545,13 +639,46 @@ export default function Settings() {
 
                   <div className="flex items-start space-x-3 p-3 border rounded-lg hover:bg-muted/20 transition-colors">
                     <RadioGroupItem value="photo" id="display-photo" className="mt-1" />
-                    <div>
+                    <div className="flex-1">
                       <Label htmlFor="display-photo" className="font-medium cursor-pointer">
                         Single Photo
                       </Label>
-                      <p className="text-sm text-muted-foreground">
-                        Display the family photo from Household Settings
+                      <p className="text-sm text-muted-foreground mb-2">
+                        Upload a family photo to display on your dashboard
                       </p>
+                      {dashboardDisplayType === "photo" && (
+                        <div className="space-y-3 mt-3">
+                          <input
+                            ref={dashboardPhotoInputRef}
+                            type="file"
+                            accept="image/*"
+                            onChange={handleDashboardPhotoUpload}
+                            className="hidden"
+                          />
+                          <div className="flex items-center gap-3">
+                            <Button
+                              type="button"
+                              onClick={() => dashboardPhotoInputRef.current?.click()}
+                              disabled={uploadingDashboardPhoto}
+                              variant="outline"
+                              size="sm"
+                              className="flex items-center gap-2"
+                            >
+                              {uploadingDashboardPhoto ? "Uploading..." : "Upload Photo"}
+                            </Button>
+                            {householdPhotoUrl && (
+                              <span className="text-xs text-muted-foreground">Photo uploaded ✓</span>
+                            )}
+                          </div>
+                          {householdPhotoUrl && (
+                            <img 
+                              src={householdPhotoUrl} 
+                              alt="Dashboard preview" 
+                              className="w-40 h-24 object-cover rounded-lg border"
+                            />
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -562,27 +689,45 @@ export default function Settings() {
                         Photo Slideshow
                       </Label>
                       <p className="text-sm text-muted-foreground mb-2">
-                        Rotating collection of 3-5 photos (auto-rotates every 5 seconds)
+                        Upload 3-5 photos that will auto-rotate every 5 seconds
                       </p>
                       {dashboardDisplayType === "slideshow" && (
-                        <div className="space-y-2 mt-3">
-                          <Label className="text-sm">Photo URLs (3-5 required)</Label>
+                        <div className="space-y-3 mt-3">
+                          <Label className="text-sm">Upload Photos (3-5 required)</Label>
                           {[0, 1, 2, 3, 4].map((index) => (
-                            <Input
-                              key={index}
-                              placeholder={`Photo ${index + 1} URL${index >= 3 ? " (optional)" : ""}`}
-                              value={dashboardPhotos[index] || ""}
-                              onChange={(e) => {
-                                const newPhotos = [...dashboardPhotos];
-                                if (e.target.value) {
-                                  newPhotos[index] = e.target.value;
-                                } else {
-                                  newPhotos.splice(index, 1);
-                                }
-                                setDashboardPhotos(newPhotos.filter(Boolean));
-                              }}
-                              className="text-sm"
-                            />
+                            <div key={index} className="space-y-2">
+                              <input
+                                ref={(el) => {
+                                  if (el) slideshowPhotoInputRefs.current[index] = el;
+                                }}
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleSlideshowPhotoUpload(e, index)}
+                                className="hidden"
+                              />
+                              <div className="flex items-center gap-3">
+                                <Button
+                                  type="button"
+                                  onClick={() => slideshowPhotoInputRefs.current[index]?.click()}
+                                  disabled={uploadingDashboardPhoto}
+                                  variant="outline"
+                                  size="sm"
+                                  className="flex items-center gap-2"
+                                >
+                                  {uploadingDashboardPhoto ? "Uploading..." : `Upload Photo ${index + 1}${index >= 3 ? " (optional)" : ""}`}
+                                </Button>
+                                {dashboardPhotos[index] && (
+                                  <span className="text-xs text-muted-foreground">Uploaded ✓</span>
+                                )}
+                              </div>
+                              {dashboardPhotos[index] && (
+                                <img 
+                                  src={dashboardPhotos[index]} 
+                                  alt={`Slideshow photo ${index + 1}`} 
+                                  className="w-32 h-20 object-cover rounded-lg border"
+                                />
+                              )}
+                            </div>
                           ))}
                         </div>
                       )}

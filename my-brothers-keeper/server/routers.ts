@@ -398,6 +398,7 @@ export const appRouter = router({
       .input(
         z.object({
           displayType: z.enum(["none", "photo", "slideshow", "quote", "memory"]),
+          photoUrl: z.string().optional(),
           photos: z.array(z.string()).optional(),
           quote: z.string().optional(),
           quoteAttribution: z.string().optional(),
@@ -414,6 +415,14 @@ export const appRouter = router({
 
         // Only admin/primary can update dashboard display
         await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        // Validate photo requires photo URL
+        if (input.displayType === "photo" && !input.photoUrl) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Photo display requires a photo to be uploaded",
+          });
+        }
 
         // Validate slideshow requires 3-5 photos
         if (input.displayType === "slideshow") {
@@ -444,6 +453,7 @@ export const appRouter = router({
         // Update dashboard display settings
         await db.updateHousehold(ctx.user.householdId, {
           dashboardDisplayType: input.displayType,
+          photoUrl: input.photoUrl || null,
           dashboardPhotos: input.photos || [],
           dashboardQuote: input.quote || null,
           dashboardQuoteAttribution: input.quoteAttribution || null,
