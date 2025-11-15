@@ -856,6 +856,13 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
   household: any; 
   isAdminOrPrimary: boolean;
 }) {
+  console.log('[RecentUpdatesContent] Props:', {
+    hasHousehold: !!household,
+    customDashboardMessage: household?.customDashboardMessage,
+    announcementsLength: announcements?.length || 0,
+    updatesLength: updates?.length || 0
+  });
+
   let displayContent = null;
   let displayType = '';
 
@@ -867,7 +874,7 @@ function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrim
     const latestUpdate = updates[0];
     displayContent = latestUpdate.content || latestUpdate.message;
     displayType = 'update';
-  } else if (household.customDashboardMessage) {
+  } else if (household && household.customDashboardMessage) {
     displayContent = household.customDashboardMessage;
     displayType = 'custom';
   }

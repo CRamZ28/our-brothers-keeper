@@ -97,7 +97,15 @@ export const appRouter = router({
       if (!ctx.user.householdId) {
         return null;
       }
-      return await db.getHousehold(ctx.user.householdId);
+      const household = await db.getHousehold(ctx.user.householdId);
+      console.log('[household.getMy] Returning household:', {
+        id: household?.id,
+        name: household?.name,
+        customDashboardMessage: household?.customDashboardMessage,
+        hasCustomMessage: !!household?.customDashboardMessage,
+        allKeys: household ? Object.keys(household) : []
+      });
+      return household;
     }),
 
     // Create a new household (for Primary user or Admin setting up on behalf)
