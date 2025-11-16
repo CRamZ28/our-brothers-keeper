@@ -69,7 +69,7 @@ export default function Home() {
 
       <div className="relative z-10">
         {/* Header - Sticky glassmorphic card */}
-        <header className="sticky top-0 px-6 md:px-10 py-4 z-50">
+        <header className="sticky top-0 px-6 md:px-10 py-4 z-[100]">
           <div 
             className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
             style={{
