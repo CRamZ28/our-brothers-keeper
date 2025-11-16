@@ -67,12 +67,11 @@ export default function Home() {
         />
       </div>
 
-      {/* Header - Fixed glassmorphic card - High z-index layer */}
-      <header className="fixed inset-x-0 top-0 px-6 md:px-10 py-4 z-[999]" style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
+      {/* Header - Sticky glassmorphic card - High z-index layer */}
+      <header className="sticky top-0 px-6 md:px-10 py-4 z-[999]">
           <div 
             className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between relative"
             style={{
-              background: 'rgba(255, 255, 255, 0.4)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}
@@ -81,6 +80,7 @@ export default function Home() {
             <div 
               className="absolute inset-0 rounded-3xl -z-10"
               style={{
+                background: 'rgba(255, 255, 255, 0.25)',
                 backdropFilter: 'blur(40px) saturate(180%)',
                 WebkitBackdropFilter: 'blur(40px) saturate(180%)'
               }}
@@ -113,8 +113,8 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Main content - Add top padding to account for fixed header */}
-        <div className="relative pt-24">
+        {/* Main content */}
+        <div className="relative">
         {/* Hero Section */}
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
