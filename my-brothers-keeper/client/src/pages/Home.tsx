@@ -115,8 +115,7 @@ export default function Home() {
               <h2 
                 className="relative text-5xl md:text-6xl lg:text-7xl font-bold leading-tight"
                 style={{ 
-                  fontFamily: "'Cinzel', serif", 
-                  zIndex: 10,
+                  fontFamily: "'Cinzel', serif",
                   color: '#1a5a56',
                   textShadow: '0 2px 4px rgba(255, 255, 255, 0.8)'
                 }}
@@ -127,7 +126,6 @@ export default function Home() {
               <div 
                 className="relative space-y-6 max-w-3xl mx-auto rounded-3xl p-8 md:p-10"
                 style={{ 
-                  zIndex: 10,
                   background: 'rgba(255, 255, 255, 0.3)',
                   backdropFilter: 'blur(20px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(20px) saturate(180%)',
@@ -158,7 +156,7 @@ export default function Home() {
                   Our Brother's Keeper turns care into something simple, structured, and sustainable—so grieving families feel supported through every stage of loss.
                 </p>
               </div>
-              <div className="relative pt-4" style={{ zIndex: 10 }}>
+              <div className="relative pt-4">
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
                   size="lg"
