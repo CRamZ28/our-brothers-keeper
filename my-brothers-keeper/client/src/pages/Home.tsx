@@ -35,8 +35,8 @@ export default function Home() {
   // Not authenticated - show landing page
   return (
     <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed relative"
-      style={{ backgroundImage: 'url(/waves-bg.png)' }}
+      className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
+      style={{ backgroundImage: 'url(/waves-bg.png)', position: 'relative' }}
     >
       {/* Lighter overlay for airy, calming feel */}
       <div 
@@ -68,7 +68,7 @@ export default function Home() {
       </div>
 
       {/* Header - Sticky glassmorphic card - Separate high z-index layer */}
-      <header className="sticky top-0 px-6 md:px-10 py-4 z-[100]">
+      <header className="sticky top-0 px-6 md:px-10 py-4" style={{ zIndex: 100, isolation: 'isolate' }}>
           <div 
             className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
             style={{
@@ -105,8 +105,8 @@ export default function Home() {
           </div>
         </header>
 
-        {/* Main content - Lower z-index layer */}
-        <div className="relative z-10">
+        {/* Main content */}
+        <div className="relative">
         {/* Hero Section */}
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
