@@ -67,9 +67,8 @@ export default function Home() {
         />
       </div>
 
-      <div className="relative z-10">
-        {/* Header - Sticky glassmorphic card */}
-        <header className="sticky top-0 px-6 md:px-10 py-4 z-[100]">
+      {/* Header - Sticky glassmorphic card - Separate high z-index layer */}
+      <header className="sticky top-0 px-6 md:px-10 py-4 z-[100]">
           <div 
             className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
             style={{
@@ -106,6 +105,8 @@ export default function Home() {
           </div>
         </header>
 
+        {/* Main content - Lower z-index layer */}
+        <div className="relative z-10">
         {/* Hero Section */}
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
