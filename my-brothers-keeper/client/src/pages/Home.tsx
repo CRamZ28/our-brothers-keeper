@@ -67,19 +67,27 @@ export default function Home() {
         />
       </div>
 
-      {/* Header - Sticky glassmorphic card - Separate high z-index layer */}
-      <header className="sticky top-0 px-6 md:px-10 py-4" style={{ zIndex: 100, isolation: 'isolate' }}>
+      {/* Header - Sticky glassmorphic card - High z-index layer */}
+      <header className="sticky top-0 px-6 md:px-10 py-4 z-[999]">
           <div 
-            className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
+            className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between relative"
             style={{
-              background: 'rgba(255, 255, 255, 0.25)',
-              backdropFilter: 'blur(40px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(40px) saturate(180%)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
             }}
           >
-            <div className="flex items-center gap-3">
+            {/* Glass backdrop effect - positioned absolutely behind content */}
+            <div 
+              className="absolute inset-0 rounded-3xl -z-10"
+              style={{
+                background: 'rgba(255, 255, 255, 0.25)',
+                backdropFilter: 'blur(40px) saturate(180%)',
+                WebkitBackdropFilter: 'blur(40px) saturate(180%)'
+              }}
+            ></div>
+            
+            {/* Header content */}
+            <div className="flex items-center gap-3 relative z-10">
               <img 
                 src="/obk-emblem.png" 
                 alt={APP_TITLE} 
@@ -98,7 +106,7 @@ export default function Home() {
             </div>
             <Button 
               onClick={() => (window.location.href = "/api/login")}
-              className="bg-[#6d4a65] hover:bg-[#5d3a55] text-white font-semibold px-5 py-2 shadow-lg"
+              className="bg-[#6d4a65] hover:bg-[#5d3a55] text-white font-semibold px-5 py-2 shadow-lg relative z-10"
             >
               Sign In
             </Button>
