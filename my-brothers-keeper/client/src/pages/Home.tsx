@@ -133,7 +133,7 @@ export default function Home() {
               <div 
                 className="max-w-2xl mx-auto rounded-3xl p-8 md:p-10"
                 style={{ 
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.80))',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.88))',
                   backdropFilter: 'blur(30px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(30px) saturate(180%)',
                   border: '1px solid rgba(255, 255, 255, 0.6)',
