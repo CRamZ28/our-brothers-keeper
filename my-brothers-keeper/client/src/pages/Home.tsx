@@ -69,12 +69,15 @@ export default function Home() {
 
       {/* Header - Fixed at top, always visible above all content */}
       <header 
-        className="fixed top-0 left-0 right-0 px-6 md:px-10 py-4 z-[9999]"
+        className="fixed top-0 left-0 right-0 px-6 md:px-10 py-4"
+        style={{
+          zIndex: 99999,
+        }}
       >
           <div 
             className="max-w-7xl mx-auto rounded-3xl px-6 py-4 flex items-center justify-between"
             style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.35)',
+              backgroundColor: 'rgba(255, 255, 255, 0.85)',
               backdropFilter: 'blur(40px) saturate(180%)',
               WebkitBackdropFilter: 'blur(40px) saturate(180%)',
               border: '1px solid rgba(255, 255, 255, 0.4)',
@@ -109,7 +112,7 @@ export default function Home() {
         </header>
 
         {/* Main content - padding-top prevents overlap with fixed header */}
-        <div className="relative pt-28">
+        <div className="pt-28">
         {/* Hero Section */}
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
