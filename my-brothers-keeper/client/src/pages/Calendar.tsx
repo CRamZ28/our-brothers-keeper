@@ -710,27 +710,29 @@ export default function Calendar() {
                       <GlassCard key={event.id} className={`card-elevated hover-lift ${isTodayEvent ? "border-primary border-2 relative" : ""} ${userIsGoing ? "accent-bar-teal" : ""}`}>
                         <CardHeader>
                           <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <CardTitle className="text-lg sm:text-xl overflow-hidden line-clamp-2">{event.title}</CardTitle>
-                                {isTodayEvent && (
-                                  <Badge variant="default" className="bg-primary">
-                                    Today
-                                  </Badge>
-                                )}
-                                {isTomorrow && <Badge variant="secondary">Tomorrow</Badge>}
-                                {userIsGoing && (
-                                  <Badge className="bg-[#2DB5A8] hover:bg-[#2DB5A8]">
-                                    You're Going
-                                  </Badge>
-                                )}
-                                {event.capacity && (
-                                  <Badge variant="outline" className="gap-1">
-                                    <Users className="w-3 h-3" />
-                                    {event.goingCount || 0}/{event.capacity}
-                                    {event.goingCount >= event.capacity && " (Full)"}
-                                  </Badge>
-                                )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 mb-2">
+                                <CardTitle className="text-lg sm:text-xl line-clamp-2">{event.title}</CardTitle>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  {isTodayEvent && (
+                                    <Badge variant="default" className="bg-primary shrink-0">
+                                      Today
+                                    </Badge>
+                                  )}
+                                  {isTomorrow && <Badge variant="secondary" className="shrink-0">Tomorrow</Badge>}
+                                  {userIsGoing && (
+                                    <Badge className="bg-[#2DB5A8] hover:bg-[#2DB5A8] shrink-0">
+                                      You're Going
+                                    </Badge>
+                                  )}
+                                  {event.capacity && (
+                                    <Badge variant="outline" className="gap-1 shrink-0">
+                                      <Users className="w-3 h-3" />
+                                      {event.goingCount || 0}/{event.capacity}
+                                      {event.goingCount >= event.capacity && " (Full)"}
+                                    </Badge>
+                                  )}
+                                </div>
                               </div>
                               <CardDescription className="space-y-1">
                                 <div className="flex items-center gap-2">

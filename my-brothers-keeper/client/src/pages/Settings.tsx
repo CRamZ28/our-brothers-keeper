@@ -1113,11 +1113,11 @@ export default function Settings() {
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Profile Picture Section */}
-              <div className="flex items-center gap-4 p-4 border rounded-lg bg-white/5">
-                <UserAvatar user={user || undefined} size="xl" />
-                <div className="flex-1">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border rounded-lg bg-white/5">
+                <UserAvatar user={user || undefined} size="xl" className="shrink-0" />
+                <div className="flex-1 min-w-0 max-w-full">
                   <Label className="font-medium">Profile Picture</Label>
-                  <p className="text-sm text-muted-foreground">Upload your photo to personalize your profile</p>
+                  <p className="text-sm text-muted-foreground break-words">Upload your photo to personalize your profile</p>
                 </div>
                 <input
                   ref={fileInputRef}
@@ -1128,7 +1128,7 @@ export default function Settings() {
                 />
                 <Button
                   variant="outline"
-                  className="border-2 border-[#2DB5A8] text-[#2DB5A8] bg-[#2DB5A8]/5 hover:bg-[#2DB5A8]/15 hover:border-[#2DB5A8] font-semibold"
+                  className="border-2 border-[#2DB5A8] text-[#2DB5A8] bg-[#2DB5A8]/5 hover:bg-[#2DB5A8]/15 hover:border-[#2DB5A8] font-semibold shrink-0 w-full sm:w-auto"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
                 >

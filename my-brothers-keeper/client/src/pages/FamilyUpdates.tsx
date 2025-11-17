@@ -299,16 +299,18 @@ export default function FamilyUpdates() {
         className={post.pinned ? "border-primary/50 bg-primary/5" : "card-elevated hover-lift"}
       >
         <CardHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3 flex-1">
-              <div className={`p-2 rounded-lg ${config.bgColor}`}>
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+            <div className="flex items-start gap-3 flex-1 min-w-0">
+              <div className={`p-2 rounded-lg ${config.bgColor} shrink-0`}>
                 <Icon className={`w-5 h-5 ${config.color}`} />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  {post.pinned && <Pin className="w-4 h-4 text-primary" />}
-                  <CardTitle className="text-base sm:text-lg overflow-hidden line-clamp-2">{post.title}</CardTitle>
-                  <Badge variant="secondary" className="text-xs">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 flex-wrap">
+                  <div className="flex items-center gap-2 min-w-0 max-w-full">
+                    {post.pinned && <Pin className="w-4 h-4 text-primary shrink-0" />}
+                    <CardTitle className="text-base sm:text-lg line-clamp-2">{post.title}</CardTitle>
+                  </div>
+                  <Badge variant="secondary" className="text-xs shrink-0">
                     {config.label}
                   </Badge>
                 </div>
@@ -328,6 +330,7 @@ export default function FamilyUpdates() {
                 size="sm"
                 onClick={() => handleDeletePost(post)}
                 disabled={deleteAnnouncementMutation.isPending || deleteUpdateMutation.isPending}
+                className="shrink-0"
               >
                 Delete
               </Button>

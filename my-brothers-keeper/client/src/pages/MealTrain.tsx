@@ -234,27 +234,29 @@ export default function MealTrain() {
           {view === "calendar" && (
             <GlassCard>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                  >
-                    Previous
-                  </Button>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
+                    >
+                      Next
+                    </Button>
+                  </div>
                   <div className="flex items-center gap-3">
-                    <CardTitle>{format(currentMonth, "MMMM yyyy")}</CardTitle>
+                    <CardTitle className="text-center">{format(currentMonth, "MMMM yyyy")}</CardTitle>
                     <Button variant="outline" size="sm" onClick={goToToday}>
                       Today
                     </Button>
                   </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                  >
-                    Next
-                  </Button>
                 </div>
               </CardHeader>
               <CardContent>

@@ -548,12 +548,12 @@ export default function People() {
                 {pendingTierRequests.map((request) => (
                   <div
                     key={request.id}
-                    className="flex items-center justify-between p-4 bg-gradient-to-r from-[#6BC4B8]/5 to-[#B08CA7]/5 rounded-lg border border-[#6BC4B8]/20"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gradient-to-r from-[#6BC4B8]/5 to-[#B08CA7]/5 rounded-lg border border-[#6BC4B8]/20"
                   >
-                    <div className="flex items-center gap-4">
-                      <UserAvatar user={request} size="lg" />
-                      <div>
-                        <p className="font-semibold text-lg">{request.name || "No name"}</p>
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      <UserAvatar user={request} size="lg" className="shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-lg truncate">{request.name || "No name"}</p>
                         <p className="text-sm text-muted-foreground">
                           Requested: <span className="font-medium text-foreground capitalize">{request.requestedTier}</span>
                         </p>
@@ -567,7 +567,7 @@ export default function People() {
                     <Button
                       onClick={() => handleApproveTierRequest(request.id)}
                       disabled={approveTierRequestMutation.isPending}
-                      className="bg-[#6BC4B8] hover:bg-[#5AB3A8] text-white"
+                      className="bg-[#6BC4B8] hover:bg-[#5AB3A8] text-white shrink-0 w-full sm:w-auto"
                     >
                       <Check className="w-4 h-4 mr-2" />
                       Approve
@@ -708,22 +708,23 @@ export default function People() {
               {pendingUsers.map((pendingUser) => (
                 <div
                   key={pendingUser.id}
-                  className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 bg-background rounded-lg border"
                 >
-                  <div className="flex items-center gap-3">
-                    <UserAvatar user={pendingUser} size="md" />
-                    <div>
-                      <p className="font-medium">{pendingUser.name || "Unknown"}</p>
-                      <p className="text-sm text-muted-foreground">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <UserAvatar user={pendingUser} size="md" className="shrink-0" />
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium truncate">{pendingUser.name || "Unknown"}</p>
+                      <p className="text-sm text-muted-foreground truncate">
                         {pendingUser.email} • {pendingUser.role}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 flex-wrap w-full sm:w-auto">
                     <Button
                       size="sm"
                       onClick={() => handleApproveUser(pendingUser.id)}
                       disabled={updateUserStatusMutation.isPending}
+                      className="flex-1 sm:flex-initial"
                     >
                       <Check className="w-4 h-4 mr-1" />
                       Approve
@@ -733,6 +734,7 @@ export default function People() {
                       variant="outline"
                       onClick={() => handleBlockUser(pendingUser.id)}
                       disabled={updateUserStatusMutation.isPending}
+                      className="flex-1 sm:flex-initial"
                     >
                       <X className="w-4 h-4 mr-1" />
                       Decline
@@ -765,13 +767,13 @@ export default function People() {
                 return (
                   <div
                     key={invite.id}
-                    className="flex items-center justify-between p-3 bg-background rounded-lg border"
+                    className="flex items-start sm:items-center justify-between gap-3 p-3 bg-background rounded-lg border"
                   >
-                    <div className="flex-1">
-                      <p className="font-medium">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">
                         {invite.invitedEmail || invite.invitedPhone || "Unknown"}
                       </p>
-                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                      <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1 flex-wrap">
                         <span className="capitalize">{invite.invitedRole}</span>
                         <span>•</span>
                         {isExpired ? (
@@ -785,7 +787,7 @@ export default function People() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
+                        <Button variant="ghost" size="sm" className="shrink-0">
                           <MoreVertical className="w-4 h-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -829,30 +831,30 @@ export default function People() {
                 activeUsers.map((member) => (
                   <div
                     key={member.id}
-                    className="flex items-center justify-between p-3 rounded-lg border hover:bg-accent/50 transition-colors"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 rounded-lg border hover:bg-accent/50 transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <UserAvatar user={member} size="md" />
-                      <div>
-                        <p className="font-medium">{member.name || "Unknown"}</p>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <UserAvatar user={member} size="md" className="shrink-0" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium truncate">{member.name || "Unknown"}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
                           {member.email && (
-                            <span className="flex items-center gap-1">
-                              <Mail className="w-3 h-3" />
-                              {member.email}
+                            <span className="flex items-center gap-1 truncate">
+                              <Mail className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{member.email}</span>
                             </span>
                           )}
                           {member.phone && (
                             <span className="flex items-center gap-1">
-                              <Phone className="w-3 h-3" />
+                              <Phone className="w-3 h-3 shrink-0" />
                               {member.phone}
                             </span>
                           )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm px-3 py-1 rounded-full bg-secondary text-secondary-foreground">
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-sm px-3 py-1 rounded-full bg-secondary text-secondary-foreground whitespace-nowrap">
                         {member.role}
                       </span>
                       {canManageUsers && member.id !== user?.id && (
