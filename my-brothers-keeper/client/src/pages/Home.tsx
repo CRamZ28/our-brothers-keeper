@@ -117,7 +117,7 @@ export default function Home() {
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
             {/* Hero Content - Single Column, Centered */}
-            <div className="relative text-center space-y-8 mb-24 md:mb-32">
+            <div className="relative text-center space-y-10 mb-24 md:mb-32">
               <h2 
                 className="relative text-5xl md:text-6xl lg:text-7xl font-bold leading-tight"
                 style={{ 
@@ -129,40 +129,59 @@ export default function Home() {
                 A Place Where Compassion
                 <span className="text-[#2DB5A8] block mt-3" style={{ textShadow: '0 2px 4px rgba(255, 255, 255, 0.6)' }}>Becomes Action</span>
               </h2>
+              
               <div 
-                className="relative space-y-6 max-w-3xl mx-auto rounded-3xl p-8 md:p-10"
+                className="max-w-2xl mx-auto rounded-3xl p-8 md:p-10"
                 style={{ 
-                  background: 'rgba(255, 255, 255, 0.3)',
-                  backdropFilter: 'blur(20px) saturate(180%)',
-                  WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-                  border: '1px solid rgba(255, 255, 255, 0.35)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.5)'
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.65))',
+                  backdropFilter: 'blur(30px) saturate(180%)',
+                  WebkitBackdropFilter: 'blur(30px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.6)',
+                  boxShadow: '0 12px 40px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.8)'
                 }}
               >
                 <p 
-                  className="text-base md:text-lg lg:text-xl font-medium"
+                  className="text-xl md:text-2xl font-semibold mb-8"
                   style={{ 
-                    lineHeight: 1.8,
-                    color: '#1e3a3a',
-                    textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)',
-                    letterSpacing: '0.01em'
+                    lineHeight: 1.5,
+                    color: '#1a5a56',
+                    letterSpacing: '-0.01em'
                   }}
                 >
-                  Compassion, organized into support that truly lasts. People want to help—they just need direction.
+                  Turn compassion into organized, lasting support for grieving families
                 </p>
-                <p 
-                  className="text-base md:text-lg lg:text-xl font-medium"
-                  style={{ 
-                    lineHeight: 1.8,
-                    color: '#1e3a3a',
-                    textShadow: '0 1px 2px rgba(255, 255, 255, 0.8)',
-                    letterSpacing: '0.01em'
-                  }}
-                >
-                  Our Brother's Keeper turns care into something simple, structured, and sustainable—so grieving families feel supported through every stage of loss.
-                </p>
+                
+                <div className="space-y-4 text-left">
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#2DB5A8] flex items-center justify-center mt-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-base md:text-lg font-medium" style={{ color: '#2a6a66', lineHeight: 1.6 }}>
+                      <strong style={{ color: '#1a5a56' }}>Structure every offer of help</strong> — Give helpers specific tasks they can actually complete
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#B08CA7] flex items-center justify-center mt-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-base md:text-lg font-medium" style={{ color: '#2a6a66', lineHeight: 1.6 }}>
+                      <strong style={{ color: '#7d5a75' }}>Support that lasts</strong> — Keep your community engaged for weeks, months, or years
+                    </p>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#2DB5A8] flex items-center justify-center mt-1">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <p className="text-base md:text-lg font-medium" style={{ color: '#2a6a66', lineHeight: 1.6 }}>
+                      <strong style={{ color: '#1a5a56' }}>Privacy you control</strong> — Share only what you want, with exactly who you choose
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div className="relative pt-4">
+              
+              <div className="pt-2">
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
                   size="lg"
