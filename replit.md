@@ -1,53 +1,7 @@
 # Our Brother's Keeper - Replit Project Documentation
 
 ## Overview
-Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication for families in need by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking. The project's goal is to offer a robust and user-friendly experience for managing community support during difficult times.
-
-## Recent Changes
-- **November 17, 2025**: Household search and deployment fixes:
-  - **Household Search Feature**: Added `/search` route with fuzzy name matching for discovering existing family support pages
-    - Users can search for households by partial name (case-insensitive ILIKE matching)
-    - Search results limited to 20 households for performance
-    - Only exposes public-safe data (id, name, description, photoUrl, slug)
-    - Integrated into onboarding flow with "Looking for an existing family page?" link
-  - **PWA Configuration Fix**: Resolved deployment build failure by excluding large image assets from service worker precaching and using runtime caching instead
-    - Large brand images (waves-bg.png 2.8MB, obk-emblem.png 2.2MB, obk-logo.png 1.4MB, etc.) now cached at runtime with CacheFirst strategy
-    - Reduced precache size from ~11MB to ~1.8MB, well under the 2MB per-file limit
-    - Images still cached for 30 days after first load for optimal performance
-  - **Routing Fix**: Changed `/setup` to `/onboarding` for proper first-time user flow
-- **November 14, 2025**: Comprehensive Dashboard redesign and mobile optimization:
-  - **Dashboard UI Refresh**:
-    - Softened glass effects to match landing page aesthetic (reduced intense glow and shadows)
-    - Click/tap-to-expand cards replacing hover reveals for mobile accessibility
-    - Fifth "Recent Updates" card showing latest announcement/update/custom message
-    - Enhanced invite prompt with stronger visual weight and improved copy
-    - Optional memorial subtitle feature: "In Loving Memory of..." with dates
-    - Custom dashboard message support for admin/primary users
-    - Improved empty state messaging for dashboard display area
-  - **Mobile Responsiveness**: Complete audit across all pages
-    - Mobile-first Tailwind patterns verified throughout (grid-cols-1 md:grid-cols-2, etc.)
-    - Responsive typography, spacing, and grid layouts
-    - GlassPageLayout headers stack properly on narrow screens (flex-col sm:flex-row)
-  - **Permissions Update**: All supporters can now invite others (not just admin/primary)
-  - **Settings Page**: New controls for memorial subtitle and custom dashboard message
-  - Earlier: Narrative-driven landing page redesign for emotional impact and improved readability
-  - **Hero Section**: "A Place Where Compassion Becomes Action" tagline with concise three-line brand message emphasizing organized compassion, direction, and sustainable support
-  - **Scripture Font**: Changed from decorative Pinyon Script to readable Georgia serif for better legibility
-  - **Improved Readability**: Added 65%→45% dark gradient overlay plus stronger glass cards (rgba(15,23,42,0.72)) for significantly better text contrast
-  - **Narrative Structure**: Replaced feature-dump approach with story-driven content:
-    - "Why Our Brother's Keeper" section with three differentiators: Turn Words Into Action, Sustained Support, Privacy & Control
-    - "You're in Control—Always" section highlighting flexibility: Handle It Yourself vs Delegate to Admins
-  - **Typography Enhancement**: Larger hero typography (text-7xl), improved line-height (1.6), and better visual hierarchy
-  - **Generous Spacing**: Implemented mb-24/md:mb-32 vertical rhythm between sections for emotional pacing
-  - **Scripture Repositioned**: Moved biblical quote to subtle footer role instead of prominent hero placement
-  - **Simplified glassmorphism**: Single-layer glass cards with darker backgrounds for improved legibility
-  - Earlier fixes: Sign Out button hover colors (orange→teal), Church/Community group card text truncation
-- **November 13, 2025**: Fixed authentication flow and landing page issues:
-  - Removed broken service worker registration and disabled PWA plugin in development to prevent aggressive caching
-  - Fixed Vite routing middleware to properly skip module requests, preventing HTML from being served for JavaScript files
-  - Removed broken analytics script reference from index.html
-  - Fixed post-authentication redirect in Home.tsx - replaced empty Link component with proper window.location redirect
-  - Landing page now works correctly with fixed scroll background and WCAG-compliant text contrast
+Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking, aiming to provide a robust and user-friendly experience for managing community support during difficult times.
 
 ## User Preferences
 - **Design Style**: Glassmorphism architecture with abstract wave background image
@@ -74,46 +28,27 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
   - Meal Train: Address/location visibility follows meal train visibility - anyone who can see the meal train can see the location
 
 ## System Architecture
-The application is built with a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend utilizing tRPC for type-safe APIs. PostgreSQL is used as the database with Drizzle ORM, and Replit Auth handles authentication. The architecture emphasizes a clear separation of concerns with a `client/`, `server/`, and `shared/` directory structure.
+The application features a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend with tRPC for type-safe APIs. It uses PostgreSQL with Drizzle ORM and Replit Auth for authentication. The architecture follows a clear separation of concerns with `client/`, `server/`, and `shared/` directories.
 
 ### UI/UX Decisions
-The UI/UX features a consistent glassmorphism design system with teal gradients and neutral typography. Key elements include:
+The UI/UX is built around a consistent glassmorphism design system using teal gradients and neutral typography, featuring:
 - **Glassmorphism Architecture**: Transparent and blurred elements over a wavy teal background with decorative blur orbs.
-- **Dashboard**: Centered family name, customizable display area (photo, slideshow, quote, memory), and three equal square cards for Supporters, Open Needs, and Upcoming Events. Cards feature white icons on a solid teal background, large numbers, teal gradient accent bars, and Mauve Purple action buttons with hover effects.
-- **Responsive Design**: Adapts glass containers and mobile headers across breakpoints.
-- **Calendar UI Consistency**: Uniform transparent glassmorphism styling across Events, Needs, and Meal Train calendars, with distinct color coding for upcoming (mauve purple) and past (grayscale) entries.
-- **Memory Wall**: Interactive drag-and-drop vision board with overlapping cards, random rotations, and vibrant color coding. Cards are freely draggable with position persistence, using dnd-kit for smooth interactions.
+- **Dashboard**: Centralized family name, customizable display area, and cards for Supporters, Open Needs, and Upcoming Events. Cards use white icons on teal backgrounds, large numbers, teal gradient accent bars, and Mauve Purple action buttons.
+- **Responsive Design**: Adapts UI elements for various screen sizes, including mobile-first optimization.
+- **Calendar UI Consistency**: Uniform transparent glassmorphism styling across all calendars (Events, Needs, Meal Train) with distinct color coding for entries.
+- **Memory Wall**: Interactive drag-and-drop vision board with overlapping cards, random rotations, and vibrant color coding for memories, stories, and images.
 
 ### Technical Implementations & Feature Specifications
-- **Meal Train Management**: Comprehensive meal coordination with day scheduling, configurable "Days Ahead Control," daily capacity controls, and dietary preference management. Includes the standardized 3-option visibility model.
-- **Group Management**: Full CRUD operations for organizing supporters with custom visibility controls.
-- **Needs Board**: Community support requests with group filtering and an "Unclaim Functionality" for users to release claimed needs, triggering email notifications to admin/primary users.
-- **Events Calendar**: Event scheduling and coordination, including an "Important Dates" feature for tracking recurring dates like birthdays and anniversaries, restricted to admin/primary users.
-- **Family Updates**: A unified timeline for announcements and personal updates (Announcement, General Update, Gratitude, Memory, Milestone) supporting media uploads and pinned announcements.
-- **Memory Wall**: Interactive drag-and-drop community collage for memories, stories, encouragement, prayers, and pictures with image uploads, filtering, and position persistence via dnd-kit.
-- **Gift Registry**: Wishlist management with three-stage tracking (Needed, Purchased, Received), priority levels, and optional item details.
-- **Privacy Controls**: Comprehensive visibility scoping (all supporters, specific groups, roles, or custom user selection) enforced across all features.
-- **Access Tier System**: Three-tier access control (Community/Friend/Family) with invisible tiering. Users select their tier upon joining, and admin/primary users can approve upgrades. Includes optional auto-promotion after a configurable duration.
-- **Role-Based Access**: Admin, primary, and supporter roles with defined permissions, including full control for admin/primary users over content, user management, and household settings.
-- **Invitation System**: Secure supporter onboarding via public household pages with customizable slug-based URLs. Users can join with Community tier access and request upgrades.
-- **Notification System**: Opt-in email notifications for 14 event types, configurable by users, with role-sensitive defaults (e.g., admin/primary receive unclaim notifications by default).
-- **Reminder System**: Personal reminders for upcoming needs and events with seven preset time options, processed by a background job.
-- **Profile Pictures**: User avatar upload system with object storage integration.
-- **Error Monitoring**: Production error tracking and performance monitoring with Sentry integration.
-- **Instructional/Onboarding System**: Simplified onboarding system with:
-  - **Interactive Tour**: Single household setup tour using react-joyride for primary users covering dashboard personalization, supporter management, privacy controls, and admin delegation
-  - **Tour Tracking**: Database-backed progress tracking per user/household with resume capability
-  - **HelpIcon Component**: Contextual help tooltips throughout the app explaining complex features
-  - **Tour Content**: Covers new Dashboard Personalization features including memorial subtitle, custom dashboard message, and Recent Updates card
-  - **Security**: Tour access validated by role with proper authorization checks
-  - **Tour Definitions**: Stored in `client/src/lib/tourConfigs.ts` with step-by-step guidance
-  - **Tour Service**: Custom React hook (`useTour`) managing Joyride state and tRPC integration for progress persistence
-  - **Database Schema**: `onboarding_tours` (tour definitions) and `user_tour_progress` (user completion tracking) tables
-
-### System Design Choices
-- **Security & Privacy Architecture**: Production-ready, centralized visibility system (`server/visibilityHelpers.ts`) with a "Five-Step Security Pattern" for endpoint validation. Security is optimized by caching group membership and validated by 17 automated tests.
-- **Database Management**: Uses Drizzle ORM's **push workflow** for schema management, defining changes in `drizzle/schema.ts` and applying via `npm run db:push`.
-- **React Deduplication**: Vite config includes `dedupe: ["react", "react-dom"]` to prevent "Invalid hook call" errors caused by multiple React instances in node_modules.
+- **Core Features**: Includes Meal Train management (scheduling, capacity, preferences), Group management (CRUD for supporters), Needs Board (community support requests, unclaim functionality), Events Calendar (scheduling, "Important Dates"), Family Updates (unified timeline, media uploads), and an interactive Memory Wall.
+- **Privacy & Access Control**: Comprehensive 3-option visibility model applied across all features. An Access Tier System (Community/Friend/Family) allows users to select their support level, with optional auto-promotion. Role-Based Access (Admin, Primary, Supporter) defines permissions.
+- **Onboarding & Support**: Secure invitation system for supporters via public household pages. An interactive onboarding tour using `react-joyride` guides primary users through setup, with contextual `HelpIcon` components for in-app assistance.
+- **Communication & Notifications**: Opt-in email notification system for 14 event types, with configurable user preferences and role-sensitive defaults. A personal Reminder System for needs and events, processed by a background job.
+- **Household Search**: `/search` route with fuzzy name matching for discovering existing family support pages.
+- **User & Content Management**: Profile picture uploads with object storage integration.
+- **Security & Privacy Architecture**: Production-ready, centralized visibility system (`server/visibilityHelpers.ts`) implementing a "Five-Step Security Pattern" for endpoint validation, optimized by caching group membership.
+- **Database Management**: Drizzle ORM's **push workflow** for schema management, defining changes in `drizzle/schema.ts`.
+- **Performance**: PWA configuration optimized to exclude large assets from service worker precaching, using runtime caching instead to reduce precache size.
+- **React Deduplication**: Vite configuration includes `dedupe: ["react", "react-dom"]` to prevent "Invalid hook call" errors.
 
 ## External Dependencies
 - **Database**: PostgreSQL
