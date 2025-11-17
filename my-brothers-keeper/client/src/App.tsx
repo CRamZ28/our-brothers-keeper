@@ -19,6 +19,7 @@ import MemoryWall from "./pages/MemoryWall";
 import GiftRegistry from "./pages/GiftRegistry";
 import Reminders from "./pages/Reminders";
 import JoinHousehold from "./pages/JoinHousehold";
+import SearchHousehold from "./pages/SearchHousehold";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -26,6 +27,7 @@ function Router() {
     <Switch>
       <Route path={"/"} component={Home} />
       <Route path={"/dashboard"} component={Dashboard} />
+      <Route path={"/search"} component={SearchHousehold} />
       <Route path={"/onboarding"} component={Onboarding} />
       <Route path={"/people"} component={People} />
       <Route path={"/needs"} component={Needs} />

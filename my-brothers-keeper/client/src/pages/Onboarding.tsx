@@ -120,6 +120,15 @@ export default function Onboarding() {
           <CardDescription className="text-base">
             Let's set up a support network for a family in need.
           </CardDescription>
+          <div className="pt-2">
+            <Button
+              variant="link"
+              onClick={() => setLocation("/search")}
+              className="text-sm text-muted-foreground hover:text-primary p-0 h-auto"
+            >
+              Looking for an existing family page? Search here
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
