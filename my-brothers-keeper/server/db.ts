@@ -1,4 +1,4 @@
-import { and, eq, inArray, desc, sql } from "drizzle-orm";
+import { and, eq, inArray, desc, sql, ilike } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import {
@@ -324,6 +324,22 @@ export function generateSlug(name: string): string {
   }
   
   return slug;
+}
+
+export async function searchHouseholds(query: string) {
+  const db = await getDb();
+  if (!db) return [];
+
+  // Use ILIKE for case-insensitive partial matching
+  const searchPattern = `%${query}%`;
+  const result = await db
+    .select()
+    .from(households)
+    .where(ilike(households.name, searchPattern))
+    .limit(20)
+    .orderBy(households.name);
+  
+  return result;
 }
 
 export async function getHouseholdBySlug(slug: string) {

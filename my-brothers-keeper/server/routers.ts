@@ -69,6 +69,22 @@ export const appRouter = router({
   }),
 
   household: router({
+    // Public endpoint to search households by name (fuzzy matching)
+    search: publicProcedure
+      .input(z.object({ query: z.string().min(1) }))
+      .query(async ({ input }) => {
+        const households = await db.searchHouseholds(input.query);
+        
+        // Return only public-safe information
+        return households.map(household => ({
+          id: household.id,
+          name: household.name,
+          description: household.description,
+          photoUrl: household.photoUrl,
+          slug: household.slug,
+        }));
+      }),
+
     // Public endpoint to get household info by slug (for public join page)
     getBySlug: publicProcedure
       .input(z.object({ slug: z.string() }))
