@@ -33,7 +33,7 @@ export default function SearchHousehold() {
       <div className="fixed w-[400px] h-[400px] rounded-full bg-teal-400/45 blur-[120px] bottom-0 left-1/4 pointer-events-none" />
 
       <div className="relative z-10 flex items-center justify-center min-h-screen p-8">
-        <GlassCard className="p-12 max-w-3xl w-full">
+        <GlassCard className="p-12 max-w-3xl w-full" style={{ backgroundColor: 'rgba(255, 255, 255, 0.5)' }}>
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-4">
