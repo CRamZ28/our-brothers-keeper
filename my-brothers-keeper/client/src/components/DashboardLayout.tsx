@@ -97,7 +97,7 @@ export default function DashboardLayout({
               </SheetTrigger>
               <SheetContent 
                 side="left" 
-                className="p-0 w-80"
+                className="p-0 w-80 flex flex-col h-full"
                 style={{
                   background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))',
                   backdropFilter: 'blur(40px) saturate(180%)',
