@@ -248,9 +248,9 @@ export default function Home() {
                 <div 
                   className="rounded-3xl p-10 space-y-5 animate-fade-in-up"
                   style={{
-                    background: 'rgba(245, 235, 245, 0.4)',
+                    background: 'rgba(255, 255, 255, 0.35)',
                     backdropFilter: 'blur(20px) saturate(180%)',
-                    border: '1px solid rgba(176, 140, 167, 0.4)',
+                    border: '1px solid rgba(255, 255, 255, 0.5)',
                     boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.4)',
                     animationDelay: '0.2s',
                     animationFillMode: 'both'
