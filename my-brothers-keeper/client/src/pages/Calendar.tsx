@@ -1110,7 +1110,7 @@ export default function Calendar() {
                     </div>
                   )}
                   <div className="space-y-3">
-                    <DialogFooter className="flex flex-col sm:flex-row gap-3 sm:justify-between">
+                    <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:justify-between w-full">
                       <Button
                         variant="default"
                         onClick={() => {
@@ -1122,11 +1122,13 @@ export default function Calendar() {
                           (event.capacity && event.goingCount >= event.capacity) ||
                           (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)
                         }
-                        className="flex-1 whitespace-nowrap"
+                        className="flex-1 min-w-0"
                       >
-                        <Check className="w-4 h-4 mr-2" />
-                        {event.capacity && event.goingCount >= event.capacity ? "Full" : 
-                         (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "I'm Going"}
+                        <Check className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">
+                          {event.capacity && event.goingCount >= event.capacity ? "Full" : 
+                           (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "Going"}
+                        </span>
                       </Button>
                       <Button
                         variant="outline"
@@ -1135,9 +1137,9 @@ export default function Calendar() {
                           setEventDetailOpen(false);
                         }}
                         disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
-                        className="flex-1 whitespace-nowrap"
+                        className="flex-1 min-w-0"
                       >
-                        Maybe
+                        <span className="truncate">Maybe</span>
                       </Button>
                       <Button
                         variant="outline"
@@ -1146,10 +1148,10 @@ export default function Calendar() {
                           setEventDetailOpen(false);
                         }}
                         disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
-                        className="flex-1 whitespace-nowrap"
+                        className="flex-1 min-w-0"
                       >
-                        <X className="w-4 h-4 mr-2" />
-                        Can't Go
+                        <X className="w-4 h-4 mr-1 sm:mr-2 shrink-0" />
+                        <span className="truncate">Can't Go</span>
                       </Button>
                     </DialogFooter>
                     <ReminderDialog targetType="event" targetId={event.id} />
