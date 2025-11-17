@@ -47,9 +47,22 @@ const plugins = [
       ]
     },
     workbox: {
-      globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
-      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB to accommodate large image assets
+      // Exclude large images from precaching to avoid build errors
+      globPatterns: ["**/*.{js,css,html,ico,svg,woff,woff2}"],
+      globIgnores: ["**/waves-bg.png", "**/obk-emblem.png", "**/obk-logo.png", "**/obk-logo-v2.png", "**/obk-symbol.png"],
       runtimeCaching: [
+        {
+          // Cache large brand images at runtime instead of precaching
+          urlPattern: /\/(waves-bg|obk-emblem|obk-logo|obk-logo-v2|obk-symbol)\.png$/,
+          handler: "CacheFirst",
+          options: {
+            cacheName: "large-images-cache",
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+            }
+          }
+        },
         {
           urlPattern: /^https:\/\/api\..*/i,
           handler: "NetworkFirst",

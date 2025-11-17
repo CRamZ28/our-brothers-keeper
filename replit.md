@@ -10,7 +10,10 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
     - Search results limited to 20 households for performance
     - Only exposes public-safe data (id, name, description, photoUrl, slug)
     - Integrated into onboarding flow with "Looking for an existing family page?" link
-  - **PWA Configuration Fix**: Resolved deployment build failure by adding `maximumFileSizeToCacheInBytes: 5MB` to workbox config in vite.config.ts to accommodate large image assets (obk-emblem.png 2.21MB, waves-bg.png 2.87MB)
+  - **PWA Configuration Fix**: Resolved deployment build failure by excluding large image assets from service worker precaching and using runtime caching instead
+    - Large brand images (waves-bg.png 2.8MB, obk-emblem.png 2.2MB, obk-logo.png 1.4MB, etc.) now cached at runtime with CacheFirst strategy
+    - Reduced precache size from ~11MB to ~1.8MB, well under the 2MB per-file limit
+    - Images still cached for 30 days after first load for optimal performance
   - **Routing Fix**: Changed `/setup` to `/onboarding` for proper first-time user flow
 - **November 14, 2025**: Comprehensive Dashboard redesign and mobile optimization:
   - **Dashboard UI Refresh**:
