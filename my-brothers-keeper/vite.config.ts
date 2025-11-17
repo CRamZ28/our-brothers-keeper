@@ -48,6 +48,7 @@ const plugins = [
     },
     workbox: {
       globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2}"],
+      maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB to accommodate large image assets
       runtimeCaching: [
         {
           urlPattern: /^https:\/\/api\..*/i,

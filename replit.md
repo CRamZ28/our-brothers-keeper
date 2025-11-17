@@ -4,6 +4,14 @@
 Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication for families in need by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking. The project's goal is to offer a robust and user-friendly experience for managing community support during difficult times.
 
 ## Recent Changes
+- **November 17, 2025**: Household search and deployment fixes:
+  - **Household Search Feature**: Added `/search` route with fuzzy name matching for discovering existing family support pages
+    - Users can search for households by partial name (case-insensitive ILIKE matching)
+    - Search results limited to 20 households for performance
+    - Only exposes public-safe data (id, name, description, photoUrl, slug)
+    - Integrated into onboarding flow with "Looking for an existing family page?" link
+  - **PWA Configuration Fix**: Resolved deployment build failure by adding `maximumFileSizeToCacheInBytes: 5MB` to workbox config in vite.config.ts to accommodate large image assets (obk-emblem.png 2.21MB, waves-bg.png 2.87MB)
+  - **Routing Fix**: Changed `/setup` to `/onboarding` for proper first-time user flow
 - **November 14, 2025**: Comprehensive Dashboard redesign and mobile optimization:
   - **Dashboard UI Refresh**:
     - Softened glass effects to match landing page aesthetic (reduced intense glow and shadows)
