@@ -423,9 +423,11 @@ export default function Settings() {
             letterSpacing: '0.05em',
             color: '#B08CA7',
             filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
-          }}>
-            <span style={{ fontSize: '48px' }}>S</span>
-            <span style={{ fontSize: '36px' }}>ETTINGS</span>
+          }}
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+          >
+            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">S</span>
+            <span>ETTINGS</span>
           </span>
         }
       >

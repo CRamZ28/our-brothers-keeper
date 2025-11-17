@@ -433,9 +433,11 @@ export default function People() {
             letterSpacing: '0.05em',
             color: '#B08CA7',
             filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
-          }}>
-            <span style={{ fontSize: '48px' }}>P</span>
-            <span style={{ fontSize: '36px' }}>EOPLE</span>
+          }}
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+          >
+            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">P</span>
+            <span>EOPLE</span>
           </span>
         }
         actions={
@@ -894,12 +896,12 @@ export default function People() {
         {isPrimaryOrAdmin && (
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="flex-1 min-w-0">
                   <CardTitle>Groups</CardTitle>
                   <CardDescription>Organize your network into visibility groups</CardDescription>
                 </div>
-                <Button onClick={() => setCreateGroupDialogOpen(true)}>
+                <Button onClick={() => setCreateGroupDialogOpen(true)} className="shrink-0">
                   <Plus className="w-4 h-4 mr-2" />
                   Create Group
                 </Button>

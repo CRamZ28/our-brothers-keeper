@@ -221,12 +221,14 @@ export default function GiftRegistry() {
             letterSpacing: '0.05em',
             color: '#B08CA7',
             filter: 'drop-shadow(0 0 8px rgba(176,140,167,0.7))'
-          }}>
-            <span style={{ fontSize: '48px' }}>G</span>
-            <span style={{ fontSize: '36px' }}>IFT</span>
+          }}
+          className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
+          >
+            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">G</span>
+            <span>IFT</span>
             {' '}
-            <span style={{ fontSize: '48px' }}>R</span>
-            <span style={{ fontSize: '36px' }}>EGISTRY</span>
+            <span className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl">R</span>
+            <span>EGISTRY</span>
           </span>
         }
         actions={
