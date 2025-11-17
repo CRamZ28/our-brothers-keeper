@@ -670,8 +670,12 @@ export default function Home() {
                 <Button 
                   onClick={() => (window.location.href = "/api/login")}
                   size="lg"
-                  className="bg-[#146b61] hover:bg-[#0f5b52] text-white font-semibold px-12 py-7 text-xl shadow-2xl opacity-100"
-                  style={{ backgroundColor: '#146b61' }}
+                  variant="ghost"
+                  className="text-white font-semibold px-12 py-7 text-xl shadow-2xl hover:opacity-90"
+                  style={{ 
+                    backgroundColor: '#146b61',
+                    opacity: 1
+                  }}
                 >
                   Get Started
                   <ArrowRight className="ml-2 h-6 w-6" />
