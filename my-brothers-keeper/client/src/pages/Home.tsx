@@ -26,9 +26,9 @@ export default function Home() {
     return null;
   }
 
-  // If authenticated but no household, redirect to setup
+  // If authenticated but no household, redirect to onboarding
   if (isAuthenticated && !household) {
-    window.location.href = "/setup";
+    window.location.href = "/onboarding";
     return null;
   }
 
