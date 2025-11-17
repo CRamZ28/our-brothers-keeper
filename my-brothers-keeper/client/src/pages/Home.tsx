@@ -133,7 +133,7 @@ export default function Home() {
               <div 
                 className="max-w-2xl mx-auto rounded-3xl p-8 md:p-10"
                 style={{ 
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.65))',
+                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.80))',
                   backdropFilter: 'blur(30px) saturate(180%)',
                   WebkitBackdropFilter: 'blur(30px) saturate(180%)',
                   border: '1px solid rgba(255, 255, 255, 0.6)',
@@ -165,8 +165,8 @@ export default function Home() {
                     <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#B08CA7] flex items-center justify-center mt-1">
                       <Check className="w-5 h-5 text-white" />
                     </div>
-                    <p className="text-base md:text-lg font-medium" style={{ color: '#2a6a66', lineHeight: 1.6 }}>
-                      <strong style={{ color: '#7d5a75' }}>Support that lasts</strong> — Keep your community engaged for weeks, months, or years
+                    <p className="text-base md:text-lg font-medium" style={{ color: '#7d5a75', lineHeight: 1.6 }}>
+                      <strong>Support that lasts</strong> — Keep your community engaged for weeks, months, or years
                     </p>
                   </div>
                   
