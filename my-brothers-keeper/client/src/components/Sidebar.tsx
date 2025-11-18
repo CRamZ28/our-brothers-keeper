@@ -11,15 +11,18 @@ import {
   Settings,
   LogOut,
   Bell,
+  MessageCircle,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { trpc } from "@/lib/trpc";
 
 const navigationItems = [
   { icon: Home, label: "Dashboard", path: "/dashboard", tourId: "dashboard" },
@@ -41,6 +44,14 @@ interface SidebarProps {
 export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: undefined }) {
   const [location, setLocation] = useLocation();
   const { user, logout } = useAuth();
+  
+  const isAdminOrPrimary = user?.role === "admin" || user?.role === "primary";
+  
+  // Get unread question count for admins/primary
+  const { data: unreadCount } = trpc.messages.getUnreadQuestionCount.useQuery(
+    undefined,
+    { enabled: isAdminOrPrimary, refetchInterval: 30000 }
+  );
 
   const handleNavigate = (path: string) => {
     setLocation(path);
@@ -94,6 +105,44 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
             </button>
           );
         })}
+        
+        {/* Questions link - only for admins/primary */}
+        {isAdminOrPrimary && (
+          <button
+            onClick={() => handleNavigate("/questions")}
+            className={`
+              relative flex items-center gap-3 h-11 pl-4 pr-4 rounded-xl w-full text-left
+              transition-all duration-200 ease-in-out
+              ${location === "/questions"
+                ? 'text-white shadow-[0_4px_15px_rgba(176,140,167,0.3)]' 
+                : 'text-foreground hover:bg-white/40 hover:translate-x-1 active:bg-white/50 focus:bg-white/40'
+              }
+              focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50
+            `}
+            style={location === "/questions" ? {
+              background: 'rgba(176, 140, 167, 0.7)'
+            } : undefined}
+          >
+            {/* Icon */}
+            <MessageCircle className="w-[18px] h-[18px] transition-all duration-200" />
+            
+            {/* Label */}
+            <span className="text-[14px] font-medium flex items-center gap-2">
+              Questions
+              {unreadCount && unreadCount > 0 && (
+                <Badge 
+                  className="h-5 min-w-[20px] px-1.5 text-xs font-bold"
+                  style={{ 
+                    background: '#6BC4B8',
+                    color: 'white',
+                  }}
+                >
+                  {unreadCount}
+                </Badge>
+              )}
+            </span>
+          </button>
+        )}
       </nav>
 
       {/* Bottom user profile section */}

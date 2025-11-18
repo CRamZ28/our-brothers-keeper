@@ -21,6 +21,7 @@ import Reminders from "./pages/Reminders";
 import JoinHousehold from "./pages/JoinHousehold";
 import SearchHousehold from "./pages/SearchHousehold";
 import Contact from "./pages/Contact";
+import Questions from "./pages/Questions";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -46,6 +47,7 @@ function Router() {
       <Route path={"/reminders"} component={Reminders} />
       <Route path={"/settings"} component={Settings} />
       <Route path={"/contact"} component={Contact} />
+      <Route path={"/questions"} component={Questions} />
       <Route path={"/invite/:token"} component={AcceptInvite} />
       <Route path={"/admin"} component={AdminTools} />
       <Route path={"/404"} component={NotFound} />
