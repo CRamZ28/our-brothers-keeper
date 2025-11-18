@@ -55,3 +55,6 @@ externalPort = 3000
 deploymentTarget = "gce"
 build = ["pnpm", "run", "build"]
 run = ["pnpm", "run", "start"]
+
+[objectStorage]
+defaultBucketID = "replit-objstore-cce36624-a6f7-4498-9b5b-6fb5bf527c9a"
