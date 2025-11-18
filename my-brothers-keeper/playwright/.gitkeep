@@ -1,0 +1,2 @@
+# This file ensures the playwright directory exists in git
+# The .auth/ subdirectory contains generated auth state and is gitignored

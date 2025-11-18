@@ -40,9 +40,12 @@ test.describe('Authentication Flow', () => {
 });
 
 test.describe('Sidebar Navigation', () => {
-  test.skip('should display all navigation links for authenticated users', async ({ page }) => {
-    // Requires authentication
+  test('should display all navigation links for authenticated users', async ({ page }) => {
+    // Requires authentication (provided by auth.setup.ts)
     await page.goto('/dashboard');
+    
+    // Wait for navigation to be visible
+    await page.waitForSelector('nav', { timeout: 10000 });
     
     // Check all sidebar navigation items
     const navItems = [
@@ -64,9 +67,12 @@ test.describe('Sidebar Navigation', () => {
     }
   });
 
-  test.skip('should show Questions link only for admin/primary users', async ({ page }) => {
-    // Requires authentication as admin/primary user
+  test('should show Questions link only for admin/primary users', async ({ page }) => {
+    // Requires authentication as admin/primary user (test user is admin)
     await page.goto('/dashboard');
+    
+    // Wait for sidebar
+    await page.waitForSelector('nav', { timeout: 10000 });
     
     // Questions link should be visible for admin/primary
     await expect(page.getByRole('button', { name: /Questions/ })).toBeVisible();

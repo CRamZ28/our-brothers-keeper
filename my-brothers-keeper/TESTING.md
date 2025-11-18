@@ -93,55 +93,23 @@ my-brothers-keeper/
 
 ### Authentication
 
-Most tests require authentication. The test suite currently has authentication tests **skipped** (`.skip`) because:
+✅ **Authentication is now fully configured!**
 
-1. **Replit Auth** uses OAuth and requires actual Replit accounts
-2. Setting up test authentication requires either:
-   - Creating test Replit accounts
-   - Mocking authentication cookies
-   - Using Playwright's auth storage
+The test suite uses **automated authentication** via a test-only endpoint that creates authenticated sessions without requiring OAuth flow.
 
-To enable authenticated tests:
+**How it works:**
 
-1. Create a `tests/auth.setup.ts` file that logs in and saves auth state
-2. Configure `playwright.config.ts` to use the auth setup
-3. Remove `.skip` from test descriptions
+1. **Test Auth Endpoint** (`/api/test/login`): Development-only endpoint that creates valid sessions
+2. **Auth Setup** (`tests/auth.setup.ts`): Runs before all tests, creates an admin user session
+3. **Storage State** (`playwright/.auth/user.json`): Saved authentication state reused across all tests
+4. **Test User**: Created with admin privileges for full feature access
 
-Example auth setup (you'll need to customize):
+**The setup runs automatically** when you run tests. You don't need to do anything!
 
-```typescript
-// tests/auth.setup.ts
-import { test as setup } from '@playwright/test';
-
-setup('authenticate', async ({ page }) => {
-  // Navigate to login
-  await page.goto('/api/login');
-  
-  // Complete Replit OAuth flow
-  // This depends on your Replit test account setup
-  
-  // Save auth state
-  await page.context().storageState({ path: 'playwright/.auth/user.json' });
-});
-```
-
-Then update `playwright.config.ts`:
-
-```typescript
-export default defineConfig({
-  projects: [
-    { name: 'setup', testMatch: /.*\.setup\.ts/ },
-    {
-      name: 'chromium',
-      use: {
-        ...devices['Desktop Chrome'],
-        storageState: 'playwright/.auth/user.json',
-      },
-      dependencies: ['setup'],
-    },
-  ],
-});
-```
+**Security:**
+- Test auth endpoints are **only enabled in development**
+- Automatically disabled in production (see `server/testAuth.ts`)
+- Creates real sessions in the database, just like regular auth
 
 ### Test Data
 
@@ -158,17 +126,29 @@ export const testData = {
 };
 ```
 
-### Skipped Tests
+### Test Status
 
-Most tests are currently marked with `.skip` because they require authentication. Once you set up authentication (see above), you can enable tests by removing `.skip`:
+✅ **Ready to Run:**
+- Authentication flow tests
+- Sidebar navigation tests
+- Contact form display tests
+
+⏸️ **Skipped (Available to Enable):**
+- Most feature workflow tests are marked with `.skip` to allow gradual test enablement
+- Remove `.skip` to activate tests as you verify they work with your data:
 
 ```typescript
-// Before
+// Skipped - won't run
 test.skip('should create a new need', async ({ page }) => {
 
-// After (once auth is set up)
+// Active - will run
 test('should create a new need', async ({ page }) => {
 ```
+
+**Why some tests are skipped:**
+- Allows you to enable tests incrementally
+- Prevents false failures during initial setup
+- You can verify each workflow before running tests
 
 ## Viewing Test Reports
 

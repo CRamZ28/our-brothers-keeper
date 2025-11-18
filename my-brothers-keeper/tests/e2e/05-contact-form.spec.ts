@@ -4,11 +4,11 @@ import { testData } from '../fixtures/testData';
 test.describe('Contact Support Form', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to contact page
-    // Note: Requires authentication
+    // Note: Requires authentication (provided by auth.setup.ts)
     await page.goto('/contact');
   });
 
-  test.skip('should display contact form', async ({ page }) => {
+  test('should display contact form', async ({ page }) => {
     // Check for form elements
     await expect(page.getByText('CONTACT SUPPORT')).toBeVisible();
     await expect(page.getByLabel('Request Type')).toBeVisible();
@@ -16,7 +16,7 @@ test.describe('Contact Support Form', () => {
     await expect(page.getByLabel('Message *')).toBeVisible();
   });
 
-  test.skip('should have Feature Suggestion as default request type', async ({ page }) => {
+  test('should have Feature Suggestion as default request type', async ({ page }) => {
     // Check default value
     const selectTrigger = page.getByLabel('Request Type');
     await expect(selectTrigger).toContainText('💡 Feature Suggestion');

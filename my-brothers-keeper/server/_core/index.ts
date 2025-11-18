@@ -4,6 +4,7 @@ import express from "express";
 import { createServer } from "http";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { setupAuth, isAuthenticated } from "../replitAuth";
+import { setupTestAuth } from "../testAuth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
@@ -39,6 +40,9 @@ async function startServer() {
   
   // Setup Replit Auth (includes sessions, passport, and auth routes)
   await setupAuth(app);
+  
+  // Setup test-only auth endpoints for E2E testing
+  await setupTestAuth(app);
   
   // Auth endpoint for frontend
   app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
