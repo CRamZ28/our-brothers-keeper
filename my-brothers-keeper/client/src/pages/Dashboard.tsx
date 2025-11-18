@@ -753,10 +753,10 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
   if (type === 'need') {
     return (
       <div 
-        className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
+        className="px-3 pt-3 pb-4 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
         style={{
           background: 'rgba(255, 255, 255, 0.3)',
-          maxHeight: isExpanded ? '200px' : '70px',
+          maxHeight: isExpanded ? '200px' : '80px',
         }}
         onClick={() => setIsExpanded(!isExpanded)}
       >
@@ -813,10 +813,10 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
   
   return (
     <div 
-      className="p-3 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
+      className="px-3 pt-3 pb-4 rounded-lg transition-all duration-300 overflow-hidden cursor-pointer"
       style={{
         background: 'rgba(255, 255, 255, 0.3)',
-        maxHeight: isExpanded ? '200px' : '70px',
+        maxHeight: isExpanded ? '200px' : '80px',
       }}
       onClick={() => setIsExpanded(!isExpanded)}
     >
