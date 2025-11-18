@@ -4,6 +4,22 @@ import { protectedProcedure, router } from "./_core/trpc";
 import { invokeLLM } from "./_core/llm";
 import * as db from "./db";
 import crypto from "crypto";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@notifications.obkapp.com>';
+
+// Helper to escape HTML to prevent XSS
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
 
 // Helper to generate secure invite token
 function generateInviteToken(): string {
@@ -19,9 +35,84 @@ async function sendInviteNotification(
   inviterName: string
 ) {
   // Build public household join link using slug (e.g., /theramseys)
-  const inviteLink = `${process.env.VITE_APP_URL || "http://localhost:5000"}/${householdSlug}`;
-  console.log(`[Invite] Would send to ${email || phone}: ${inviteLink}`);
-  // TODO: Implement actual email/SMS sending via Resend
+  const baseUrl = process.env.VITE_APP_URL || "https://obkapp.com";
+  const inviteLink = `${baseUrl}/${householdSlug}`;
+  
+  // Only send email if email is provided
+  if (email) {
+    try {
+      // Escape all user-supplied content to prevent HTML injection
+      const safeInviterName = escapeHtml(inviterName);
+      const safeHouseholdName = escapeHtml(householdName);
+      
+      const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #6BC4B8 0%, #5A9FD4 50%, #9B7FB8 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+            .header h1 { color: white; margin: 0; font-size: 24px; }
+            .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+            .button { display: inline-block; background: #6BC4B8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+            .divider { border-top: 1px solid #e5e7eb; margin: 20px 0; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🤍 Our Brother's Keeper</h1>
+            </div>
+            <div class="content">
+              <p>Hi there,</p>
+              <p><strong>${safeInviterName}</strong> has invited you to join <strong>${safeHouseholdName}'s</strong> support circle on Our Brother's Keeper.</p>
+              <div style="background: #f9fafb; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
+                <p style="margin: 0; font-size: 16px;">Our Brother's Keeper is a compassionate platform designed to help families coordinate support during difficult times.</p>
+              </div>
+              <p>Click the button below to join this caring community and see how you can help.</p>
+              <div style="text-align: center;">
+                <a href="${inviteLink}" class="button">Join Support Circle</a>
+              </div>
+              <div class="divider"></div>
+              <p style="color: #666; font-size: 14px; margin: 0;">With care and support,<br>The Our Brother's Keeper Team</p>
+            </div>
+            <div class="footer">
+              <p>You're receiving this email because ${safeInviterName} invited you to support ${safeHouseholdName}.</p>
+              <p style="font-size: 12px; color: #999;">If you don't want to join, you can simply ignore this email.</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      const result = await resend.emails.send({
+        from: FROM_EMAIL,
+        to: email,
+        subject: `💌 You're Invited to Support ${safeHouseholdName}`,
+        html: emailHtml,
+      });
+
+      if (result.error) {
+        console.error('[Invite] Email send failed:', result.error);
+        throw new Error(`Failed to send invite email: ${result.error.message}`);
+      }
+
+      console.log(`[Invite] Email sent successfully to ${email}: ${inviteLink}`, result.data);
+    } catch (error) {
+      console.error('[Invite] Error sending email:', error);
+      throw error;
+    }
+  }
+
+  // SMS sending would go here if phone is provided
+  if (phone) {
+    console.log(`[Invite] SMS not yet implemented for ${phone}: ${inviteLink}`);
+  }
+
   return inviteLink;
 }
 
