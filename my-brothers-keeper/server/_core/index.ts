@@ -12,6 +12,7 @@ import uploadRouter from "../uploadRouter";
 import { getUser } from "../db";
 import { processAutoPromotions } from "../autoPromotion";
 import { processReminders } from "../reminderProcessor";
+import { ENV } from "./env";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -77,7 +78,7 @@ async function startServer() {
   );
   
   // development mode uses Vite, production mode uses static files
-  if (process.env.NODE_ENV === "development") {
+  if (!ENV.isProduction) {
     await setupVite(app, server);
   } else {
     serveStatic(app);
