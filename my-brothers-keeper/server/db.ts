@@ -51,6 +51,8 @@ import {
   InsertMemoryWallPosition,
   giftRegistry,
   InsertGiftRegistryItem,
+  questionReplies,
+  InsertQuestionReply,
 } from "../drizzle/schema";
 import { ENV } from "./_core/env";
 
@@ -771,6 +773,73 @@ export async function deleteAnnouncement(id: number) {
   if (!db) return;
 
   await db.delete(announcements).where(eq(announcements.id, id));
+}
+
+export async function getQuestionsByHousehold(householdId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(announcements)
+    .where(and(
+      eq(announcements.householdId, householdId),
+      eq(announcements.isQuestion, true)
+    ))
+    .orderBy(desc(announcements.createdAt));
+}
+
+export async function markQuestionAsRead(questionId: number, userId: string) {
+  const db = await getDb();
+  if (!db) return;
+
+  const question = await db.select().from(announcements).where(eq(announcements.id, questionId)).limit(1);
+  if (question.length === 0) return;
+
+  const readBy = question[0].readBy || [];
+  if (!readBy.includes(userId)) {
+    await db.update(announcements)
+      .set({ readBy: [...readBy, userId] })
+      .where(eq(announcements.id, questionId));
+  }
+}
+
+export async function getUnreadQuestionCount(householdId: number, userId: string) {
+  const db = await getDb();
+  if (!db) return 0;
+
+  const questions = await db
+    .select()
+    .from(announcements)
+    .where(and(
+      eq(announcements.householdId, householdId),
+      eq(announcements.isQuestion, true)
+    ));
+
+  return questions.filter(q => !q.readBy?.includes(userId)).length;
+}
+
+// ============================================================================
+// QUESTION REPLIES
+// ============================================================================
+
+export async function createQuestionReply(reply: InsertQuestionReply) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db.insert(questionReplies).values(reply).returning({ id: questionReplies.id });
+  return result[0].id;
+}
+
+export async function getQuestionReplies(questionId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return await db
+    .select()
+    .from(questionReplies)
+    .where(eq(questionReplies.questionId, questionId))
+    .orderBy(questionReplies.createdAt);
 }
 
 // ============================================================================

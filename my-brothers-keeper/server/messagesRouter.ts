@@ -239,6 +239,10 @@ export const messagesRouter = router({
         visibilityGroupIds: null,
         customUserIds,
         mediaUrls: null,
+        isQuestion: true,
+        questionContext: input.context || null,
+        questionContextId: input.contextId || null,
+        readBy: [],
       });
 
       await db.createAuditLog({
@@ -336,6 +340,153 @@ export const messagesRouter = router({
       ).catch((err: Error) => console.error("Failed to send direct message notification:", err));
 
       return { success: true, announcementId };
+    }),
+
+  // List all questions for admins/primary
+  listQuestions: protectedProcedure
+    .query(async ({ ctx }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Only admin or primary can list questions
+      if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only Admin or Primary can view questions",
+        });
+      }
+
+      const questions = await db.getQuestionsByHousehold(ctx.user.householdId);
+      
+      // Get author info and reply count for each question
+      const questionsWithDetails = await Promise.all(
+        questions.map(async (q) => {
+          const author = await db.getUserById(q.createdBy);
+          const replies = await db.getQuestionReplies(q.id);
+          
+          return {
+            ...q,
+            authorName: author ? `${author.firstName || ""} ${author.lastName || ""}`.trim() : "Unknown",
+            authorEmail: author?.email,
+            replyCount: replies.length,
+            isUnread: !q.readBy?.includes(ctx.user.id),
+          };
+        })
+      );
+
+      return questionsWithDetails;
+    }),
+
+  // Mark a question as read
+  markQuestionAsRead: protectedProcedure
+    .input(z.object({ questionId: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Only admin or primary can mark questions as read
+      if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only Admin or Primary can mark questions as read",
+        });
+      }
+
+      await db.markQuestionAsRead(input.questionId, ctx.user.id);
+
+      return { success: true };
+    }),
+
+  // Reply to a question
+  replyToQuestion: protectedProcedure
+    .input(z.object({
+      questionId: z.number(),
+      message: z.string().min(1),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Only admin or primary can reply to questions
+      if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only Admin or Primary can reply to questions",
+        });
+      }
+
+      const replyId = await db.createQuestionReply({
+        questionId: input.questionId,
+        householdId: ctx.user.householdId,
+        authorId: ctx.user.id,
+        message: input.message,
+      });
+
+      // Mark as read when replying
+      await db.markQuestionAsRead(input.questionId, ctx.user.id);
+
+      // Get the question to find the original asker
+      const questions = await db.getAnnouncementsByHousehold(ctx.user.householdId);
+      const question = questions.find(q => q.id === input.questionId);
+      
+      if (question) {
+        // Send notification to the question asker
+        notifyVisibleUsers(
+          ctx.user.householdId,
+          [question.createdBy],
+          "new_message",
+          {
+            announcementBody: `Reply to your question: ${input.message.substring(0, 150)}${input.message.length > 150 ? "..." : ""}`,
+            actionUrl: `${process.env.REPL_HOME || ""}/questions`,
+          },
+          [ctx.user.id]
+        ).catch((err: Error) => console.error("Failed to send reply notification:", err));
+      }
+
+      return { success: true, replyId };
+    }),
+
+  // Get replies for a question
+  getQuestionReplies: protectedProcedure
+    .input(z.object({ questionId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      const replies = await db.getQuestionReplies(input.questionId);
+      
+      // Get author info for each reply
+      const repliesWithAuthor = await Promise.all(
+        replies.map(async (r) => {
+          const author = await db.getUserById(r.authorId);
+          return {
+            ...r,
+            authorName: author ? `${author.firstName || ""} ${author.lastName || ""}`.trim() : "Unknown",
+            authorRole: author?.role,
+          };
+        })
+      );
+
+      return repliesWithAuthor;
+    }),
+
+  // Get unread question count
+  getUnreadQuestionCount: protectedProcedure
+    .query(async ({ ctx }) => {
+      if (!ctx.user.householdId) {
+        return 0;
+      }
+
+      // Only admin or primary should see unread counts
+      if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        return 0;
+      }
+
+      return await db.getUnreadQuestionCount(ctx.user.householdId, ctx.user.id);
     }),
 });
 

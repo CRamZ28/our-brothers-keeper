@@ -333,16 +333,39 @@ export const announcements = pgTable("announcements", {
   visibilityGroupIds: integer("visibility_group_ids").array(),
   customUserIds: varchar("custom_user_ids").array(),
   mediaUrls: text("media_urls").array(),
+  isQuestion: boolean("is_question").default(false).notNull(),
+  questionContext: varchar("question_context", { length: 50 }),
+  questionContextId: integer("question_context_id"),
+  readBy: varchar("read_by").array(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 }, (table) => ({
   householdIdx: index("announcements_household_idx").on(table.householdId),
   pinnedIdx: index("announcements_pinned_idx").on(table.pinned),
   createdAtIdx: index("announcements_created_at_idx").on(table.createdAt),
+  isQuestionIdx: index("announcements_is_question_idx").on(table.isQuestion),
 }));
 
 export type Announcement = typeof announcements.$inferSelect;
 export type InsertAnnouncement = typeof announcements.$inferInsert;
+
+/**
+ * Question Replies - responses to questions asked through Ask a Question feature
+ */
+export const questionReplies = pgTable("question_replies", {
+  id: serial("id").primaryKey(),
+  questionId: integer("question_id").notNull(),
+  householdId: integer("household_id").notNull(),
+  authorId: varchar("author_id").notNull(),
+  message: text("message").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => ({
+  questionIdx: index("question_replies_question_idx").on(table.questionId),
+  householdIdx: index("question_replies_household_idx").on(table.householdId),
+}));
+
+export type QuestionReply = typeof questionReplies.$inferSelect;
+export type InsertQuestionReply = typeof questionReplies.$inferInsert;
 
 /**
  * Updates - personal updates from Primary with photos
