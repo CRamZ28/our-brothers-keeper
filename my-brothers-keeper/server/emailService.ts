@@ -29,7 +29,7 @@ export interface EmailContext {
   [key: string]: any;
 }
 
-const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@notifications.obkapp.com>';
+const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
 
 function getEmailTemplate(type: NotificationType, context: EmailContext): { subject: string; html: string } {
   const baseStyles = `

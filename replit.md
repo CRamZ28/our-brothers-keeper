@@ -54,7 +54,7 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **Database**: PostgreSQL
 - **Authentication**: Replit Auth (OpenID Connect via Passport.js)
 - **Session Store**: PostgreSQL (`connect-pg-simple`)
-- **Email Service**: Resend (manually configured with RESEND_API_KEY secret, sends from notifications@notifications.obkapp.com)
+- **Email Service**: Resend (manually configured with RESEND_API_KEY secret, sends from notifications@obkapp.com)
 - **Error Monitoring**: Sentry
 - **Frontend Framework**: React
 - **Build Tool**: Vite

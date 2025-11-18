@@ -7,7 +7,7 @@ import crypto from "crypto";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@notifications.obkapp.com>';
+const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
 
 // Helper to escape HTML to prevent XSS
 function escapeHtml(text: string): string {

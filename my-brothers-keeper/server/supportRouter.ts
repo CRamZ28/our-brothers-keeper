@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 import { TRPCError } from '@trpc/server';
 
 const SUPPORT_EMAIL = 'caleb@txpressurewash.com';
-const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@notifications.obkapp.com>';
+const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
 
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
