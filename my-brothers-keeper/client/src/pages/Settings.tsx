@@ -327,7 +327,13 @@ export default function Settings() {
 
       const data = await response.json();
       setHouseholdPhotoUrl(data.url);
-      toast.success("Photo uploaded successfully!");
+      
+      // Automatically save the photo to the database
+      updateDashboardDisplayMutation.mutate({
+        displayType: "photo",
+        photoUrl: data.url,
+      });
+      
       setUploadingDashboardPhoto(false);
     } catch (error) {
       console.error("Upload error:", error);
