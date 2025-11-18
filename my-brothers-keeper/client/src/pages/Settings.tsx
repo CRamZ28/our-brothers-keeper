@@ -17,7 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
-import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload, HelpCircle, Play, CheckCircle2, XCircle } from "lucide-react";
+import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload, HelpCircle, Play, CheckCircle2, XCircle, Copy, Check } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
 import { useTour } from "@/hooks/useTour";
@@ -428,12 +428,29 @@ export default function Settings() {
                   {updateHouseholdMutation.isPending ? "Saving..." : "Save Changes"}
                 </Button>
 
-                <div className="border-t pt-6 space-y-2">
+                <div className="border-t pt-6 space-y-3">
                   <div className="space-y-2">
                     <Label>Public Join Page URL</Label>
-                    <p className="text-sm text-muted-foreground">
-                      Your household's permanent URL: <strong>www.obkapp.com/{householdSlug || "your-family"}</strong>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Share this link with friends and family so they can join your support circle
                     </p>
+                    <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-md border border-gray-200">
+                      <code className="flex-1 text-sm font-mono text-gray-700">
+                        www.obkapp.com/{householdSlug || "your-family"}
+                      </code>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`https://www.obkapp.com/${householdSlug}`);
+                          toast.success("URL copied to clipboard!");
+                        }}
+                        className="shrink-0"
+                      >
+                        <Copy className="w-4 h-4 mr-1" />
+                        Copy
+                      </Button>
+                    </div>
                     <p className="text-xs text-muted-foreground italic">
                       This URL is permanent and cannot be changed. If you need to change it, please{" "}
                       <a href="/contact" className="text-[#6BC4B8] underline hover:text-[#5AB3A8]">

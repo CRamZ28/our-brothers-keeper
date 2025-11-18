@@ -1,10 +1,20 @@
 import { router, protectedProcedure } from './_core/trpc';
 import { z } from 'zod';
 import { Resend } from 'resend';
+import { TRPCError } from '@trpc/server';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const SUPPORT_EMAIL = 'caleb@txpressurewash.com';
 const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@notifications.obkapp.com>';
+
+function getResendClient() {
+  if (!process.env.RESEND_API_KEY) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Email service is not configured. Please contact support directly.',
+    });
+  }
+  return new Resend(process.env.RESEND_API_KEY);
+}
 
 export const supportRouter = router({
   sendMessage: protectedProcedure
@@ -60,6 +70,7 @@ export const supportRouter = router({
       `;
 
       try {
+        const resend = getResendClient();
         await resend.emails.send({
           from: FROM_EMAIL,
           to: SUPPORT_EMAIL,
@@ -70,8 +81,17 @@ export const supportRouter = router({
 
         return { success: true };
       } catch (error) {
+        // Preserve TRPCError for controlled failures (e.g., missing API key)
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
+        // Log and wrap unknown errors
         console.error('Failed to send support email:', error);
-        throw new Error('Failed to send support request. Please try again later.');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to send support request. Please try again later.',
+        });
       }
     }),
 });
