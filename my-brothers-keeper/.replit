@@ -1,0 +1,15 @@
+run = "pnpm run start"
+entrypoint = "server/_core/index.ts"
+hidden = [".config", "package-lock.json"]
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["pnpm", "run", "start"]
+deploymentTarget = "autoscale"
+build = ["pnpm", "run", "build"]
+
+[[ports]]
+localPort = 5000
+externalPort = 80
