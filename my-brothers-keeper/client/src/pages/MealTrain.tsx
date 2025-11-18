@@ -281,13 +281,13 @@ export default function MealTrain() {
                     return (
                       <div
                         key={format(date, "yyyy-MM-dd")}
-                        className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all bg-muted/30 ${
+                        className={`min-h-[100px] p-2 border rounded-lg cursor-pointer hover-lift transition-all bg-muted/30 overflow-hidden ${
                           isPast ? "opacity-50 grayscale" : ""
                         }`}
                         onClick={() => openDaySignupsDialog(date)}
                       >
                         <div className={`text-sm font-medium mb-1 ${isPast ? "text-gray-500" : ""}`}>{format(date, "d")}</div>
-                        <div className="space-y-1">
+                        <div className="space-y-1 overflow-hidden">
                           {capacityInfo.isAvailable && !isPast ? (
                             <Badge 
                               variant="outline" 
