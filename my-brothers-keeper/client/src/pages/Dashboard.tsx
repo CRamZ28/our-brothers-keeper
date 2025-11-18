@@ -775,7 +775,7 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
             </div>
           </div>
           {item.dueAt && (
-            <p className="text-xs text-foreground/70 mt-1">
+            <p className="text-xs text-foreground/70 mt-1 mb-2">
               {new Date(item.dueAt).toLocaleDateString("en-US", { 
                 weekday: "short", 
                 month: "short", 
@@ -834,7 +834,7 @@ function CommitmentCard({ item, type }: { item: any; type: 'need' | 'meal' }) {
             Meal
           </div>
         </div>
-        <p className="text-xs text-foreground/70 mt-1">
+        <p className="text-xs text-foreground/70 mt-1 mb-2">
           {new Date(item.date).toLocaleDateString("en-US", { 
             weekday: "short", 
             month: "short", 
