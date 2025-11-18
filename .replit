@@ -5,6 +5,7 @@ integrations = ["javascript_object_storage:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
+packages = ["glib", "nspr", "nss", "dbus", "atk", "at-spi2-atk", "cups", "at-spi2-core", "mesa", "cairo", "pango", "alsa-lib", "xorg.libxcb", "xorg.libX11", "xorg.libXcomposite", "xorg.libXdamage", "xorg.libXext", "xorg.libXfixes", "xorg.libXrandr", "libxkbcommon", "libgbm", "xorg.libXcursor", "xorg.libXi", "gtk3", "gdk-pixbuf"]
 
 [workflows]
 runButton = "Project"
@@ -45,10 +46,6 @@ externalPort = 3002
 [[ports]]
 localPort = 40811
 externalPort = 3003
-
-[[ports]]
-localPort = 43809
-externalPort = 4200
 
 [[ports]]
 localPort = 45159

@@ -1,7 +1,6 @@
 import { test as setup, expect } from '@playwright/test';
-import path from 'path';
 
-const authFile = path.join(__dirname, '../playwright/.auth/user.json');
+const authFile = 'playwright/.auth/user.json';
 
 /**
  * Authentication setup for Playwright tests
