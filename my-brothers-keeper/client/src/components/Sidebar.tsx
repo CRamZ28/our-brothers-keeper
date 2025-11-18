@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -127,19 +126,8 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
             <MessageCircle className="w-[18px] h-[18px] transition-all duration-200" />
             
             {/* Label */}
-            <span className="text-[14px] font-medium flex items-center gap-2">
-              Questions
-              {unreadCount && unreadCount > 0 && (
-                <Badge 
-                  className="h-5 min-w-[20px] px-1.5 text-xs font-bold"
-                  style={{ 
-                    background: '#6BC4B8',
-                    color: 'white',
-                  }}
-                >
-                  {unreadCount}
-                </Badge>
-              )}
+            <span className="text-[14px] font-medium">
+              Questions{unreadCount && unreadCount > 0 ? ` (${unreadCount})` : ''}
             </span>
           </button>
         )}
