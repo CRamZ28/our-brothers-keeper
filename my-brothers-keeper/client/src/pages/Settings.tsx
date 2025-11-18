@@ -435,7 +435,11 @@ export default function Settings() {
                       Your household's permanent URL: <strong>www.obkapp.com/{householdSlug || "your-family"}</strong>
                     </p>
                     <p className="text-xs text-muted-foreground italic">
-                      This URL is permanent and cannot be changed. If you need to change it, please contact the OBK support team.
+                      This URL is permanent and cannot be changed. If you need to change it, please{" "}
+                      <a href="/contact" className="text-[#6BC4B8] underline hover:text-[#5AB3A8]">
+                        contact support
+                      </a>
+                      .
                     </p>
                   </div>
                 </div>

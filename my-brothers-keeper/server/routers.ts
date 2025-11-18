@@ -17,6 +17,7 @@ import { memoryWallRouter } from "./memoryWallRouter";
 import { giftRegistryRouter } from "./giftRegistryRouter";
 import { reminderRouter } from "./reminderRouter";
 import { onboardingRouter } from "./onboardingRouter";
+import { supportRouter } from "./supportRouter";
 
 // Helper to check if user is Primary or Admin for a household
 async function checkHouseholdAccess(
@@ -56,6 +57,7 @@ export const appRouter = router({
   giftRegistry: giftRegistryRouter,
   reminder: reminderRouter,
   onboarding: onboardingRouter,
+  support: supportRouter,
 
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
