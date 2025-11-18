@@ -166,46 +166,52 @@ export default function JoinHousehold() {
 
               <RadioGroup value={selectedTier} onValueChange={(value) => setSelectedTier(value as "family" | "friend" | "community")} className="space-y-4 mb-8">
                 {/* Family Member */}
-                <div className="flex items-start space-x-4 p-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors cursor-pointer">
-                  <RadioGroupItem value="family" id="family" className="mt-1" />
-                  <Label htmlFor="family" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Heart className="h-5 w-5 text-[#2DB5A8]" />
-                      <span className="font-semibold text-gray-900">Family Member</span>
+                <Label htmlFor="family" className="cursor-pointer block">
+                  <div className="flex items-center space-x-4 p-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    <RadioGroupItem value="family" id="family" className="shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Heart className="h-5 w-5 text-[#2DB5A8]" />
+                        <span className="font-semibold text-gray-900">Family Member</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        I'm a close family member and want full access to support the family.
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      I'm a close family member and want full access to support the family.
-                    </p>
-                  </Label>
-                </div>
+                  </div>
+                </Label>
 
                 {/* Friend */}
-                <div className="flex items-start space-x-4 p-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors cursor-pointer">
-                  <RadioGroupItem value="friend" id="friend" className="mt-1" />
-                  <Label htmlFor="friend" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Users className="h-5 w-5 text-[#2DB5A8]" />
-                      <span className="font-semibold text-gray-900">Friend</span>
+                <Label htmlFor="friend" className="cursor-pointer block">
+                  <div className="flex items-center space-x-4 p-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    <RadioGroupItem value="friend" id="friend" className="shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Users className="h-5 w-5 text-[#2DB5A8]" />
+                        <span className="font-semibold text-gray-900">Friend</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        I'm a close friend and want to actively support the family.
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      I'm a close friend and want to actively support the family.
-                    </p>
-                  </Label>
-                </div>
+                  </div>
+                </Label>
 
                 {/* Community Member */}
-                <div className="flex items-start space-x-4 p-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors cursor-pointer">
-                  <RadioGroupItem value="community" id="community" className="mt-1" />
-                  <Label htmlFor="community" className="cursor-pointer flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Globe className="h-5 w-5 text-[#2DB5A8]" />
-                      <span className="font-semibold text-gray-900">Community Member</span>
+                <Label htmlFor="community" className="cursor-pointer block">
+                  <div className="flex items-center space-x-4 p-4 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+                    <RadioGroupItem value="community" id="community" className="shrink-0" />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Globe className="h-5 w-5 text-[#2DB5A8]" />
+                        <span className="font-semibold text-gray-900">Community Member</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        I'm part of the broader community and want to help where I can.
+                      </p>
                     </div>
-                    <p className="text-sm text-gray-600">
-                      I'm part of the broader community and want to help where I can.
-                    </p>
-                  </Label>
-                </div>
+                  </div>
+                </Label>
               </RadioGroup>
 
               <Button
