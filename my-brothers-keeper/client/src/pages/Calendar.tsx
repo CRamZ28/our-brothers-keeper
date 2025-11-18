@@ -767,7 +767,7 @@ export default function Calendar() {
                           </CardContent>
                         )}
                         <CardContent className="pt-0 space-y-2">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <Button
                               size="sm"
                               variant="default"
@@ -777,27 +777,32 @@ export default function Calendar() {
                                 (event.capacity && event.goingCount >= event.capacity) ||
                                 (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)
                               }
+                              className="min-w-0"
                             >
-                              <Check className="w-4 h-4 mr-1" />
-                              {event.capacity && event.goingCount >= event.capacity ? "Full" : 
-                               (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "Going"}
+                              <Check className="w-4 h-4 mr-1 shrink-0" />
+                              <span className="truncate">
+                                {event.capacity && event.goingCount >= event.capacity ? "Full" : 
+                                 (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin) ? "Past Event" : "Going"}
+                              </span>
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleRsvp(event.id, "maybe")}
                               disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
+                              className="min-w-0"
                             >
-                              Maybe
+                              <span className="truncate">Maybe</span>
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => handleRsvp(event.id, "declined")}
                               disabled={rsvpMutation.isPending || (event.startAt && new Date(event.startAt) < new Date() && !isPrimaryOrAdmin)}
+                              className="min-w-0"
                             >
-                              <X className="w-4 h-4 mr-1" />
-                              Can't Go
+                              <X className="w-4 h-4 mr-1 shrink-0" />
+                              <span className="truncate">Can't Go</span>
                             </Button>
                           </div>
                           <QuestionDialog
