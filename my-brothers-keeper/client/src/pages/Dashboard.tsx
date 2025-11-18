@@ -147,7 +147,7 @@ export default function Dashboard() {
         </div>
 
         {/* Four Square Cards Grid - 2x2 on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
           
           {/* Card 1: Supporters */}
           <div 
