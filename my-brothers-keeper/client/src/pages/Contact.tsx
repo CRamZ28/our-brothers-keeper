@@ -20,7 +20,7 @@ import { Mail, Send } from "lucide-react";
 
 export default function Contact() {
   const { user } = useAuth();
-  const [requestType, setRequestType] = useState<"url_change" | "bug_report" | "feature_request" | "general">("general");
+  const [requestType, setRequestType] = useState<"url_change" | "bug_report" | "feature_request" | "general">("feature_request");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
 
@@ -29,7 +29,7 @@ export default function Contact() {
       toast.success("Message sent successfully! We'll get back to you soon.");
       setSubject("");
       setMessage("");
-      setRequestType("general");
+      setRequestType("feature_request");
     },
     onError: (error: any) => {
       toast.error(error.message || "Failed to send message. Please try again.");
@@ -76,7 +76,7 @@ export default function Contact() {
                 <CardTitle>Get in Touch</CardTitle>
               </div>
               <CardDescription>
-                Have a question, need help, or want to request a change? Send us a message and we'll get back to you as soon as possible.
+                Your feedback shapes Our Brother's Keeper! Share ideas, report issues, request features, or ask questions. We're actively improving the platform based on your suggestions.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -88,14 +88,14 @@ export default function Contact() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="general">General Support</SelectItem>
-                      <SelectItem value="url_change">URL Change Request</SelectItem>
-                      <SelectItem value="bug_report">Bug Report</SelectItem>
-                      <SelectItem value="feature_request">Feature Request</SelectItem>
+                      <SelectItem value="feature_request">💡 Feature Suggestion</SelectItem>
+                      <SelectItem value="bug_report">🐛 Bug Report</SelectItem>
+                      <SelectItem value="general">💬 General Feedback</SelectItem>
+                      <SelectItem value="url_change">🔗 URL Change Request</SelectItem>
                     </SelectContent>
                   </Select>
                   <p className="text-xs text-muted-foreground">
-                    Select the type of request to help us route your message appropriately
+                    We especially welcome feature suggestions and ideas to improve the platform!
                   </p>
                 </div>
 

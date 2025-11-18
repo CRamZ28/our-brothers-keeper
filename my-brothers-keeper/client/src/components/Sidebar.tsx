@@ -12,6 +12,7 @@ import {
   LogOut,
   Bell,
   MessageCircle,
+  Mail,
 } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -34,6 +35,7 @@ const navigationItems = [
   { icon: Bell, label: "Reminders", path: "/reminders", tourId: "reminders-nav" },
   { icon: Users, label: "People", path: "/people", tourId: "people-nav" },
   { icon: Settings, label: "Settings", path: "/settings", tourId: "settings-nav" },
+  { icon: Mail, label: "Contact Support", path: "/contact", tourId: "contact-nav" },
 ];
 
 interface SidebarProps {
