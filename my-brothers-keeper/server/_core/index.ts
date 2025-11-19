@@ -13,6 +13,7 @@ import { getUser } from "../db";
 import { processAutoPromotions } from "../autoPromotion";
 import { processReminders } from "../reminderProcessor";
 import { ENV } from "./env";
+import { ObjectStorageService, ObjectNotFoundError } from "../objectStorage";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -67,6 +68,21 @@ async function startServer() {
   
   // Serve uploaded files
   app.use("/uploads", express.static("uploads"));
+  
+  // Serve object storage files
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const objectStorageService = new ObjectStorageService();
+      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
+      await objectStorageService.downloadObject(objectFile, res);
+    } catch (error) {
+      console.error("Error serving object:", error);
+      if (error instanceof ObjectNotFoundError) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      return res.status(500).json({ error: "Error serving file" });
+    }
+  });
   
   // tRPC API
   app.use(
