@@ -183,6 +183,13 @@ export async function updateUserStatus(userId: string, status: "active" | "pendi
   await db.update(users).set({ status }).where(eq(users.id, userId));
 }
 
+export async function updateUserRole(userId: string, role: "primary" | "admin" | "supporter") {
+  const db = await getDb();
+  if (!db) return;
+
+  await db.update(users).set({ role }).where(eq(users.id, userId));
+}
+
 export async function updateUserProfile(userId: string, data: Partial<Pick<InsertUser, "name" | "phone" | "profileImageUrl">>) {
   const db = await getDb();
   if (!db) return;

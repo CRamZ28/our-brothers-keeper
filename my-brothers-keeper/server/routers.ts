@@ -571,6 +571,61 @@ export const appRouter = router({
         return { success: true };
       }),
 
+    // Update user role (primary only)
+    updateRole: protectedProcedure
+      .input(
+        z.object({
+          userId: z.string(),
+          role: z.enum(["admin", "supporter"]),
+        })
+      )
+      .mutation(async ({ ctx, input }) => {
+        if (!ctx.user.householdId) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+        }
+
+        // Only primary can change roles
+        if (ctx.user.role !== "primary") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Only Primary can change user roles",
+          });
+        }
+
+        // Get target user to verify they're in the same household
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+
+        if (targetUser.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "FORBIDDEN", message: "User belongs to different household" });
+        }
+
+        // Can't change your own role
+        if (targetUser.id === ctx.user.id) {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot change your own role" });
+        }
+
+        // Can't change another primary's role
+        if (targetUser.role === "primary") {
+          throw new TRPCError({ code: "BAD_REQUEST", message: "Cannot change Primary role" });
+        }
+
+        await db.updateUserRole(input.userId, input.role);
+
+        await db.createAuditLog({
+          householdId: ctx.user.householdId,
+          actorUserId: ctx.user.id,
+          action: "user_role_updated",
+          targetType: "user",
+          targetId: 0,
+          metadata: { userId: input.userId, newRole: input.role },
+        });
+
+        return { success: true };
+      }),
+
     // Remove user from household (admin/primary only)
     removeFromHousehold: protectedProcedure
       .input(

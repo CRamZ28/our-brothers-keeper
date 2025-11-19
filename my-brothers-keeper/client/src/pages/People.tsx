@@ -119,6 +119,16 @@ export default function People() {
     },
   });
 
+  const updateUserRoleMutation = trpc.user.updateRole.useMutation({
+    onSuccess: () => {
+      toast.success("User role updated");
+      refetchUsers();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Failed to update user role");
+    },
+  });
+
   const removeUserMutation = trpc.user.removeFromHousehold.useMutation({
     onSuccess: () => {
       toast.success("User removed from household");
@@ -854,9 +864,30 @@ export default function People() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-sm px-3 py-1 rounded-full bg-secondary text-secondary-foreground whitespace-nowrap">
-                        {member.role}
-                      </span>
+                      {user?.role === "primary" && member.role !== "primary" && member.id !== user?.id ? (
+                        <Select
+                          value={member.role}
+                          onValueChange={(newRole) => {
+                            updateUserRoleMutation.mutate({
+                              userId: member.id,
+                              role: newRole as "admin" | "supporter",
+                            });
+                          }}
+                          disabled={updateUserRoleMutation.isPending}
+                        >
+                          <SelectTrigger className="w-32">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="admin">Admin</SelectItem>
+                            <SelectItem value="supporter">Supporter</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="text-sm px-3 py-1 rounded-full bg-secondary text-secondary-foreground whitespace-nowrap">
+                          {member.role}
+                        </span>
+                      )}
                       {canManageUsers && member.id !== user?.id && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
