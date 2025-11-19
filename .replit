@@ -55,6 +55,10 @@ externalPort = 3003
 localPort = 45159
 externalPort = 3000
 
+[[ports]]
+localPort = 45347
+externalPort = 4200
+
 [deployment]
 deploymentTarget = "gce"
 build = ["pnpm", "run", "build"]

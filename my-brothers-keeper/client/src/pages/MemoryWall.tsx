@@ -118,11 +118,13 @@ const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, 
     data: { memoryId: entry.id, position },
   });
 
+  const [isHovered, setIsHovered] = useState(false);
+  
   const style = {
     left: position.x,
     top: position.y,
     transform: CSS.Transform.toString(transform) + ` rotate(${position.rotation}deg)`,
-    zIndex: isDragging ? 1000 : 1,
+    zIndex: isDragging ? 1000 : isHovered ? 100 : 1,
     width: '320px',
     cursor: isDragging ? 'grabbing' : 'grab',
     opacity: isDragging ? 0.8 : 1,
@@ -131,18 +133,22 @@ const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, 
   return (
     <div
       ref={setNodeRef}
-      className="absolute transition-opacity duration-200"
+      className="absolute transition-opacity duration-200 group"
       style={style}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
       {...attributes}
       {...listeners}
     >
       <div
-        className="rounded-2xl p-5 shadow-2xl border-2"
+        className="rounded-2xl p-5 shadow-2xl border-2 transition-all duration-300 group-hover:scale-105 opacity-[0.85] group-hover:opacity-100"
         style={{
           background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
           backdropFilter: 'blur(20px)',
           borderColor: `${config.color}40`,
-          boxShadow: `0 10px 30px rgba(0,0,0,0.2), 0 0 10px ${config.color}20`,
+          boxShadow: isHovered 
+            ? `0 20px 40px rgba(0,0,0,0.3), 0 0 20px ${config.color}40` 
+            : `0 10px 30px rgba(0,0,0,0.2), 0 0 10px ${config.color}20`,
         }}
       >
         {/* Header */}
