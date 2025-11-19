@@ -47,10 +47,25 @@ const plugins = [
       ]
     },
     workbox: {
-      // Exclude large images from precaching to avoid build errors
-      globPatterns: ["**/*.{js,css,html,ico,svg,woff,woff2}"],
+      // Exclude HTML from precaching to prevent stale landing page
+      globPatterns: ["**/*.{js,css,ico,svg,woff,woff2}"],
       globIgnores: ["**/waves-bg.png", "**/obk-emblem.png", "**/obk-logo.png", "**/obk-logo-v2.png", "**/obk-symbol.png"],
+      // Don't cache during navigation to ensure fresh HTML
+      navigateFallback: null,
       runtimeCaching: [
+        {
+          // Always fetch fresh HTML from network
+          urlPattern: /\.html$/,
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "html-cache",
+            networkTimeoutSeconds: 3,
+            expiration: {
+              maxEntries: 10,
+              maxAgeSeconds: 60 * 60 // 1 hour only
+            }
+          }
+        },
         {
           // Cache large brand images at runtime instead of precaching
           urlPattern: /\/(waves-bg|obk-emblem|obk-logo|obk-logo-v2|obk-symbol)\.png$/,
