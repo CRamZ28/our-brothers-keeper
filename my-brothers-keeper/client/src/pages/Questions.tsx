@@ -71,14 +71,10 @@ export default function Questions() {
 
   const isAdminOrPrimary = user?.role === "admin" || user?.role === "primary";
 
+  // Redirect non-admin/primary users to dashboard
   if (!isAdminOrPrimary) {
-    return (
-      <DashboardLayout>
-        <div className="flex items-center justify-center h-full">
-          <p className="text-foreground/80">You don't have permission to view this page.</p>
-        </div>
-      </DashboardLayout>
-    );
+    window.location.href = "/dashboard";
+    return null;
   }
 
   const selectedQuestionData = questions?.find(q => q.id === selectedQuestion);
