@@ -440,8 +440,8 @@ export default function Settings() {
                     <p className="text-sm text-muted-foreground mb-2">
                       Share this link with friends and family so they can join your support circle
                     </p>
-                    <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-md border border-gray-200">
-                      <code className="flex-1 text-sm font-mono text-gray-700">
+                    <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-md border border-gray-200 min-w-0">
+                      <code className="flex-1 text-sm font-mono text-gray-700 break-all overflow-hidden min-w-0">
                         www.obkapp.com/{householdSlug || "your-family"}
                       </code>
                       <Button

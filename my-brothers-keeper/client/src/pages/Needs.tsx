@@ -1059,8 +1059,8 @@ export default function Needs() {
                               </div>
                               <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug overflow-hidden line-clamp-2">{need.title}</CardTitle>
                               {need.status === "claimed" && need.claimedByName && (
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  by <span className="font-medium text-foreground">{need.claimedByName}</span>
+                                <p className="text-sm text-muted-foreground mt-1 break-words overflow-hidden">
+                                  by <span className="font-medium text-foreground break-words">{need.claimedByName}</span>
                                 </p>
                               )}
                             </div>
@@ -1295,8 +1295,8 @@ export default function Needs() {
                               </div>
                               <CardTitle className="text-base sm:text-lg font-semibold text-foreground leading-snug overflow-hidden line-clamp-2">{need.title}</CardTitle>
                               {need.claimedByName && (
-                                <p className="text-sm text-muted-foreground mt-1">
-                                  by <span className="font-medium text-foreground">{need.claimedByName}</span>
+                                <p className="text-sm text-muted-foreground mt-1 break-words overflow-hidden">
+                                  by <span className="font-medium text-foreground break-words">{need.claimedByName}</span>
                                 </p>
                               )}
                             </div>

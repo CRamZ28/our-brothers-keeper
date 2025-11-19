@@ -15,21 +15,21 @@ export function GlassPageLayout({
   actions 
 }: GlassPageLayoutProps) {
   return (
-    <div className="p-6 lg:p-8 max-w-6xl mx-auto">
+    <div className="p-6 lg:p-8 max-w-6xl mx-auto min-w-0">
       {showHeader && <PageHeader />}
       
       {(title || actions) && (
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 min-w-0">
           {title && (
-            <h1 className="text-2xl font-bold text-foreground">
+            <h1 className="text-2xl font-bold text-foreground break-words min-w-0">
               {typeof title === 'string' ? title : title}
             </h1>
           )}
-          {actions && <div className="flex items-center gap-2">{actions}</div>}
+          {actions && <div className="flex items-center gap-2 shrink-0">{actions}</div>}
         </div>
       )}
       
-      <div className="space-y-6">
+      <div className="space-y-6 min-w-0">
         {children}
       </div>
     </div>

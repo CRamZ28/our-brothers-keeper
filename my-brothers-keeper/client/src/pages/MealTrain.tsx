@@ -640,10 +640,10 @@ function RecipientInfoView({ mealTrain }: { mealTrain: any }) {
       {mealTrain.location && (
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <MapPin className="w-5 h-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="font-semibold">Meal Drop-Off Location</p>
-              <p className="text-sm whitespace-pre-line">{mealTrain.location}</p>
+            <MapPin className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold break-words">Meal Drop-Off Location</p>
+              <p className="text-sm whitespace-pre-line break-words">{mealTrain.location}</p>
             </div>
           </div>
         </div>
@@ -664,10 +664,10 @@ function RecipientInfoView({ mealTrain }: { mealTrain: any }) {
       {mealTrain.favoriteMeals && (
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <ChefHat className="w-5 h-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="font-semibold">Favorite Meals or Restaurants</p>
-              <p className="text-sm whitespace-pre-line">{mealTrain.favoriteMeals}</p>
+            <ChefHat className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold break-words">Favorite Meals or Restaurants</p>
+              <p className="text-sm whitespace-pre-line break-words">{mealTrain.favoriteMeals}</p>
             </div>
           </div>
         </div>
@@ -676,10 +676,10 @@ function RecipientInfoView({ mealTrain }: { mealTrain: any }) {
       {mealTrain.allergies && (
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-foreground/60 mt-0.5" />
-            <div>
-              <p className="font-semibold text-foreground">Allergies</p>
-              <p className="text-sm whitespace-pre-line">{mealTrain.allergies}</p>
+            <AlertCircle className="w-5 h-5 text-foreground/60 mt-0.5 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-foreground break-words">Allergies</p>
+              <p className="text-sm whitespace-pre-line break-words">{mealTrain.allergies}</p>
             </div>
           </div>
         </div>
@@ -688,10 +688,10 @@ function RecipientInfoView({ mealTrain }: { mealTrain: any }) {
       {mealTrain.dislikes && (
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <X className="w-5 h-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="font-semibold">Dislikes</p>
-              <p className="text-sm whitespace-pre-line">{mealTrain.dislikes}</p>
+            <X className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold break-words">Dislikes</p>
+              <p className="text-sm whitespace-pre-line break-words">{mealTrain.dislikes}</p>
             </div>
           </div>
         </div>
@@ -700,10 +700,10 @@ function RecipientInfoView({ mealTrain }: { mealTrain: any }) {
       {mealTrain.specialInstructions && (
         <div className="space-y-2">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5" />
-            <div>
-              <p className="font-semibold">Special Instructions</p>
-              <p className="text-sm whitespace-pre-line">{mealTrain.specialInstructions}</p>
+            <AlertCircle className="w-5 h-5 text-muted-foreground mt-0.5 shrink-0" />
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold break-words">Special Instructions</p>
+              <p className="text-sm whitespace-pre-line break-words">{mealTrain.specialInstructions}</p>
             </div>
           </div>
         </div>

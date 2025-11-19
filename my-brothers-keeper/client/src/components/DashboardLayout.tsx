@@ -129,7 +129,7 @@ export default function DashboardLayout({
 
             {/* Main Content - transparent to show wave background */}
             <main 
-              className="flex-1 overflow-auto"
+              className="flex-1 overflow-auto min-w-0"
               style={{
                 background: 'rgba(255, 255, 255, 0)'
               }}

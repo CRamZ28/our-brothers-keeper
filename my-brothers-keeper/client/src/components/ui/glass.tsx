@@ -2,9 +2,9 @@ import { cn } from "@/lib/utils";
 import { ButtonHTMLAttributes, forwardRef, HTMLAttributes } from "react";
 
 export const glassStyles = {
-  card: "backdrop-blur-[6px] bg-white/10 border border-white/20 rounded-2xl shadow-lg",
-  panel: "backdrop-blur-[6px] bg-white/10 border border-white/20 rounded-xl",
-  badge: "backdrop-blur-[6px] bg-white/20 border border-white/30 rounded-full px-3 py-1 text-xs font-medium",
+  card: "backdrop-blur-[6px] bg-white/10 border border-white/20 rounded-2xl shadow-lg min-w-0",
+  panel: "backdrop-blur-[6px] bg-white/10 border border-white/20 rounded-xl min-w-0",
+  badge: "backdrop-blur-[6px] bg-white/20 border border-white/30 rounded-full px-3 py-1 text-xs font-medium break-words",
   button: {
     primary: "bg-[#B08CA7]/70 hover:bg-[#B08CA7]/85 text-white backdrop-blur-sm border border-white/30 transition-all hover:shadow-lg",
     secondary: "bg-white/20 hover:bg-white/30 text-foreground backdrop-blur-sm border border-white/30 transition-all",
