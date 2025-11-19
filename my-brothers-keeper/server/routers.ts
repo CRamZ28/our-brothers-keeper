@@ -571,7 +571,7 @@ export const appRouter = router({
         return { success: true };
       }),
 
-    // Update user role (primary only)
+    // Update user role (primary and admin)
     updateRole: protectedProcedure
       .input(
         z.object({
@@ -584,11 +584,11 @@ export const appRouter = router({
           throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
         }
 
-        // Only primary can change roles
-        if (ctx.user.role !== "primary") {
+        // Only primary or admin can change roles
+        if (ctx.user.role !== "primary" && ctx.user.role !== "admin") {
           throw new TRPCError({
             code: "FORBIDDEN",
-            message: "Only Primary can change user roles",
+            message: "Only Primary or Admin can change user roles",
           });
         }
 

@@ -877,7 +877,7 @@ export default function People() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      {user?.role === "primary" && member.role !== "primary" && member.id !== user?.id ? (
+                      {(user?.role === "primary" || user?.role === "admin") && member.role !== "primary" && member.id !== user?.id ? (
                         <Select
                           value={member.role}
                           onValueChange={(newRole) => {
