@@ -85,8 +85,8 @@ export class ObjectStorageService {
       },
     });
 
-    // Make the file publicly readable
-    await file.makePublic();
+    // Files are accessible via /objects/* route which handles streaming from object storage
+    // No need to makePublic() - uniform bucket-level access is configured
 
     // Return normalized path instead of Google Cloud URL
     // This ensures the path works in both dev and production
