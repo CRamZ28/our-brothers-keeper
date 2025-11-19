@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
-import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus, Camera, Upload, UserX } from "lucide-react";
+import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus, Camera, Upload, UserX, Ban, ShieldAlert } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 import { UserSelector } from "@/components/UserSelector";
@@ -110,8 +110,13 @@ export default function People() {
   });
 
   const updateUserStatusMutation = trpc.user.updateStatus.useMutation({
-    onSuccess: () => {
-      toast.success("User status updated");
+    onSuccess: (_, variables) => {
+      const statusMessages = {
+        active: "User has been approved and can now access the household",
+        blocked: "User has been blocked and can no longer access the household",
+        pending: "User status updated to pending",
+      };
+      toast.success(statusMessages[variables.status] || "User status updated");
       refetchUsers();
     },
     onError: (error) => {
@@ -410,8 +415,16 @@ export default function People() {
     updateUserStatusMutation.mutate({ userId, status: "active" });
   };
 
-  const handleBlockUser = (userId: string) => {
-    updateUserStatusMutation.mutate({ userId, status: "blocked" });
+  const handleBlockUser = (userId: string, userName: string) => {
+    if (confirm(`Are you sure you want to block ${userName}? They will lose access to the household and won't be able to see any content.`)) {
+      updateUserStatusMutation.mutate({ userId, status: "blocked" });
+    }
+  };
+
+  const handleUnblockUser = (userId: string, userName: string) => {
+    if (confirm(`Are you sure you want to unblock ${userName}? They will regain access to the household.`)) {
+      updateUserStatusMutation.mutate({ userId, status: "active" });
+    }
   };
 
   const handleApproveTierRequest = (userId: string) => {
@@ -742,7 +755,7 @@ export default function People() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleBlockUser(pendingUser.id)}
+                      onClick={() => handleBlockUser(pendingUser.id, pendingUser.name || 'this user')}
                       disabled={updateUserStatusMutation.isPending}
                       className="flex-1 sm:flex-initial"
                     >
@@ -897,8 +910,9 @@ export default function People() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onClick={() => handleBlockUser(member.id)}
+                              onClick={() => handleBlockUser(member.id, member.name || 'this user')}
                             >
+                              <Ban className="w-4 h-4 mr-2" />
                               Block User
                             </DropdownMenuItem>
                             {isPrimaryOrAdmin && (
@@ -924,6 +938,66 @@ export default function People() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Blocked Users - Only visible to managers */}
+        {canManageUsers && blockedUsers.length > 0 && (
+          <Card className="border-red-200 bg-red-50/50">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-red-900">
+                <ShieldAlert className="w-5 h-5" />
+                Blocked Users
+              </CardTitle>
+              <CardDescription>
+                {blockedUsers.length} {blockedUsers.length === 1 ? "user" : "users"} blocked from accessing the household
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {blockedUsers.map((blockedUser) => (
+                  <div
+                    key={blockedUser.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3 rounded-lg border border-red-200 bg-white hover:bg-red-50/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <UserAvatar user={blockedUser} size="md" className="shrink-0 opacity-50" />
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium truncate text-red-900">{blockedUser.name || "Unknown"}</p>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                          {blockedUser.email && (
+                            <span className="flex items-center gap-1 truncate">
+                              <Mail className="w-3 h-3 shrink-0" />
+                              <span className="truncate">{blockedUser.email}</span>
+                            </span>
+                          )}
+                          {blockedUser.phone && (
+                            <span className="flex items-center gap-1">
+                              <Phone className="w-3 h-3 shrink-0" />
+                              {blockedUser.phone}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-sm px-3 py-1 rounded-full bg-red-100 text-red-800 whitespace-nowrap font-medium">
+                        Blocked
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleUnblockUser(blockedUser.id, blockedUser.name || 'this user')}
+                        disabled={updateUserStatusMutation.isPending}
+                      >
+                        <Check className="w-4 h-4 mr-2" />
+                        Unblock
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Groups Section - Only visible to Primary/Admin */}
         {isPrimaryOrAdmin && (

@@ -17,6 +17,14 @@ const requireUser = t.middleware(async opts => {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
 
+  // Block access for blocked users
+  if (ctx.user.status === "blocked") {
+    throw new TRPCError({ 
+      code: "FORBIDDEN", 
+      message: "Your access has been blocked. Please contact the household administrator." 
+    });
+  }
+
   return next({
     ctx: {
       ...ctx,
@@ -27,11 +35,11 @@ const requireUser = t.middleware(async opts => {
 
 export const protectedProcedure = t.procedure.use(requireUser);
 
-export const adminProcedure = t.procedure.use(
+export const adminProcedure = protectedProcedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
 
-    if (!ctx.user || ctx.user.role !== 'admin') {
+    if (ctx.user.role !== 'admin') {
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
 
