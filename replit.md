@@ -65,10 +65,8 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **Runtime**: Node.js
 
 ## Recent Changes
-- **November 19, 2025**: Implemented comprehensive mobile text overflow protection across entire application:
-  - **Global Layout Protection**: Added `min-w-0` and `break-words` to GlassPageLayout, DashboardLayout main content area
-  - **UI Primitives**: Enhanced Card, GlassCard, and GlassBadge components with overflow-safe defaults (`min-w-0`, `break-words`)
-  - **Settings Page**: Fixed public join URL overflow with `break-all` and proper container constraints
-  - **Page-Specific Fixes**: Added flex container overflow protection to Needs (claimedByName), MealTrain (location, allergies, preferences, instructions) with standardized pattern: icon `shrink-0` + text wrapper `min-w-0 flex-1` + content `break-words`
+- **November 19, 2025**: Comprehensive mobile optimization and bug fixes:
+  - **Mobile Text Overflow Protection**: Added `min-w-0` and `break-words` to GlassPageLayout, DashboardLayout, Card components, and page-specific fixes for Needs/MealTrain with standardized flex pattern (icon `shrink-0` + text wrapper `min-w-0 flex-1` + content `break-words`)
+  - **Timezone Bug Fix**: Fixed Dashboard memorial dates displaying one day earlier (e.g., showing 7/20 instead of 7/21) by parsing YYYY-MM-DD strings directly instead of using `new Date()` which caused UTC conversion issues in western timezones
   - **Role Management**: Both Primary and Admin users can now change user roles (admin/supporter) via dropdown on People page
 - **November 18, 2025**: Implemented invite email functionality via Resend API. Emails now sent to supporters when invited to join a household's support circle. Manual RESEND_API_KEY configuration (Replit connector integration declined by user).
