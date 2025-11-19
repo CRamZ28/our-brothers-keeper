@@ -427,9 +427,24 @@ export default function Dashboard() {
 
 // Helper function to format memorial dates
 function formatMemorialDate(dateString: string): string {
-  const date = new Date(dateString);
+  // Parse the date string directly to avoid timezone issues
+  // dateString format is "YYYY-MM-DD"
+  const parts = dateString.split('-').map(Number);
+  
+  // Validate we have 3 numeric parts (year, month, day)
+  if (parts.length !== 3 || parts.some(isNaN)) {
+    return dateString; // Fallback to raw string if malformed
+  }
+  
+  const [year, month, day] = parts;
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+  
+  // Validate month is in range
+  if (month < 1 || month > 12) {
+    return dateString; // Fallback to raw string if invalid month
+  }
+  
+  return `${months[month - 1]} ${day}, ${year}`;
 }
 
 // Dashboard Display Components
