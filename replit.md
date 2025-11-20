@@ -66,6 +66,10 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 
 ## Recent Changes
 - **November 20, 2025**: 
+  - **Object Storage Fix**: Removed silent fallback to local file storage in `server/uploadRouter.ts` that caused dashboard photos to disappear in production. Now enforces object storage only - uploads fail loudly if object storage is misconfigured, ensuring all uploads persist permanently in autoscale deployments
+  - **Sidebar User Profile**: Updated user button background to mauve purple gradient (`rgba(176, 140, 167, 0.35)`) for better visibility. Admin/Primary roles now display as distinctive teal badges with white text instead of subtle gray text
+  - **Landing Page Z-Index Fix**: Added `z-index: 10` to main content wrapper to ensure section headers ("Why Our Brother's Keeper", "You're in Control—Always", "Everything You Need") appear above fixed background layers on mobile
+  - **Landing Page Background Architecture**: Separated wavy background into dedicated fixed layer to solve iOS Safari `background-attachment: fixed` limitation - background now stays perfectly still while content scrolls on mobile
   - **Memory Wall Enhancements**: Increased card base opacity from `0.85` to `0.95` for better readability when stacked. Added click-to-expand feature with full-screen modal view, supporting mouse/touch/keyboard (Enter/Space keys), drag detection with 100ms debounce, interactive element exclusion (buttons/images), and proper accessibility (ARIA attributes, focus management)
   - **Landing Page Mobile Fix**: Reduced feature card background opacity (white cards: `0.35` → `0.15`, purple cards: `0.4` → `0.18`) to eliminate "floating panel" effect on mobile scroll, allowing wavy background to show through naturally
 - **November 19, 2025**: Comprehensive mobile optimization and bug fixes:
