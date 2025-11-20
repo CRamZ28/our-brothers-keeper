@@ -65,6 +65,9 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **Runtime**: Node.js
 
 ## Recent Changes
+- **November 20, 2025**: 
+  - **Memory Wall Enhancements**: Increased card base opacity from `0.85` to `0.95` for better readability when stacked. Added click-to-expand feature with full-screen modal view, supporting mouse/touch/keyboard (Enter/Space keys), drag detection with 100ms debounce, interactive element exclusion (buttons/images), and proper accessibility (ARIA attributes, focus management)
+  - **Landing Page Mobile Fix**: Reduced feature card background opacity (white cards: `0.35` → `0.15`, purple cards: `0.4` → `0.18`) to eliminate "floating panel" effect on mobile scroll, allowing wavy background to show through naturally
 - **November 19, 2025**: Comprehensive mobile optimization and bug fixes:
   - **Mobile Text Overflow Protection**: Added `min-w-0` and `break-words` to GlassPageLayout, DashboardLayout, Card components, and page-specific fixes for Needs/MealTrain with standardized flex pattern (icon `shrink-0` + text wrapper `min-w-0 flex-1` + content `break-words`)
   - **Timezone Bug Fix**: Fixed Dashboard memorial dates displaying one day earlier (e.g., showing 7/20 instead of 7/21) by parsing YYYY-MM-DD strings directly instead of using `new Date()` which caused UTC conversion issues in western timezones
