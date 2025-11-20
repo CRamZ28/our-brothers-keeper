@@ -159,9 +159,21 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
                 <p className="text-sm font-medium truncate leading-none">
                   {user?.name || "-"}
                 </p>
-                <p className="text-xs truncate mt-1.5 opacity-70">
-                  {user?.role || "supporter"}
-                </p>
+                {(user?.role === "admin" || user?.role === "primary") ? (
+                  <span 
+                    className="inline-block text-xs font-semibold px-2 py-0.5 rounded mt-1.5 text-white"
+                    style={{
+                      background: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+                      boxShadow: '0 1px 3px rgba(20, 184, 166, 0.4)'
+                    }}
+                  >
+                    {user.role}
+                  </span>
+                ) : (
+                  <p className="text-xs truncate mt-1.5 opacity-70">
+                    {user?.role || "supporter"}
+                  </p>
+                )}
               </div>
             </button>
           </DropdownMenuTrigger>
