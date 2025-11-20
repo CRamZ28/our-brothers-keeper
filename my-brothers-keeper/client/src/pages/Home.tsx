@@ -119,7 +119,7 @@ export default function Home() {
         </header>
 
         {/* Main content - padding-top prevents overlap with fixed header */}
-        <div className="pt-28">
+        <div className="pt-28 relative" style={{ zIndex: 10 }}>
         {/* Hero Section */}
         <main className="px-6 md:px-10 py-16 md:py-24">
           <div className="max-w-5xl mx-auto">
