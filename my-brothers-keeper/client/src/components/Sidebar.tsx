@@ -142,7 +142,7 @@ export default function Sidebar({ onNavigate }: SidebarProps = { onNavigate: und
             <button 
               className="flex items-center gap-3 rounded-xl px-3 py-2 hover:bg-white/50 transition-all duration-200 ease-in-out w-full text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-400/50 text-foreground"
               style={{
-                background: 'linear-gradient(135deg, rgba(107, 196, 184, 0.15) 0%, rgba(155, 127, 184, 0.12) 100%)'
+                background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.35) 0%, rgba(155, 127, 184, 0.28) 100%)'
               }}
             >
               <Avatar className="h-9 w-9 border-2 border-white/40 shrink-0">
