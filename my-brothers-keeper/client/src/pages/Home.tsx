@@ -34,15 +34,22 @@ export default function Home() {
 
   // Not authenticated - show landing page
   return (
-    <div 
-      className="min-h-screen bg-cover bg-center bg-no-repeat bg-fixed"
-      style={{ backgroundImage: 'url(/waves-bg.png)', position: 'relative' }}
-    >
+    <div className="min-h-screen relative">
+      {/* Fixed Background - Stays in place while content scrolls */}
+      <div 
+        className="fixed inset-0 pointer-events-none bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: 'url(/waves-bg.png)',
+          zIndex: 0
+        }}
+      ></div>
+
       {/* Lighter overlay for airy, calming feel */}
       <div 
         className="fixed inset-0 pointer-events-none"
         style={{
-          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(45, 181, 168, 0.08))'
+          background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(45, 181, 168, 0.08))',
+          zIndex: 0
         }}
       ></div>
 
