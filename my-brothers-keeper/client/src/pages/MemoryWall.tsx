@@ -108,9 +108,10 @@ interface VisionBoardCardProps {
   onEdit: (entry: any) => void;
   onDelete: (id: number) => void;
   onImageClick: (images: string[], index: number) => void;
+  onExpand: (entry: any) => void;
 }
 
-const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, onDelete, onImageClick }: VisionBoardCardProps) => {
+const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, onDelete, onImageClick, onExpand }: VisionBoardCardProps) => {
   const Icon = config.icon;
   
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -119,6 +120,37 @@ const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, 
   });
 
   const [isHovered, setIsHovered] = useState(false);
+  const [dragStarted, setDragStarted] = useState(false);
+  
+  const handleClick = (e: React.MouseEvent) => {
+    // Don't expand if we just finished dragging
+    if (!dragStarted && !isDragging) {
+      // Check if click was on an interactive element (button, image, or element with data-interactive)
+      const target = e.target as HTMLElement;
+      if (!target.closest('button, img, [data-interactive="true"]')) {
+        onExpand(entry);
+      }
+    }
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    // Expand on Enter or Space, but only if not dragging
+    if ((e.key === 'Enter' || e.key === ' ') && !dragStarted && !isDragging) {
+      e.preventDefault(); // Prevent scrolling on Space
+      onExpand(entry);
+    }
+  };
+  
+  // Track when dragging actually starts
+  useEffect(() => {
+    if (isDragging) {
+      setDragStarted(true);
+    } else {
+      // Reset drag flag after a short delay
+      const timer = setTimeout(() => setDragStarted(false), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isDragging]);
   
   const style = {
     left: position.x,
@@ -137,11 +169,16 @@ const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, 
       style={style}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
       {...attributes}
       {...listeners}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-label={`${config.label} by ${entry.authorName || 'Anonymous'}`}
     >
       <div
-        className="rounded-2xl p-5 shadow-2xl border-2 transition-all duration-300 group-hover:scale-105 opacity-[0.85] group-hover:opacity-100"
+        className="rounded-2xl p-5 shadow-2xl border-2 transition-all duration-300 group-hover:scale-105 opacity-95 group-hover:opacity-100"
         style={{
           background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
           backdropFilter: 'blur(20px)',
@@ -198,16 +235,22 @@ const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, 
         {entry.imageUrls && entry.imageUrls.length > 0 ? (
           <div className="grid grid-cols-2 gap-2 mb-4">
             {entry.imageUrls.map((url: string, i: number) => (
-              <div key={i} className="relative group/image">
+              <div key={i} className="relative group/image" data-interactive="true">
                 <img
                   src={url}
                   alt={`Memory ${i + 1}`}
                   className="w-full rounded-lg object-cover aspect-square cursor-pointer"
-                  onClick={() => onImageClick(entry.imageUrls, i)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onImageClick(entry.imageUrls, i);
+                  }}
                 />
                 <div 
                   className="absolute inset-0 rounded-lg bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
-                  onClick={() => onImageClick(entry.imageUrls, i)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onImageClick(entry.imageUrls, i);
+                  }}
                 >
                   <ZoomIn className="w-6 h-6 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
                 </div>
@@ -215,17 +258,23 @@ const VisionBoardCard = ({ entry, position, config, canEdit, canDelete, onEdit, 
             ))}
           </div>
         ) : entry.imageUrl ? (
-          <div className="mb-4 relative group/image">
+          <div className="mb-4 relative group/image" data-interactive="true">
             <img
               src={entry.imageUrl}
               alt="Memory"
               className="w-full rounded-xl object-cover cursor-pointer"
               style={{ maxHeight: '300px' }}
-              onClick={() => onImageClick([entry.imageUrl], 0)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onImageClick([entry.imageUrl], 0);
+              }}
             />
             <div 
               className="absolute inset-0 rounded-xl bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
-              onClick={() => onImageClick([entry.imageUrl], 0)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onImageClick([entry.imageUrl], 0);
+              }}
             >
               <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
             </div>
@@ -262,6 +311,7 @@ export default function MemoryWall() {
   const [positions, setPositions] = useState<Record<number, CardPosition>>({});
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedEntryForEdit, setSelectedEntryForEdit] = useState<any>(null);
+  const [expandedEntry, setExpandedEntry] = useState<any>(null);
 
   const { data: entries, refetch } = trpc.memoryWall.list.useQuery(
     filter === "all" ? {} : { type: filter }
@@ -889,6 +939,7 @@ export default function MemoryWall() {
                       setLightboxImages(images);
                       setLightboxIndex(index);
                     }}
+                    onExpand={(entry) => setExpandedEntry(entry)}
                   />
                 );
               })}
@@ -977,6 +1028,159 @@ export default function MemoryWall() {
           />
         </div>
       )}
+
+      {/* Expanded Card View */}
+      {expandedEntry && (() => {
+        const config = typeConfig[expandedEntry.type as EntryType];
+        const Icon = config.icon;
+        const canEdit = expandedEntry.authorId === user?.id || isPrimaryOrAdmin;
+        const canDelete = expandedEntry.authorId === user?.id || isPrimaryOrAdmin;
+        
+        return (
+          <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{
+              background: 'rgba(0, 0, 0, 0.7)',
+              backdropFilter: 'blur(12px)',
+            }}
+            onClick={() => setExpandedEntry(null)}
+          >
+            {/* Close Button */}
+            <button
+              className="absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all z-10"
+              style={{
+                background: 'rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.3)',
+              }}
+              onClick={() => setExpandedEntry(null)}
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            {/* Expanded Card */}
+            <div
+              className="rounded-2xl p-8 shadow-2xl border-2 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              style={{
+                background: `linear-gradient(135deg, ${config.gradientFrom}, ${config.gradientTo})`,
+                backdropFilter: 'blur(20px)',
+                borderColor: `${config.color}40`,
+                boxShadow: `0 30px 60px rgba(0,0,0,0.4), 0 0 30px ${config.color}60`,
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div
+                    className="w-12 h-12 rounded-full flex items-center justify-center"
+                    style={{ backgroundColor: `${config.color}20` }}
+                  >
+                    <Icon className="w-6 h-6" style={{ color: config.color }} />
+                  </div>
+                  <span className="text-xl font-semibold" style={{ color: config.color }}>
+                    {config.label}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {canEdit && (
+                    <button
+                      onClick={() => {
+                        handleEdit(expandedEntry);
+                        setExpandedEntry(null);
+                      }}
+                      className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-blue-100"
+                      style={{ color: '#3B82F6' }}
+                      title="Edit"
+                    >
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                  )}
+                  {canDelete && (
+                    <button
+                      onClick={() => {
+                        handleDelete(expandedEntry.id);
+                        setExpandedEntry(null);
+                      }}
+                      className="w-9 h-9 rounded-full flex items-center justify-center transition-all hover:bg-red-100"
+                      style={{ color: '#EF4444' }}
+                      title="Delete"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Images */}
+              {expandedEntry.imageUrls && expandedEntry.imageUrls.length > 0 ? (
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  {expandedEntry.imageUrls.map((url: string, i: number) => (
+                    <div key={i} className="relative group/image">
+                      <img
+                        src={url}
+                        alt={`Memory ${i + 1}`}
+                        className="w-full rounded-lg object-cover aspect-square cursor-pointer"
+                        onClick={() => {
+                          setLightboxImages(expandedEntry.imageUrls);
+                          setLightboxIndex(i);
+                          setExpandedEntry(null);
+                        }}
+                      />
+                      <div 
+                        className="absolute inset-0 rounded-lg bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
+                        onClick={() => {
+                          setLightboxImages(expandedEntry.imageUrls);
+                          setLightboxIndex(i);
+                          setExpandedEntry(null);
+                        }}
+                      >
+                        <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : expandedEntry.imageUrl ? (
+                <div className="mb-6 relative group/image">
+                  <img
+                    src={expandedEntry.imageUrl}
+                    alt="Memory"
+                    className="w-full rounded-xl object-cover cursor-pointer"
+                    style={{ maxHeight: '400px' }}
+                    onClick={() => {
+                      setLightboxImages([expandedEntry.imageUrl]);
+                      setLightboxIndex(0);
+                      setExpandedEntry(null);
+                    }}
+                  />
+                  <div 
+                    className="absolute inset-0 rounded-xl bg-black/0 group-hover/image:bg-black/20 transition-all flex items-center justify-center cursor-pointer"
+                    onClick={() => {
+                      setLightboxImages([expandedEntry.imageUrl]);
+                      setLightboxIndex(0);
+                      setExpandedEntry(null);
+                    }}
+                  >
+                    <ZoomIn className="w-10 h-10 text-white opacity-0 group-hover/image:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+              ) : null}
+
+              {/* Content */}
+              {expandedEntry.content && (
+                <p className="text-base text-gray-700 whitespace-pre-wrap leading-relaxed mb-6">
+                  {expandedEntry.content}
+                </p>
+              )}
+
+              {/* Footer */}
+              <div className="flex items-center justify-between text-sm text-gray-600 pt-4 border-t border-gray-300/30">
+                <span className="font-semibold">{expandedEntry.authorName || "Anonymous"}</span>
+                <span>{new Date(expandedEntry.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </DashboardLayout>
   );
 }
