@@ -42,6 +42,13 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       });
     }
 
+    console.log("Starting upload:", {
+      filename: req.file.originalname,
+      size: req.file.size,
+      mimetype: req.file.mimetype,
+      objectDir: process.env.PRIVATE_OBJECT_DIR,
+    });
+
     const objectStorageService = new ObjectStorageService();
     const url = await objectStorageService.uploadFile(
       req.file.buffer,
@@ -49,10 +56,16 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       req.file.mimetype
     );
     
+    console.log("Upload successful:", url);
     res.json({ url, filename: req.file.originalname });
   } catch (error) {
-    console.error("Upload error:", error);
-    res.status(500).json({ error: "Failed to upload file" });
+    console.error("Upload error details:", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      filename: req.file?.originalname,
+    });
+    const errorMessage = error instanceof Error ? error.message : "Failed to upload file";
+    res.status(500).json({ error: errorMessage });
   }
 });
 
