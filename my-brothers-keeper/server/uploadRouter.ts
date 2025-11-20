@@ -33,32 +33,23 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file provided" });
     }
 
-    // Try object storage first if configured
-    if (process.env.PRIVATE_OBJECT_DIR) {
-      try {
-        const objectStorageService = new ObjectStorageService();
-        const url = await objectStorageService.uploadFile(
-          req.file.buffer,
-          req.file.originalname,
-          req.file.mimetype
-        );
-        return res.json({ url, filename: req.file.originalname });
-      } catch (storageError) {
-        console.warn("Object storage failed, falling back to local storage:", storageError);
-      }
+    // Always use object storage - no fallback to local files
+    // Local files don't persist in autoscale deployments
+    if (!process.env.PRIVATE_OBJECT_DIR) {
+      console.error("Object storage not configured - PRIVATE_OBJECT_DIR missing");
+      return res.status(500).json({ 
+        error: "File storage not configured. Please set up object storage." 
+      });
     }
 
-    // Fallback to local file storage
-    const timestamp = Date.now();
-    const filename = `${timestamp}-${req.file.originalname}`;
-    const filepath = path.join(uploadsDir, filename);
+    const objectStorageService = new ObjectStorageService();
+    const url = await objectStorageService.uploadFile(
+      req.file.buffer,
+      req.file.originalname,
+      req.file.mimetype
+    );
     
-    await fs.writeFile(filepath, req.file.buffer);
-    
-    // Return URL pointing to our static file endpoint
-    const url = `/uploads/${filename}`;
-    
-    res.json({ url, filename });
+    res.json({ url, filename: req.file.originalname });
   } catch (error) {
     console.error("Upload error:", error);
     res.status(500).json({ error: "Failed to upload file" });
