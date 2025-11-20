@@ -322,10 +322,13 @@ export default function Settings() {
       });
 
       if (!response.ok) {
-        throw new Error("Upload failed");
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("Upload failed:", errorData);
+        throw new Error(errorData.error || "Upload failed");
       }
 
       const data = await response.json();
+      console.log("Upload successful, URL:", data.url);
       setHouseholdPhotoUrl(data.url);
       
       // Automatically save the photo to the database
@@ -334,10 +337,11 @@ export default function Settings() {
         photoUrl: data.url,
       });
       
+      toast.success("Dashboard photo uploaded successfully!");
       setUploadingDashboardPhoto(false);
     } catch (error) {
       console.error("Upload error:", error);
-      toast.error("Failed to upload photo");
+      toast.error(error instanceof Error ? error.message : "Failed to upload photo");
       setUploadingDashboardPhoto(false);
     }
   };
