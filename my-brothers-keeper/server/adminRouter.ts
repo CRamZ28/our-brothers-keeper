@@ -2,6 +2,117 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
+
+// Helper to escape HTML to prevent XSS
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;'
+  };
+  return text.replace(/[&<>"']/g, (char) => map[char]);
+}
+
+// Helper to send broadcast notification emails
+async function sendBroadcastEmail(
+  recipientEmail: string,
+  recipientName: string | null,
+  subject: string,
+  body: string,
+  senderName: string,
+  householdName: string
+): Promise<{ success: boolean; error?: string }> {
+  if (!recipientEmail) {
+    return { success: false, error: "No email address provided" };
+  }
+
+  if (!process.env.RESEND_API_KEY) {
+    console.warn("[Broadcast] RESEND_API_KEY not configured - skipping email");
+    return { success: false, error: "Email service not configured" };
+  }
+
+  try {
+    // Escape all user-supplied content
+    const safeSenderName = escapeHtml(senderName);
+    const safeHouseholdName = escapeHtml(householdName);
+    const safeRecipientName = recipientName ? escapeHtml(recipientName) : '';
+    const safeSubject = escapeHtml(subject);
+    // Preserve line breaks in body but escape HTML
+    const safeBody = escapeHtml(body).replace(/\n/g, '<br>');
+
+    const greeting = safeRecipientName ? `Hi ${safeRecipientName},` : 'Hi there,';
+    
+    const emailHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #6BC4B8 0%, #5A9FD4 50%, #9B7FB8 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
+          .header h1 { color: white; margin: 0; font-size: 24px; }
+          .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+          .message-box { background: #f9fafb; padding: 20px; margin: 20px 0; border-radius: 8px; border-left: 4px solid #6BC4B8; }
+          .message-title { font-size: 18px; font-weight: bold; color: #1a1a1a; margin-bottom: 12px; }
+          .message-body { font-size: 15px; color: #444; line-height: 1.7; }
+          .button { display: inline-block; background: #6BC4B8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+          .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
+          .badge { display: inline-block; background: #B08CA7; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-bottom: 10px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>📢 ${safeHouseholdName}</h1>
+          </div>
+          <div class="content">
+            <p>${greeting}</p>
+            <p><strong>${safeSenderName}</strong> has sent an important message to the support circle:</p>
+            <div class="message-box">
+              <div class="badge">BROADCAST MESSAGE</div>
+              <div class="message-title">${safeSubject}</div>
+              <div class="message-body">${safeBody}</div>
+            </div>
+            <p>You can view this message and respond in the Our Brother's Keeper app.</p>
+            <div style="text-align: center;">
+              <a href="${process.env.VITE_APP_URL || 'https://obkapp.com'}/dashboard" class="button">View in App</a>
+            </div>
+            <p style="color: #666; font-size: 14px; margin-top: 30px;">With care and support,<br>The Our Brother's Keeper Team</p>
+          </div>
+          <div class="footer">
+            <p>You're receiving this email as a member of ${safeHouseholdName}'s support circle.</p>
+            <p style="font-size: 12px; color: #999;">This is an important message from your family's support coordinator.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const result = await resend.emails.send({
+      from: FROM_EMAIL,
+      to: recipientEmail,
+      subject: `[${householdName}] ${subject}`, // Use raw strings for email header
+      html: emailHtml,
+    });
+
+    console.log(`[Broadcast] Email sent to ${recipientEmail}:`, result);
+    return { success: true };
+  } catch (error) {
+    console.error(`[Broadcast] Failed to send email to ${recipientEmail}:`, error);
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    };
+  }
+}
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -106,9 +217,48 @@ export const adminMessageRouter = router({
         },
       });
 
-      // TODO: Send actual notifications via email/SMS
+      // Send email notifications to all recipients
+      const household = await db.getHousehold(ctx.user.householdId);
+      if (!household) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Household not found" });
+      }
 
-      return { success: true, messageId, recipientCount: recipientIds.length };
+      const senderName = ctx.user.name || "An admin";
+      let emailsSent = 0;
+      let emailsFailed = 0;
+
+      for (const recipientId of recipientIds) {
+        const recipient = await db.getUserById(recipientId);
+        if (recipient && recipient.email) {
+          const result = await sendBroadcastEmail(
+            recipient.email,
+            recipient.name,
+            input.subject,
+            input.body,
+            senderName,
+            household.name
+          );
+          
+          if (result.success) {
+            emailsSent++;
+          } else {
+            emailsFailed++;
+            console.warn(`[Broadcast] Failed to send email to ${recipient.email}:`, result.error);
+          }
+        } else {
+          console.warn(`[Broadcast] Skipping user ${recipientId} - no email address`);
+        }
+      }
+
+      console.log(`[Broadcast] Sent ${emailsSent} emails, ${emailsFailed} failed out of ${recipientIds.length} total recipients`);
+
+      return { 
+        success: true, 
+        messageId, 
+        recipientCount: recipientIds.length,
+        emailsSent,
+        emailsFailed 
+      };
     }),
 
   // List sent messages

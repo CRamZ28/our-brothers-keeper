@@ -73,6 +73,10 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **Runtime**: Node.js
 
 ## Recent Changes
+- **November 21, 2025**:
+  - **Broadcast Email Notifications**: Admin/primary users can now send broadcast messages with automatic email notifications. When admins send messages to supporters (individual, group, or all), recipients receive both in-app messages and email notifications with the full message content. Emails include beautiful HTML formatting with "BROADCAST MESSAGE" badge, household branding, and direct link to view in app. System tracks email delivery success/failure rates and logs all broadcast activity.
+  - **Role/Access Tier Alignment System**: Implemented comprehensive multi-layer safeguards ensuring primary/admin users always maintain family-tier access. Includes atomic SQL enforcement, validation checks, tier-only update protection, and helper functions across all code paths (invites, household creation, role changes, auto-promotion, manual approvals).
+  - **UI Refinements**: Removed pixelated noise texture from background for smoother glassmorphic appearance. Updated Settings page URL card with transparent glassmorphism styling.
 - **November 20, 2025**: 
   - **Object Storage Fix**: Removed silent fallback to local file storage in `server/uploadRouter.ts` that caused dashboard photos to disappear in production. Now enforces object storage only - uploads fail loudly if object storage is misconfigured, ensuring all uploads persist permanently in autoscale deployments
   - **Sidebar User Profile**: Updated user button background to mauve purple gradient (`rgba(176, 140, 167, 0.35)`) for better visibility. Admin/Primary roles now display as distinctive teal badges with white text instead of subtle gray text
