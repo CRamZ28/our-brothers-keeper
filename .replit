@@ -61,4 +61,4 @@ build = ["pnpm", "run", "build"]
 run = ["pnpm", "run", "start"]
 
 [objectStorage]
-defaultBucketID = "replit-objstore-cce36624-a6f7-4498-9b5b-6fb5bf527c9a"
+defaultBucketID = "replit-objstore-6008e1fb-5906-4c5d-9de5-4880f2e8d33e"
