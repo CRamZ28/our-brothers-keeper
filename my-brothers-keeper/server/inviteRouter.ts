@@ -123,7 +123,7 @@ export const inviteRouter = router({
       z.object({
         email: z.string().email().optional(),
         phone: z.string().optional(),
-        role: z.enum(["admin", "supporter"]),
+        role: z.enum(["primary", "admin", "supporter"]),
         personalMessage: z.string().optional(),
         relationship: z.string().optional(), // e.g., "close friend", "church member", "family"
       })
@@ -301,7 +301,43 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Household not found" });
       }
 
-      // Update user with household and role, set status to pending
+      // Special handling for primary role invites
+      if (invite.invitedRole === "primary") {
+        // Primary users are automatically active (no approval needed)
+        await db.upsertUser({
+          id: ctx.user.id,
+          householdId: invite.householdId,
+          role: "primary",
+          status: "active",
+        });
+
+        // Update household to point to the new primary user
+        await db.updateHousehold(invite.householdId, {
+          primaryUserId: ctx.user.id,
+        });
+
+        // Mark invite as accepted
+        await db.updateInviteStatus(invite.id, "accepted");
+
+        // Create audit log
+        await db.createAuditLog({
+          householdId: invite.householdId,
+          actorUserId: ctx.user.id,
+          action: "primary_transferred",
+          targetType: "household",
+          targetId: invite.householdId,
+          metadata: { previousPrimaryId: household.primaryUserId, newPrimaryId: ctx.user.id },
+        });
+
+        return {
+          success: true,
+          householdId: invite.householdId,
+          requiresApproval: false,
+          isPrimary: true,
+        };
+      }
+
+      // Regular admin/supporter flow - requires approval
       await db.upsertUser({
         id: ctx.user.id,
         householdId: invite.householdId,

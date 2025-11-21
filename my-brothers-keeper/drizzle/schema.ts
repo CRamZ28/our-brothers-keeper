@@ -30,7 +30,7 @@ export const sessions = pgTable(
 // Define PostgreSQL enums
 export const userRoleEnum = pgEnum("user_role", ["primary", "admin", "supporter", "user"]);
 export const userStatusEnum = pgEnum("user_status", ["active", "pending", "blocked"]);
-export const invitedRoleEnum = pgEnum("invited_role", ["admin", "supporter"]);
+export const invitedRoleEnum = pgEnum("invited_role", ["primary", "admin", "supporter"]);
 export const inviteStatusEnum = pgEnum("invite_status", ["sent", "accepted", "revoked", "expired"]);
 export const visibilityScopeEnum = pgEnum("visibility_scope", ["private", "all_supporters", "group", "role", "custom"]);
 export const minRoleEnum = pgEnum("min_role", ["supporter", "admin", "primary"]);
