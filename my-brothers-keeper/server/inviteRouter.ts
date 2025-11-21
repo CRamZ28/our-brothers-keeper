@@ -27,7 +27,7 @@ function generateInviteToken(): string {
 }
 
 // Helper to send invite notification
-async function sendInviteNotification(
+export async function sendInviteNotification(
   email: string | null,
   phone: string | null,
   householdSlug: string,
