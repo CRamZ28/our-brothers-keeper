@@ -394,15 +394,15 @@ export const inviteRouter = router({
       }
 
       // Regular admin/supporter flow - requires approval
-      // Determine appropriate access tier based on role
-      // Admin = family tier, Supporter = community tier (can request upgrade later)
-      const accessTier = invite.invitedRole === "admin" ? "family" : "community";
+      // CRITICAL: Enforce role/access tier alignment using helper function
+      // This ensures alignment even if invite data is inconsistent or tampered
+      const alignedTier = db.getAccessTierForRole(invite.invitedRole);
       
       await db.upsertUser({
         id: ctx.user.id,
         householdId: invite.householdId,
         role: invite.invitedRole,
-        accessTier,
+        accessTier: alignedTier,
         status: "pending", // Requires approval
       });
 

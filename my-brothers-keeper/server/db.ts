@@ -129,14 +129,49 @@ export async function upsertUser(user: InsertUser): Promise<void> {
     
     // Automatically enforce role/access tier alignment
     // If role is being set and accessTier is NOT explicitly provided, enforce alignment
+    // This is the PRIMARY safeguard - normal code should never explicitly set mismatched tiers
     if (finalRole && user.accessTier === undefined) {
       const alignedTier = getAccessTierForRole(finalRole);
       values.accessTier = alignedTier;
       updateSet.accessTier = alignedTier;
-    } else if (user.accessTier !== undefined) {
-      // If accessTier is explicitly provided, use it
+    } else if (user.accessTier !== undefined && finalRole !== undefined) {
+      // VALIDATION: If both role and tier are explicitly provided, verify alignment
+      if ((finalRole === "primary" || finalRole === "admin") && user.accessTier !== "family") {
+        console.error(
+          `[upsertUser] REJECTED: Attempted to set ${finalRole} role with ${user.accessTier} tier. Primary/Admin MUST have family tier.`
+        );
+        throw new Error(`Invalid role/tier combination: ${finalRole} role requires family tier, got ${user.accessTier}`);
+      }
+      // If validation passes, use the explicit tier
       values.accessTier = user.accessTier;
       updateSet.accessTier = user.accessTier;
+    } else if (user.accessTier !== undefined) {
+      // CRITICAL: Tier-only update - must validate against existing role
+      // Fetch existing user to prevent misalignment
+      const existingUser = await getUser(user.id);
+      
+      if (existingUser) {
+        // User exists - validate against their role
+        if ((existingUser.role === "primary" || existingUser.role === "admin") && user.accessTier !== "family") {
+          console.error(
+            `[upsertUser] REJECTED: Attempted tier-only update to ${user.accessTier} for ${existingUser.role} user ${user.id}. Primary/Admin MUST remain at family tier.`
+          );
+          throw new Error(`Cannot downgrade ${existingUser.role} user to ${user.accessTier} tier. Primary/Admin users require family tier.`);
+        }
+        // Validation passed - allow the tier update
+        // For UPDATE path, use SQL CASE for additional atomicity
+        values.accessTier = user.accessTier;
+        updateSet.accessTier = sql`CASE 
+          WHEN ${users.role} IN ('primary', 'admin') THEN 'family'::varchar 
+          ELSE ${user.accessTier}::varchar 
+        END`;
+      } else {
+        // New user with tier-only (no role) is invalid
+        console.error(
+          `[upsertUser] REJECTED: Attempted to create new user ${user.id} with tier but no role`
+        );
+        throw new Error(`Cannot create new user with access tier but no role. Role is required for new users.`);
+      }
     }
     
     if (user.householdId !== undefined) {
@@ -271,27 +306,25 @@ export async function updateUserAccessTier(userId: string, tier: "community" | "
   const db = await getDb();
   if (!db) return;
 
-  // Get user's current role to ensure we don't violate role/tier alignment
-  const user = await getUserById(userId);
-  if (!user) {
-    console.warn(`[updateUserAccessTier] User ${userId} not found`);
-    return;
-  }
-
   // CRITICAL: Primary and Admin users MUST have family tier
-  // Never allow downgrading their access tier
-  if ((user.role === "primary" || user.role === "admin") && tier !== "family") {
-    console.warn(
-      `[updateUserAccessTier] Cannot set ${user.role} user to ${tier} tier - enforcing family tier for role alignment`
-    );
-    tier = "family"; // Force family tier for primary/admin
-  }
-
+  // Use a CASE statement to enforce alignment atomically in the database
+  // This eliminates race conditions by making the enforcement happen at the DB level
   await db.update(users).set({ 
-    accessTier: tier,
+    accessTier: sql`CASE 
+      WHEN role IN ('primary', 'admin') THEN 'family'::varchar 
+      ELSE ${tier}::varchar 
+    END`,
     requestedTier: null,
     updatedAt: new Date()
   }).where(eq(users.id, userId));
+  
+  // Log if we enforced family tier for primary/admin
+  const user = await getUserById(userId);
+  if (user && (user.role === "primary" || user.role === "admin") && tier !== "family") {
+    console.warn(
+      `[updateUserAccessTier] Enforced family tier for ${user.role} user ${userId} (requested: ${tier})`
+    );
+  }
 }
 
 /**
