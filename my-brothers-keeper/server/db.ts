@@ -115,13 +115,30 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.lastSignedIn = user.lastSignedIn;
       updateSet.lastSignedIn = user.lastSignedIn;
     }
+    // Handle role assignment and automatically set appropriate access tier
+    let finalRole: "primary" | "admin" | "supporter" | "user" | undefined;
     if (user.role !== undefined) {
+      finalRole = user.role;
       values.role = user.role;
       updateSet.role = user.role;
     } else if (user.id === ENV.ownerId) {
+      finalRole = "admin";
       values.role = "admin";
       updateSet.role = "admin";
     }
+    
+    // Automatically enforce role/access tier alignment
+    // If role is being set and accessTier is NOT explicitly provided, enforce alignment
+    if (finalRole && user.accessTier === undefined) {
+      const alignedTier = getAccessTierForRole(finalRole);
+      values.accessTier = alignedTier;
+      updateSet.accessTier = alignedTier;
+    } else if (user.accessTier !== undefined) {
+      // If accessTier is explicitly provided, use it
+      values.accessTier = user.accessTier;
+      updateSet.accessTier = user.accessTier;
+    }
+    
     if (user.householdId !== undefined) {
       values.householdId = user.householdId;
       updateSet.householdId = user.householdId;
@@ -187,7 +204,14 @@ export async function updateUserRole(userId: string, role: "primary" | "admin" |
   const db = await getDb();
   if (!db) return;
 
-  await db.update(users).set({ role }).where(eq(users.id, userId));
+  // Automatically set the correct access tier based on role
+  const accessTier = getAccessTierForRole(role);
+  
+  await db.update(users).set({ 
+    role, 
+    accessTier,
+    updatedAt: new Date()
+  }).where(eq(users.id, userId));
 }
 
 export async function updateUserProfile(userId: string, data: Partial<Pick<InsertUser, "name" | "phone" | "profileImageUrl">>) {
@@ -247,11 +271,40 @@ export async function updateUserAccessTier(userId: string, tier: "community" | "
   const db = await getDb();
   if (!db) return;
 
+  // Get user's current role to ensure we don't violate role/tier alignment
+  const user = await getUserById(userId);
+  if (!user) {
+    console.warn(`[updateUserAccessTier] User ${userId} not found`);
+    return;
+  }
+
+  // CRITICAL: Primary and Admin users MUST have family tier
+  // Never allow downgrading their access tier
+  if ((user.role === "primary" || user.role === "admin") && tier !== "family") {
+    console.warn(
+      `[updateUserAccessTier] Cannot set ${user.role} user to ${tier} tier - enforcing family tier for role alignment`
+    );
+    tier = "family"; // Force family tier for primary/admin
+  }
+
   await db.update(users).set({ 
     accessTier: tier,
     requestedTier: null,
     updatedAt: new Date()
   }).where(eq(users.id, userId));
+}
+
+/**
+ * Helper function to determine the correct access tier based on role
+ * Ensures role and access tier alignment:
+ * - Primary/Admin roles ALWAYS get 'family' tier
+ * - Supporters get 'community' tier by default
+ */
+export function getAccessTierForRole(role: "primary" | "admin" | "supporter" | "user"): "family" | "friend" | "community" {
+  if (role === "primary" || role === "admin") {
+    return "family";
+  }
+  return "community";
 }
 
 export async function joinHouseholdWithTier(
@@ -262,9 +315,12 @@ export async function joinHouseholdWithTier(
   const db = await getDb();
   if (!db) return;
 
+  // Supporters start with community tier but can request upgrades
+  const initialTier = "community";
+
   await db.update(users).set({
     householdId,
-    accessTier: "community",
+    accessTier: initialTier,
     requestedTier,
     tierRequestedAt: new Date(),
     role: "supporter",

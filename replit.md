@@ -30,6 +30,14 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 ## System Architecture
 The application features a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend with tRPC for type-safe APIs. It uses PostgreSQL with Drizzle ORM and Replit Auth for authentication. The architecture follows a clear separation of concerns with `client/`, `server/`, and `shared/` directories.
 
+### Role and Access Tier Alignment
+**Critical Business Rule**: User roles and access tiers must align to prevent permission/visibility mismatches:
+- **Primary users**: ALWAYS get `family` access tier (full visibility + full control)
+- **Admin users**: ALWAYS get `family` access tier (full visibility + elevated control)
+- **Supporter users**: Get `community` access tier by default (can request upgrades to friend/family)
+- **Helper function**: `getAccessTierForRole()` in `server/db.ts` enforces this alignment
+- **Enforcement points**: Household creation, invite acceptance, and all user role assignments automatically set appropriate access tier
+
 ### UI/UX Decisions
 The UI/UX is built around a consistent glassmorphism design system using teal gradients and neutral typography, featuring:
 - **Glassmorphism Architecture**: Transparent and blurred elements over a wavy teal background with decorative blur orbs.

@@ -358,10 +358,12 @@ export const inviteRouter = router({
       // Special handling for primary role invites
       if (invite.invitedRole === "primary") {
         // Primary users are automatically active (no approval needed)
+        // Primary users ALWAYS get family-level access tier
         await db.upsertUser({
           id: ctx.user.id,
           householdId: invite.householdId,
           role: "primary",
+          accessTier: "family",
           status: "active",
         });
 
@@ -392,10 +394,15 @@ export const inviteRouter = router({
       }
 
       // Regular admin/supporter flow - requires approval
+      // Determine appropriate access tier based on role
+      // Admin = family tier, Supporter = community tier (can request upgrade later)
+      const accessTier = invite.invitedRole === "admin" ? "family" : "community";
+      
       await db.upsertUser({
         id: ctx.user.id,
         householdId: invite.householdId,
         role: invite.invitedRole,
+        accessTier,
         status: "pending", // Requires approval
       });
 

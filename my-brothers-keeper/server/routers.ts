@@ -162,17 +162,21 @@ export const appRouter = router({
 
         if (input.setupRole === "primary") {
           // User is setting up for themselves - make them Primary
+          // Primary users ALWAYS get family-level access
           await db.upsertUser({
             id: ctx.user.id,
             role: "primary",
+            accessTier: "family",
             householdId,
             status: "active",
           });
         } else {
           // Admin is setting up for someone else - make current user Admin
+          // Admin users get family-level access
           await db.upsertUser({
             id: ctx.user.id,
             role: "admin",
+            accessTier: "family",
             householdId,
             status: "active",
           });
