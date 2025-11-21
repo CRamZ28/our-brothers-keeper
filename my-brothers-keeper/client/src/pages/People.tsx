@@ -839,7 +839,7 @@ export default function People() {
         )}
 
         {/* Active Members */}
-        <Card>
+        <Card className="bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
             <CardTitle>Active Members</CardTitle>
             <CardDescription>People in your support network</CardDescription>
@@ -1001,7 +1001,7 @@ export default function People() {
 
         {/* Groups Section - Only visible to Primary/Admin */}
         {isPrimaryOrAdmin && (
-          <Card>
+          <Card className="bg-white/10 backdrop-blur-sm border-white/20">
             <CardHeader>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex-1 min-w-0">
