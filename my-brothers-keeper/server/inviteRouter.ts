@@ -30,13 +30,26 @@ function generateInviteToken(): string {
 export async function sendInviteNotification(
   email: string | null,
   phone: string | null,
-  householdSlug: string,
+  householdSlug: string | null,
   householdName: string,
-  inviterName: string
-) {
-  // Build public household join link using slug (e.g., /theramseys)
+  inviterName: string,
+  options?: {
+    token?: string;
+    isPrimary?: boolean;
+    recipientName?: string;
+  }
+): Promise<{ success: boolean; error?: string; inviteLink?: string }> {
   const baseUrl = process.env.VITE_APP_URL || "https://obkapp.com";
-  const inviteLink = `${baseUrl}/${householdSlug}`;
+  
+  // Build invite link - use token if provided, otherwise use slug
+  let inviteLink: string;
+  if (options?.token) {
+    inviteLink = `${baseUrl}/accept-invite?token=${options.token}`;
+  } else if (householdSlug) {
+    inviteLink = `${baseUrl}/${householdSlug}`;
+  } else {
+    return { success: false, error: "Neither token nor household slug provided" };
+  }
   
   // Only send email if email is provided
   if (email) {
@@ -44,6 +57,29 @@ export async function sendInviteNotification(
       // Escape all user-supplied content to prevent HTML injection
       const safeInviterName = escapeHtml(inviterName);
       const safeHouseholdName = escapeHtml(householdName);
+      const safeRecipientName = options?.recipientName ? escapeHtml(options.recipientName) : '';
+      
+      // Different email content for primary vs regular invites
+      let greeting: string;
+      let mainMessage: string;
+      let buttonText: string;
+      let subject: string;
+      let footerNote: string;
+
+      if (options?.isPrimary) {
+        greeting = safeRecipientName ? `Hi ${safeRecipientName},` : 'Hi there,';
+        mainMessage = `<p><strong>${safeInviterName}</strong> has set up a support page for <strong>${safeHouseholdName}</strong> on Our Brother's Keeper.</p>
+              <p>You've been invited to become the <strong>Primary Administrator</strong> of this support circle. As the primary administrator, you'll have full control over settings, supporters, and all aspects of the support page.</p>`;
+        buttonText = 'Accept Invitation';
+        subject = `You're Invited to Manage ${safeHouseholdName}'s Support Circle`;
+        footerNote = '<p style="font-size: 12px; color: #999;">This invitation will expire in 14 days.</p>';
+      } else {
+        greeting = 'Hi there,';
+        mainMessage = `<p><strong>${safeInviterName}</strong> has invited you to join <strong>${safeHouseholdName}'s</strong> support circle on Our Brother's Keeper.</p>`;
+        buttonText = 'Join Support Circle';
+        subject = `💌 You're Invited to Support ${safeHouseholdName}`;
+        footerNote = '<p style="font-size: 12px; color: #999;">If you don\'t want to join, you can simply ignore this email.</p>';
+      }
       
       const emailHtml = `
         <!DOCTYPE html>
@@ -59,7 +95,6 @@ export async function sendInviteNotification(
             .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
             .button { display: inline-block; background: #6BC4B8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
             .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
-            .divider { border-top: 1px solid #e5e7eb; margin: 20px 0; }
           </style>
         </head>
         <body>
@@ -68,21 +103,20 @@ export async function sendInviteNotification(
               <h1>🤍 Our Brother's Keeper</h1>
             </div>
             <div class="content">
-              <p>Hi there,</p>
-              <p><strong>${safeInviterName}</strong> has invited you to join <strong>${safeHouseholdName}'s</strong> support circle on Our Brother's Keeper.</p>
+              <p>${greeting}</p>
+              ${mainMessage}
               <div style="background: #f9fafb; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
                 <p style="margin: 0; font-size: 16px;">Our Brother's Keeper is a compassionate platform designed to help families coordinate support during difficult times.</p>
               </div>
-              <p>Click the button below to join this caring community and see how you can help.</p>
+              <p>Click the button below to ${options?.isPrimary ? 'accept this invitation and take control of your support circle' : 'join this caring community and see how you can help'}.</p>
               <div style="text-align: center;">
-                <a href="${inviteLink}" class="button">Join Support Circle</a>
+                <a href="${inviteLink}" class="button">${buttonText}</a>
               </div>
-              <div class="divider"></div>
-              <p style="color: #666; font-size: 14px; margin: 0;">With care and support,<br>The Our Brother's Keeper Team</p>
+              <p style="color: #666; font-size: 14px; margin-top: 30px;">With care and support,<br>The Our Brother's Keeper Team</p>
             </div>
             <div class="footer">
-              <p>You're receiving this email because ${safeInviterName} invited you to support ${safeHouseholdName}.</p>
-              <p style="font-size: 12px; color: #999;">If you don't want to join, you can simply ignore this email.</p>
+              <p>You're receiving this email because ${safeInviterName} ${options?.isPrimary ? `has invited you to manage ${safeHouseholdName}'s support page` : `invited you to support ${safeHouseholdName}`}.</p>
+              ${footerNote}
             </div>
           </div>
         </body>
@@ -92,19 +126,29 @@ export async function sendInviteNotification(
       const result = await resend.emails.send({
         from: FROM_EMAIL,
         to: email,
-        subject: `💌 You're Invited to Support ${safeHouseholdName}`,
+        subject,
         html: emailHtml,
       });
 
       if (result.error) {
         console.error('[Invite] Email send failed:', result.error);
-        throw new Error(`Failed to send invite email: ${result.error.message}`);
+        return { 
+          success: false, 
+          error: `Failed to send invite email: ${result.error.message}`,
+          inviteLink 
+        };
       }
 
       console.log(`[Invite] Email sent successfully to ${email}: ${inviteLink}`, result.data);
+      return { success: true, inviteLink };
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       console.error('[Invite] Error sending email:', error);
-      throw error;
+      return { 
+        success: false, 
+        error: `Email sending failed: ${errorMessage}`,
+        inviteLink 
+      };
     }
   }
 
@@ -113,7 +157,7 @@ export async function sendInviteNotification(
     console.log(`[Invite] SMS not yet implemented for ${phone}: ${inviteLink}`);
   }
 
-  return inviteLink;
+  return { success: true, inviteLink };
 }
 
 export const inviteRouter = router({
@@ -212,7 +256,7 @@ export const inviteRouter = router({
       });
 
       // Send notification with household slug
-      const inviteLink = await sendInviteNotification(
+      const emailResult = await sendInviteNotification(
         input.email || null,
         input.phone || null,
         household.slug,
@@ -224,7 +268,7 @@ export const inviteRouter = router({
       await db.createAuditLog({
         householdId: ctx.user.householdId,
         actorUserId: ctx.user.id,
-        action: "invite_sent",
+        action: emailResult.success ? "invite_sent" : "invite_send_failed",
         targetType: "invite",
         targetId: inviteId,
         metadata: {
@@ -232,13 +276,23 @@ export const inviteRouter = router({
           phone: input.phone,
           role: input.role,
           relationship: input.relationship,
+          emailSuccess: emailResult.success,
+          emailError: emailResult.error || null,
         },
       });
+
+      // If email failed, throw error so user knows
+      if (!emailResult.success) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Invite created but email failed to send: ${emailResult.error}`,
+        });
+      }
 
       return {
         inviteId,
         token,
-        inviteLink,
+        inviteLink: emailResult.inviteLink,
         enhancedMessage,
       };
     }),
@@ -452,7 +506,7 @@ export const inviteRouter = router({
       });
 
       // Send notification with household page link
-      await sendInviteNotification(
+      const resendResult = await sendInviteNotification(
         invite.invitedEmail,
         invite.invitedPhone,
         household.slug, // Use household slug
@@ -463,11 +517,22 @@ export const inviteRouter = router({
       await db.createAuditLog({
         householdId: ctx.user.householdId,
         actorUserId: ctx.user.id,
-        action: "invite_resent",
+        action: resendResult.success ? "invite_resent" : "invite_resend_failed",
         targetType: "invite",
         targetId: input.inviteId,
-        metadata: {},
+        metadata: {
+          emailSuccess: resendResult.success,
+          emailError: resendResult.error || null,
+        },
       });
+
+      // If resend failed, throw error
+      if (!resendResult.success) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Failed to resend invite: ${resendResult.error}`,
+        });
+      }
 
       return { success: true };
     }),

@@ -193,81 +193,51 @@ export const appRouter = router({
             expiresAt,
           });
 
-          // Send primary invite email using token-based link
+          // Send primary invite email using centralized helper with token-based link
           const household = await db.getHousehold(householdId);
           if (household) {
-            try {
-              // For primary invites, use token-based invite link since slug may not be set yet
-              // Token link format: /accept-invite?token=...
-              const baseUrl = process.env.VITE_APP_URL || "https://obkapp.com";
-              const tokenInviteLink = `${baseUrl}/accept-invite?token=${inviteToken}`;
+            const emailResult = await sendInviteNotification(
+              input.primaryEmail!,
+              null, // No phone
+              null, // No slug needed - will use token
+              household.name,
+              ctx.user.name || "An admin",
+              {
+                token: inviteToken,
+                isPrimary: true,
+                recipientName: input.primaryName || undefined,
+              }
+            );
 
-              // Send email with token-based link (works even without slug)
-              const Resend = (await import("resend")).Resend;
-              const resend = new Resend(process.env.RESEND_API_KEY);
-              const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
+            // Create audit log for primary invite email
+            await db.createAuditLog({
+              householdId,
+              actorUserId: ctx.user.id,
+              action: emailResult.success ? "primary_invite_sent" : "primary_invite_send_failed",
+              targetType: "household",
+              targetId: householdId,
+              metadata: {
+                primaryEmail: input.primaryEmail,
+                primaryName: input.primaryName,
+                emailSuccess: emailResult.success,
+                emailError: emailResult.error || null,
+              },
+            });
 
-              const safeInviterName = (ctx.user.name || "An admin").replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c] || c));
-              const safeHouseholdName = household.name.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c] || c));
-              const safePrimaryName = (input.primaryName || '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c] || c));
-
-              const emailHtml = `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                  <meta charset="utf-8">
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                  <style>
-                    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
-                    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                    .header { background: linear-gradient(135deg, #6BC4B8 0%, #5A9FD4 50%, #9B7FB8 100%); padding: 30px; text-align: center; border-radius: 12px 12px 0 0; }
-                    .header h1 { color: white; margin: 0; font-size: 24px; }
-                    .content { background: white; padding: 30px; border-radius: 0 0 12px 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-                    .button { display: inline-block; background: #6BC4B8; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }
-                    .footer { text-align: center; padding: 20px; color: #666; font-size: 14px; }
-                  </style>
-                </head>
-                <body>
-                  <div class="container">
-                    <div class="header">
-                      <h1>🤍 Our Brother's Keeper</h1>
-                    </div>
-                    <div class="content">
-                      <p>Hi ${safePrimaryName},</p>
-                      <p><strong>${safeInviterName}</strong> has set up a support page for <strong>${safeHouseholdName}</strong> on Our Brother's Keeper.</p>
-                      <p>You've been invited to become the <strong>Primary Administrator</strong> of this support circle. As the primary administrator, you'll have full control over settings, supporters, and all aspects of the support page.</p>
-                      <div style="background: #f9fafb; padding: 20px; text-align: center; margin: 20px 0; border-radius: 8px;">
-                        <p style="margin: 0; font-size: 16px;">Our Brother's Keeper is a compassionate platform designed to help families coordinate support during difficult times.</p>
-                      </div>
-                      <p>Click the button below to accept this invitation and take control of your support circle.</p>
-                      <div style="text-align: center;">
-                        <a href="${tokenInviteLink}" class="button">Accept Invitation</a>
-                      </div>
-                      <p style="color: #666; font-size: 14px; margin-top: 30px;">With care and support,<br>The Our Brother's Keeper Team</p>
-                    </div>
-                    <div class="footer">
-                      <p>You're receiving this email because ${safeInviterName} has invited you to manage ${safeHouseholdName}'s support page.</p>
-                      <p style="font-size: 12px; color: #999;">This invitation will expire in 14 days.</p>
-                    </div>
-                  </div>
-                </body>
-                </html>
-              `;
-
-              await resend.emails.send({
-                from: FROM_EMAIL,
-                to: input.primaryEmail!,
-                subject: `You're Invited to Manage ${safeHouseholdName}'s Support Circle`,
-                html: emailHtml,
-              });
-
-              console.log(
-                `[Household] Primary invite email sent to ${input.primaryName} (${input.primaryEmail})`
+            // Surface email failures to the admin - primary invite email is critical
+            if (!emailResult.success) {
+              console.error(
+                `[Household] Failed to send primary invite email: ${emailResult.error}`
               );
-            } catch (error) {
-              console.error('[Household] Failed to send primary invite email:', error);
-              // Don't fail the household creation if email fails
+              throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: `Household created but failed to send primary invite email: ${emailResult.error}. Please try resending the invite from the People page.`,
+              });
             }
+
+            console.log(
+              `[Household] Primary invite email sent to ${input.primaryName} (${input.primaryEmail})`
+            );
           }
         }
 
