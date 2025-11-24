@@ -47,7 +47,8 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **Memory Wall**: Interactive drag-and-drop vision board with overlapping cards, random rotations, and vibrant color coding for memories, stories, and images.
 
 ### Technical Implementations & Feature Specifications
-- **Core Features**: Includes Meal Train management (scheduling, capacity, preferences), Group management (CRUD for supporters), Needs Board (community support requests, unclaim functionality), Events Calendar (scheduling, "Important Dates"), Family Updates (unified timeline, media uploads), and an interactive Memory Wall.
+- **Core Features**: Includes Meal Train management (scheduling, capacity, preferences), Group management (CRUD for supporters), Needs Board (community support requests, unclaim functionality), Events Calendar (scheduling, "Important Dates"), Family Updates (unified timeline, media uploads), an interactive Memory Wall, and a comprehensive Resources page.
+- **Resources & Education**: Tabbed insights hub (`/resources`) with three audience-specific sections: "For Those Who Are Grieving" (understanding grief stages, self-care, crisis resources), "For Friends & Family" (how to help, what to say/avoid, long-term support), and "Ongoing Support & Community" (coordination strategies, platform feature guidance, community resilience).
 - **Privacy & Access Control**: Comprehensive 3-option visibility model applied across all features. An Access Tier System (Community/Friend/Family) allows users to select their support level, with optional auto-promotion. Role-Based Access (Admin, Primary, Supporter) defines permissions.
 - **Onboarding & Support**: Secure invitation system for supporters via public household pages. An interactive onboarding tour using `react-joyride` guides primary users through setup, with contextual `HelpIcon` components for in-app assistance.
 - **Communication & Notifications**: Opt-in email notification system for 14 event types, with configurable user preferences and role-sensitive defaults. A personal Reminder System for needs and events, processed by a background job.
@@ -73,6 +74,8 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **Runtime**: Node.js
 
 ## Recent Changes
+- **November 24, 2025**:
+  - **Resources Page**: Added comprehensive tabbed insights hub at `/resources` positioned after People in navigation. Features three audience-specific tabs: "For Those Who Are Grieving" (grief stages, self-care, crisis resources with National Suicide Prevention Lifeline), "For Friends & Family" (helpful/unhelpful phrases, practical actions, long-term support strategies), and "Ongoing Support & Community" (coordination tips, platform feature guide, community resilience building). Uses clean tab navigation with gradient-active state and glassmorphism styling consistent with app design.
 - **November 21, 2025**:
   - **Full-Screen Layout Optimization**: Reduced viewport margins from 40px to responsive 16px (mobile) / 24px (desktop) and removed max-width constraints on Dashboard content, allowing full utilization of available screen space while maintaining the glassmorphism aesthetic.
   - **Broadcast Email Notifications**: Admin/primary users can now send broadcast messages with automatic email notifications. When admins send messages to supporters (individual, group, or all), recipients receive both in-app messages and email notifications with the full message content. Emails include beautiful HTML formatting with "BROADCAST MESSAGE" badge, household branding, and direct link to view in app. System tracks email delivery success/failure rates and logs all broadcast activity.
