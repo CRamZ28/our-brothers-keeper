@@ -30,6 +30,14 @@ Our Brother's Keeper is a platform designed to provide sustained support to fami
 ## System Architecture
 The application uses a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend with tRPC for type-safe APIs. PostgreSQL with Drizzle ORM is used for data persistence, and Replit Auth handles authentication. The project structure separates `client/`, `server/`, and `shared/` concerns.
 
+### Dashboard Design
+The dashboard uses an "At-a-Glance Hub" layout for quick insights and navigation:
+- **Top**: Family name with Cinzel serif font and customizable memorial subtitle
+- **Stats Row**: Four responsive stat cards showing Supporters, Open Needs, Events This Week, and My Reminders counts
+- **Content Row**: Two larger cards featuring Latest Family Updates (recent 3 posts) and Resources & Support (with CTA to /resources page)
+- **Mobile-first**: Grid layout adapts from single column (mobile) to 2 columns (tablet) to 4 columns (desktop) for stats
+- Clean glassmorphism styling consistent with overall design system
+
 ### Role and Access Tier Alignment
 User roles and access tiers are strictly aligned to prevent permission/visibility issues:
 - Primary and Admin users always have `family` access (full visibility and control).
