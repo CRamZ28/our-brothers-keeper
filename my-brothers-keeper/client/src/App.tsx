@@ -22,6 +22,7 @@ import JoinHousehold from "./pages/JoinHousehold";
 import SearchHousehold from "./pages/SearchHousehold";
 import Contact from "./pages/Contact";
 import Questions from "./pages/Questions";
+import Resources from "./pages/Resources";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -32,6 +33,7 @@ function Router() {
       <Route path={"/search"} component={SearchHousehold} />
       <Route path={"/onboarding"} component={Onboarding} />
       <Route path={"/people"} component={People} />
+      <Route path={"/resources"} component={Resources} />
       <Route path={"/needs"} component={Needs} />
       <Route path={"/calendar"} component={Calendar} />
       <Route path={"/family-updates"} component={FamilyUpdates} />
