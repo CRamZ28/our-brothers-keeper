@@ -79,96 +79,167 @@ function GrievingContent() {
     <div className="space-y-6">
       {/* Card 1: When the Shock Fades */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          When the Shock Fades, but the Pain Stays
-        </h3>
-        <div className="space-y-4 text-foreground/80 leading-relaxed">
-          <p>
+        <div className="flex items-start gap-4 mb-4">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+              boxShadow: '0 4px 12px rgba(176, 140, 167, 0.3)'
+            }}
+          >
+            <Heart className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            When the Shock Fades, but the Pain Stays
+          </h3>
+        </div>
+        <div className="space-y-4 text-foreground/85 leading-relaxed">
+          <p className="text-base">
             Grief often hits hardest after the first few weeks — once the meals stop coming, once texts slow down, once life around you seems to move forward.
             <br />
-            This doesn't mean you're doing it wrong. It means your heart is recognizing the depth of your loss.
+            <span className="font-medium text-foreground">This doesn't mean you're doing it wrong.</span> It means your heart is recognizing the depth of your loss.
           </p>
           
-          <div>
-            <p className="font-medium mb-2">It is normal to feel:</p>
-            <ul className="space-y-1.5 ml-4">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <p className="font-semibold text-foreground mb-3" style={{ color: '#B08CA7' }}>It is normal to feel:</p>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>More sadness or heaviness than you expected</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Numbness followed by waves of emotion</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Loneliness, even when surrounded by people</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Difficulty focusing or sleeping</span>
               </li>
             </ul>
           </div>
 
-          <p className="italic text-foreground/90 pt-2">
-            Your grief is a sign of love. Healing is not linear — and you don't have to rush it.
-          </p>
+          <div 
+            className="p-4 rounded-xl text-center italic text-base"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.3)'
+            }}
+          >
+            <span className="font-medium text-foreground">Your grief is a sign of love.</span> Healing is not linear — and you don't have to rush it.
+          </div>
         </div>
       </GlassCard>
 
       {/* Card 2: Coping Tools */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          Coping Tools You Can Use Daily
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+              boxShadow: '0 4px 12px rgba(45, 181, 168, 0.3)'
+            }}
+          >
+            <BookOpen className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Coping Tools You Can Use Daily
+          </h3>
+        </div>
         
         <div className="space-y-5">
           {/* Breathing & Grounding */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">Breathing & Grounding</h4>
-            <p className="text-foreground/80 leading-relaxed">
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#2DB5A8' }}>
+              <span className="text-xl">🌬️</span>
+              Breathing & Grounding
+            </h4>
+            <p className="text-foreground/85 leading-relaxed">
               When emotions surge, pause and breathe slowly.
               <br />
               Focus on your inhale, your exhale, and remind yourself:
               <br />
-              <span className="italic">"I am safe. I am not alone. God is here."</span>
+              <span className="italic font-medium text-foreground mt-2 block">"I am safe. I am not alone. God is here."</span>
             </p>
           </div>
 
           {/* Journaling Prompts */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">Journaling Prompts</h4>
-            <ul className="space-y-1.5 ml-4 text-foreground/80">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#B08CA7' }}>
+              <span className="text-xl">📝</span>
+              Journaling Prompts
+            </h4>
+            <ul className="space-y-2 text-foreground/85">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>"What is one thing I miss today?"</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>"Where did I feel God's comfort recently?"</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>"What is one thing I wish others understood?"</span>
               </li>
             </ul>
           </div>
 
           {/* Faith & Prayer */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">Faith & Prayer Practices</h4>
-            <ul className="space-y-1.5 ml-4 text-foreground/80">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
-                <span>Pray a simple breath prayer: "Lord, hold my heart."</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#2DB5A8' }}>
+              <span className="text-xl">🙏</span>
+              Faith & Prayer Practices
+            </h4>
+            <ul className="space-y-2 text-foreground/85">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
+                <span>Pray a simple breath prayer: <span className="font-medium">"Lord, hold my heart."</span></span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
-                <span>Read Psalm 34:18: "The Lord is close to the brokenhearted…"</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
+                <span>Read Psalm 34:18: <span className="italic">"The Lord is close to the brokenhearted…"</span></span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>Spend quiet time just resting, not performing.</span>
               </li>
             </ul>
@@ -178,20 +249,46 @@ function GrievingContent() {
 
       {/* Card 3: Words of Comfort */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-6">
-          Words of Comfort
-        </h3>
+        <div className="flex items-start gap-4 mb-6">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+              boxShadow: '0 4px 12px rgba(176, 140, 167, 0.3)'
+            }}
+          >
+            <span className="text-2xl">✨</span>
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Words of Comfort
+          </h3>
+        </div>
         
-        <div className="text-center space-y-6 py-4">
-          <div className="text-lg italic text-foreground/90 leading-relaxed">
+        <div 
+          className="text-center space-y-6 py-6 px-4 rounded-xl"
+          style={{
+            background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.1) 0%, rgba(155, 127, 184, 0.1) 100%)',
+            border: '2px solid rgba(176, 140, 167, 0.3)'
+          }}
+        >
+          <div className="text-2xl italic text-foreground leading-relaxed font-serif">
             "Blessed are those who mourn,
             <br />
             for they will be comforted."
             <br />
-            <span className="text-base not-italic text-foreground/70 mt-2 block">— Matthew 5:4</span>
+            <span className="text-lg not-italic text-foreground/70 mt-3 block font-sans">— Matthew 5:4</span>
           </div>
 
-          <p className="text-foreground/80 leading-relaxed max-w-xl mx-auto">
+          <div className="w-16 h-1 mx-auto rounded-full" style={{
+            background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)'
+          }}></div>
+
+          <p className="text-foreground/85 leading-relaxed max-w-xl mx-auto text-lg">
             God does not rush your healing.
             <br />
             He sits with you in the dark, even when no one else sees your pain.
@@ -207,38 +304,63 @@ function FriendsContent() {
     <div className="space-y-6">
       {/* Card 4: How to Help */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          How to Help a Grieving Friend
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+              boxShadow: '0 4px 12px rgba(45, 181, 168, 0.3)'
+            }}
+          >
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            How to Help a Grieving Friend
+          </h3>
+        </div>
         
         <div className="space-y-5">
           {/* What Helps */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">What Helps</h4>
-            <ul className="space-y-2 ml-4 text-foreground/80">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#2DB5A8' }}>
+              <span className="text-xl">✅</span>
+              What Helps
+            </h4>
+            <ul className="space-y-2 text-foreground/85">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>Listen more than you speak. Let them talk, cry, or sit in silence.</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>Be consistent. Keep checking in long after the funeral.</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <div className="flex-1">
                   <span>Offer specific help, like:</span>
-                  <ul className="mt-1.5 ml-4 space-y-1">
+                  <ul className="mt-2 ml-4 space-y-1.5">
                     <li className="flex items-start gap-2">
-                      <span className="text-teal-400">–</span>
+                      <span style={{ color: '#14b8a6' }}>–</span>
                       <span>"Can I bring dinner Thursday?"</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-teal-400">–</span>
+                      <span style={{ color: '#14b8a6' }}>–</span>
                       <span>"Want me to pick up groceries?"</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-teal-400">–</span>
+                      <span style={{ color: '#14b8a6' }}>–</span>
                       <span>"I'm driving your way — need anything?"</span>
                     </li>
                   </ul>
@@ -248,15 +370,24 @@ function FriendsContent() {
           </div>
 
           {/* What Doesn't Help */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">What Doesn't Help</h4>
-            <ul className="space-y-1.5 ml-4 text-foreground/80">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%)',
+              border: '1px solid rgba(239, 68, 68, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-600">
+              <span className="text-xl">⚠️</span>
+              What Doesn't Help
+            </h4>
+            <ul className="space-y-2 text-foreground/85">
+              <li className="flex items-start gap-3">
+                <span className="text-lg text-red-500">•</span>
                 <span>Avoid clichés like "They're in a better place" or "Stay strong."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg text-red-500">•</span>
                 <span>Don't rush them. Grief takes months and years, not days.</span>
               </li>
             </ul>
@@ -266,52 +397,86 @@ function FriendsContent() {
 
       {/* Card 5: Helpful vs Hurtful Words */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          Helpful Words vs. Hurtful Words
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+              boxShadow: '0 4px 12px rgba(176, 140, 167, 0.3)'
+            }}
+          >
+            <span className="text-2xl">💬</span>
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Helpful Words vs. Hurtful Words
+          </h3>
+        </div>
         
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 gap-5">
           {/* Helpful */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-3 text-teal-600">Helpful to Say</h4>
-            <ul className="space-y-2 text-foreground/80">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#2DB5A8' }}>
+              <span className="text-xl">💚</span>
+              Helpful to Say
+            </h4>
+            <ul className="space-y-2.5 text-foreground/85">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>"I'm here with you."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>"This must be so hard."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>"I'm not going anywhere."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>"I'd love to hear a story about them."</span>
               </li>
             </ul>
           </div>
 
           {/* Avoid */}
-          <div>
-            <h4 className="font-semibold text-foreground mb-3 text-red-600">Avoid Saying</h4>
-            <ul className="space-y-2 text-foreground/80">
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%)',
+              border: '1px solid rgba(239, 68, 68, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-600">
+              <span className="text-xl">❌</span>
+              Avoid Saying
+            </h4>
+            <ul className="space-y-2.5 text-foreground/85">
+              <li className="flex items-start gap-3">
+                <span className="text-lg text-red-500">•</span>
                 <span>"Everything happens for a reason."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg text-red-500">•</span>
                 <span>"At least they lived a long life."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg text-red-500">•</span>
                 <span>"You should try to move on."</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-400 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg text-red-500">•</span>
                 <span>"I know exactly how you feel."</span>
               </li>
             </ul>
@@ -321,29 +486,51 @@ function FriendsContent() {
 
       {/* Card 6: Actions That Show Love */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          Actions That Show Love
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+              boxShadow: '0 4px 12px rgba(176, 140, 167, 0.3)'
+            }}
+          >
+            <Heart className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Actions That Show Love
+          </h3>
+        </div>
         
         <div className="space-y-5">
-          <ul className="space-y-2 ml-4 text-foreground/80">
-            <li className="flex items-start gap-2">
-              <span className="text-teal-500 mt-1">•</span>
-              <span>Send a message: "Thinking of you today."</span>
+          <ul className="space-y-3 text-foreground/85">
+            <li className="flex items-start gap-3">
+              <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
+              <span>Send a message: <span className="font-medium">"Thinking of you today."</span></span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-teal-500 mt-1">•</span>
+            <li className="flex items-start gap-3">
+              <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
               <span>Offer practical help with food, errands, or childcare.</span>
             </li>
-            <li className="flex items-start gap-2">
-              <span className="text-teal-500 mt-1">•</span>
+            <li className="flex items-start gap-3">
+              <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
               <span>Schedule reminders to check in weekly, even months later.</span>
             </li>
           </ul>
 
-          <p className="italic text-foreground/90 pt-2">
+          <div 
+            className="p-4 rounded-xl text-center italic text-base"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.1) 0%, rgba(155, 127, 184, 0.1) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.3)'
+            }}
+          >
             Your consistency heals in ways you may never see.
-          </p>
+          </div>
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-2">
@@ -362,50 +549,93 @@ function OngoingContent() {
     <div className="space-y-6">
       {/* Card 7: Why Continued Support Matters */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          Why Continued Support Matters
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+              boxShadow: '0 4px 12px rgba(45, 181, 168, 0.3)'
+            }}
+          >
+            <Users className="w-6 h-6 text-white" />
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Why Continued Support Matters
+          </h3>
+        </div>
         
-        <div className="space-y-4 text-foreground/80 leading-relaxed">
-          <p>
-            Most people receive support for 2–4 weeks, but grief lasts far longer.
+        <div className="space-y-4 text-foreground/85 leading-relaxed">
+          <p className="text-base">
+            Most people receive support for <span className="font-medium">2–4 weeks</span>, but grief lasts far longer.
           </p>
 
-          <div>
-            <p className="font-medium mb-2">Over time, people in grief often feel:</p>
-            <ul className="space-y-1.5 ml-4">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <p className="font-semibold mb-3" style={{ color: '#B08CA7' }}>Over time, people in grief often feel:</p>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Forgotten</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>"Too much" to talk about</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Unsure who to reach out to</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Guilty asking for help</span>
               </li>
             </ul>
           </div>
 
-          <p className="pt-2">
-            Your long-term support helps break the isolation that can grow months later.
-            <br />
-            It reminds them their loved one still matters — and so do they.
-          </p>
+          <div 
+            className="p-4 rounded-xl text-base"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.3)'
+            }}
+          >
+            <p>Your long-term support helps break the isolation that can grow months later.</p>
+            <p className="mt-2 font-medium">It reminds them their loved one still matters — and so do they.</p>
+          </div>
         </div>
       </GlassCard>
 
       {/* Card 8: Reminder Templates */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          Reminder Templates
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+              boxShadow: '0 4px 12px rgba(176, 140, 167, 0.3)'
+            }}
+          >
+            <span className="text-2xl">🔔</span>
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Reminder Templates
+          </h3>
+        </div>
         
         <div className="space-y-4">
           <ReminderTemplate 
@@ -425,54 +655,94 @@ function OngoingContent() {
 
       {/* Card 9: Find Help */}
       <GlassCard>
-        <h3 className="text-xl font-semibold text-foreground mb-4">
-          Find Help
-        </h3>
+        <div className="flex items-start gap-4 mb-5">
+          <div 
+            className="p-3 rounded-xl shrink-0"
+            style={{
+              background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+              boxShadow: '0 4px 12px rgba(45, 181, 168, 0.3)'
+            }}
+          >
+            <span className="text-2xl">🤝</span>
+          </div>
+          <h3 className="text-xl font-bold mt-2" style={{
+            background: 'linear-gradient(135deg, #2DB5A8 0%, #14b8a6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            Find Help
+          </h3>
+        </div>
         
-        <div className="space-y-5 text-foreground/80">
-          <p className="leading-relaxed">
+        <div className="space-y-5 text-foreground/85">
+          <p className="leading-relaxed text-base">
             Sometimes additional support is needed, and that's okay.
           </p>
 
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">Local & Faith-Based Support</h4>
-            <ul className="space-y-1.5 ml-4">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.08) 0%, rgba(20, 184, 166, 0.08) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#2DB5A8' }}>
+              <span className="text-xl">🏛️</span>
+              Local & Faith-Based Support
+            </h4>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>Church counseling or pastoral care</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>Local grief support groups</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#2DB5A8' }}>•</span>
                 <span>Christian counselors or therapists</span>
               </li>
             </ul>
           </div>
 
-          <div>
-            <h4 className="font-semibold text-foreground mb-2">Online Resources</h4>
-            <ul className="space-y-1.5 ml-4">
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2" style={{ color: '#B08CA7' }}>
+              <span className="text-xl">🌐</span>
+              Online Resources
+            </h4>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Grief devotionals</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Faith-based grief workshops</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-teal-500 mt-1">•</span>
+              <li className="flex items-start gap-3">
+                <span className="text-lg" style={{ color: '#B08CA7' }}>•</span>
                 <span>Audio prayers for comfort</span>
               </li>
             </ul>
           </div>
 
-          <p className="italic pt-2">
+          <div 
+            className="p-4 rounded-xl text-center italic text-base"
+            style={{
+              background: 'linear-gradient(135deg, rgba(45, 181, 168, 0.1) 0%, rgba(20, 184, 166, 0.1) 100%)',
+              border: '1px solid rgba(45, 181, 168, 0.3)'
+            }}
+          >
             Seeking help is a sign of courage, not weakness.
-          </p>
+          </div>
         </div>
       </GlassCard>
     </div>
