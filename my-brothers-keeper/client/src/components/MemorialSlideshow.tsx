@@ -7,26 +7,27 @@ interface MemorialSlideshowProps {
 }
 
 export default function MemorialSlideshow({ photos, autoPlayInterval = 5000 }: MemorialSlideshowProps) {
+  const safePhotos = photos || [];
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    if (photos.length <= 1) return;
+    if (safePhotos.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % photos.length);
+      setCurrentIndex((prev) => (prev + 1) % safePhotos.length);
     }, autoPlayInterval);
 
     return () => clearInterval(interval);
-  }, [photos.length, autoPlayInterval]);
+  }, [safePhotos.length, autoPlayInterval]);
 
-  if (!photos || photos.length === 0) return null;
+  if (safePhotos.length === 0) return null;
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
+    setCurrentIndex((prev) => (prev - 1 + safePhotos.length) % safePhotos.length);
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % photos.length);
+    setCurrentIndex((prev) => (prev + 1) % safePhotos.length);
   };
 
   return (
@@ -43,13 +44,13 @@ export default function MemorialSlideshow({ photos, autoPlayInterval = 5000 }: M
       
       <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/10">
         <img
-          src={photos[currentIndex]}
+          src={safePhotos[currentIndex]}
           alt={`Memorial photo ${currentIndex + 1}`}
           className="w-full h-full object-cover transition-opacity duration-500"
           style={{ opacity: 1 }}
         />
         
-        {photos.length > 1 && (
+        {safePhotos.length > 1 && (
           <>
             <button
               onClick={goToPrevious}
@@ -76,7 +77,7 @@ export default function MemorialSlideshow({ photos, autoPlayInterval = 5000 }: M
             </button>
             
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
-              {photos.map((_, index) => (
+              {safePhotos.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
@@ -94,9 +95,9 @@ export default function MemorialSlideshow({ photos, autoPlayInterval = 5000 }: M
         )}
       </div>
       
-      {photos.length > 1 && (
+      {safePhotos.length > 1 && (
         <p className="text-xs text-center text-foreground/60 mt-3">
-          {currentIndex + 1} of {photos.length}
+          {currentIndex + 1} of {safePhotos.length}
         </p>
       )}
     </div>
