@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLocation } from "wouter";
 import DashboardLayout from "@/components/DashboardLayout";
 import { GlassPageLayout } from "@/components/GlassPageLayout";
 import { BookOpen, Heart, Users } from "lucide-react";
@@ -7,6 +8,7 @@ type TabId = "grieving" | "friends" | "ongoing";
 
 export default function Resources() {
   const [activeTab, setActiveTab] = useState<TabId>("grieving");
+  const [, setLocation] = useLocation();
 
   const tabs = [
     { id: "grieving" as TabId, label: "For Those Who Are Grieving", icon: Heart },
@@ -66,7 +68,7 @@ export default function Resources() {
         {/* Tab Content */}
         <div className="space-y-6">
           {activeTab === "grieving" && <GrievingContent />}
-          {activeTab === "friends" && <FriendsContent />}
+          {activeTab === "friends" && <FriendsContent setLocation={setLocation} />}
           {activeTab === "ongoing" && <OngoingContent />}
         </div>
       </GlassPageLayout>
@@ -75,6 +77,14 @@ export default function Resources() {
 }
 
 function GrievingContent() {
+  const handleCallHotline = () => {
+    window.location.href = 'tel:988';
+  };
+
+  const handleBrowseResources = () => {
+    window.open('https://www.samhsa.gov/find-help/national-helpline', '_blank');
+  };
+
   return (
     <div className="space-y-6">
       {/* Card 1: When the Shock Fades */}
@@ -244,6 +254,49 @@ function GrievingContent() {
               </li>
             </ul>
           </div>
+
+          {/* Crisis Resources */}
+          <div 
+            className="p-5 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%)',
+              border: '2px solid rgba(239, 68, 68, 0.3)'
+            }}
+          >
+            <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-600">
+              <span className="text-xl">🆘</span>
+              If you're in crisis or need immediate support
+            </h4>
+            <p className="text-foreground/85 mb-4">You don't have to face this alone. Help is available 24/7.</p>
+            
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={handleCallHotline}
+                className="px-4 py-2.5 rounded-lg font-medium text-white transition-all hover:opacity-90 active:scale-[0.98]"
+                style={{
+                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
+                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  📞 Call 988 (Suicide & Crisis Lifeline)
+                </span>
+              </button>
+              <button
+                onClick={handleBrowseResources}
+                className="px-4 py-2.5 rounded-lg font-medium transition-all hover:bg-white/30 active:scale-[0.98]"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.2)',
+                  border: '1px solid rgba(255, 255, 255, 0.3)',
+                  color: 'inherit'
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  🔗 Browse Resources
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </GlassCard>
 
@@ -299,7 +352,7 @@ function GrievingContent() {
   );
 }
 
-function FriendsContent() {
+function FriendsContent({ setLocation }: { setLocation: any }) {
   return (
     <div className="space-y-6">
       {/* Card 4: How to Help */}
@@ -534,9 +587,9 @@ function FriendsContent() {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-2">
-            <ActionButton icon="💬">Send a message</ActionButton>
-            <ActionButton icon="🤝">Offer help</ActionButton>
-            <ActionButton icon="🔔">Schedule a check-in</ActionButton>
+            <ActionButton icon="💬" onClick={() => setLocation('/messages')}>Send a message</ActionButton>
+            <ActionButton icon="🤝" onClick={() => setLocation('/needs')}>Offer help</ActionButton>
+            <ActionButton icon="🔔" onClick={() => setLocation('/calendar')}>Schedule a check-in</ActionButton>
           </div>
         </div>
       </GlassCard>
@@ -545,6 +598,15 @@ function FriendsContent() {
 }
 
 function OngoingContent() {
+  const copyReminderTemplate = async (template: string) => {
+    try {
+      await navigator.clipboard.writeText(template);
+      alert('Template copied to clipboard!');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Card 7: Why Continued Support Matters */}
@@ -641,14 +703,17 @@ function OngoingContent() {
           <ReminderTemplate 
             title="1 Month Check-In"
             message={`"It's been a month. How are you doing today? I'm here."`}
+            onCopy={copyReminderTemplate}
           />
           <ReminderTemplate 
             title="Birthday or Anniversary Remembrance"
             message={`"Thinking of you today. I remember them with you."`}
+            onCopy={copyReminderTemplate}
           />
           <ReminderTemplate 
             title="Holiday Support"
             message={`"The holidays can be bittersweet. How can I support you?"`}
+            onCopy={copyReminderTemplate}
           />
         </div>
       </GlassCard>
@@ -766,10 +831,11 @@ function GlassCard({ children }: { children: React.ReactNode }) {
   );
 }
 
-function ActionButton({ icon, children }: { icon: string; children: React.ReactNode }) {
+function ActionButton({ icon, children, onClick }: { icon: string; children: React.ReactNode; onClick: () => void }) {
   return (
     <button
-      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-foreground transition-all hover:bg-white/30"
+      onClick={onClick}
+      className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-foreground transition-all hover:bg-white/30 active:scale-[0.98]"
       style={{
         background: 'rgba(255, 255, 255, 0.2)',
         border: '1px solid rgba(255, 255, 255, 0.3)'
@@ -781,7 +847,7 @@ function ActionButton({ icon, children }: { icon: string; children: React.ReactN
   );
 }
 
-function ReminderTemplate({ title, message }: { title: string; message: string }) {
+function ReminderTemplate({ title, message, onCopy }: { title: string; message: string; onCopy: (message: string) => void }) {
   return (
     <div 
       className="p-4 rounded-lg"
@@ -796,10 +862,11 @@ function ReminderTemplate({ title, message }: { title: string; message: string }
           <p className="text-sm text-foreground/80 italic">{message}</p>
         </div>
         <button
-          className="shrink-0 px-3 py-1.5 rounded text-xs font-medium text-white transition-all hover:bg-[#9A7890]"
+          onClick={() => onCopy(message)}
+          className="shrink-0 px-3 py-1.5 rounded text-xs font-medium text-white transition-all hover:bg-[#9A7890] active:scale-[0.98]"
           style={{ backgroundColor: '#B08CA7' }}
         >
-          Set Reminder
+          Copy Template
         </button>
       </div>
     </div>
