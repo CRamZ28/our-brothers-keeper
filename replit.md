@@ -8,9 +8,9 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
 - **Background**: Abstract wavy teal background (`/waves-bg.png`) with large decorative blur orbs for added depth
 - **Blur Orbs**: Three large visible orbs (600px, 700px, 400px) with cyan, emerald, and teal colors for depth
 - **Glass System**:
-  - **Glass Container**: `background: rgba(255, 255, 255, 0.03)` - no blur, 40px viewport margins, `2px solid rgba(255, 255, 255, 0.25)` border glow
+  - **Glass Container**: `background: rgba(255, 255, 255, 0.03)` - no blur, responsive viewport margins (16px mobile, 24px desktop), `2px solid rgba(255, 255, 255, 0.25)` border glow, full-width content for maximum screen utilization
   - **Sidebar**: `linear-gradient(to bottom, rgba(255, 255, 255, 0.65), rgba(192, 192, 192, 0.55))` with `backdrop-filter: blur(40px) saturate(180%)` - white to silver gradient glassmorphism with enhanced frosting, neutral text colors
-  - **Main Content**: `background: rgba(255, 255, 255, 0)` - fully transparent, no blur
+  - **Main Content**: `background: rgba(255, 255, 255, 0)` - fully transparent, no blur, full-width layout
   - **Cards**: `background: rgba(255, 255, 255, 0.1)` with `backdrop-filter: blur(6px)`
   - **Landing Page Glass**: Darker glass containers (`background: rgba(15, 23, 42, 0.4)` with `backdrop-blur-lg`) for WCAG-compliant text contrast, plus a darkening overlay (`linear-gradient(to bottom, rgba(15, 23, 42, 0.25), rgba(6, 78, 59, 0.20))`) for legibility while preserving glassmorphism aesthetic
 - **Logo**: Professional teal cross held by caring hands emblem (stored at `client/public/obk-emblem.png`) displayed directly on sidebar without background container
@@ -74,6 +74,7 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 
 ## Recent Changes
 - **November 21, 2025**:
+  - **Full-Screen Layout Optimization**: Reduced viewport margins from 40px to responsive 16px (mobile) / 24px (desktop) and removed max-width constraints on Dashboard content, allowing full utilization of available screen space while maintaining the glassmorphism aesthetic.
   - **Broadcast Email Notifications**: Admin/primary users can now send broadcast messages with automatic email notifications. When admins send messages to supporters (individual, group, or all), recipients receive both in-app messages and email notifications with the full message content. Emails include beautiful HTML formatting with "BROADCAST MESSAGE" badge, household branding, and direct link to view in app. System tracks email delivery success/failure rates and logs all broadcast activity.
   - **Role/Access Tier Alignment System**: Implemented comprehensive multi-layer safeguards ensuring primary/admin users always maintain family-tier access. Includes atomic SQL enforcement, validation checks, tier-only update protection, and helper functions across all code paths (invites, household creation, role changes, auto-promotion, manual approvals).
   - **UI Refinements**: Removed pixelated noise texture from background for smoother glassmorphic appearance. Updated Settings page URL card with transparent glassmorphism styling.

@@ -69,10 +69,10 @@ export default function DashboardLayout({
       <div className="absolute bottom-[15%] left-[5%] w-[700px] h-[700px] bg-emerald-300/35 blur-[180px] rounded-full pointer-events-none"></div>
       <div className="absolute top-[45%] right-[5%] w-[400px] h-[400px] bg-teal-200/45 blur-[130px] rounded-full pointer-events-none"></div>
 
-      {/* Glass Container - 40px margins from viewport edges */}
-      <div className="min-h-screen p-[40px]">
+      {/* Glass Container - reduced margins for more screen space */}
+      <div className="min-h-screen p-4 md:p-6">
         <div 
-          className="mx-auto max-w-7xl h-[calc(100vh-80px)] rounded-3xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(31,38,135,0.15),inset_0_1px_0_rgba(255,255,255,0.5)]"
+          className="mx-auto h-[calc(100vh-2rem)] md:h-[calc(100vh-3rem)] rounded-3xl overflow-hidden flex flex-col shadow-[0_8px_32px_rgba(31,38,135,0.15),inset_0_1px_0_rgba(255,255,255,0.5)]"
           style={{
             background: 'rgba(255, 255, 255, 0.03)',
             border: '2px solid rgba(255, 255, 255, 0.25)'

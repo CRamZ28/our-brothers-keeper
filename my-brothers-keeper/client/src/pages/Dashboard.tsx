@@ -66,7 +66,7 @@ export default function Dashboard() {
           continuous={true}
         />
       )}
-      <div className="p-6 lg:p-8 max-w-6xl mx-auto" data-tour="dashboard">
+      <div className="p-4 md:p-6 lg:p-8 w-full" data-tour="dashboard">
         
         {/* Top Section - Centered Family Name & Photo */}
         <div className="flex flex-col items-center mb-8 space-y-4">
