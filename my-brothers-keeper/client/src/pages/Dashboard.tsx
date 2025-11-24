@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { trpc } from "@/lib/trpc";
-import { Users, Plus, Heart, Calendar, Quote as QuoteIcon, CheckCircle2 } from "lucide-react";
+import { Users, Heart, Calendar, Quote as QuoteIcon, Bell, BookOpen, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 import { useState, useEffect, useRef } from "react";
 import { TourProvider } from "@/hooks/useTour";
@@ -12,10 +12,9 @@ export default function Dashboard() {
   const { data: users } = trpc.user.listInHousehold.useQuery();
   const { data: needs } = trpc.needs.list.useQuery();
   const { data: events } = trpc.events.list.useQuery();
-  const { data: userClaims } = trpc.needs.listUserClaims.useQuery();
-  const { data: userMealSignups } = trpc.mealTrain.listUserSignups.useQuery();
   const { data: updates } = trpc.updates.list.useQuery();
   const { data: announcements } = trpc.messages.listAnnouncements.useQuery();
+  const { data: reminders } = trpc.reminder.list.useQuery();
   
   const { data: availableTours } = trpc.onboarding.listAvailableTours.useQuery(
     { scope: "household" },
@@ -54,7 +53,7 @@ export default function Dashboard() {
     return eventDate >= now && eventDate <= oneWeekFromNow;
   }) || [];
 
-  const totalCommitments = (userClaims?.length || 0) + (userMealSignups?.length || 0);
+  const activeReminders = reminders?.filter((r: any) => r.status === "queued") || [];
 
   return (
     <DashboardLayout>
@@ -140,19 +139,13 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* HERO RIBBON LAYOUT - Two Column */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        {/* CLEAN CARD GRID - Four Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           
-          {/* LEFT: Memorial Display (2/3 width on large screens) */}
-          <div className="lg:col-span-2">
-            <DashboardDisplay household={household} />
-          </div>
-
-          {/* RIGHT: Metrics Ribbon (1/3 width on large screens) */}
-          <div className="space-y-4">
-            {/* Metric Card 1: Supporters */}
+          {/* Metric Card 1: Supporters */}
+          <Link href="/people">
             <div 
-              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              className="rounded-xl p-5 group hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02]"
               style={{
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
@@ -160,30 +153,20 @@ export default function Dashboard() {
                 border: '1px solid rgba(255, 255, 255, 0.3)'
               }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
-                    <Users className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-foreground/70 truncate">Supporters</p>
-                    <p className="text-2xl font-bold text-foreground">{activeUsers.length}</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: '#2DB5A8' }}>
+                  <Users className="w-5 h-5 text-white" />
                 </div>
-                <Link href="/people">
-                  <button 
-                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
-                    style={{ backgroundColor: '#B08CA7' }}
-                  >
-                    View
-                  </button>
-                </Link>
+                <p className="text-sm text-foreground/70">Supporters</p>
               </div>
+              <p className="text-3xl font-bold text-foreground">{activeUsers.length}</p>
             </div>
+          </Link>
 
-            {/* Metric Card 2: Open Needs */}
+          {/* Metric Card 2: Open Needs */}
+          <Link href="/needs">
             <div 
-              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              className="rounded-xl p-5 group hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02]"
               style={{
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
@@ -191,30 +174,20 @@ export default function Dashboard() {
                 border: '1px solid rgba(255, 255, 255, 0.3)'
               }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
-                    <Heart className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-foreground/70 truncate">Open Needs</p>
-                    <p className="text-2xl font-bold text-foreground">{openNeeds.length}</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: '#2DB5A8' }}>
+                  <Heart className="w-5 h-5 text-white" />
                 </div>
-                <Link href="/needs">
-                  <button 
-                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
-                    style={{ backgroundColor: '#B08CA7' }}
-                  >
-                    View
-                  </button>
-                </Link>
+                <p className="text-sm text-foreground/70">Open Needs</p>
               </div>
+              <p className="text-3xl font-bold text-foreground">{openNeeds.length}</p>
             </div>
+          </Link>
 
-            {/* Metric Card 3: Upcoming Events */}
+          {/* Metric Card 3: Upcoming Events */}
+          <Link href="/calendar">
             <div 
-              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              className="rounded-xl p-5 group hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02]"
               style={{
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
@@ -222,30 +195,20 @@ export default function Dashboard() {
                 border: '1px solid rgba(255, 255, 255, 0.3)'
               }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
-                    <Calendar className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-foreground/70 truncate">Upcoming Events</p>
-                    <p className="text-2xl font-bold text-foreground">{upcomingEvents.length}</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: '#2DB5A8' }}>
+                  <Calendar className="w-5 h-5 text-white" />
                 </div>
-                <Link href="/calendar">
-                  <button 
-                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
-                    style={{ backgroundColor: '#B08CA7' }}
-                  >
-                    View
-                  </button>
-                </Link>
+                <p className="text-sm text-foreground/70">Upcoming</p>
               </div>
+              <p className="text-3xl font-bold text-foreground">{upcomingEvents.length}</p>
             </div>
+          </Link>
 
-            {/* Metric Card 4: My Commitments */}
+          {/* Metric Card 4: My Reminders */}
+          <Link href="/reminders">
             <div 
-              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              className="rounded-xl p-5 group hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.02]"
               style={{
                 backdropFilter: 'blur(6px)',
                 WebkitBackdropFilter: 'blur(6px)',
@@ -253,278 +216,23 @@ export default function Dashboard() {
                 border: '1px solid rgba(255, 255, 255, 0.3)'
               }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1 min-w-0">
-                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
-                    <CheckCircle2 className="w-4 h-4 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-foreground/70 truncate">My Commitments</p>
-                    <p className="text-2xl font-bold text-foreground">{totalCommitments}</p>
-                  </div>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: '#B08CA7' }}>
+                  <Bell className="w-5 h-5 text-white" />
                 </div>
-                <Link href="/needs">
-                  <button 
-                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
-                    style={{ backgroundColor: '#B08CA7' }}
-                  >
-                    View
-                  </button>
-                </Link>
+                <p className="text-sm text-foreground/70">My Reminders</p>
               </div>
+              <p className="text-3xl font-bold text-foreground">{activeReminders.length}</p>
             </div>
-          </div>
+          </Link>
         </div>
 
-        {/* BELOW: Wide Highlight Panels */}
+        {/* BELOW: Two Large Content Cards */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
           
-          {/* Card 1: Supporters */}
+          {/* Card 1: Recent Updates */}
           <div 
             className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
-            style={{
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
-            }}
-          >
-            {/* Header with icon */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
-                <Users className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">Supporters</h2>
-            </div>
-
-            {/* Large number in mauve circle */}
-            <div className="mb-6 flex justify-center">
-              <div 
-                className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: '#B08CA7' }}
-              >
-                <div className="text-4xl font-bold text-slate-900">{activeUsers.length}</div>
-              </div>
-            </div>
-
-            {/* Preview items */}
-            <div className="flex-1 space-y-3 mb-6">
-              <Link href="/people?invite=true">
-                <div 
-                  className="p-6 rounded-lg text-center cursor-pointer transition-all duration-200 hover:bg-white/45 hover:-translate-y-0.5 active:scale-[0.98]"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)',
-                    border: '2px solid rgba(255, 255, 255, 0.5)'
-                  }}
-                >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <Users className="w-8 h-8 text-foreground/60" />
-                    <Plus className="w-6 h-6 text-foreground/60" />
-                  </div>
-                  <p className="text-sm font-semibold text-foreground mb-1">Grow Your Support Circle</p>
-                  <p className="text-xs text-foreground/70 mt-1">Invite friends and family to help coordinate care and stay connected</p>
-                </div>
-              </Link>
-            </div>
-
-            {/* Button at bottom */}
-            <Link href="/people">
-              <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
-                style={{
-                  backgroundColor: '#B08CA7',
-                }}
-              >
-                View All
-              </button>
-            </Link>
-          </div>
-
-          {/* Card 2: Open Needs */}
-          <div 
-            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
-            style={{
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
-            }}
-          >
-            {/* Header with icon */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
-                <Heart className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">Open Needs</h2>
-            </div>
-
-            {/* Large number in mauve circle */}
-            <div className="mb-6 flex justify-center">
-              <div 
-                className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: '#B08CA7' }}
-              >
-                <div className="text-4xl font-bold text-slate-900">{openNeeds.length}</div>
-              </div>
-            </div>
-
-            {/* Preview items */}
-            <div className="flex-1 space-y-3 mb-6">
-              {openNeeds.length === 0 ? (
-                <div 
-                  className="p-3 rounded-lg text-center text-sm text-foreground/70 italic"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)'
-                  }}
-                >
-                  No open needs
-                </div>
-              ) : (
-                openNeeds.slice(0, 2).map((need) => (
-                  <NeedCard key={need.id} need={need} />
-                ))
-              )}
-            </div>
-
-            {/* Button at bottom */}
-            <Link href="/needs">
-              <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
-                style={{
-                  backgroundColor: '#B08CA7',
-                }}
-              >
-                View All
-              </button>
-            </Link>
-          </div>
-
-          {/* Card 3: Upcoming Events */}
-          <div 
-            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
-            style={{
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
-            }}
-          >
-            {/* Header with icon */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
-                <Calendar className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">Upcoming Events</h2>
-            </div>
-
-            {/* Large number in mauve circle */}
-            <div className="mb-6 flex justify-center">
-              <div 
-                className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: '#B08CA7' }}
-              >
-                <div className="text-4xl font-bold text-slate-900">{upcomingEvents.length}</div>
-              </div>
-            </div>
-
-            {/* Preview items */}
-            <div className="flex-1 space-y-3 mb-6">
-              {upcomingEvents.length === 0 ? (
-                <div 
-                  className="p-3 rounded-lg text-center text-sm text-foreground/70 italic"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)'
-                  }}
-                >
-                  No events this week
-                </div>
-              ) : (
-                upcomingEvents.slice(0, 2).map((event) => (
-                  <EventCard key={event.id} event={event} />
-                ))
-              )}
-            </div>
-
-            {/* Button at bottom */}
-            <Link href="/calendar">
-              <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
-                style={{
-                  backgroundColor: '#B08CA7',
-                }}
-              >
-                View Calendar
-              </button>
-            </Link>
-          </div>
-
-          {/* Card 4: My Commitments */}
-          <div 
-            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
-            style={{
-              backdropFilter: 'blur(6px)',
-              WebkitBackdropFilter: 'blur(6px)',
-              background: 'rgba(255, 255, 255, 0.1)',
-              border: '1px solid rgba(255, 255, 255, 0.3)'
-            }}
-          >
-            {/* Header with icon */}
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#2DB5A8' }}>
-                <CheckCircle2 className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-lg font-semibold text-foreground">My Commitments</h2>
-            </div>
-
-            {/* Large number in mauve circle */}
-            <div className="mb-6 flex justify-center">
-              <div 
-                className="w-24 h-24 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: '#B08CA7' }}
-              >
-                <div className="text-4xl font-bold text-slate-900">{totalCommitments}</div>
-              </div>
-            </div>
-
-            {/* Preview items */}
-            <div className="flex-1 space-y-3 mb-6">
-              {totalCommitments === 0 ? (
-                <div 
-                  className="p-3 rounded-lg text-center text-sm text-foreground/70 italic"
-                  style={{
-                    background: 'rgba(255, 255, 255, 0.3)'
-                  }}
-                >
-                  No active commitments
-                </div>
-              ) : (
-                <>
-                  {userClaims?.slice(0, 2).map((need) => (
-                    <CommitmentCard key={`need-${need.id}`} item={need} type="need" />
-                  ))}
-                  {userMealSignups?.slice(0, 2 - (userClaims?.length || 0)).map((signup) => (
-                    <CommitmentCard key={`meal-${signup.id}`} item={signup} type="meal" />
-                  ))}
-                </>
-              )}
-            </div>
-
-            {/* Button at bottom */}
-            <Link href="/needs">
-              <button 
-                className="w-full py-3 px-4 text-white font-medium rounded-lg transition-all duration-200 hover:bg-[#9A7890] active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#B08CA7] focus:ring-offset-2"
-                style={{
-                  backgroundColor: '#B08CA7',
-                }}
-              >
-                View All
-              </button>
-            </Link>
-          </div>
-
-          {/* Card 5: Recent Updates - Full Width */}
-          <div 
-            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300 md:col-span-2"
             style={{
               backdropFilter: 'blur(6px)',
               WebkitBackdropFilter: 'blur(6px)',
@@ -547,6 +255,97 @@ export default function Dashboard() {
               household={household}
               isAdminOrPrimary={isAdminOrPrimary}
             />
+          </div>
+
+          {/* Card 2: Resources & Help */}
+          <div 
+            className="rounded-2xl p-6 flex flex-col group hover:shadow-lg transition-all duration-300"
+            style={{
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              background: 'rgba(255, 255, 255, 0.1)',
+              border: '1px solid rgba(255, 255, 255, 0.3)'
+            }}
+          >
+            {/* Header with icon */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl" style={{ backgroundColor: '#B08CA7' }}>
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-lg font-semibold text-foreground">Resources & Help</h2>
+            </div>
+
+            {/* Description */}
+            <p className="text-sm text-foreground/80 mb-6 leading-relaxed">
+              Find support, send encouragement, and stay organized with helpful tools and resources.
+            </p>
+
+            {/* Quick Links */}
+            <div className="space-y-3 flex-1">
+              <Link href="/resources">
+                <button 
+                  className="w-full py-3 px-4 text-foreground font-medium rounded-lg transition-all duration-200 hover:bg-white/30 active:scale-[0.98] flex items-center justify-between group"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" style={{ color: '#2DB5A8' }} />
+                    Grief Support & Guidance
+                  </span>
+                  <span className="text-foreground/50 group-hover:text-foreground/70">→</span>
+                </button>
+              </Link>
+
+              <Link href="/memory-wall">
+                <button 
+                  className="w-full py-3 px-4 text-foreground font-medium rounded-lg transition-all duration-200 hover:bg-white/30 active:scale-[0.98] flex items-center justify-between group"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4" style={{ color: '#B08CA7' }} />
+                    Share a Memory
+                  </span>
+                  <span className="text-foreground/50 group-hover:text-foreground/70">→</span>
+                </button>
+              </Link>
+
+              <Link href="/needs">
+                <button 
+                  className="w-full py-3 px-4 text-foreground font-medium rounded-lg transition-all duration-200 hover:bg-white/30 active:scale-[0.98] flex items-center justify-between group"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <Heart className="w-4 h-4" style={{ color: '#2DB5A8' }} />
+                    Help With Needs
+                  </span>
+                  <span className="text-foreground/50 group-hover:text-foreground/70">→</span>
+                </button>
+              </Link>
+
+              <Link href="/reminders">
+                <button 
+                  className="w-full py-3 px-4 text-foreground font-medium rounded-lg transition-all duration-200 hover:bg-white/30 active:scale-[0.98] flex items-center justify-between group"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)'
+                  }}
+                >
+                  <span className="flex items-center gap-2">
+                    <Bell className="w-4 h-4" style={{ color: '#B08CA7' }} />
+                    My Reminders
+                  </span>
+                  <span className="text-foreground/50 group-hover:text-foreground/70">→</span>
+                </button>
+              </Link>
+            </div>
           </div>
 
         </div>
@@ -741,12 +540,14 @@ function FeaturedMemory({ memoryId }: { memoryId?: number | null }) {
   );
 }
 
-function NeedCard({ need }: { need: any }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-  
-  const claimCount = need.claimCount || 0;
-  const capacity = need.capacity;
-  const hasCapacity = capacity !== null && capacity !== undefined;
+function RecentUpdatesContent({ announcements, updates, household, isAdminOrPrimary }: { 
+  announcements: any; 
+  updates: any; 
+  household: any; 
+  isAdminOrPrimary: boolean;
+}) {
+  let displayContent = null;
+  let displayType = '';
   
   return (
     <div 
