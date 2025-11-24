@@ -68,11 +68,10 @@ export default function Dashboard() {
       )}
       <div className="p-4 md:p-6 lg:p-8 w-full" data-tour="dashboard">
         
-        {/* Top Section - Centered Family Name & Photo */}
-        <div className="flex flex-col items-center mb-8 space-y-4">
-          {/* Family Name Pill */}
+        {/* Family Name - Top Center */}
+        <div className="flex flex-col items-center mb-6 space-y-3">
           <div 
-            className="px-10 py-5 rounded-full"
+            className="px-8 py-4 rounded-full"
             style={{
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
@@ -82,7 +81,7 @@ export default function Dashboard() {
             }}
           >
             <h1 
-              className="text-2xl sm:text-3xl lg:text-[36px] font-semibold tracking-wide text-center overflow-hidden px-2"
+              className="text-2xl sm:text-3xl lg:text-[36px] font-semibold tracking-wide text-center"
               style={{
                 fontFamily: "'Cinzel', serif",
                 color: '#0fa9a7',
@@ -101,53 +100,184 @@ export default function Dashboard() {
             </h1>
           </div>
 
-          {/* Memorial Subtitle - Optional */}
+          {/* Memorial Subtitle */}
           {household.showMemorialSubtitle && household.memorialName && (
-            <div className="text-center mt-3 px-4">
-              <p 
-                className="text-base sm:text-lg md:text-xl italic tracking-wide"
+            <p 
+              className="text-base sm:text-lg md:text-xl italic tracking-wide text-center px-4"
+              style={{ 
+                fontFamily: 'Georgia, serif',
+                color: '#4d7c7a',
+                textShadow: '0 1px 3px rgba(45, 181, 168, 0.15)',
+                letterSpacing: '0.02em'
+              }}
+            >
+              In Loving Memory of{' '}
+              <span 
+                className="font-semibold not-italic"
                 style={{ 
-                  fontFamily: 'Georgia, serif',
-                  color: '#4d7c7a',
-                  textShadow: '0 1px 3px rgba(45, 181, 168, 0.15)',
-                  letterSpacing: '0.02em'
+                  color: '#2DB5A8',
+                  textShadow: '0 1px 4px rgba(45, 181, 168, 0.25)'
                 }}
               >
-                In Loving Memory of{' '}
-                <span 
-                  className="font-semibold not-italic"
-                  style={{ 
-                    color: '#2DB5A8',
-                    textShadow: '0 1px 4px rgba(45, 181, 168, 0.25)'
-                  }}
-                >
-                  {household.memorialName}
+                {household.memorialName}
+              </span>
+              {(household.memorialBirthDate || household.memorialPassingDate) && (
+                <span className="block mt-1 text-sm sm:text-base" style={{ color: '#5a8887' }}>
+                  {household.memorialBirthDate && household.memorialPassingDate && (
+                    <span>
+                      {formatMemorialDate(household.memorialBirthDate)} - {formatMemorialDate(household.memorialPassingDate)}
+                    </span>
+                  )}
+                  {household.memorialBirthDate && !household.memorialPassingDate && (
+                    <span>Born {formatMemorialDate(household.memorialBirthDate)}</span>
+                  )}
+                  {!household.memorialBirthDate && household.memorialPassingDate && (
+                    <span>Passed {formatMemorialDate(household.memorialPassingDate)}</span>
+                  )}
                 </span>
-                {(household.memorialBirthDate || household.memorialPassingDate) && (
-                  <span className="block mt-1 text-sm sm:text-base" style={{ color: '#5a8887' }}>
-                    {household.memorialBirthDate && household.memorialPassingDate && (
-                      <span>
-                        {formatMemorialDate(household.memorialBirthDate)} - {formatMemorialDate(household.memorialPassingDate)}
-                      </span>
-                    )}
-                    {household.memorialBirthDate && !household.memorialPassingDate && (
-                      <span>Born {formatMemorialDate(household.memorialBirthDate)}</span>
-                    )}
-                    {!household.memorialBirthDate && household.memorialPassingDate && (
-                      <span>Passed {formatMemorialDate(household.memorialPassingDate)}</span>
-                    )}
-                  </span>
-                )}
-              </p>
-            </div>
+              )}
+            </p>
           )}
-
-          {/* Dashboard Display - Conditional Rendering */}
-          <DashboardDisplay household={household} />
         </div>
 
-        {/* Four Square Cards Grid - 2x2 on desktop */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-8">
+        {/* HERO RIBBON LAYOUT - Two Column */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          
+          {/* LEFT: Memorial Display (2/3 width on large screens) */}
+          <div className="lg:col-span-2">
+            <DashboardDisplay household={household} />
+          </div>
+
+          {/* RIGHT: Metrics Ribbon (1/3 width on large screens) */}
+          <div className="space-y-4">
+            {/* Metric Card 1: Supporters */}
+            <div 
+              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              style={{
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
+                    <Users className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-foreground/70 truncate">Supporters</p>
+                    <p className="text-2xl font-bold text-foreground">{activeUsers.length}</p>
+                  </div>
+                </div>
+                <Link href="/people">
+                  <button 
+                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
+                    style={{ backgroundColor: '#B08CA7' }}
+                  >
+                    View
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Metric Card 2: Open Needs */}
+            <div 
+              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              style={{
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
+                    <Heart className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-foreground/70 truncate">Open Needs</p>
+                    <p className="text-2xl font-bold text-foreground">{openNeeds.length}</p>
+                  </div>
+                </div>
+                <Link href="/needs">
+                  <button 
+                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
+                    style={{ backgroundColor: '#B08CA7' }}
+                  >
+                    View
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Metric Card 3: Upcoming Events */}
+            <div 
+              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              style={{
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
+                    <Calendar className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-foreground/70 truncate">Upcoming Events</p>
+                    <p className="text-2xl font-bold text-foreground">{upcomingEvents.length}</p>
+                  </div>
+                </div>
+                <Link href="/calendar">
+                  <button 
+                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
+                    style={{ backgroundColor: '#B08CA7' }}
+                  >
+                    View
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Metric Card 4: My Commitments */}
+            <div 
+              className="rounded-xl p-4 group hover:shadow-lg transition-all duration-300"
+              style={{
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 flex-1 min-w-0">
+                  <div className="p-2 rounded-lg shrink-0" style={{ backgroundColor: '#2DB5A8' }}>
+                    <CheckCircle2 className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-foreground/70 truncate">My Commitments</p>
+                    <p className="text-2xl font-bold text-foreground">{totalCommitments}</p>
+                  </div>
+                </div>
+                <Link href="/needs">
+                  <button 
+                    className="px-3 py-1.5 text-xs text-white font-medium rounded-lg transition-all hover:bg-[#9A7890] shrink-0"
+                    style={{ backgroundColor: '#B08CA7' }}
+                  >
+                    View
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* BELOW: Wide Highlight Panels */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-8">
           
           {/* Card 1: Supporters */}
           <div 
