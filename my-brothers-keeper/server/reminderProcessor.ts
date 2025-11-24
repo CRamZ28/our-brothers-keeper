@@ -68,7 +68,27 @@ export async function processReminders() {
         let notificationType: NotificationType;
         let actionUrl: string;
 
-        if (reminder.targetType === "need") {
+        if (reminder.targetType === "personal") {
+          notificationType = "personal_reminder";
+          actionUrl = `/reminders`;
+          context = {
+            reminderTitle: reminder.title || "Personal Reminder",
+            reminderDescription: reminder.description || "",
+          };
+        } else if (reminder.targetType === "need") {
+          if (!reminder.targetId) {
+            console.warn(`[Reminders] Need reminder ${reminder.id} has no targetId`);
+            await db
+              .update(reminders)
+              .set({ 
+                status: "cancelled", 
+                errorMessage: "Need reminder missing targetId",
+                updatedAt: new Date() 
+              })
+              .where(eq(reminders.id, reminder.id));
+            continue;
+          }
+
           const need = await db
             .select()
             .from(needs)
@@ -104,6 +124,19 @@ export async function processReminders() {
             }) : "No due date",
           };
         } else {
+          if (!reminder.targetId) {
+            console.warn(`[Reminders] Event reminder ${reminder.id} has no targetId`);
+            await db
+              .update(reminders)
+              .set({ 
+                status: "cancelled", 
+                errorMessage: "Event reminder missing targetId",
+                updatedAt: new Date() 
+              })
+              .where(eq(reminders.id, reminder.id));
+            continue;
+          }
+
           const event = await db
             .select()
             .from(events)

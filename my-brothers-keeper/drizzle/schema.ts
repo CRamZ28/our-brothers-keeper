@@ -57,7 +57,8 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "new_message",
   "new_announcement",
   "new_update",
-  "invite_sent"
+  "invite_sent",
+  "personal_reminder"
 ]);
 export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
 export const reminderTargetTypeEnum = pgEnum("reminder_target_type", ["need", "event", "personal"]);

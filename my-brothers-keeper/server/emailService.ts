@@ -19,7 +19,8 @@ export type NotificationType =
   | 'new_message'
   | 'new_announcement'
   | 'new_update'
-  | 'invite_sent';
+  | 'invite_sent'
+  | 'personal_reminder';
 
 export interface EmailContext {
   recipientName: string;
@@ -197,6 +198,18 @@ function getEmailTemplate(type: NotificationType, context: EmailContext): { subj
           ${context.eventLocation ? `<p style="margin: 5px 0 0 0; color: #666; font-size: 14px;"><strong>Where:</strong> ${context.eventLocation}</p>` : ''}
         </div>
         <p>Click the button below to view the event details.</p>
+      `
+    },
+    personal_reminder: {
+      subject: `🔔 Reminder: ${context.reminderTitle}`,
+      body: `
+        <p>Hi ${context.recipientName},</p>
+        <p>This is your personal reminder:</p>
+        <div style="background: #f9fafb; padding: 15px; border-left: 4px solid #2DB5A8; margin: 20px 0;">
+          <h3 style="margin: 0 0 10px 0; color: #2DB5A8;">${context.reminderTitle}</h3>
+          ${context.reminderDescription ? `<p style="margin: 0;">${context.reminderDescription}</p>` : ''}
+        </div>
+        <p>Take care and remember you're doing great supporting ${context.householdName}!</p>
       `
     },
     invite_sent: {

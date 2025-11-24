@@ -1,7 +1,7 @@
 # Our Brother's Keeper - Replit Project Documentation
 
 ## Overview
-Our Brother's Keeper is a compassionate platform designed to help families and communities provide sustained support to those who have lost a loved one. The application simplifies community support and communication by offering features such as a needs board, shared calendar, meal train, messaging, and update tracking, aiming to provide a robust and user-friendly experience for managing community support during difficult times.
+Our Brother's Keeper is a platform designed to provide sustained support to families and communities after the loss of a loved one. It offers features like a needs board, shared calendar, meal train, messaging, and update tracking to simplify community support and communication during difficult times. The project aims to be a user-friendly and robust solution for managing community support.
 
 ## User Preferences
 - **Design Style**: Glassmorphism architecture with abstract wave background image
@@ -28,42 +28,40 @@ Our Brother's Keeper is a compassionate platform designed to help families and c
   - Meal Train: Address/location visibility follows meal train visibility - anyone who can see the meal train can see the location
 
 ## System Architecture
-The application features a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend with tRPC for type-safe APIs. It uses PostgreSQL with Drizzle ORM and Replit Auth for authentication. The architecture follows a clear separation of concerns with `client/`, `server/`, and `shared/` directories.
+The application uses a React frontend (Vite, TypeScript, Tailwind CSS) and an Express.js backend with tRPC for type-safe APIs. PostgreSQL with Drizzle ORM is used for data persistence, and Replit Auth handles authentication. The project structure separates `client/`, `server/`, and `shared/` concerns.
 
 ### Role and Access Tier Alignment
-**Critical Business Rule**: User roles and access tiers must align to prevent permission/visibility mismatches:
-- **Primary users**: ALWAYS get `family` access tier (full visibility + full control)
-- **Admin users**: ALWAYS get `family` access tier (full visibility + elevated control)
-- **Supporter users**: Get `community` access tier by default (can request upgrades to friend/family)
-- **Helper function**: `getAccessTierForRole()` in `server/db.ts` enforces this alignment
-- **Enforcement points**: Household creation, invite acceptance, and all user role assignments automatically set appropriate access tier
+User roles and access tiers are strictly aligned to prevent permission/visibility issues:
+- Primary and Admin users always have `family` access (full visibility and control).
+- Supporter users default to `community` access, with options to upgrade.
+- A helper function `getAccessTierForRole()` in `server/db.ts` enforces this alignment during household creation, invite acceptance, and all user role assignments.
 
 ### UI/UX Decisions
-The UI/UX is built around a consistent glassmorphism design system using teal gradients and neutral typography, featuring:
+The UI/UX is built on a consistent glassmorphism design system, featuring:
 - **Glassmorphism Architecture**: Transparent and blurred elements over a wavy teal background with decorative blur orbs.
-- **Dashboard**: Centralized family name, customizable display area, and cards for Supporters, Open Needs, and Upcoming Events. Cards use white icons on teal backgrounds, large numbers, teal gradient accent bars, and Mauve Purple action buttons.
-- **Responsive Design**: Adapts UI elements for various screen sizes, including mobile-first optimization.
-- **Calendar UI Consistency**: Uniform transparent glassmorphism styling across all calendars (Events, Needs, Meal Train) with distinct color coding for entries.
-- **Memory Wall**: Interactive drag-and-drop vision board with overlapping cards, random rotations, and vibrant color coding for memories, stories, and images.
+- **Dashboard**: Displays a central family name, customizable area, and cards for Supporters, Open Needs, and Upcoming Events, using consistent design elements.
+- **Responsive Design**: The interface is optimized for various screen sizes, including mobile devices.
+- **Calendar UI Consistency**: All calendars (Events, Needs, Meal Train) maintain a transparent glassmorphism style with distinct color coding.
+- **Memory Wall**: An interactive drag-and-drop vision board with overlapping, rotated cards and color-coded content for memories, stories, and images.
 
 ### Technical Implementations & Feature Specifications
-- **Core Features**: Includes Meal Train management (scheduling, capacity, preferences), Group management (CRUD for supporters), Needs Board (community support requests, unclaim functionality), Events Calendar (scheduling, "Important Dates"), Family Updates (unified timeline, media uploads), an interactive Memory Wall, and a comprehensive Resources page.
-- **Resources & Education**: Tabbed insights hub (`/resources`) with three audience-specific sections: "For Those Who Are Grieving" (understanding grief stages, self-care, faith-based guidance), "For Friends & Family" (how to help, what to say/avoid, long-term support, actionable buttons for sending encouragement, helping with needs, and viewing reminders), and "Ongoing Support & Community" (coordination strategies, platform feature guidance, community resilience, reminder templates with copy functionality).
-- **Privacy & Access Control**: Comprehensive 3-option visibility model applied across all features. An Access Tier System (Community/Friend/Family) allows users to select their support level, with optional auto-promotion. Role-Based Access (Admin, Primary, Supporter) defines permissions.
-- **Onboarding & Support**: Secure invitation system for supporters via public household pages. An interactive onboarding tour using `react-joyride` guides primary users through setup, with contextual `HelpIcon` components for in-app assistance.
-- **Communication & Notifications**: Opt-in email notification system for 14 event types, with configurable user preferences and role-sensitive defaults. A personal Reminder System supporting both need/event-based reminders and standalone personal reminders with custom titles, descriptions, and trigger times, processed by a background job.
-- **Household Search**: `/search` route with fuzzy name matching for discovering existing family support pages.
-- **User & Content Management**: Profile picture uploads with object storage integration.
-- **Security & Privacy Architecture**: Production-ready, centralized visibility system (`server/visibilityHelpers.ts`) implementing a "Five-Step Security Pattern" for endpoint validation, optimized by caching group membership.
-- **Database Management**: Drizzle ORM's **push workflow** for schema management, defining changes in `drizzle/schema.ts`.
-- **Performance**: PWA configuration optimized to exclude large assets from service worker precaching, using runtime caching instead to reduce precache size.
+- **Core Features**: Include Meal Train management, Group management, a Needs Board with unclaim functionality, an Events Calendar with "Important Dates," Family Updates with media uploads, an interactive Memory Wall, and a Resources page.
+- **Resources & Education**: A tabbed insights hub (`/resources`) provides sections for "For Those Who Are Grieving," "For Friends & Family," and "Ongoing Support & Community," offering guidance and actionable features.
+- **Privacy & Access Control**: A 3-option visibility model is applied across all features. An Access Tier System (Community/Friend/Family) allows users to select support levels, with Role-Based Access (Admin, Primary, Supporter) defining permissions.
+- **Onboarding & Support**: Features a secure invitation system for supporters, an interactive onboarding tour using `react-joyride`, and contextual `HelpIcon` components.
+- **Communication & Notifications**: An opt-in email notification system for 15 event types, with configurable user preferences. A personal Reminder System supports both need/event-based and standalone reminders, processed by a background job.
+- **Household Search**: A `/search` route allows discovering existing family support pages via fuzzy name matching.
+- **User & Content Management**: Supports profile picture uploads integrated with object storage.
+- **Security & Privacy Architecture**: A production-ready, centralized visibility system (`server/visibilityHelpers.ts`) implements a "Five-Step Security Pattern" for endpoint validation, optimized with group membership caching.
+- **Database Management**: Uses Drizzle ORM's **push workflow** for schema management.
+- **Performance**: PWA configuration excludes large assets from service worker precaching, utilizing runtime caching for efficiency.
 - **React Deduplication**: Vite configuration includes `dedupe: ["react", "react-dom"]` to prevent "Invalid hook call" errors.
 
 ## External Dependencies
 - **Database**: PostgreSQL
 - **Authentication**: Replit Auth (OpenID Connect via Passport.js)
 - **Session Store**: PostgreSQL (`connect-pg-simple`)
-- **Email Service**: Resend (manually configured with RESEND_API_KEY secret, sends from notifications@obkapp.com)
+- **Email Service**: Resend (configured with `RESEND_API_KEY`, sends from `notifications@obkapp.com`)
 - **Error Monitoring**: Sentry
 - **Frontend Framework**: React
 - **Build Tool**: Vite
@@ -72,26 +70,3 @@ The UI/UX is built around a consistent glassmorphism design system using teal gr
 - **API Layer**: tRPC
 - **Package Manager**: pnpm
 - **Runtime**: Node.js
-
-## Recent Changes
-- **November 24, 2025**:
-  - **Standalone Personal Reminders**: Extended reminder system to support personal reminders not tied to specific needs or events. Users can create custom reminders with title, description (optional), and trigger date/time via "Create Reminder" button on Reminders page. Database schema updated to include "personal" target type with nullable targetId/reminderOffsetMinutes fields and new title/description fields. Personal reminders display in dedicated section with full glassmorphism styling.
-  - **Resources Page Action Buttons**: Added three actionable buttons to "For Friends & Family" tab: "Send Encouragement" (navigates to Memory Wall), "Help With Needs" (navigates to Needs Board), and "My Reminders" (navigates to Reminders page). Removed crisis resources section per user preference.
-  - **Resources Page**: Added comprehensive tabbed insights hub at `/resources` positioned after People in navigation. Features three audience-specific tabs: "For Those Who Are Grieving" (grief stages, self-care, faith-based guidance), "For Friends & Family" (helpful/unhelpful phrases, practical actions, long-term support strategies), and "Ongoing Support & Community" (coordination tips, platform feature guide, community resilience building, reminder templates with copy-to-clipboard functionality). Uses clean tab navigation with gradient-active state and glassmorphism styling consistent with app design.
-- **November 21, 2025**:
-  - **Full-Screen Layout Optimization**: Reduced viewport margins from 40px to responsive 16px (mobile) / 24px (desktop) and removed max-width constraints on Dashboard content, allowing full utilization of available screen space while maintaining the glassmorphism aesthetic.
-  - **Broadcast Email Notifications**: Admin/primary users can now send broadcast messages with automatic email notifications. When admins send messages to supporters (individual, group, or all), recipients receive both in-app messages and email notifications with the full message content. Emails include beautiful HTML formatting with "BROADCAST MESSAGE" badge, household branding, and direct link to view in app. System tracks email delivery success/failure rates and logs all broadcast activity.
-  - **Role/Access Tier Alignment System**: Implemented comprehensive multi-layer safeguards ensuring primary/admin users always maintain family-tier access. Includes atomic SQL enforcement, validation checks, tier-only update protection, and helper functions across all code paths (invites, household creation, role changes, auto-promotion, manual approvals).
-  - **UI Refinements**: Removed pixelated noise texture from background for smoother glassmorphic appearance. Updated Settings page URL card with transparent glassmorphism styling.
-- **November 20, 2025**: 
-  - **Object Storage Fix**: Removed silent fallback to local file storage in `server/uploadRouter.ts` that caused dashboard photos to disappear in production. Now enforces object storage only - uploads fail loudly if object storage is misconfigured, ensuring all uploads persist permanently in autoscale deployments
-  - **Sidebar User Profile**: Updated user button background to mauve purple gradient (`rgba(176, 140, 167, 0.35)`) for better visibility. Admin/Primary roles now display as distinctive teal badges with white text instead of subtle gray text
-  - **Landing Page Z-Index Fix**: Added `z-index: 10` to main content wrapper to ensure section headers ("Why Our Brother's Keeper", "You're in Control—Always", "Everything You Need") appear above fixed background layers on mobile
-  - **Landing Page Background Architecture**: Separated wavy background into dedicated fixed layer to solve iOS Safari `background-attachment: fixed` limitation - background now stays perfectly still while content scrolls on mobile
-  - **Memory Wall Enhancements**: Increased card base opacity from `0.85` to `0.95` for better readability when stacked. Added click-to-expand feature with full-screen modal view, supporting mouse/touch/keyboard (Enter/Space keys), drag detection with 100ms debounce, interactive element exclusion (buttons/images), and proper accessibility (ARIA attributes, focus management)
-  - **Landing Page Mobile Fix**: Reduced feature card background opacity (white cards: `0.35` → `0.15`, purple cards: `0.4` → `0.18`) to eliminate "floating panel" effect on mobile scroll, allowing wavy background to show through naturally
-- **November 19, 2025**: Comprehensive mobile optimization and bug fixes:
-  - **Mobile Text Overflow Protection**: Added `min-w-0` and `break-words` to GlassPageLayout, DashboardLayout, Card components, and page-specific fixes for Needs/MealTrain with standardized flex pattern (icon `shrink-0` + text wrapper `min-w-0 flex-1` + content `break-words`)
-  - **Timezone Bug Fix**: Fixed Dashboard memorial dates displaying one day earlier (e.g., showing 7/20 instead of 7/21) by parsing YYYY-MM-DD strings directly instead of using `new Date()` which caused UTC conversion issues in western timezones
-  - **Role Management**: Both Primary and Admin users can now change user roles (admin/supporter) via dropdown on People page
-- **November 18, 2025**: Implemented invite email functionality via Resend API. Emails now sent to supporters when invited to join a household's support circle. Manual RESEND_API_KEY configuration (Replit connector integration declined by user).
