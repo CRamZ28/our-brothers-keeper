@@ -35,6 +35,7 @@ The dashboard uses an "At-a-Glance Hub" layout for quick insights and navigation
 - **Top**: Family name with Cinzel serif font and customizable memorial subtitle
 - **Stats Row**: Four responsive stat cards showing Supporters, Open Needs, Events This Week, and My Reminders counts
 - **Content Row**: Two larger cards featuring Latest Family Updates (recent 3 posts) and Resources & Support (with CTA to /resources page)
+- **Memorial Features Row**: Conditionally displays Memorial Photo Slideshow (auto-rotating every 5 seconds with manual controls) and Memorial Quote (Pinyon Script font) when household has dashboardPhotos or dashboardQuote configured
 - **Mobile-first**: Grid layout adapts from single column (mobile) to 2 columns (tablet) to 4 columns (desktop) for stats
 - Clean glassmorphism styling consistent with overall design system
 
