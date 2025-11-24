@@ -60,7 +60,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "invite_sent"
 ]);
 export const notificationChannelEnum = pgEnum("notification_channel", ["email", "push"]);
-export const reminderTargetTypeEnum = pgEnum("reminder_target_type", ["need", "event"]);
+export const reminderTargetTypeEnum = pgEnum("reminder_target_type", ["need", "event", "personal"]);
 export const reminderStatusEnum = pgEnum("reminder_status", ["queued", "sent", "cancelled", "failed"]);
 export const memoryWallTypeEnum = pgEnum("memory_wall_type", ["memory", "story", "encouragement", "prayer", "picture"]);
 export const giftStatusEnum = pgEnum("gift_status", ["needed", "purchased", "received"]);
@@ -674,7 +674,7 @@ export type NotificationLog = typeof notificationLogs.$inferSelect;
 export type InsertNotificationLog = typeof notificationLogs.$inferInsert;
 
 /**
- * Reminders - User-specific reminders for needs and events
+ * Reminders - User-specific reminders for needs, events, and personal reminders
  * Stores reminder preferences and tracks sent status
  */
 export const reminders = pgTable("reminders", {
@@ -682,9 +682,11 @@ export const reminders = pgTable("reminders", {
   userId: varchar("user_id").notNull(),
   householdId: integer("household_id").notNull(),
   targetType: reminderTargetTypeEnum("target_type").notNull(),
-  targetId: integer("target_id").notNull(),
-  reminderOffsetMinutes: integer("reminder_offset_minutes").notNull(),
+  targetId: integer("target_id"), // Nullable for personal reminders
+  reminderOffsetMinutes: integer("reminder_offset_minutes"), // Nullable for personal reminders
   triggerAt: timestamp("trigger_at").notNull(),
+  title: text("title"), // For personal reminders
+  description: text("description"), // For personal reminders
   status: reminderStatusEnum("status").default("queued").notNull(),
   sentAt: timestamp("sent_at"),
   retryAt: timestamp("retry_at"),
