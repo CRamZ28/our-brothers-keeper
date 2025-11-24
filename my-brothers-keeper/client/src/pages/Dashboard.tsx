@@ -4,6 +4,8 @@ import { trpc } from "@/lib/trpc";
 import { Users, Heart, Calendar, Bell, MessageSquare, BookOpen } from "lucide-react";
 import { Link } from "wouter";
 import { TourProvider } from "@/hooks/useTour";
+import MemorialSlideshow from "@/components/MemorialSlideshow";
+import MemorialQuote from "@/components/MemorialQuote";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -277,6 +279,22 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
+
+        {/* Memorial Features Row */}
+        {((household.dashboardPhotos && household.dashboardPhotos.length > 0) || household.dashboardQuote) && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            {household.dashboardPhotos && household.dashboardPhotos.length > 0 && (
+              <MemorialSlideshow photos={household.dashboardPhotos} />
+            )}
+            
+            {household.dashboardQuote && (
+              <MemorialQuote 
+                quote={household.dashboardQuote} 
+                attribution={household.dashboardQuoteAttribution || undefined}
+              />
+            )}
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );
