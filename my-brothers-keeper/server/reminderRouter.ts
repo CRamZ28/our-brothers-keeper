@@ -6,6 +6,52 @@ import { reminders, needs, events, households } from "../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 
 export const reminderRouter = router({
+  // Create a personal reminder (standalone, not tied to need/event)
+  createPersonal: protectedProcedure
+    .input(
+      z.object({
+        title: z.string().min(1, "Title is required"),
+        description: z.string().optional(),
+        triggerAt: z.string(), // ISO date string
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Database not available" });
+
+      if (!ctx.user.householdId) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "User not in household" });
+      }
+
+      const triggerDate = new Date(input.triggerAt);
+
+      // Check if trigger time is in the past
+      if (triggerDate < new Date()) {
+        throw new TRPCError({ 
+          code: "BAD_REQUEST", 
+          message: "Reminder time must be in the future" 
+        });
+      }
+
+      // Create the personal reminder
+      const reminder = await db
+        .insert(reminders)
+        .values({
+          userId: ctx.user.id,
+          householdId: ctx.user.householdId,
+          targetType: "personal",
+          targetId: null,
+          reminderOffsetMinutes: null,
+          triggerAt: triggerDate,
+          title: input.title,
+          description: input.description || null,
+          status: "queued",
+        })
+        .returning();
+
+      return reminder[0];
+    }),
+
   // Create a new reminder
   create: protectedProcedure
     .input(
