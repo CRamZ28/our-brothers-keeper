@@ -536,9 +536,9 @@ function FriendsContent({ setLocation }: { setLocation: any }) {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3 pt-2">
-            <ActionButton icon="💬" onClick={() => setLocation('/messages')}>Send a message</ActionButton>
-            <ActionButton icon="🤝" onClick={() => setLocation('/needs')}>Offer help</ActionButton>
-            <ActionButton icon="🔔" onClick={() => setLocation('/calendar')}>Schedule a check-in</ActionButton>
+            <ActionButton icon="💬" onClick={() => setLocation('/memory-wall')}>Send Encouragement</ActionButton>
+            <ActionButton icon="🤝" onClick={() => setLocation('/needs')}>Help With Needs</ActionButton>
+            <ActionButton icon="🔔" onClick={() => setLocation('/reminders')}>My Reminders</ActionButton>
           </div>
         </div>
       </GlassCard>
