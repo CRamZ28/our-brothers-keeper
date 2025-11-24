@@ -77,14 +77,6 @@ export default function Resources() {
 }
 
 function GrievingContent() {
-  const handleCallHotline = () => {
-    window.location.href = 'tel:988';
-  };
-
-  const handleBrowseResources = () => {
-    window.open('https://www.samhsa.gov/find-help/national-helpline', '_blank');
-  };
-
   return (
     <div className="space-y-6">
       {/* Card 1: When the Shock Fades */}
@@ -253,49 +245,6 @@ function GrievingContent() {
                 <span>Spend quiet time just resting, not performing.</span>
               </li>
             </ul>
-          </div>
-
-          {/* Crisis Resources */}
-          <div 
-            className="p-5 rounded-xl"
-            style={{
-              background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08) 0%, rgba(220, 38, 38, 0.08) 100%)',
-              border: '2px solid rgba(239, 68, 68, 0.3)'
-            }}
-          >
-            <h4 className="font-semibold mb-3 flex items-center gap-2 text-red-600">
-              <span className="text-xl">🆘</span>
-              If you're in crisis or need immediate support
-            </h4>
-            <p className="text-foreground/85 mb-4">You don't have to face this alone. Help is available 24/7.</p>
-            
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={handleCallHotline}
-                className="px-4 py-2.5 rounded-lg font-medium text-white transition-all hover:opacity-90 active:scale-[0.98]"
-                style={{
-                  background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-                  boxShadow: '0 4px 12px rgba(239, 68, 68, 0.3)'
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  📞 Call 988 (Suicide & Crisis Lifeline)
-                </span>
-              </button>
-              <button
-                onClick={handleBrowseResources}
-                className="px-4 py-2.5 rounded-lg font-medium transition-all hover:bg-white/30 active:scale-[0.98]"
-                style={{
-                  background: 'rgba(255, 255, 255, 0.2)',
-                  border: '1px solid rgba(255, 255, 255, 0.3)',
-                  color: 'inherit'
-                }}
-              >
-                <span className="flex items-center gap-2">
-                  🔗 Browse Resources
-                </span>
-              </button>
-            </div>
           </div>
         </div>
       </GlassCard>
