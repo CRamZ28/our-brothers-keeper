@@ -547,15 +547,6 @@ function FriendsContent({ setLocation }: { setLocation: any }) {
 }
 
 function OngoingContent() {
-  const copyReminderTemplate = async (template: string) => {
-    try {
-      await navigator.clipboard.writeText(template);
-      alert('Template copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
   return (
     <div className="space-y-6">
       {/* Card 7: Why Continued Support Matters */}
@@ -626,7 +617,7 @@ function OngoingContent() {
         </div>
       </GlassCard>
 
-      {/* Card 8: Reminder Templates */}
+      {/* Card 8: Reminder Ideas */}
       <GlassCard>
         <div className="flex items-start gap-4 mb-5">
           <div 
@@ -636,7 +627,7 @@ function OngoingContent() {
               boxShadow: '0 4px 12px rgba(176, 140, 167, 0.3)'
             }}
           >
-            <span className="text-2xl">🔔</span>
+            <span className="text-2xl">💡</span>
           </div>
           <h3 className="text-xl font-bold mt-2" style={{
             background: 'linear-gradient(135deg, #B08CA7 0%, #9B7FB8 100%)',
@@ -644,26 +635,47 @@ function OngoingContent() {
             WebkitTextFillColor: 'transparent',
             backgroundClip: 'text'
           }}>
-            Reminder Templates
+            Reminder Ideas
           </h3>
         </div>
         
-        <div className="space-y-4">
-          <ReminderTemplate 
-            title="1 Month Check-In"
-            message={`"It's been a month. How are you doing today? I'm here."`}
-            onCopy={copyReminderTemplate}
-          />
-          <ReminderTemplate 
-            title="Birthday or Anniversary Remembrance"
-            message={`"Thinking of you today. I remember them with you."`}
-            onCopy={copyReminderTemplate}
-          />
-          <ReminderTemplate 
-            title="Holiday Support"
-            message={`"The holidays can be bittersweet. How can I support you?"`}
-            onCopy={copyReminderTemplate}
-          />
+        <p className="text-foreground/85 mb-4">
+          Set reminders to check in during meaningful moments:
+        </p>
+        
+        <div className="space-y-3">
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <h5 className="font-semibold text-foreground mb-1.5">1 Month Check-In</h5>
+            <p className="text-sm text-foreground/80 italic">"It's been a month. How are you doing today? I'm here."</p>
+          </div>
+          
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <h5 className="font-semibold text-foreground mb-1.5">Birthday or Anniversary Remembrance</h5>
+            <p className="text-sm text-foreground/80 italic">"Thinking of you today. I remember them with you."</p>
+          </div>
+          
+          <div 
+            className="p-4 rounded-xl"
+            style={{
+              background: 'linear-gradient(135deg, rgba(176, 140, 167, 0.08) 0%, rgba(155, 127, 184, 0.08) 100%)',
+              border: '1px solid rgba(176, 140, 167, 0.2)'
+            }}
+          >
+            <h5 className="font-semibold text-foreground mb-1.5">Holiday Support</h5>
+            <p className="text-sm text-foreground/80 italic">"The holidays can be bittersweet. How can I support you?"</p>
+          </div>
         </div>
       </GlassCard>
 
@@ -793,31 +805,5 @@ function ActionButton({ icon, children, onClick }: { icon: string; children: Rea
       <span>{icon}</span>
       <span>{children}</span>
     </button>
-  );
-}
-
-function ReminderTemplate({ title, message, onCopy }: { title: string; message: string; onCopy: (message: string) => void }) {
-  return (
-    <div 
-      className="p-4 rounded-lg"
-      style={{
-        background: 'rgba(255, 255, 255, 0.15)',
-        border: '1px solid rgba(255, 255, 255, 0.25)'
-      }}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1">
-          <h5 className="font-semibold text-foreground mb-1">{title}</h5>
-          <p className="text-sm text-foreground/80 italic">{message}</p>
-        </div>
-        <button
-          onClick={() => onCopy(message)}
-          className="shrink-0 px-3 py-1.5 rounded text-xs font-medium text-white transition-all hover:bg-[#9A7890] active:scale-[0.98]"
-          style={{ backgroundColor: '#B08CA7' }}
-        >
-          Copy Template
-        </button>
-      </div>
-    </div>
   );
 }
