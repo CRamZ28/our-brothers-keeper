@@ -47,12 +47,29 @@ const plugins = [
       ]
     },
     workbox: {
-      // Exclude HTML from precaching to prevent stale landing page
-      globPatterns: ["**/*.{js,css,ico,svg,woff,woff2}"],
+      // Exclude HTML and large JS bundles from precaching
+      globPatterns: ["**/*.{css,ico,svg,woff,woff2}"],
       globIgnores: ["**/waves-bg.png", "**/obk-emblem.png", "**/obk-logo.png", "**/obk-logo-v2.png", "**/obk-symbol.png"],
+      // Increase limit for remaining assets, but use runtime caching for large JS
+      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024, // 3 MiB
       // Don't cache during navigation to ensure fresh HTML
       navigateFallback: null,
       runtimeCaching: [
+        {
+          // Runtime cache for JavaScript bundles (more efficient than precaching large files)
+          urlPattern: /\.js$/,
+          handler: "StaleWhileRevalidate",
+          options: {
+            cacheName: "js-cache",
+            expiration: {
+              maxEntries: 30,
+              maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+            },
+            cacheableResponse: {
+              statuses: [0, 200]
+            }
+          }
+        },
         {
           // Always fetch fresh HTML from network
           urlPattern: /\.html$/,

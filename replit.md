@@ -63,7 +63,7 @@ The UI/UX is built on a consistent glassmorphism design system, featuring:
 - **User & Content Management**: Supports profile picture uploads integrated with object storage.
 - **Security & Privacy Architecture**: A production-ready, centralized visibility system (`server/visibilityHelpers.ts`) implements a "Five-Step Security Pattern" for endpoint validation, optimized with group membership caching.
 - **Database Management**: Uses Drizzle ORM's **push workflow** for schema management.
-- **Performance**: PWA configuration excludes large assets from service worker precaching, utilizing runtime caching for efficiency.
+- **Performance**: PWA configuration uses runtime caching for JavaScript bundles instead of precaching (more efficient for large bundles). Service worker precaches only CSS, fonts, and icons. Large images and JS files cached on-demand with StaleWhileRevalidate strategy.
 - **React Deduplication**: Vite configuration includes `dedupe: ["react", "react-dom"]` to prevent "Invalid hook call" errors.
 
 ## External Dependencies
