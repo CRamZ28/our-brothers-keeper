@@ -138,6 +138,16 @@ export default function Dashboard() {
               )}
             </p>
           )}
+
+          {/* Memorial Quote - Centered under dates */}
+          {household.dashboardQuote && (
+            <div className="mt-4 max-w-2xl mx-auto">
+              <MemorialQuote 
+                quote={household.dashboardQuote} 
+                attribution={household.dashboardQuoteAttribution || undefined}
+              />
+            </div>
+          )}
         </div>
 
         {/* AT-A-GLANCE HUB: 4 Stat Cards */}
@@ -280,19 +290,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Memorial Features Row */}
-        {((household.dashboardPhotos && household.dashboardPhotos.length > 0) || household.dashboardQuote) && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-            {household.dashboardPhotos && household.dashboardPhotos.length > 0 && (
-              <MemorialSlideshow photos={household.dashboardPhotos} />
-            )}
-            
-            {household.dashboardQuote && (
-              <MemorialQuote 
-                quote={household.dashboardQuote} 
-                attribution={household.dashboardQuoteAttribution || undefined}
-              />
-            )}
+        {/* Memorial Photo Slideshow */}
+        {household.dashboardPhotos && household.dashboardPhotos.length > 0 && (
+          <div className="mt-6 max-w-3xl mx-auto">
+            <MemorialSlideshow photos={household.dashboardPhotos} />
           </div>
         )}
       </div>
