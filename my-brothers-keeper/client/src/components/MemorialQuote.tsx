@@ -23,13 +23,14 @@ export default function MemorialQuote({ quote, attribution }: MemorialQuoteProps
       </div>
       
       <blockquote 
-        className="text-base md:text-lg italic leading-relaxed mb-4"
+        className="text-xl md:text-2xl lg:text-3xl italic leading-relaxed mb-4 px-4"
         style={{
           fontFamily: "'Pinyon Script', cursive",
-          color: '#4d7c7a',
-          textShadow: '0 1px 3px rgba(45, 181, 168, 0.15)',
-          fontSize: '1.5rem',
-          lineHeight: '1.8'
+          color: '#2d5a57',
+          textShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
+          fontSize: 'clamp(1.75rem, 4vw, 2.5rem)',
+          lineHeight: '1.6',
+          fontWeight: '400'
         }}
       >
         "{quote}"
