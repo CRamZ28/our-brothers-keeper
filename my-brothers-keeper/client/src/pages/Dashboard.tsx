@@ -141,7 +141,7 @@ export default function Dashboard() {
 
           {/* Memorial Quote - Centered under dates */}
           {household.dashboardQuote && (
-            <div className="mt-4 max-w-2xl mx-auto">
+            <div className="mt-4 max-w-2xl mx-auto px-4">
               <MemorialQuote 
                 quote={household.dashboardQuote} 
                 attribution={household.dashboardQuoteAttribution || undefined}
@@ -292,7 +292,7 @@ export default function Dashboard() {
 
         {/* Memorial Photo Slideshow */}
         {household.dashboardPhotos && household.dashboardPhotos.length > 0 && (
-          <div className="mt-6 max-w-3xl mx-auto">
+          <div className="mt-6 max-w-3xl mx-auto px-4">
             <MemorialSlideshow photos={household.dashboardPhotos} />
           </div>
         )}

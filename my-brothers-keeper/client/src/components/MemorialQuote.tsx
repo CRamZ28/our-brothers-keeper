@@ -10,7 +10,7 @@ export default function MemorialQuote({ quote, attribution }: MemorialQuoteProps
 
   return (
     <div 
-      className="rounded-2xl p-6 flex flex-col items-center justify-center text-center"
+      className="rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center text-center"
       style={{
         backdropFilter: 'blur(6px)',
         WebkitBackdropFilter: 'blur(6px)',
@@ -23,12 +23,12 @@ export default function MemorialQuote({ quote, attribution }: MemorialQuoteProps
       </div>
       
       <blockquote 
-        className="text-lg md:text-xl lg:text-2xl italic leading-relaxed mb-4 px-4"
+        className="text-lg md:text-xl lg:text-2xl italic leading-relaxed mb-4"
         style={{
           fontFamily: 'Georgia, "Times New Roman", serif',
           color: '#2d5a57',
           textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-          fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
+          fontSize: 'clamp(1rem, 3vw, 1.5rem)',
           lineHeight: '1.7',
           fontWeight: '400'
         }}

@@ -32,7 +32,7 @@ export default function MemorialSlideshow({ photos, autoPlayInterval = 5000 }: M
 
   return (
     <div 
-      className="rounded-2xl p-6 relative overflow-hidden"
+      className="rounded-2xl p-4 sm:p-6 relative overflow-hidden"
       style={{
         backdropFilter: 'blur(6px)',
         WebkitBackdropFilter: 'blur(6px)',
