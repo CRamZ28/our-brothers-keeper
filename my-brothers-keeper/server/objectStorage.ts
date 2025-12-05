@@ -75,15 +75,37 @@ export class ObjectStorageService {
 
     const { bucketName, objectName } = parseObjectPath(fullPath);
     
+    console.log("[ObjectStorage] Upload attempt:", {
+      privateObjectDir,
+      fullPath,
+      bucketName,
+      objectName,
+      filename,
+      contentType,
+      bufferSize: buffer.length,
+    });
+    
     const bucket = objectStorageClient.bucket(bucketName);
     const file = bucket.file(objectName);
 
-    await file.save(buffer, {
-      contentType,
-      metadata: {
+    try {
+      await file.save(buffer, {
         contentType,
-      },
-    });
+        metadata: {
+          contentType,
+        },
+      });
+      console.log("[ObjectStorage] Upload successful:", { bucketName, objectName });
+    } catch (error) {
+      console.error("[ObjectStorage] Upload failed:", {
+        bucketName,
+        objectName,
+        error: error instanceof Error ? error.message : String(error),
+        errorCode: (error as any)?.code,
+        errorDetails: (error as any)?.errors,
+      });
+      throw error;
+    }
 
     // Files are accessible via /objects/* route which handles streaming from object storage
     // No need to makePublic() - uniform bucket-level access is configured
