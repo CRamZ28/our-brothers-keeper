@@ -31,6 +31,12 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   
+  // Log object storage configuration on startup
+  console.log("[ObjectStorage] Configuration:", {
+    PRIVATE_OBJECT_DIR: process.env.PRIVATE_OBJECT_DIR || "NOT SET",
+    PUBLIC_OBJECT_SEARCH_PATHS: process.env.PUBLIC_OBJECT_SEARCH_PATHS || "NOT SET",
+  });
+  
   // Sentry error handler must be registered early to capture all requests
   if (process.env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);
