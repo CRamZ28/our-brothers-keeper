@@ -290,8 +290,32 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Memorial Photo Display - handles both single photo and slideshow */}
+        {household.dashboardDisplayType === "photo" && household.photoUrl && (
+          <div className="mt-6 max-w-3xl mx-auto px-4">
+            <div 
+              className="rounded-2xl p-4 sm:p-6 relative overflow-hidden"
+              style={{
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                background: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.3)'
+              }}
+            >
+              <h2 className="text-lg font-semibold text-foreground mb-4">Memorial Photo</h2>
+              <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-black/10">
+                <img
+                  src={household.photoUrl}
+                  alt="Memorial photo"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Memorial Photo Slideshow */}
-        {household.dashboardPhotos && household.dashboardPhotos.length > 0 && (
+        {household.dashboardDisplayType === "slideshow" && household.dashboardPhotos && household.dashboardPhotos.length > 0 && (
           <div className="mt-6 max-w-3xl mx-auto px-4">
             <MemorialSlideshow photos={household.dashboardPhotos} />
           </div>
