@@ -67,6 +67,24 @@ export async function getDb() {
     try {
       _pool = new Pool({
         connectionString: process.env.DATABASE_URL,
+        // Connection pool configuration
+        max: 20, // Maximum number of clients in the pool
+        idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
+        connectionTimeoutMillis: 10000, // Timeout after 10 seconds if can't connect
+      });
+
+      // Add error handler to prevent crashes from database restarts
+      _pool.on("error", (err, client) => {
+        console.error(
+          "[Database] Pool error - connection terminated:",
+          err.message
+        );
+        // Log to Sentry but don't crash the process
+        if (err.message.includes("terminating connection")) {
+          console.warn(
+            "[Database] Connection terminated by administrator, will reconnect automatically on next query"
+          );
+        }
       });
       _db = drizzle(_pool);
     } catch (error) {
@@ -126,7 +144,7 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       values.role = "admin";
       updateSet.role = "admin";
     }
-    
+
     // Automatically enforce role/access tier alignment
     // If role is being set and accessTier is NOT explicitly provided, enforce alignment
     // This is the PRIMARY safeguard - normal code should never explicitly set mismatched tiers
@@ -136,11 +154,16 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       updateSet.accessTier = alignedTier;
     } else if (user.accessTier !== undefined && finalRole !== undefined) {
       // VALIDATION: If both role and tier are explicitly provided, verify alignment
-      if ((finalRole === "primary" || finalRole === "admin") && user.accessTier !== "family") {
+      if (
+        (finalRole === "primary" || finalRole === "admin") &&
+        user.accessTier !== "family"
+      ) {
         console.error(
           `[upsertUser] REJECTED: Attempted to set ${finalRole} role with ${user.accessTier} tier. Primary/Admin MUST have family tier.`
         );
-        throw new Error(`Invalid role/tier combination: ${finalRole} role requires family tier, got ${user.accessTier}`);
+        throw new Error(
+          `Invalid role/tier combination: ${finalRole} role requires family tier, got ${user.accessTier}`
+        );
       }
       // If validation passes, use the explicit tier
       values.accessTier = user.accessTier;
@@ -149,14 +172,19 @@ export async function upsertUser(user: InsertUser): Promise<void> {
       // CRITICAL: Tier-only update - must validate against existing role
       // Fetch existing user to prevent misalignment
       const existingUser = await getUser(user.id);
-      
+
       if (existingUser) {
         // User exists - validate against their role
-        if ((existingUser.role === "primary" || existingUser.role === "admin") && user.accessTier !== "family") {
+        if (
+          (existingUser.role === "primary" || existingUser.role === "admin") &&
+          user.accessTier !== "family"
+        ) {
           console.error(
             `[upsertUser] REJECTED: Attempted tier-only update to ${user.accessTier} for ${existingUser.role} user ${user.id}. Primary/Admin MUST remain at family tier.`
           );
-          throw new Error(`Cannot downgrade ${existingUser.role} user to ${user.accessTier} tier. Primary/Admin users require family tier.`);
+          throw new Error(
+            `Cannot downgrade ${existingUser.role} user to ${user.accessTier} tier. Primary/Admin users require family tier.`
+          );
         }
         // Validation passed - allow the tier update
         // For UPDATE path, use SQL CASE for additional atomicity
@@ -170,10 +198,12 @@ export async function upsertUser(user: InsertUser): Promise<void> {
         console.error(
           `[upsertUser] REJECTED: Attempted to create new user ${user.id} with tier but no role`
         );
-        throw new Error(`Cannot create new user with access tier but no role. Role is required for new users.`);
+        throw new Error(
+          `Cannot create new user with access tier but no role. Role is required for new users.`
+        );
       }
     }
-    
+
     if (user.householdId !== undefined) {
       values.householdId = user.householdId;
       updateSet.householdId = user.householdId;
@@ -225,38 +255,56 @@ export async function getUsersByHousehold(householdId: number) {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(users).where(eq(users.householdId, householdId));
+  return await db
+    .select()
+    .from(users)
+    .where(eq(users.householdId, householdId));
 }
 
-export async function updateUserStatus(userId: string, status: "active" | "pending" | "blocked") {
+export async function updateUserStatus(
+  userId: string,
+  status: "active" | "pending" | "blocked"
+) {
   const db = await getDb();
   if (!db) return;
 
   await db.update(users).set({ status }).where(eq(users.id, userId));
 }
 
-export async function updateUserRole(userId: string, role: "primary" | "admin" | "supporter") {
+export async function updateUserRole(
+  userId: string,
+  role: "primary" | "admin" | "supporter"
+) {
   const db = await getDb();
   if (!db) return;
 
   // Automatically set the correct access tier based on role
   const accessTier = getAccessTierForRole(role);
-  
-  await db.update(users).set({ 
-    role, 
-    accessTier,
-    updatedAt: new Date()
-  }).where(eq(users.id, userId));
+
+  await db
+    .update(users)
+    .set({
+      role,
+      accessTier,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
 }
 
-export async function updateUserProfile(userId: string, data: Partial<Pick<InsertUser, "name" | "phone" | "profileImageUrl">>) {
+export async function updateUserProfile(
+  userId: string,
+  data: Partial<Pick<InsertUser, "name" | "phone" | "profileImageUrl">>
+) {
   const db = await getDb();
   if (!db) return;
 
   await db.update(users).set(data).where(eq(users.id, userId));
 }
 
-export async function removeUserFromHousehold(userId: string, householdId: number) {
+export async function removeUserFromHousehold(
+  userId: string,
+  householdId: number
+) {
   const db = await getDb();
   if (!db) return;
 
@@ -278,10 +326,13 @@ export async function removeUserFromHousehold(userId: string, householdId: numbe
   }
 
   // Set user's household to null and status to blocked
-  await db.update(users).set({ 
-    householdId: null,
-    status: "blocked"
-  }).where(eq(users.id, userId));
+  await db
+    .update(users)
+    .set({
+      householdId: null,
+      status: "blocked",
+    })
+    .where(eq(users.id, userId));
 }
 
 export async function getUsersPendingTierApproval(householdId: number) {
@@ -302,25 +353,35 @@ export async function getUsersPendingTierApproval(householdId: number) {
   return result;
 }
 
-export async function updateUserAccessTier(userId: string, tier: "community" | "friend" | "family") {
+export async function updateUserAccessTier(
+  userId: string,
+  tier: "community" | "friend" | "family"
+) {
   const db = await getDb();
   if (!db) return;
 
   // CRITICAL: Primary and Admin users MUST have family tier
   // Use a CASE statement to enforce alignment atomically in the database
   // This eliminates race conditions by making the enforcement happen at the DB level
-  await db.update(users).set({ 
-    accessTier: sql`CASE 
+  await db
+    .update(users)
+    .set({
+      accessTier: sql`CASE 
       WHEN role IN ('primary', 'admin') THEN 'family'::varchar 
       ELSE ${tier}::varchar 
     END`,
-    requestedTier: null,
-    updatedAt: new Date()
-  }).where(eq(users.id, userId));
-  
+      requestedTier: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+
   // Log if we enforced family tier for primary/admin
   const user = await getUserById(userId);
-  if (user && (user.role === "primary" || user.role === "admin") && tier !== "family") {
+  if (
+    user &&
+    (user.role === "primary" || user.role === "admin") &&
+    tier !== "family"
+  ) {
     console.warn(
       `[updateUserAccessTier] Enforced family tier for ${user.role} user ${userId} (requested: ${tier})`
     );
@@ -333,7 +394,9 @@ export async function updateUserAccessTier(userId: string, tier: "community" | "
  * - Primary/Admin roles ALWAYS get 'family' tier
  * - Supporters get 'community' tier by default
  */
-export function getAccessTierForRole(role: "primary" | "admin" | "supporter" | "user"): "family" | "friend" | "community" {
+export function getAccessTierForRole(
+  role: "primary" | "admin" | "supporter" | "user"
+): "family" | "friend" | "community" {
   if (role === "primary" || role === "admin") {
     return "family";
   }
@@ -341,8 +404,8 @@ export function getAccessTierForRole(role: "primary" | "admin" | "supporter" | "
 }
 
 export async function joinHouseholdWithTier(
-  userId: string, 
-  householdId: number, 
+  userId: string,
+  householdId: number,
   requestedTier: "community" | "friend" | "family"
 ) {
   const db = await getDb();
@@ -351,15 +414,18 @@ export async function joinHouseholdWithTier(
   // Supporters start with community tier but can request upgrades
   const initialTier = "community";
 
-  await db.update(users).set({
-    householdId,
-    accessTier: initialTier,
-    requestedTier,
-    tierRequestedAt: new Date(),
-    role: "supporter",
-    status: "active",
-    updatedAt: new Date()
-  }).where(eq(users.id, userId));
+  await db
+    .update(users)
+    .set({
+      householdId,
+      accessTier: initialTier,
+      requestedTier,
+      tierRequestedAt: new Date(),
+      role: "supporter",
+      status: "active",
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
 }
 
 // ============================================================================
@@ -375,7 +441,10 @@ export async function createHousehold(household: InsertHousehold) {
     household.slug = await generateUniqueSlug(household.name);
   }
 
-  const result = await db.insert(households).values(household).returning({ id: households.id });
+  const result = await db
+    .insert(households)
+    .values(household)
+    .returning({ id: households.id });
   return result[0].id;
 }
 
@@ -383,11 +452,18 @@ export async function getHousehold(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(households).where(eq(households.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(households)
+    .where(eq(households.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function updateHousehold(id: number, data: Partial<InsertHousehold>) {
+export async function updateHousehold(
+  id: number,
+  data: Partial<InsertHousehold>
+) {
   const db = await getDb();
   if (!db) return;
 
@@ -401,26 +477,27 @@ export async function updateHouseholdAutoPromote(
   const db = await getDb();
   if (!db) return;
 
-  await db.update(households).set({
-    ...settings,
-    updatedAt: new Date()
-  }).where(eq(households.id, householdId));
+  await db
+    .update(households)
+    .set({
+      ...settings,
+      updatedAt: new Date(),
+    })
+    .where(eq(households.id, householdId));
 }
 
 // Slug utilities
 export function generateSlug(name: string): string {
   // Normalize accented characters to their base form
-  const normalized = name.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  
-  let slug = normalized
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, ''); // Remove all non-alphanumeric characters
-  
+  const normalized = name.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  let slug = normalized.toLowerCase().replace(/[^a-z0-9]+/g, ""); // Remove all non-alphanumeric characters
+
   // If slug is empty (e.g., all emoji or special chars), use "family" as fallback
   if (!slug || slug.length === 0) {
-    slug = 'family';
+    slug = "family";
   }
-  
+
   return slug;
 }
 
@@ -436,7 +513,7 @@ export async function searchHouseholds(query: string) {
     .where(ilike(households.name, searchPattern))
     .limit(20)
     .orderBy(households.name);
-  
+
   return result;
 }
 
@@ -444,46 +521,65 @@ export async function getHouseholdBySlug(slug: string) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(households).where(eq(households.slug, slug)).limit(1);
+  const result = await db
+    .select()
+    .from(households)
+    .where(eq(households.slug, slug))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function isSlugAvailable(slug: string, excludeHouseholdId?: number) {
+export async function isSlugAvailable(
+  slug: string,
+  excludeHouseholdId?: number
+) {
   const db = await getDb();
   if (!db) {
     throw new Error("Database not available - cannot check slug availability");
   }
 
-  const conditions = excludeHouseholdId 
-    ? and(eq(households.slug, slug), sql`${households.id} != ${excludeHouseholdId}`)
+  const conditions = excludeHouseholdId
+    ? and(
+        eq(households.slug, slug),
+        sql`${households.id} != ${excludeHouseholdId}`
+      )
     : eq(households.slug, slug);
-    
-  const result = await db.select({ id: households.id }).from(households).where(conditions).limit(1);
+
+  const result = await db
+    .select({ id: households.id })
+    .from(households)
+    .where(conditions)
+    .limit(1);
   return result.length === 0;
 }
 
-export async function generateUniqueSlug(baseName: string, excludeHouseholdId?: number): Promise<string> {
+export async function generateUniqueSlug(
+  baseName: string,
+  excludeHouseholdId?: number
+): Promise<string> {
   const MAX_SLUG_LENGTH = 250; // Reserve 5 chars for numeric suffix
-  
+
   let baseSlug = generateSlug(baseName);
   // Truncate base slug to ensure room for numeric suffixes
   if (baseSlug.length > MAX_SLUG_LENGTH) {
     baseSlug = baseSlug.substring(0, MAX_SLUG_LENGTH);
   }
-  
+
   let slug = baseSlug;
   let counter = 1;
-  
+
   while (!(await isSlugAvailable(slug, excludeHouseholdId))) {
     slug = `${baseSlug}${counter}`;
     counter++;
-    
+
     // Safety check - prevent infinite loops
     if (counter > 10000) {
-      throw new Error(`Unable to generate unique slug for "${baseName}" after 10000 attempts`);
+      throw new Error(
+        `Unable to generate unique slug for "${baseName}" after 10000 attempts`
+      );
     }
   }
-  
+
   return slug;
 }
 
@@ -495,7 +591,10 @@ export async function createGroup(group: InsertGroup) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(groups).values(group).returning({ id: groups.id });
+  const result = await db
+    .insert(groups)
+    .values(group)
+    .returning({ id: groups.id });
   return result[0].id;
 }
 
@@ -531,9 +630,11 @@ export async function removeUserFromGroup(groupId: number, userId: string) {
   const db = await getDb();
   if (!db) return;
 
-  await db.delete(groupMembers).where(
-    and(eq(groupMembers.groupId, groupId), eq(groupMembers.userId, userId))
-  );
+  await db
+    .delete(groupMembers)
+    .where(
+      and(eq(groupMembers.groupId, groupId), eq(groupMembers.userId, userId))
+    );
 }
 
 export async function getUserGroups(userId: string, householdId: number) {
@@ -544,12 +645,17 @@ export async function getUserGroups(userId: string, householdId: number) {
     .select({ group: groups })
     .from(groupMembers)
     .innerJoin(groups, eq(groupMembers.groupId, groups.id))
-    .where(and(eq(groupMembers.userId, userId), eq(groups.householdId, householdId)));
+    .where(
+      and(eq(groupMembers.userId, userId), eq(groups.householdId, householdId))
+    );
 
-  return result.map((r) => r.group);
+  return result.map(r => r.group);
 }
 
-export async function updateGroup(groupId: number, data: { name?: string; description?: string | null }) {
+export async function updateGroup(
+  groupId: number,
+  data: { name?: string; description?: string | null }
+) {
   const db = await getDb();
   if (!db) return;
 
@@ -562,7 +668,7 @@ export async function deleteGroup(groupId: number) {
 
   // First delete all group members
   await db.delete(groupMembers).where(eq(groupMembers.groupId, groupId));
-  
+
   // Then delete the group
   await db.delete(groups).where(eq(groups.id, groupId));
 }
@@ -577,7 +683,7 @@ export async function getGroupMembers(groupId: number) {
     .innerJoin(users, eq(groupMembers.userId, users.id))
     .where(eq(groupMembers.groupId, groupId));
 
-  return result.map((r) => r.user);
+  return result.map(r => r.user);
 }
 
 // ============================================================================
@@ -588,7 +694,10 @@ export async function createInvite(invite: InsertInvite) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(invites).values(invite).returning({ id: invites.id });
+  const result = await db
+    .insert(invites)
+    .values(invite)
+    .returning({ id: invites.id });
   return result[0].id;
 }
 
@@ -596,7 +705,11 @@ export async function getInviteByToken(token: string) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(invites).where(eq(invites.token, token)).limit(1);
+  const result = await db
+    .select()
+    .from(invites)
+    .where(eq(invites.token, token))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -617,20 +730,30 @@ export async function getPendingInvitesByHousehold(householdId: number) {
   return await db
     .select()
     .from(invites)
-    .where(and(eq(invites.householdId, householdId), eq(invites.status, "sent")));
+    .where(
+      and(eq(invites.householdId, householdId), eq(invites.status, "sent"))
+    );
 }
 
 export async function getInviteById(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(invites).where(eq(invites.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(invites)
+    .where(eq(invites.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
 export async function updateInvite(
   id: number,
-  data: { token?: string; expiresAt?: Date; status?: "sent" | "accepted" | "revoked" | "expired" }
+  data: {
+    token?: string;
+    expiresAt?: Date;
+    status?: "sent" | "accepted" | "revoked" | "expired";
+  }
 ) {
   const db = await getDb();
   if (!db) return;
@@ -646,11 +769,17 @@ export async function createEvent(event: InsertEvent) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(events).values(event).returning({ id: events.id });
+  const result = await db
+    .insert(events)
+    .values(event)
+    .returning({ id: events.id });
   return result[0].id;
 }
 
-export async function getEventsByHousehold(householdId: number, userId?: string) {
+export async function getEventsByHousehold(
+  householdId: number,
+  userId?: string
+) {
   const db = await getDb();
   if (!db) return [];
 
@@ -691,7 +820,11 @@ export async function getEvent(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(events).where(eq(events.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(events)
+    .where(eq(events.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -717,7 +850,10 @@ export async function createNeed(need: InsertNeed) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(needs).values(need).returning({ id: needs.id });
+  const result = await db
+    .insert(needs)
+    .values(need)
+    .returning({ id: needs.id });
   return result[0].id;
 }
 
@@ -769,11 +905,13 @@ export async function getNeedsByHousehold(householdId: number) {
   }
 
   const allNeeds = Array.from(needsMap.values());
-  
+
   // Sort completed needs by completedAt (most recent first)
   return allNeeds.sort((a, b) => {
     if (a.completedAt && b.completedAt) {
-      return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
+      return (
+        new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
+      );
     }
     return 0;
   });
@@ -809,7 +947,10 @@ export async function createNeedClaim(claim: InsertNeedClaim) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(needClaims).values(claim).returning({ id: needClaims.id });
+  const result = await db
+    .insert(needClaims)
+    .values(claim)
+    .returning({ id: needClaims.id });
   return result[0].id;
 }
 
@@ -817,14 +958,21 @@ export async function getClaimsByNeed(needId: number) {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(needClaims).where(eq(needClaims.needId, needId));
+  return await db
+    .select()
+    .from(needClaims)
+    .where(eq(needClaims.needId, needId));
 }
 
 export async function getNeedClaim(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(needClaims).where(eq(needClaims.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(needClaims)
+    .where(eq(needClaims.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -846,7 +994,10 @@ export async function createAnnouncement(announcement: InsertAnnouncement) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(announcements).values(announcement).returning({ id: announcements.id });
+  const result = await db
+    .insert(announcements)
+    .values(announcement)
+    .returning({ id: announcements.id });
   return result[0].id;
 }
 
@@ -854,10 +1005,16 @@ export async function getAnnouncementsByHousehold(householdId: number) {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(announcements).where(eq(announcements.householdId, householdId));
+  return await db
+    .select()
+    .from(announcements)
+    .where(eq(announcements.householdId, householdId));
 }
 
-export async function updateAnnouncement(id: number, data: Partial<InsertAnnouncement>) {
+export async function updateAnnouncement(
+  id: number,
+  data: Partial<InsertAnnouncement>
+) {
   const db = await getDb();
   if (!db) return;
 
@@ -878,10 +1035,12 @@ export async function getQuestionsByHousehold(householdId: number) {
   return await db
     .select()
     .from(announcements)
-    .where(and(
-      eq(announcements.householdId, householdId),
-      eq(announcements.isQuestion, true)
-    ))
+    .where(
+      and(
+        eq(announcements.householdId, householdId),
+        eq(announcements.isQuestion, true)
+      )
+    )
     .orderBy(desc(announcements.createdAt));
 }
 
@@ -889,28 +1048,38 @@ export async function markQuestionAsRead(questionId: number, userId: string) {
   const db = await getDb();
   if (!db) return;
 
-  const question = await db.select().from(announcements).where(eq(announcements.id, questionId)).limit(1);
+  const question = await db
+    .select()
+    .from(announcements)
+    .where(eq(announcements.id, questionId))
+    .limit(1);
   if (question.length === 0) return;
 
   const readBy = question[0].readBy || [];
   if (!readBy.includes(userId)) {
-    await db.update(announcements)
+    await db
+      .update(announcements)
       .set({ readBy: [...readBy, userId] })
       .where(eq(announcements.id, questionId));
   }
 }
 
-export async function getUnreadQuestionCount(householdId: number, userId: string) {
+export async function getUnreadQuestionCount(
+  householdId: number,
+  userId: string
+) {
   const db = await getDb();
   if (!db) return 0;
 
   const questions = await db
     .select()
     .from(announcements)
-    .where(and(
-      eq(announcements.householdId, householdId),
-      eq(announcements.isQuestion, true)
-    ));
+    .where(
+      and(
+        eq(announcements.householdId, householdId),
+        eq(announcements.isQuestion, true)
+      )
+    );
 
   return questions.filter(q => !q.readBy?.includes(userId)).length;
 }
@@ -923,7 +1092,10 @@ export async function createQuestionReply(reply: InsertQuestionReply) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(questionReplies).values(reply).returning({ id: questionReplies.id });
+  const result = await db
+    .insert(questionReplies)
+    .values(reply)
+    .returning({ id: questionReplies.id });
   return result[0].id;
 }
 
@@ -953,7 +1125,10 @@ export async function createAuditLog(log: InsertAuditLog) {
   }
 }
 
-export async function getAuditLogsByHousehold(householdId: number, limit = 100) {
+export async function getAuditLogsByHousehold(
+  householdId: number,
+  limit = 100
+) {
   const db = await getDb();
   if (!db) return [];
 
@@ -1008,14 +1183,23 @@ export async function getNotificationPrefs(userId: string) {
   return result.length > 0 ? result[0] : null;
 }
 
-export async function updateNotificationPrefs(userId: string, data: Partial<InsertNotificationPref>) {
+export async function updateNotificationPrefs(
+  userId: string,
+  data: Partial<InsertNotificationPref>
+) {
   const db = await getDb();
   if (!db) return;
 
-  await db.update(notificationPrefs).set(data).where(eq(notificationPrefs.userId, userId));
+  await db
+    .update(notificationPrefs)
+    .set(data)
+    .where(eq(notificationPrefs.userId, userId));
 }
 
-export async function upsertNotificationPrefs(userId: string, data: Partial<InsertNotificationPref>) {
+export async function upsertNotificationPrefs(
+  userId: string,
+  data: Partial<InsertNotificationPref>
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -1028,14 +1212,15 @@ export async function upsertNotificationPrefs(userId: string, data: Partial<Inse
 
   if (existing.length > 0) {
     // Update existing
-    await db.update(notificationPrefs).set(data).where(eq(notificationPrefs.userId, userId));
+    await db
+      .update(notificationPrefs)
+      .set(data)
+      .where(eq(notificationPrefs.userId, userId));
   } else {
     // Create new
     await db.insert(notificationPrefs).values({ userId, ...data });
   }
 }
-
-
 
 // ============================================================================
 // RSVP MANAGEMENT
@@ -1049,7 +1234,12 @@ export async function upsertRsvp(rsvp: InsertEventRsvp) {
   const existing = await db
     .select()
     .from(eventRsvps)
-    .where(and(eq(eventRsvps.eventId, rsvp.eventId), eq(eventRsvps.userId, rsvp.userId)))
+    .where(
+      and(
+        eq(eventRsvps.eventId, rsvp.eventId),
+        eq(eventRsvps.userId, rsvp.userId)
+      )
+    )
     .limit(1);
 
   if (existing.length > 0) {
@@ -1061,7 +1251,10 @@ export async function upsertRsvp(rsvp: InsertEventRsvp) {
     return existing[0].id;
   } else {
     // Create new RSVP
-    const result = await db.insert(eventRsvps).values(rsvp).returning({ id: eventRsvps.id });
+    const result = await db
+      .insert(eventRsvps)
+      .values(rsvp)
+      .returning({ id: eventRsvps.id });
     return result[0].id;
   }
 }
@@ -1093,8 +1286,6 @@ export async function getUserRsvp(eventId: number, userId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-
-
 // ============================================================================
 // RECENT ACTIVITY
 // ============================================================================
@@ -1114,7 +1305,7 @@ export async function getRecentActivity(householdId: number, limit = 20) {
     .orderBy(desc(auditLogs.createdAt))
     .limit(limit);
 
-  return logs.map((row) => ({
+  return logs.map(row => ({
     id: row.log.id,
     action: row.log.action,
     actorName: row.actor?.name || null,
@@ -1122,8 +1313,6 @@ export async function getRecentActivity(householdId: number, limit = 20) {
     metadata: row.log.metadata,
   }));
 }
-
-
 
 // ============================================================================
 // ADMIN MESSAGES
@@ -1133,11 +1322,16 @@ export async function createAdminMessage(message: InsertAdminMessage) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(adminMessages).values(message).returning({ id: adminMessages.id });
+  const result = await db
+    .insert(adminMessages)
+    .values(message)
+    .returning({ id: adminMessages.id });
   return result[0].id;
 }
 
-export async function createAdminMessageRecipient(recipient: InsertAdminMessageRecipient) {
+export async function createAdminMessageRecipient(
+  recipient: InsertAdminMessageRecipient
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
@@ -1163,7 +1357,10 @@ export async function createAdminGroup(group: InsertAdminGroup) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(adminGroups).values(group).returning({ id: adminGroups.id });
+  const result = await db
+    .insert(adminGroups)
+    .values(group)
+    .returning({ id: adminGroups.id });
   return result[0].id;
 }
 
@@ -1207,7 +1404,11 @@ export async function getAdminGroup(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(adminGroups).where(eq(adminGroups.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(adminGroups)
+    .where(eq(adminGroups.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -1215,7 +1416,10 @@ export async function getAdminGroupMembers(groupId: number) {
   const db = await getDb();
   if (!db) return [];
 
-  return await db.select().from(adminGroupMembers).where(eq(adminGroupMembers.groupId, groupId));
+  return await db
+    .select()
+    .from(adminGroupMembers)
+    .where(eq(adminGroupMembers.groupId, groupId));
 }
 
 export async function deleteAdminGroup(id: number) {
@@ -1228,8 +1432,6 @@ export async function deleteAdminGroup(id: number) {
   await db.delete(adminGroups).where(eq(adminGroups.id, id));
 }
 
-
-
 // ============================================================================
 // UPDATES
 // ============================================================================
@@ -1238,7 +1440,10 @@ export async function createUpdate(update: InsertUpdate) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(updates).values(update).returning({ id: updates.id });
+  const result = await db
+    .insert(updates)
+    .values(update)
+    .returning({ id: updates.id });
   return result[0].id;
 }
 
@@ -1266,7 +1471,11 @@ export async function getUpdate(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(updates).where(eq(updates.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(updates)
+    .where(eq(updates.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
@@ -1297,15 +1506,24 @@ export async function createMealTrain(mealTrain: InsertMealTrain) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(mealTrains).values(mealTrain).returning({ id: mealTrains.id });
+  const result = await db
+    .insert(mealTrains)
+    .values(mealTrain)
+    .returning({ id: mealTrains.id });
   return result[0].id;
 }
 
-export async function updateMealTrain(id: number, data: Partial<InsertMealTrain>) {
+export async function updateMealTrain(
+  id: number,
+  data: Partial<InsertMealTrain>
+) {
   const db = await getDb();
   if (!db) return;
 
-  await db.update(mealTrains).set({ ...data, updatedAt: new Date() }).where(eq(mealTrains.id, id));
+  await db
+    .update(mealTrains)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(mealTrains.id, id));
 }
 
 export async function getMealSignupsByMealTrain(mealTrainId: number) {
@@ -1318,12 +1536,14 @@ export async function getMealSignupsByMealTrain(mealTrainId: number) {
     .where(eq(mealSignups.mealTrainId, mealTrainId))
     .orderBy(mealSignups.deliveryDate);
 
-  const userIds = signups.map((s) => s.userId).filter((id) => id != null);
+  const userIds = signups.map(s => s.userId).filter(id => id != null);
   const signupUsers =
-    userIds.length > 0 ? await db.select().from(users).where(inArray(users.id, userIds)) : [];
+    userIds.length > 0
+      ? await db.select().from(users).where(inArray(users.id, userIds))
+      : [];
 
-  return signups.map((signup) => {
-    const user = signupUsers.find((u) => u.id === signup.userId);
+  return signups.map(signup => {
+    const user = signupUsers.find(u => u.id === signup.userId);
     return {
       ...signup,
       userName: user?.name || user?.email || "Unknown",
@@ -1336,7 +1556,10 @@ export async function createMealSignup(signup: InsertMealSignup) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const result = await db.insert(mealSignups).values(signup).returning({ id: mealSignups.id });
+  const result = await db
+    .insert(mealSignups)
+    .values(signup)
+    .returning({ id: mealSignups.id });
   return result[0].id;
 }
 
@@ -1344,15 +1567,25 @@ export async function getMealSignup(id: number) {
   const db = await getDb();
   if (!db) return undefined;
 
-  const result = await db.select().from(mealSignups).where(eq(mealSignups.id, id)).limit(1);
+  const result = await db
+    .select()
+    .from(mealSignups)
+    .where(eq(mealSignups.id, id))
+    .limit(1);
   return result.length > 0 ? result[0] : undefined;
 }
 
-export async function updateMealSignup(id: number, data: Partial<InsertMealSignup>) {
+export async function updateMealSignup(
+  id: number,
+  data: Partial<InsertMealSignup>
+) {
   const db = await getDb();
   if (!db) return;
 
-  await db.update(mealSignups).set({ ...data, updatedAt: new Date() }).where(eq(mealSignups.id, id));
+  await db
+    .update(mealSignups)
+    .set({ ...data, updatedAt: new Date() })
+    .where(eq(mealSignups.id, id));
 }
 
 export async function deleteMealSignup(id: number) {
@@ -1368,14 +1601,16 @@ export async function saveMealTrainDays(mealTrainId: number, dates: Date[]) {
   if (!db) throw new Error("Database not available");
 
   // Delete existing days for this meal train
-  await db.delete(mealTrainDays).where(eq(mealTrainDays.mealTrainId, mealTrainId));
+  await db
+    .delete(mealTrainDays)
+    .where(eq(mealTrainDays.mealTrainId, mealTrainId));
 
   // Insert new days
   if (dates.length > 0) {
     await db.insert(mealTrainDays).values(
       dates.map(date => ({
         mealTrainId,
-        date: date.toISOString().split('T')[0],
+        date: date.toISOString().split("T")[0],
         isAvailable: true,
       }))
     );
@@ -1428,7 +1663,10 @@ export async function createMemoryWallEntry(entry: InsertMemoryWallEntry) {
 }
 
 // Get memory wall entries with optional type filter
-export async function getMemoryWallEntries(householdId: number, type?: "memory" | "story" | "encouragement" | "prayer" | "picture") {
+export async function getMemoryWallEntries(
+  householdId: number,
+  type?: "memory" | "story" | "encouragement" | "prayer" | "picture"
+) {
   const db = await getDb();
   if (!db) return [];
 
@@ -1480,7 +1718,7 @@ export async function deleteMemoryWallEntry(entryId: number) {
 
 // Update memory wall entry
 export async function updateMemoryWallEntry(
-  entryId: number, 
+  entryId: number,
   updates: {
     type?: "memory" | "story" | "encouragement" | "prayer" | "picture";
     content?: string;
@@ -1492,20 +1730,20 @@ export async function updateMemoryWallEntry(
   if (!db) throw new Error("Database not connected");
 
   const updateData: any = { updatedAt: new Date() };
-  
+
   if (updates.type !== undefined) updateData.type = updates.type;
   if (updates.content !== undefined) updateData.content = updates.content;
   if (updates.imageUrl !== undefined) updateData.imageUrl = updates.imageUrl;
   if (updates.imageUrls !== undefined) updateData.imageUrls = updates.imageUrls;
 
-  await db
-    .update(memoryWall)
-    .set(updateData)
-    .where(eq(memoryWall.id, entryId));
+  await db.update(memoryWall).set(updateData).where(eq(memoryWall.id, entryId));
 }
 
 // Get user-specific positions for memory wall cards
-export async function getMemoryWallPositions(userId: string, householdId: number) {
+export async function getMemoryWallPositions(
+  userId: string,
+  householdId: number
+) {
   const db = await getDb();
   if (!db) return [];
 
@@ -1521,7 +1759,9 @@ export async function getMemoryWallPositions(userId: string, householdId: number
 }
 
 // Save or update memory wall card position
-export async function saveMemoryWallPosition(position: InsertMemoryWallPosition) {
+export async function saveMemoryWallPosition(
+  position: InsertMemoryWallPosition
+) {
   const db = await getDb();
   if (!db) throw new Error("Database not connected");
 
@@ -1595,7 +1835,9 @@ export async function getGiftRegistryItems(householdId: number) {
     .leftJoin(users, eq(giftRegistry.purchasedBy, users.id))
     .where(eq(giftRegistry.householdId, householdId))
     .orderBy(
-      desc(sql`CASE WHEN ${giftRegistry.priority} = 'urgent' THEN 1 WHEN ${giftRegistry.priority} = 'normal' THEN 2 ELSE 3 END`),
+      desc(
+        sql`CASE WHEN ${giftRegistry.priority} = 'urgent' THEN 1 WHEN ${giftRegistry.priority} = 'normal' THEN 2 ELSE 3 END`
+      ),
       giftRegistry.createdAt
     );
 }
@@ -1670,4 +1912,3 @@ export async function deleteGiftRegistryItem(itemId: number) {
 
   await db.delete(giftRegistry).where(eq(giftRegistry.id, itemId));
 }
-
