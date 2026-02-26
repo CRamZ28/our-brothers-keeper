@@ -31,11 +31,8 @@ async function startServer() {
   const app = express();
   const server = createServer(app);
   
-  // Log object storage configuration on startup
-  console.log("[ObjectStorage] Configuration:", {
-    PRIVATE_OBJECT_DIR: process.env.PRIVATE_OBJECT_DIR || "NOT SET",
-    PUBLIC_OBJECT_SEARCH_PATHS: process.env.PUBLIC_OBJECT_SEARCH_PATHS || "NOT SET",
-  });
+  // Log storage mode on startup
+  console.log("[ObjectStorage] Using local filesystem storage (uploads/ directory)");
   
   // Sentry error handler must be registered early to capture all requests
   if (process.env.SENTRY_DSN) {
@@ -46,7 +43,7 @@ async function startServer() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   
-  // Setup Replit Auth (includes sessions, passport, and auth routes)
+  // Setup auth (includes sessions, passport, and auth routes)
   await setupAuth(app);
   
   // Setup test-only auth endpoints for E2E testing
@@ -110,7 +107,7 @@ async function startServer() {
 
   server.listen(port, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${port}/`);
-    console.log(`Replit Auth enabled`);
+    console.log(`Auth enabled`);
     
     // Set up auto-promotion background job
     // Run once on startup to catch any pending promotions

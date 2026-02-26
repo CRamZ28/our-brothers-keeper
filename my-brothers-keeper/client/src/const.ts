@@ -6,7 +6,7 @@ export const APP_LOGO =
   import.meta.env.VITE_APP_LOGO ||
   "/obk-logo-v2.png?v=2";
 
-// Replit Auth endpoints
+// Auth endpoints
 export const getLoginUrl = () => "/api/login";
 export const getLogoutUrl = () => "/api/logout";
 

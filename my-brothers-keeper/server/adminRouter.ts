@@ -4,7 +4,35 @@ import { protectedProcedure, router } from "./_core/trpc";
 import * as db from "./db";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazily initialised so the app can start without RESEND_API_KEY in dev
+let _resendInstance: InstanceType<typeof Resend> | null = null;
+function getResend() {
+  if (!_resendInstance) {
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("[Email] RESEND_API_KEY not set — admin emails will be logged but not sent");
+      return null;
+    }
+    _resendInstance = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resendInstance;
+}
+const resend = new Proxy({} as InstanceType<typeof Resend>, {
+  get(_target, prop) {
+    const instance = getResend();
+    if (!instance) {
+      if (prop === "emails") {
+        return {
+          send: async (...args: any[]) => {
+            console.warn("[Email] RESEND_API_KEY not set — admin email not sent:", JSON.stringify(args[0]?.subject));
+            return { data: null, error: null };
+          },
+        };
+      }
+      return undefined;
+    }
+    return (instance as any)[prop];
+  },
+});
 const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
 
 // Helper to escape HTML to prevent XSS

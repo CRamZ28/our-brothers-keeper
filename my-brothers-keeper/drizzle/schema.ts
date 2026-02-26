@@ -15,8 +15,7 @@ import {
   real,
 } from "drizzle-orm/pg-core";
 
-// Replit Auth: Session storage table
-// Reference: blueprint:javascript_log_in_with_replit
+// Session storage table (used by connect-pg-simple for Express sessions)
 export const sessions = pgTable(
   "sessions",
   {
@@ -73,13 +72,11 @@ export const tourScopeEnum = pgEnum("tour_scope", ["household", "feature", "help
 
 /**
  * Core user table backing auth flow.
- * Modified for Replit Auth integration - uses varchar ID from OpenID Connect
+ * Uses varchar ID to support OpenID Connect sub claims.
  * Extended with role and household support for Our Brother's Keeper.
  */
 export const users = pgTable("users", {
-  // Replit Auth: Using varchar for OpenID Connect sub claim
   id: varchar("id").primaryKey(),
-  // Replit Auth fields
   email: varchar("email", { length: 320 }),
   firstName: varchar("first_name", { length: 255 }),
   lastName: varchar("last_name", { length: 255 }),

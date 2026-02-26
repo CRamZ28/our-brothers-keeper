@@ -3,7 +3,31 @@ import { getDb } from './db';
 import { notificationLogs, notificationPreferences, users } from '../drizzle/schema';
 import { eq, and } from 'drizzle-orm';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazily initialised so the app can start without RESEND_API_KEY in dev
+let _resend: Resend | null = null;
+function getResend(): Resend | null {
+  if (!_resend && process.env.RESEND_API_KEY) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
+const resend = new Proxy({} as Resend, {
+  get(_target, prop) {
+    const instance = getResend();
+    if (!instance) {
+      if (prop === "emails") {
+        return {
+          send: async (...args: any[]) => {
+            console.warn("[Email] RESEND_API_KEY not set — email not sent:", args[0]?.subject ?? "");
+            return { data: null, error: null };
+          },
+        };
+      }
+      return undefined;
+    }
+    return (instance as any)[prop];
+  },
+});
 
 export type NotificationType =
   | 'need_created'

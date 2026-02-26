@@ -18,7 +18,7 @@ if (sentryDsn) {
       Sentry.replayIntegration(),
     ],
     tracesSampleRate: 1.0,
-    tracePropagationTargets: ["localhost", /^https:\/\/[^/]*\.replit\.dev/],
+    tracePropagationTargets: ["localhost"],
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
     environment: import.meta.env.MODE,

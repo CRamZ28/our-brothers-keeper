@@ -6,7 +6,35 @@ import * as db from "./db";
 import crypto from "crypto";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazily initialised so the app can start without RESEND_API_KEY in dev
+let _resend: InstanceType<typeof Resend> | null = null;
+function getResend() {
+  if (!_resend) {
+    if (!process.env.RESEND_API_KEY) {
+      console.warn("[Email] RESEND_API_KEY not set — emails will be logged but not sent");
+      return null;
+    }
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
+const resend = new Proxy({} as InstanceType<typeof Resend>, {
+  get(_target, prop) {
+    const instance = getResend();
+    if (!instance) {
+      if (prop === "emails") {
+        return {
+          send: async (...args: any[]) => {
+            console.warn("[Email] RESEND_API_KEY not set — invite email not sent:", JSON.stringify(args[0]?.to));
+            return { data: null, error: null };
+          },
+        };
+      }
+      return undefined;
+    }
+    return (instance as any)[prop];
+  },
+});
 const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
 
 // Helper to escape HTML to prevent XSS

@@ -33,20 +33,10 @@ router.post("/upload", upload.single("file"), async (req, res) => {
       return res.status(400).json({ error: "No file provided" });
     }
 
-    // Always use object storage - no fallback to local files
-    // Local files don't persist in autoscale deployments
-    if (!process.env.PRIVATE_OBJECT_DIR) {
-      console.error("Object storage not configured - PRIVATE_OBJECT_DIR missing");
-      return res.status(500).json({ 
-        error: "File storage not configured. Please set up object storage." 
-      });
-    }
-
     console.log("Starting upload:", {
       filename: req.file.originalname,
       size: req.file.size,
       mimetype: req.file.mimetype,
-      objectDir: process.env.PRIVATE_OBJECT_DIR,
     });
 
     const objectStorageService = new ObjectStorageService();

@@ -14,7 +14,7 @@ export async function createContext(
   let user: User | null = null;
 
   try {
-    // Use Replit Auth session-based authentication
+    // Extract authenticated user from Passport session
     const req = opts.req as any;
     if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
       const userId = req.user.claims.sub;
