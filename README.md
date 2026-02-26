@@ -42,6 +42,48 @@ This is not social media. There are no feeds to scroll, no engagement metrics, n
 
 ---
 
+## Privacy & Access Control
+
+OBK is built around the idea that a grieving family should have precise control over who sees what — not just a single public/private toggle, but real, granular control at every level.
+
+### Three-Tier Access System
+
+Every supporter on the platform is assigned one of three access tiers, set by the Primary or an Admin:
+
+| Tier | Who It's For | What They Can See |
+|---|---|---|
+| **Family** | Immediate family, closest inner circle | Everything — all content regardless of visibility settings |
+| **Friend** | Close friends, trusted community members | Mid-level content and above |
+| **Community** | General supporters, acquaintances | Publicly-shared content only |
+
+### Per-Content Visibility
+
+When creating any piece of content — a need, an event, a family update, a meal train — the author chooses exactly who can see it:
+
+- **Everyone** — all supporters across all tiers
+- **Specific Groups** — one or more custom groups (e.g., "Church Friends", "Work Family", "Inner Circle")
+- **Custom** — hand-pick specific individuals
+
+This means an event like a private graveside memorial can be visible only to Family-tier members, while a general meal delivery need is visible to everyone. A sensitive family update stays within a trusted inner circle. A public prayer request reaches the whole community.
+
+### Custom Groups
+
+The Primary can create unlimited custom groups with any names they choose. Groups are entirely flexible — they're just named collections of people used for visibility targeting. The names don't change how the system works; they just make it easier to share the right things with the right people.
+
+### Role-Based Permissions
+
+Separate from access tiers, users have one of three **roles** that determine what actions they can take:
+
+- **Primary** — full control over all settings, content, membership, and delegation
+- **Admin** — delegated operational control; can manage most content and members
+- **Supporter** — can view content they have access to and interact (claim needs, RSVP, etc.)
+
+The Primary always retains ultimate authority. This cannot be transferred or overridden by any Admin action.
+
+> The technical implementation of this system lives in `server/visibilityHelpers.ts`. It uses a Five-Step Security Pattern enforced at every endpoint — see [CONTRIBUTING.md](my-brothers-keeper/CONTRIBUTING.md) for details.
+
+---
+
 ## Faith Foundation
 
 OBK is rooted in a Christian conviction — that we are called to carry one another's burdens. The name is a reference to Scripture. The logo includes a cross. That foundation is real and it won't be hidden.
