@@ -10,7 +10,7 @@ This document explains everything you need to know to run this app outside of Re
 |---|---|
 | Frontend | React + Vite + TypeScript + Tailwind CSS |
 | Backend | Express.js + tRPC |
-| Database | PostgreSQL (via Drizzle ORM) |
+| Database | PostgreSQL via [Neon](https://neon.tech) (Drizzle ORM) |
 | Auth | Replit Auth / OpenID Connect (Passport.js) |
 | File Storage | Google Cloud Storage via Replit Sidecar |
 | Email | Resend |
@@ -23,7 +23,7 @@ This document explains everything you need to know to run this app outside of Re
 
 - Node.js >= 18
 - pnpm >= 8 (`npm install -g pnpm`)
-- A PostgreSQL database (v14+)
+- A [Neon](https://neon.tech) account for PostgreSQL (free tier works — project `obk-prod` already created under c.ramsey28@gmail.com)
 - A [Resend](https://resend.com) account for email
 - File/object storage (see below)
 
