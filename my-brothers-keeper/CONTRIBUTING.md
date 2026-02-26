@@ -1,6 +1,50 @@
 # Contributing to Our Brother's Keeper
 
-Thank you for contributing to Our Brother's Keeper! This document outlines the security patterns and best practices you must follow when developing features for this platform.
+Before you open a pull request, please take a few minutes to understand what this project is and who it serves.
+
+Our Brother's Keeper exists to help communities stay present for grieving families — not just in the first week, but in year two and beyond. It was built by a non-developer, using AI tools, out of a personal experience of loss. The code has rough edges. The mission does not.
+
+Every contribution should be held against a simple question: **does this make it easier for a grieving family to receive support, with their dignity intact?** If a change improves efficiency but reduces dignity, we won't merge it. If a feature is architecturally elegant but serves engagement metrics rather than families, it doesn't belong here.
+
+Please read [FOUNDER_NOTE.md](FOUNDER_NOTE.md), [VISION.md](VISION.md), and [PHILOSOPHY.md](PHILOSOPHY.md) before diving into code. The technical guide below matters — but the heart behind the project matters more.
+
+---
+
+## Where Help Is Most Needed
+
+- **Security hardening** — the app handles sensitive family data; privacy bugs are critical
+- **Code refactoring** — AI-generated code that needs a thoughtful developer's eye
+- **Testing coverage** — unit, integration, and e2e tests
+- **Accessibility** — WCAG compliance throughout
+- **Notification reliability** — email reminders are core to the long-term support mission
+- **Mobile experience** — PWA improvements and eventual React Native expansion
+- **DevOps / deployment** — infrastructure for hosting outside Replit
+- **Documentation** — inline code docs, API docs, onboarding guides
+
+## What We Won't Merge
+
+- Features that introduce engagement metrics, public post counts, or social comparison
+- Changes that reduce the Primary's control over their family's space
+- Anything that monetizes user data or grief
+- Dark UI patterns designed to increase session time
+- Features that optimize for virality or sharing
+
+---
+
+## Practical Notes
+
+- Open an issue before starting significant work so we can align on direction
+- Label issues appropriately: `good-first-issue`, `security`, `privacy`, `accessibility`, `ux`, `bug`
+- PRs should include a description of *why*, not just *what*
+- Tests are expected for new features and bug fixes
+
+---
+
+## Technical Guide
+
+*The section below covers the security patterns and implementation practices required for all contributions. This was generated from the existing codebase and reflects how the app is currently structured.*
+
+---
 
 ## Table of Contents
 - [Security-First Development](#security-first-development)
