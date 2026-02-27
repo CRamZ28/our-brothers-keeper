@@ -4,7 +4,7 @@
 
 I want to tell you why I built this, because I think it matters before you look at any of the code.
 
-My brother passed away and left behind a wife and three young boys.
+My brother passed away in a plane crash on October 25, 2025 leaving behind a wife and three young boys.
 
 In the days and weeks after, people showed up. The way people do when something devastating happens — with meals, and phone calls, and presence, and prayer. It was real. It was genuine. And then, as life does, it slowly faded.
 
