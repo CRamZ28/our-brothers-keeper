@@ -161,6 +161,39 @@ pnpm dev                  # Starts at http://localhost:5000
 
 ---
 
+## Deploying to Vercel
+
+This repo is configured to deploy on Vercel. The frontend builds to a static bundle served from Vercel's CDN, the Express + tRPC API runs as a serverless function under `/api/*`, and the 15-minute reminder job runs as a Vercel Cron.
+
+### One-time setup
+
+1. **Vercel** → **Add New** → **Project** → import `our-brothers-keeper` from GitHub.
+2. In the import screen, set **Root Directory** to `my-brothers-keeper`.
+3. Under **Environment Variables**, add the values listed below.
+4. Click **Deploy**.
+
+### Required environment variables
+
+| Variable | Where to get it | Notes |
+|---|---|---|
+| `DATABASE_URL` | Neon → project → Connection string | Use the **pooled** connection string for serverless |
+| `SESSION_SECRET` | Generate a random string | `openssl rand -hex 32` |
+| `CRON_SECRET` | Generate a random string | Used to authenticate the reminder cron |
+| `REPLIT_DOMAINS` | Your Vercel domain | e.g. `your-app.vercel.app` |
+| `REPL_ID` | Your Replit app's ID | Required by Replit Auth until it's swapped out |
+| `ISSUER_URL` | `https://replit.com/oidc` | Default for Replit Auth |
+| `OWNER_OPEN_ID` | Your Replit user ID | Identifies the project owner |
+| `RESEND_API_KEY` | resend.com dashboard | Required for email reminders |
+| `NODE_ENV` | `production` | |
+
+### Known limitations on Vercel
+
+- **File uploads are non-functional** until `server/objectStorage.ts` is swapped from Replit Object Storage to S3/R2. See "Where Help Is Most Needed" above — this is a contributor task.
+- **Hourly auto-promotion is disabled** on Vercel. The 15-minute reminder cron is wired up; auto-promotion can be added as a second cron entry in `vercel.json` once contributors prioritize it.
+- **Replit Auth still requires `REPLIT_DOMAINS` and `REPL_ID`.** Until auth is migrated, sign-in flows through Replit's OIDC service.
+
+---
+
 ## Repository Structure
 
 ```

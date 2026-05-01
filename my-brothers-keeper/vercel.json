@@ -1,0 +1,20 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "vite build",
+  "outputDirectory": "dist/public",
+  "installCommand": "pnpm install --frozen-lockfile=false",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/trpc/:path*", "destination": "/api" },
+    { "source": "/api/auth/:path*", "destination": "/api" },
+    { "source": "/api/cron/:path*", "destination": "/api" },
+    { "source": "/api/upload", "destination": "/api" },
+    { "source": "/objects/:path*", "destination": "/api" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/reminders",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}
