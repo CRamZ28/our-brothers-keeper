@@ -6,7 +6,8 @@
   "framework": null,
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api" },
-    { "source": "/objects/:path*", "destination": "/api" }
+    { "source": "/objects/:path*", "destination": "/api" },
+        { "source": "/(.*)", "destination": "/index.html" }
   ],
   "crons": [
     {
