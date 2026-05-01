@@ -136,6 +136,15 @@ const normalizeContentPart = (
   throw new Error("Unsupported message content part");
 };
 
+const isNonEmptyContentPart = (
+  part: TextContent | ImageContent | FileContent
+): boolean => {
+  if (part.type === "text") {
+    return part.text.trim().length > 0;
+  }
+  return true;
+};
+
 const normalizeMessage = (message: Message) => {
   const { role, name, tool_call_id } = message;
 
@@ -152,7 +161,13 @@ const normalizeMessage = (message: Message) => {
     };
   }
 
-  const contentParts = ensureArray(message.content).map(normalizeContentPart);
+  const contentParts = ensureArray(message.content)
+    .map(normalizeContentPart)
+    .filter(isNonEmptyContentPart);
+
+  if (contentParts.length === 0) {
+    return null;
+  }
 
   // If there's only text content, collapse to a single string for compatibility
   if (contentParts.length === 1 && contentParts[0].type === "text") {
@@ -279,9 +294,19 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     response_format,
   } = params;
 
+  const normalizedMessages = messages
+    .map(normalizeMessage)
+    .filter((m): m is NonNullable<typeof m> => m !== null);
+
+  if (normalizedMessages.length === 0) {
+    throw new Error(
+      "invokeLLM called with no non-empty messages; refusing to send a request with empty content"
+    );
+  }
+
   const payload: Record<string, unknown> = {
     model: "gemini-2.5-flash",
-    messages: messages.map(normalizeMessage),
+    messages: normalizedMessages,
   };
 
   if (tools && tools.length > 0) {
