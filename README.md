@@ -119,6 +119,8 @@ Before diving into the code, please read:
 
 ### Where Help Is Most Needed
 
+- **Replace Replit Auth with a portable login system** — `server/replitAuth.ts` currently handles all sign-in via Replit's OpenID Connect service. We'd like to swap this for a self-hostable option (Auth.js / NextAuth, Clerk, Supabase Auth, or a plain email-link flow). Touches `server/replitAuth.ts`, `server/_core/index.ts`, `server/_core/context.ts`, `server/_core/env.ts`, and `client/src/main.tsx`. Good first contribution — clearly scoped.
+- **Replace Replit Object Storage** — `server/objectStorage.ts` uses Replit's GCS sidecar. Swap for direct S3, R2, or any S3-compatible bucket.
 - Security hardening and privacy audit
 - Mobile experience (React Native / PWA improvements)
 - Accessibility compliance
