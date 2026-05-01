@@ -5,16 +5,13 @@
   "installCommand": "pnpm install --frozen-lockfile=false",
   "framework": null,
   "rewrites": [
-    { "source": "/api/trpc/:path*", "destination": "/api" },
-    { "source": "/api/auth/:path*", "destination": "/api" },
-    { "source": "/api/cron/:path*", "destination": "/api" },
-    { "source": "/api/upload", "destination": "/api" },
+    { "source": "/api/:path*", "destination": "/api" },
     { "source": "/objects/:path*", "destination": "/api" }
   ],
   "crons": [
     {
       "path": "/api/cron/reminders",
-                          "schedule": "0 0 * * *"
+      "schedule": "0 0 * * *"
     }
   ]
 }
