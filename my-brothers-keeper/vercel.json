@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "vite build",
+  "buildCommand": "vite build && esbuild server/_vercel/handler.ts --platform=node --format=esm --bundle --packages=external --outfile=api/index.js",
   "outputDirectory": "dist/public",
   "installCommand": "pnpm install --frozen-lockfile=false",
   "framework": null,
