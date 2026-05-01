@@ -2,6 +2,7 @@ node_modules/
 .pnpm-store/
 dist/
 build/
+my-brothers-keeper/api/index.js
 .env
 .env.local
 .DS_Store
