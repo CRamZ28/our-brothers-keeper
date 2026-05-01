@@ -189,7 +189,8 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 ### Known limitations on Vercel
 
 - **File uploads are non-functional** until `server/objectStorage.ts` is swapped from Replit Object Storage to S3/R2. See "Where Help Is Most Needed" above — this is a contributor task.
-- **Hourly auto-promotion is disabled** on Vercel. The 15-minute reminder cron is wired up; auto-promotion can be added as a second cron entry in `vercel.json` once contributors prioritize it.
+- **Reminders run once per day on the Vercel Hobby (free) plan.** Vercel's free tier limits cron jobs to a minimum interval of one run per day, so `vercel.json` is currently set to `0 0 * * *` (midnight). This means a reminder scheduled for 2:00 PM today won't be sent until midnight the following day — up to 24 hours late. To restore the original 15-minute cadence, upgrade to Vercel Pro and change the schedule in `vercel.json` to `*/15 * * * *`. Alternatively, point an external cron service (cron-job.org, EasyCron, etc.) at `/api/cron/reminders` with the `CRON_SECRET` header.
+- **Hourly auto-promotion is disabled** on Vercel. It can be added as a second cron entry in `vercel.json` once contributors prioritize it (also subject to the Hobby once-per-day limit).
 - **Replit Auth still requires `REPLIT_DOMAINS` and `REPL_ID`.** Until auth is migrated, sign-in flows through Replit's OIDC service.
 
 ---
