@@ -54,10 +54,6 @@ function buildAuthConfig() {
         from: process.env.AUTH_EMAIL_FROM ?? "Our Brother's Keeper <notifications@obkapp.com>",
       }),
     ],
-    pages: {
-      signIn: "/signin",
-      verifyRequest: "/signin/check-email",
-    },
   };
 }
 
