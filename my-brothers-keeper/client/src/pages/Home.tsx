@@ -110,7 +110,7 @@ export default function Home() {
               </h1>
             </div>
             <Button 
-              onClick={() => (window.location.href = "/api/login")}
+              onClick={() => (window.location.href = "/api/auth/signin")}
               className="bg-[#6d4a65] hover:bg-[#5d3a55] text-white font-semibold px-5 py-2 shadow-lg"
             >
               Sign In
@@ -190,7 +190,7 @@ export default function Home() {
               
               <div className="pt-2">
                 <Button 
-                  onClick={() => (window.location.href = "/api/login")}
+                  onClick={() => (window.location.href = "/api/auth/signin")}
                   size="lg"
                   variant="ghost"
                   className="text-white font-semibold px-12 py-7 text-xl shadow-2xl hover:opacity-90"
@@ -675,7 +675,7 @@ export default function Home() {
               </p>
               <div className="pt-4">
                 <Button 
-                  onClick={() => (window.location.href = "/api/login")}
+                  onClick={() => (window.location.href = "/api/auth/signin")}
                   size="lg"
                   variant="ghost"
                   className="text-white font-semibold px-12 py-7 text-xl shadow-2xl hover:opacity-90"

@@ -18,6 +18,8 @@
     "db:push": "drizzle-kit push"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.11.2",
+    "@auth/express": "^0.12.2",
     "@aws-sdk/client-s3": "^3.693.0",
     "@aws-sdk/s3-request-presigner": "^3.693.0",
     "@radix-ui/react-accordion": "^1.2.12",
@@ -78,6 +80,7 @@
     "react-hook-form": "^7.64.0",
     "react-resizable-panels": "^3.0.6",
     "recharts": "^2.15.2",
+    "resend": "^6.4.2",
     "sonner": "^2.0.7",
     "superjson": "^1.13.3",
     "tailwind-merge": "^3.3.1",

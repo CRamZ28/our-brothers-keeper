@@ -1,12 +1,10 @@
 import * as Sentry from "@sentry/node";
 import express, { type Express } from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { setupAuth, isAuthenticated } from "../replitAuth";
-import { setupTestAuth } from "../testAuth";
+import { authHandler } from "../auth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import uploadRouter from "../uploadRouter";
-import { getUser } from "../db";
 import { processReminders } from "../reminderProcessor";
 import { ObjectStorageService, ObjectNotFoundError } from "../objectStorage";
 
@@ -21,6 +19,9 @@ if (process.env.SENTRY_DSN) {
 
 export async function createApp(): Promise<Express> {
   const app = express();
+
+  // Required by @auth/express when running behind a proxy (Vercel does)
+  app.set("trust proxy", true);
 
   if (process.env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);
@@ -43,22 +44,8 @@ export async function createApp(): Promise<Express> {
     }
   });
 
-  await setupAuth(app);
-  await setupTestAuth(app);
-
-  app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  // Auth.js handles /api/auth/signin, /api/auth/callback/*, /api/auth/signout, /api/auth/session, etc.
+  app.use("/api/auth/*", authHandler);
 
   app.use("/api", uploadRouter);
   app.use("/uploads", express.static("uploads"));

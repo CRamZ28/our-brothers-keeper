@@ -18,7 +18,7 @@ export function useAuth(options?: UseAuthOptions) {
   });
 
   const logout = useCallback(() => {
-    window.location.href = "/api/logout";
+    window.location.href = "/api/auth/signout";
   }, []);
 
   const state = useMemo(() => {

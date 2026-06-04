@@ -25,7 +25,7 @@ async function startServer() {
 
   server.listen(port, "0.0.0.0", () => {
     console.log(`Server running on http://0.0.0.0:${port}/`);
-    console.log(`Replit Auth enabled`);
+    console.log(`Auth.js (email magic links via Resend) enabled`);
 
     processAutoPromotions()
       .then(() => console.log("[AutoPromotion] Initial auto-promotion check completed"))

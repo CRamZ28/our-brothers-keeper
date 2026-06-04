@@ -119,8 +119,8 @@ Before diving into the code, please read:
 
 ### Where Help Is Most Needed
 
-- **Replace Replit Auth with a portable login system** — `server/replitAuth.ts` currently handles all sign-in via Replit's OpenID Connect service. We'd like to swap this for a self-hostable option (Auth.js / NextAuth, Clerk, Supabase Auth, or a plain email-link flow). Touches `server/replitAuth.ts`, `server/_core/index.ts`, `server/_core/context.ts`, `server/_core/env.ts`, and `client/src/main.tsx`. Good first contribution — clearly scoped.
-- **Replace Replit Object Storage** — `server/objectStorage.ts` uses Replit's GCS sidecar. Swap for direct S3, R2, or any S3-compatible bucket.
+- **Replace Replit Object Storage** — `server/objectStorage.ts` uses Replit's GCS sidecar. Swap for direct S3, R2, or any S3-compatible bucket. See issue #8.
+- **Add social sign-in providers** — auth currently uses Auth.js email magic links via Resend. Adding Google, GitHub, or Apple is ~10 lines per provider; see `server/auth.ts`.
 - Security hardening and privacy audit
 - Mobile experience (React Native / PWA improvements)
 - Accessibility compliance
@@ -139,13 +139,13 @@ Before diving into the code, please read:
 | Frontend | React + Vite + TypeScript + Tailwind CSS |
 | Backend | Express.js + tRPC |
 | Database | PostgreSQL + Drizzle ORM |
-| Auth | Replit Auth (OpenID Connect / Passport.js) |
-| File Storage | Replit Object Storage (GCS sidecar) |
+| Auth | Auth.js (email magic links via Resend) |
+| File Storage | Replit Object Storage (GCS sidecar) — to be replaced, see issue #8 |
 | Email | Resend |
 | Package Manager | pnpm (workspaces) |
 | Runtime | Node.js 18+ |
 
-> **Note:** Two pieces of this stack are Replit-specific (`server/replitAuth.ts` and `server/objectStorage.ts`). Everything else is standard and portable. See [DEPLOYMENT.md](my-brothers-keeper/DEPLOYMENT.md) for what needs to be replaced when hosting elsewhere.
+> **Note:** `server/objectStorage.ts` is the only remaining Replit-specific module. Everything else is standard and portable. See [DEPLOYMENT.md](my-brothers-keeper/DEPLOYMENT.md) for what needs to be replaced when hosting elsewhere.
 
 ---
 
@@ -177,13 +177,10 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 | Variable | Where to get it | Notes |
 |---|---|---|
 | `DATABASE_URL` | Neon → project → Connection string | Use the **pooled** connection string for serverless |
-| `SESSION_SECRET` | Generate a random string | `openssl rand -hex 32` |
-| `CRON_SECRET` | Generate a random string | Used to authenticate the reminder cron |
-| `REPLIT_DOMAINS` | Your Vercel domain | e.g. `your-app.vercel.app` |
-| `REPL_ID` | Your Replit app's ID | Required by Replit Auth until it's swapped out |
-| `ISSUER_URL` | `https://replit.com/oidc` | Default for Replit Auth |
-| `OWNER_OPEN_ID` | Your Replit user ID | Identifies the project owner |
-| `RESEND_API_KEY` | resend.com dashboard | Required for email reminders |
+| `AUTH_SECRET` | Generate a random string | `openssl rand -hex 32` — used by Auth.js to encrypt session cookies |
+| `CRON_SECRET` | Generate a random string | `openssl rand -hex 32` — authenticates Vercel Cron when hitting `/api/cron/reminders` |
+| `RESEND_API_KEY` | resend.com dashboard | Sends magic-link sign-in emails and notification emails |
+| `AUTH_EMAIL_FROM` | _optional_ | From-address for magic-link emails. Defaults to `Our Brother's Keeper <notifications@obkapp.com>` — must be a verified Resend sender |
 | `NODE_ENV` | `production` | |
 
 ### Known limitations on Vercel
@@ -191,7 +188,7 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 - **File uploads are non-functional** until `server/objectStorage.ts` is swapped from Replit Object Storage to S3/R2. See "Where Help Is Most Needed" above — this is a contributor task.
 - **Reminders run once per day on the Vercel Hobby (free) plan.** Vercel's free tier limits cron jobs to a minimum interval of one run per day, so `vercel.json` is currently set to `0 0 * * *` (midnight). This means a reminder scheduled for 2:00 PM today won't be sent until midnight the following day — up to 24 hours late. To restore the original 15-minute cadence, upgrade to Vercel Pro and change the schedule in `vercel.json` to `*/15 * * * *`. Alternatively, point an external cron service (cron-job.org, EasyCron, etc.) at `/api/cron/reminders` with the `CRON_SECRET` header.
 - **Hourly auto-promotion is disabled** on Vercel. It can be added as a second cron entry in `vercel.json` once contributors prioritize it (also subject to the Hobby once-per-day limit).
-- **Replit Auth still requires `REPLIT_DOMAINS` and `REPL_ID`.** Until auth is migrated, sign-in flows through Replit's OIDC service.
+- **Magic-link emails require Resend.** Sign-in works by emailing a one-time link to the user. If `RESEND_API_KEY` is missing, invalid, or the FROM domain isn't verified in Resend, sign-in will silently fail. Test by sending yourself an invite first.
 
 ---
 
