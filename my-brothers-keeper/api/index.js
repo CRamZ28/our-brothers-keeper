@@ -6,16 +6,10 @@ import * as Sentry from "@sentry/node";
 import express from "express";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
-// server/replitAuth.ts
-import * as client from "openid-client";
-import { Strategy } from "openid-client/passport";
-import passport from "passport";
-import session from "express-session";
-import memoize from "memoizee";
-import connectPg from "connect-pg-simple";
-
-// server/db.ts
-import { and, eq, inArray, desc, sql, ilike } from "drizzle-orm";
+// server/auth.ts
+import { ExpressAuth, getSession } from "@auth/express";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import Resend from "@auth/express/providers/resend";
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 
@@ -38,11 +32,11 @@ import {
 var sessions = pgTable(
   "sessions",
   {
-    sid: varchar("sid").primaryKey(),
-    sess: jsonb("sess").notNull(),
-    expire: timestamp("expire").notNull()
+    sessionToken: varchar("session_token").primaryKey(),
+    userId: varchar("user_id").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull()
   },
-  (table) => [index("sessions_expire_idx").on(table.expire)]
+  (table) => [index("sessions_user_id_idx").on(table.userId)]
 );
 var userRoleEnum = pgEnum("user_role", ["primary", "admin", "supporter", "user"]);
 var userStatusEnum = pgEnum("user_status", ["active", "pending", "blocked"]);
@@ -87,15 +81,14 @@ var dashboardDisplayTypeEnum = pgEnum("dashboard_display_type", ["none", "photo"
 var tourStatusEnum = pgEnum("tour_status", ["not_started", "in_progress", "completed", "dismissed"]);
 var tourScopeEnum = pgEnum("tour_scope", ["household", "feature", "help"]);
 var users = pgTable("users", {
-  // Replit Auth: Using varchar for OpenID Connect sub claim
   id: varchar("id").primaryKey(),
-  // Replit Auth fields
   email: varchar("email", { length: 320 }),
+  emailVerified: timestamp("email_verified", { mode: "date" }),
+  name: text("name"),
+  image: text("image"),
   firstName: varchar("first_name", { length: 255 }),
   lastName: varchar("last_name", { length: 255 }),
   profileImageUrl: varchar("profile_image_url", { length: 500 }),
-  // App-specific fields
-  name: text("name"),
   phone: varchar("phone", { length: 20 }),
   loginMethod: varchar("login_method", { length: 64 }),
   role: userRoleEnum("role").default("user").notNull(),
@@ -112,6 +105,35 @@ var users = pgTable("users", {
   statusIdx: index("users_status_idx").on(table.status),
   emailIdx: index("users_email_idx").on(table.email)
 }));
+var accounts = pgTable(
+  "accounts",
+  {
+    userId: varchar("user_id").notNull(),
+    type: varchar("type", { length: 32 }).notNull(),
+    provider: varchar("provider", { length: 64 }).notNull(),
+    providerAccountId: varchar("provider_account_id", { length: 255 }).notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: varchar("token_type", { length: 32 }),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state")
+  },
+  (table) => [
+    uniqueIndex("accounts_provider_account_id_idx").on(table.provider, table.providerAccountId),
+    index("accounts_user_id_idx").on(table.userId)
+  ]
+);
+var verificationTokens = pgTable(
+  "verification_tokens",
+  {
+    identifier: varchar("identifier", { length: 320 }).notNull(),
+    token: varchar("token", { length: 255 }).notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull()
+  },
+  (table) => [uniqueIndex("verification_tokens_identifier_token_idx").on(table.identifier, table.token)]
+);
 var households = pgTable("households", {
   id: serial("id").primaryKey(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -626,6 +648,112 @@ var userTourProgress = pgTable("user_tour_progress", {
   statusIdx: index("user_tour_progress_status_idx").on(table.status)
 }));
 
+// server/auth.ts
+var { Pool } = pg;
+var _pool = null;
+var _authDb = null;
+var _authConfig = null;
+var _authHandler = null;
+function getAuthDb() {
+  if (!_authDb && process.env.DATABASE_URL) {
+    _pool = new Pool({ connectionString: process.env.DATABASE_URL });
+    _authDb = drizzle(_pool);
+  }
+  return _authDb;
+}
+function buildAuthConfig() {
+  const db = getAuthDb();
+  if (!db) {
+    throw new Error("DATABASE_URL is required for authentication");
+  }
+  if (!process.env.AUTH_SECRET) {
+    throw new Error("AUTH_SECRET is required (generate with `openssl rand -hex 32`)");
+  }
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is required to send magic-link emails");
+  }
+  return {
+    adapter: DrizzleAdapter(db, {
+      usersTable: users,
+      accountsTable: accounts,
+      sessionsTable: sessions,
+      verificationTokensTable: verificationTokens
+    }),
+    secret: process.env.AUTH_SECRET,
+    trustHost: true,
+    session: { strategy: "database" },
+    providers: [
+      Resend({
+        apiKey: process.env.RESEND_API_KEY,
+        from: process.env.AUTH_EMAIL_FROM ?? "Our Brother's Keeper <notifications@obkapp.com>"
+      })
+    ],
+    pages: {
+      signIn: "/signin",
+      verifyRequest: "/signin/check-email"
+    }
+  };
+}
+function getAuthConfig() {
+  if (!_authConfig) {
+    _authConfig = buildAuthConfig();
+  }
+  return _authConfig;
+}
+var authHandler = (req, res, next) => {
+  try {
+    if (!_authHandler) {
+      _authHandler = ExpressAuth(getAuthConfig());
+    }
+    return _authHandler(req, res, next);
+  } catch (error) {
+    console.error("[auth] handler init failed:", error);
+    res.status(500).json({ error: "Authentication not configured" });
+  }
+};
+async function getSessionUserId(req) {
+  try {
+    const session = await getSession(req, getAuthConfig());
+    return session?.user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+// shared/const.ts
+var COOKIE_NAME = "app_session_id";
+var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
+var UNAUTHED_ERR_MSG = "Please login (10001)";
+var NOT_ADMIN_ERR_MSG = "You do not have required permission (10002)";
+
+// server/routers.ts
+import { TRPCError as TRPCError16 } from "@trpc/server";
+import { z as z15 } from "zod";
+import crypto2 from "crypto";
+
+// server/_core/cookies.ts
+function isSecureRequest(req) {
+  if (req.protocol === "https") return true;
+  const forwardedProto = req.headers["x-forwarded-proto"];
+  if (!forwardedProto) return false;
+  const protoList = Array.isArray(forwardedProto) ? forwardedProto : forwardedProto.split(",");
+  return protoList.some((proto) => proto.trim().toLowerCase() === "https");
+}
+function getSessionCookieOptions(req) {
+  return {
+    httpOnly: true,
+    path: "/",
+    sameSite: "none",
+    secure: isSecureRequest(req)
+  };
+}
+
+// server/_core/systemRouter.ts
+import { z } from "zod";
+
+// server/_core/notification.ts
+import { TRPCError } from "@trpc/server";
+
 // server/_core/env.ts
 var ENV = {
   appId: process.env.VITE_APP_ID ?? "",
@@ -638,14 +766,162 @@ var ENV = {
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? ""
 };
 
+// server/_core/notification.ts
+var TITLE_MAX_LENGTH = 1200;
+var CONTENT_MAX_LENGTH = 2e4;
+var trimValue = (value) => value.trim();
+var isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0;
+var buildEndpointUrl = (baseUrl) => {
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
+  return new URL(
+    "webdevtoken.v1.WebDevService/SendNotification",
+    normalizedBase
+  ).toString();
+};
+var validatePayload = (input) => {
+  if (!isNonEmptyString(input.title)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Notification title is required."
+    });
+  }
+  if (!isNonEmptyString(input.content)) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Notification content is required."
+    });
+  }
+  const title = trimValue(input.title);
+  const content = trimValue(input.content);
+  if (title.length > TITLE_MAX_LENGTH) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: `Notification title must be at most ${TITLE_MAX_LENGTH} characters.`
+    });
+  }
+  if (content.length > CONTENT_MAX_LENGTH) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: `Notification content must be at most ${CONTENT_MAX_LENGTH} characters.`
+    });
+  }
+  return { title, content };
+};
+async function notifyOwner(payload) {
+  const { title, content } = validatePayload(payload);
+  if (!ENV.forgeApiUrl) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Notification service URL is not configured."
+    });
+  }
+  if (!ENV.forgeApiKey) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Notification service API key is not configured."
+    });
+  }
+  const endpoint = buildEndpointUrl(ENV.forgeApiUrl);
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        authorization: `Bearer ${ENV.forgeApiKey}`,
+        "content-type": "application/json",
+        "connect-protocol-version": "1"
+      },
+      body: JSON.stringify({ title, content })
+    });
+    if (!response.ok) {
+      const detail = await response.text().catch(() => "");
+      console.warn(
+        `[Notification] Failed to notify owner (${response.status} ${response.statusText})${detail ? `: ${detail}` : ""}`
+      );
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.warn("[Notification] Error calling notification service:", error);
+    return false;
+  }
+}
+
+// server/_core/trpc.ts
+import { initTRPC, TRPCError as TRPCError2 } from "@trpc/server";
+import superjson from "superjson";
+var t = initTRPC.context().create({
+  transformer: superjson
+});
+var router = t.router;
+var publicProcedure = t.procedure;
+var requireUser = t.middleware(async (opts) => {
+  const { ctx, next } = opts;
+  if (!ctx.user) {
+    throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+  }
+  if (ctx.user.status === "blocked") {
+    throw new TRPCError2({
+      code: "FORBIDDEN",
+      message: "Your access has been blocked. Please contact the household administrator."
+    });
+  }
+  return next({
+    ctx: {
+      ...ctx,
+      user: ctx.user
+    }
+  });
+});
+var protectedProcedure = t.procedure.use(requireUser);
+var adminProcedure = protectedProcedure.use(
+  t.middleware(async (opts) => {
+    const { ctx, next } = opts;
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
+    }
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user
+      }
+    });
+  })
+);
+
+// server/_core/systemRouter.ts
+var systemRouter = router({
+  health: publicProcedure.input(
+    z.object({
+      timestamp: z.number().min(0, "timestamp cannot be negative")
+    })
+  ).query(() => ({
+    ok: true
+  })),
+  notifyOwner: adminProcedure.input(
+    z.object({
+      title: z.string().min(1, "title is required"),
+      content: z.string().min(1, "content is required")
+    })
+  ).mutation(async ({ input }) => {
+    const delivered = await notifyOwner(input);
+    return {
+      success: delivered
+    };
+  })
+});
+
 // server/db.ts
-var { Pool } = pg;
+import { and, eq, inArray, desc, sql, ilike } from "drizzle-orm";
+import { drizzle as drizzle2 } from "drizzle-orm/node-postgres";
+import pg2 from "pg";
+var { Pool: Pool2 } = pg2;
 var _db = null;
-var _pool = null;
+var _pool2 = null;
 async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _pool = new Pool({
+      _pool2 = new Pool2({
         connectionString: process.env.DATABASE_URL,
         // Connection pool configuration
         max: 20,
@@ -655,7 +931,7 @@ async function getDb() {
         connectionTimeoutMillis: 1e4
         // Timeout after 10 seconds if can't connect
       });
-      _pool.on("error", (err, client2) => {
+      _pool2.on("error", (err, client) => {
         console.error(
           "[Database] Pool error - connection terminated:",
           err.message
@@ -666,7 +942,7 @@ async function getDb() {
           );
         }
       });
-      _db = drizzle(_pool);
+      _db = drizzle2(_pool2);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
@@ -1640,425 +1916,6 @@ async function deleteGiftRegistryItem(itemId) {
   await db.delete(giftRegistry).where(eq(giftRegistry.id, itemId));
 }
 
-// server/replitAuth.ts
-if (!process.env.REPLIT_DOMAINS) {
-  throw new Error("Environment variable REPLIT_DOMAINS not provided");
-}
-var getOidcConfig = memoize(
-  async () => {
-    return await client.discovery(
-      new URL(process.env.ISSUER_URL ?? "https://replit.com/oidc"),
-      process.env.REPL_ID
-    );
-  },
-  { maxAge: 3600 * 1e3 }
-);
-function getSession() {
-  const sessionTtl = 7 * 24 * 60 * 60 * 1e3;
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions"
-  });
-  const isProduction = process.env.NODE_ENV === "production";
-  return session({
-    secret: process.env.SESSION_SECRET,
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      maxAge: sessionTtl
-    }
-  });
-}
-function updateUserSession(user, tokens) {
-  user.claims = tokens.claims();
-  user.access_token = tokens.access_token;
-  user.refresh_token = tokens.refresh_token;
-  user.expires_at = user.claims?.exp;
-}
-async function upsertReplitUser(claims) {
-  const userData = {
-    id: claims["sub"],
-    email: claims["email"],
-    firstName: claims["first_name"],
-    lastName: claims["last_name"],
-    profileImageUrl: claims["profile_image_url"],
-    // Combine first and last name for the name field
-    name: [claims["first_name"], claims["last_name"]].filter(Boolean).join(" ") || null,
-    lastSignedIn: /* @__PURE__ */ new Date()
-  };
-  await upsertUser(userData);
-}
-async function setupAuth(app) {
-  app.set("trust proxy", 1);
-  app.use(getSession());
-  app.use(passport.initialize());
-  app.use(passport.session());
-  const config = await getOidcConfig();
-  const verify = async (tokens, verified) => {
-    const user = {};
-    updateUserSession(user, tokens);
-    await upsertReplitUser(tokens.claims());
-    verified(null, user);
-  };
-  const getDomainForHost = (hostname) => {
-    const domains = process.env.REPLIT_DOMAINS.split(",");
-    if (hostname.includes("localhost") || hostname.includes("127.0.0.1")) {
-      return domains[0];
-    }
-    for (const domain of domains) {
-      if (hostname.endsWith(domain)) {
-        return domain;
-      }
-    }
-    return domains[0];
-  };
-  for (const domain of process.env.REPLIT_DOMAINS.split(",")) {
-    const strategy = new Strategy(
-      {
-        name: `replitauth:${domain}`,
-        config,
-        scope: "openid email profile offline_access",
-        callbackURL: `https://${domain}/api/callback`
-      },
-      verify
-    );
-    passport.use(strategy);
-  }
-  passport.serializeUser((user, cb) => cb(null, user));
-  passport.deserializeUser((user, cb) => cb(null, user));
-  app.get("/api/login", (req, res, next) => {
-    if (req.query.redirect && typeof req.query.redirect === "string") {
-      const redirect = req.query.redirect;
-      if (redirect.startsWith("/") && !redirect.includes("//")) {
-        req.session.returnTo = redirect;
-      }
-    }
-    const domain = getDomainForHost(req.hostname);
-    passport.authenticate(`replitauth:${domain}`, {
-      prompt: "login consent",
-      scope: ["openid", "email", "profile", "offline_access"]
-    })(req, res, next);
-  });
-  app.get("/api/callback", (req, res, next) => {
-    const domain = getDomainForHost(req.hostname);
-    passport.authenticate(`replitauth:${domain}`, {
-      failureRedirect: "/api/login"
-    })(req, res, (err) => {
-      if (err) {
-        return next(err);
-      }
-      const redirectTo = req.session.returnTo || "/";
-      delete req.session.returnTo;
-      res.redirect(redirectTo);
-    });
-  });
-  app.get("/api/logout", (req, res) => {
-    req.logout(() => {
-      res.redirect(
-        client.buildEndSessionUrl(config, {
-          client_id: process.env.REPL_ID,
-          post_logout_redirect_uri: `${req.protocol}://${req.hostname}`
-        }).href
-      );
-    });
-  });
-}
-var isAuthenticated = async (req, res, next) => {
-  const user = req.user;
-  if (!req.isAuthenticated() || !user.expires_at) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  const now = Math.floor(Date.now() / 1e3);
-  if (now <= user.expires_at) {
-    return next();
-  }
-  const refreshToken = user.refresh_token;
-  if (!refreshToken) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-  try {
-    const config = await getOidcConfig();
-    const tokenResponse = await client.refreshTokenGrant(config, refreshToken);
-    updateUserSession(user, tokenResponse);
-    return next();
-  } catch (error) {
-    res.status(401).json({ message: "Unauthorized" });
-    return;
-  }
-};
-
-// server/testAuth.ts
-async function setupTestAuth(app) {
-  if (process.env.NODE_ENV === "production") {
-    console.log("Test auth endpoints disabled in production");
-    return;
-  }
-  console.log("\u26A0\uFE0F  Test auth endpoints enabled (development only)");
-  app.post("/api/test/login", async (req, res) => {
-    try {
-      const {
-        userId = "test-user-123",
-        email = "test@example.com",
-        firstName = "Test",
-        lastName = "User",
-        role = "admin"
-      } = req.body || {};
-      const userData = {
-        id: userId,
-        email,
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        profileImageUrl: null,
-        lastSignedIn: /* @__PURE__ */ new Date()
-      };
-      await upsertUser(userData);
-      const user = await getUser(userId);
-      if (!user) {
-        return res.status(500).json({ error: "Failed to create test user" });
-      }
-      const sessionUser = {
-        claims: {
-          sub: userId,
-          email,
-          first_name: firstName,
-          last_name: lastName,
-          exp: Math.floor(Date.now() / 1e3) + 7 * 24 * 60 * 60
-          // 1 week
-        },
-        access_token: "test-access-token",
-        refresh_token: "test-refresh-token",
-        expires_at: Math.floor(Date.now() / 1e3) + 7 * 24 * 60 * 60
-      };
-      req.login(sessionUser, (err) => {
-        if (err) {
-          console.error("Test login error:", err);
-          return res.status(500).json({ error: "Failed to create session" });
-        }
-        res.json({
-          success: true,
-          user: {
-            id: userId,
-            email,
-            firstName,
-            lastName,
-            role
-          }
-        });
-      });
-    } catch (error) {
-      console.error("Test auth error:", error);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  });
-  app.post("/api/test/logout", (req, res) => {
-    req.logout(() => {
-      res.json({ success: true });
-    });
-  });
-  app.get("/api/test/session", (req, res) => {
-    if (req.isAuthenticated()) {
-      const user = req.user;
-      res.json({
-        authenticated: true,
-        user: {
-          id: user.claims?.sub,
-          email: user.claims?.email,
-          firstName: user.claims?.first_name,
-          lastName: user.claims?.last_name
-        }
-      });
-    } else {
-      res.json({ authenticated: false });
-    }
-  });
-}
-
-// shared/const.ts
-var COOKIE_NAME = "app_session_id";
-var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
-var UNAUTHED_ERR_MSG = "Please login (10001)";
-var NOT_ADMIN_ERR_MSG = "You do not have required permission (10002)";
-
-// server/routers.ts
-import { TRPCError as TRPCError16 } from "@trpc/server";
-import { z as z15 } from "zod";
-import crypto2 from "crypto";
-
-// server/_core/cookies.ts
-function isSecureRequest(req) {
-  if (req.protocol === "https") return true;
-  const forwardedProto = req.headers["x-forwarded-proto"];
-  if (!forwardedProto) return false;
-  const protoList = Array.isArray(forwardedProto) ? forwardedProto : forwardedProto.split(",");
-  return protoList.some((proto) => proto.trim().toLowerCase() === "https");
-}
-function getSessionCookieOptions(req) {
-  return {
-    httpOnly: true,
-    path: "/",
-    sameSite: "none",
-    secure: isSecureRequest(req)
-  };
-}
-
-// server/_core/systemRouter.ts
-import { z } from "zod";
-
-// server/_core/notification.ts
-import { TRPCError } from "@trpc/server";
-var TITLE_MAX_LENGTH = 1200;
-var CONTENT_MAX_LENGTH = 2e4;
-var trimValue = (value) => value.trim();
-var isNonEmptyString = (value) => typeof value === "string" && value.trim().length > 0;
-var buildEndpointUrl = (baseUrl) => {
-  const normalizedBase = baseUrl.endsWith("/") ? baseUrl : `${baseUrl}/`;
-  return new URL(
-    "webdevtoken.v1.WebDevService/SendNotification",
-    normalizedBase
-  ).toString();
-};
-var validatePayload = (input) => {
-  if (!isNonEmptyString(input.title)) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Notification title is required."
-    });
-  }
-  if (!isNonEmptyString(input.content)) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: "Notification content is required."
-    });
-  }
-  const title = trimValue(input.title);
-  const content = trimValue(input.content);
-  if (title.length > TITLE_MAX_LENGTH) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: `Notification title must be at most ${TITLE_MAX_LENGTH} characters.`
-    });
-  }
-  if (content.length > CONTENT_MAX_LENGTH) {
-    throw new TRPCError({
-      code: "BAD_REQUEST",
-      message: `Notification content must be at most ${CONTENT_MAX_LENGTH} characters.`
-    });
-  }
-  return { title, content };
-};
-async function notifyOwner(payload) {
-  const { title, content } = validatePayload(payload);
-  if (!ENV.forgeApiUrl) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Notification service URL is not configured."
-    });
-  }
-  if (!ENV.forgeApiKey) {
-    throw new TRPCError({
-      code: "INTERNAL_SERVER_ERROR",
-      message: "Notification service API key is not configured."
-    });
-  }
-  const endpoint = buildEndpointUrl(ENV.forgeApiUrl);
-  try {
-    const response = await fetch(endpoint, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        authorization: `Bearer ${ENV.forgeApiKey}`,
-        "content-type": "application/json",
-        "connect-protocol-version": "1"
-      },
-      body: JSON.stringify({ title, content })
-    });
-    if (!response.ok) {
-      const detail = await response.text().catch(() => "");
-      console.warn(
-        `[Notification] Failed to notify owner (${response.status} ${response.statusText})${detail ? `: ${detail}` : ""}`
-      );
-      return false;
-    }
-    return true;
-  } catch (error) {
-    console.warn("[Notification] Error calling notification service:", error);
-    return false;
-  }
-}
-
-// server/_core/trpc.ts
-import { initTRPC, TRPCError as TRPCError2 } from "@trpc/server";
-import superjson from "superjson";
-var t = initTRPC.context().create({
-  transformer: superjson
-});
-var router = t.router;
-var publicProcedure = t.procedure;
-var requireUser = t.middleware(async (opts) => {
-  const { ctx, next } = opts;
-  if (!ctx.user) {
-    throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
-  }
-  if (ctx.user.status === "blocked") {
-    throw new TRPCError2({
-      code: "FORBIDDEN",
-      message: "Your access has been blocked. Please contact the household administrator."
-    });
-  }
-  return next({
-    ctx: {
-      ...ctx,
-      user: ctx.user
-    }
-  });
-});
-var protectedProcedure = t.procedure.use(requireUser);
-var adminProcedure = protectedProcedure.use(
-  t.middleware(async (opts) => {
-    const { ctx, next } = opts;
-    if (ctx.user.role !== "admin") {
-      throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
-    }
-    return next({
-      ctx: {
-        ...ctx,
-        user: ctx.user
-      }
-    });
-  })
-);
-
-// server/_core/systemRouter.ts
-var systemRouter = router({
-  health: publicProcedure.input(
-    z.object({
-      timestamp: z.number().min(0, "timestamp cannot be negative")
-    })
-  ).query(() => ({
-    ok: true
-  })),
-  notifyOwner: adminProcedure.input(
-    z.object({
-      title: z.string().min(1, "title is required"),
-      content: z.string().min(1, "content is required")
-    })
-  ).mutation(async ({ input }) => {
-    const delivered = await notifyOwner(input);
-    return {
-      success: delivered
-    };
-  })
-});
-
 // server/inviteRouter.ts
 import { TRPCError as TRPCError3 } from "@trpc/server";
 import { z as z2 } from "zod";
@@ -2227,8 +2084,8 @@ async function invokeLLM(params) {
 
 // server/inviteRouter.ts
 import crypto from "crypto";
-import { Resend } from "resend";
-var resend = new Resend(process.env.RESEND_API_KEY);
+import { Resend as Resend2 } from "resend";
+var resend = new Resend2(process.env.RESEND_API_KEY);
 var FROM_EMAIL = "Our Brother's Keeper <notifications@obkapp.com>";
 function escapeHtml(text2) {
   const map = {
@@ -2680,8 +2537,8 @@ Make it warm but not overly formal. The person being invited will be a ${input.r
 // server/adminRouter.ts
 import { TRPCError as TRPCError4 } from "@trpc/server";
 import { z as z3 } from "zod";
-import { Resend as Resend2 } from "resend";
-var resend2 = new Resend2(process.env.RESEND_API_KEY);
+import { Resend as Resend3 } from "resend";
+var resend2 = new Resend3(process.env.RESEND_API_KEY);
 var FROM_EMAIL2 = "Our Brother's Keeper <notifications@obkapp.com>";
 function escapeHtml2(text2) {
   const map = {
@@ -2973,9 +2830,9 @@ import { TRPCError as TRPCError5 } from "@trpc/server";
 import { z as z4 } from "zod";
 
 // server/emailService.ts
-import { Resend as Resend3 } from "resend";
+import { Resend as Resend4 } from "resend";
 import { eq as eq2, and as and2 } from "drizzle-orm";
-var resend3 = new Resend3(process.env.RESEND_API_KEY);
+var resend3 = new Resend4(process.env.RESEND_API_KEY);
 var FROM_EMAIL3 = "Our Brother's Keeper <notifications@obkapp.com>";
 function getEmailTemplate(type, context) {
   const baseStyles = `
@@ -5840,7 +5697,7 @@ var onboardingRouter = router({
 
 // server/supportRouter.ts
 import { z as z14 } from "zod";
-import { Resend as Resend4 } from "resend";
+import { Resend as Resend5 } from "resend";
 import { TRPCError as TRPCError15 } from "@trpc/server";
 var SUPPORT_EMAIL = "caleb@txpressurewash.com";
 var FROM_EMAIL4 = "Our Brother's Keeper <notifications@obkapp.com>";
@@ -5851,7 +5708,7 @@ function getResendClient() {
       message: "Email service is not configured. Please contact support directly."
     });
   }
-  return new Resend4(process.env.RESEND_API_KEY);
+  return new Resend5(process.env.RESEND_API_KEY);
 }
 var supportRouter = router({
   sendMessage: protectedProcedure.input(z14.object({
@@ -6666,10 +6523,9 @@ var appRouter = router({
 async function createContext(opts) {
   let user = null;
   try {
-    const req = opts.req;
-    if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
-      const userId = req.user.claims.sub;
-      user = await getUser(userId);
+    const userId = await getSessionUserId(opts.req);
+    if (userId) {
+      user = await getUser(userId) ?? null;
     }
   } catch (error) {
     user = null;
@@ -7104,6 +6960,7 @@ if (process.env.SENTRY_DSN) {
 }
 async function createApp() {
   const app = express();
+  app.set("trust proxy", true);
   if (process.env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);
   }
@@ -7122,21 +6979,7 @@ async function createApp() {
       res.status(500).json({ error: "Failed" });
     }
   });
-  await setupAuth(app);
-  await setupTestAuth(app);
-  app.get("/api/auth/user", isAuthenticated, async (req, res) => {
-    try {
-      const userId = req.user.claims.sub;
-      const user = await getUser(userId);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      res.json(user);
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
+  app.use("/api/auth/*", authHandler);
   app.use("/api", uploadRouter_default);
   app.use("/uploads", express.static("uploads"));
   app.get("/objects/:objectPath(*)", async (req, res) => {

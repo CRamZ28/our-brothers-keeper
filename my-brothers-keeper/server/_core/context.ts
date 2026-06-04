@@ -1,6 +1,7 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
 import type { User } from "../../drizzle/schema";
 import { getUser } from "../db";
+import { getSessionUserId } from "../auth";
 
 export type TrpcContext = {
   req: CreateExpressContextOptions["req"];
@@ -14,11 +15,9 @@ export async function createContext(
   let user: User | null = null;
 
   try {
-    // Use Replit Auth session-based authentication
-    const req = opts.req as any;
-    if (req.isAuthenticated && req.isAuthenticated() && req.user?.claims?.sub) {
-      const userId = req.user.claims.sub;
-      user = await getUser(userId);
+    const userId = await getSessionUserId(opts.req);
+    if (userId) {
+      user = (await getUser(userId)) ?? null;
     }
   } catch (error) {
     // Authentication is optional for public procedures.

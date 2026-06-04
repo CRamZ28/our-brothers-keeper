@@ -1132,7 +1132,7 @@ export default function Settings() {
                   variant="outline"
                   className="w-full hover:bg-teal-50 hover:text-teal-700 hover:border-teal-300"
                   onClick={() => {
-                    window.location.href = "/api/logout";
+                    window.location.href = "/api/auth/signout";
                   }}
                 >
                   <LogOut className="mr-2 h-4 w-4" />

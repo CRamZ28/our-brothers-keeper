@@ -60,7 +60,7 @@ export default function JoinHousehold() {
   const handleLoginRedirect = () => {
     // Redirect to login with the household slug as redirect parameter
     // After login, user will be redirected back to /:slug to complete join
-    window.location.href = `/api/login?redirect=/${encodeURIComponent(slug || "")}`;
+    window.location.href = `/api/auth/signin?callbackUrl=${encodeURIComponent(`/${slug || ""}`)}`;
   };
 
   if (isLoading) {

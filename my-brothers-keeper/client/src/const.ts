@@ -6,9 +6,9 @@ export const APP_LOGO =
   import.meta.env.VITE_APP_LOGO ||
   "/obk-logo-v2.png?v=2";
 
-// Replit Auth endpoints
-export const getLoginUrl = () => "/api/login";
-export const getLogoutUrl = () => "/api/logout";
+// Auth.js endpoints
+export const getLoginUrl = () => "/api/auth/signin";
+export const getLogoutUrl = () => "/api/auth/signout";
 
 // Visibility options - simplified 3-option model
 // Maps to existing backend visibility scopes:
