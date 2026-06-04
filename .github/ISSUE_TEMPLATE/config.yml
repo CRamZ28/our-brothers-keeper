@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read before contributing
+    url: https://github.com/CRamZ28/our-brothers-keeper/blob/main/my-brothers-keeper/CONTRIBUTING.md
+    about: Please review CONTRIBUTING.md and PHILOSOPHY.md before opening a feature request.
