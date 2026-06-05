@@ -31,6 +31,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
+import { uploadFile } from "@/lib/uploadFile";
 import { Heart, Image as ImageIcon, MessageSquare, Pin, Plus, Upload, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
@@ -157,20 +158,7 @@ export default function FamilyUpdates() {
 
     try {
       for (const file of mediaFiles) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to upload ${file.name}`);
-        }
-
-        const data = await response.json();
-        uploadedUrls.push(data.url);
+        uploadedUrls.push(await uploadFile(file));
       }
 
       return uploadedUrls;

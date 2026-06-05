@@ -119,7 +119,6 @@ Before diving into the code, please read:
 
 ### Where Help Is Most Needed
 
-- **Replace Replit Object Storage** — `server/objectStorage.ts` uses Replit's GCS sidecar. Swap for direct S3, R2, or any S3-compatible bucket. See issue #8.
 - **Add social sign-in providers** — auth currently uses Auth.js email magic links via Resend. Adding Google, GitHub, or Apple is ~10 lines per provider; see `server/auth.ts`.
 - Security hardening and privacy audit
 - Mobile experience (React Native / PWA improvements)
@@ -140,12 +139,12 @@ Before diving into the code, please read:
 | Backend | Express.js + tRPC |
 | Database | PostgreSQL + Drizzle ORM |
 | Auth | Auth.js (email magic links via Resend) |
-| File Storage | Replit Object Storage (GCS sidecar) — to be replaced, see issue #8 |
+| File Storage | Vercel Blob (direct browser-to-Blob uploads) |
 | Email | Resend |
 | Package Manager | pnpm (workspaces) |
 | Runtime | Node.js 18+ |
 
-> **Note:** `server/objectStorage.ts` is the only remaining Replit-specific module. Everything else is standard and portable. See [DEPLOYMENT.md](my-brothers-keeper/DEPLOYMENT.md) for what needs to be replaced when hosting elsewhere.
+> **Note:** File storage now uses **Vercel Blob**. Uploads go straight from the browser to Blob via an authenticated token route (`server/uploadRouter.ts`), so they work within Vercel's serverless limits and no Replit-specific infrastructure remains. See [DEPLOYMENT.md](my-brothers-keeper/DEPLOYMENT.md) for the one env var you need.
 
 ---
 
@@ -170,7 +169,8 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 1. **Vercel** → **Add New** → **Project** → import `our-brothers-keeper` from GitHub.
 2. In the import screen, set **Root Directory** to `my-brothers-keeper`.
 3. Under **Environment Variables**, add the values listed below.
-4. Click **Deploy**.
+4. **Storage** tab → create a **Blob** store → connect it to this project. This injects `BLOB_READ_WRITE_TOKEN` automatically (used for photo/video uploads).
+5. Click **Deploy**.
 
 ### Required environment variables
 
@@ -180,12 +180,13 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 | `AUTH_SECRET` | Generate a random string | `openssl rand -hex 32` — used by Auth.js to encrypt session cookies |
 | `CRON_SECRET` | Generate a random string | `openssl rand -hex 32` — authenticates Vercel Cron when hitting `/api/cron/reminders` |
 | `RESEND_API_KEY` | resend.com dashboard | Sends magic-link sign-in emails and notification emails |
+| `BLOB_READ_WRITE_TOKEN` | Auto-injected | Created when you connect a Vercel Blob store (step 4 below). Powers photo/video uploads — no manual entry needed |
 | `AUTH_EMAIL_FROM` | _optional_ | From-address for magic-link emails. Defaults to `Our Brother's Keeper <notifications@obkapp.com>` — must be a verified Resend sender |
 | `NODE_ENV` | `production` | |
 
 ### Known limitations on Vercel
 
-- **File uploads are non-functional** until `server/objectStorage.ts` is swapped from Replit Object Storage to S3/R2. See "Where Help Is Most Needed" above — this is a contributor task.
+- **File uploads use Vercel Blob.** Connect a Blob store to the project (Storage tab) so `BLOB_READ_WRITE_TOKEN` is injected. Files upload directly from the browser to Blob, so large videos are not affected by the serverless request-body limit.
 - **Reminders run once per day on the Vercel Hobby (free) plan.** Vercel's free tier limits cron jobs to a minimum interval of one run per day, so `vercel.json` is currently set to `0 0 * * *` (midnight). This means a reminder scheduled for 2:00 PM today won't be sent until midnight the following day — up to 24 hours late. To restore the original 15-minute cadence, upgrade to Vercel Pro and change the schedule in `vercel.json` to `*/15 * * * *`. Alternatively, point an external cron service (cron-job.org, EasyCron, etc.) at `/api/cron/reminders` with the `CRON_SECRET` header.
 - **Hourly auto-promotion is disabled** on Vercel. It can be added as a second cron entry in `vercel.json` once contributors prioritize it (also subject to the Hobby once-per-day limit).
 - **Magic-link emails require Resend.** Sign-in works by emailing a one-time link to the user. If `RESEND_API_KEY` is missing, invalid, or the FROM domain isn't verified in Resend, sign-in will silently fail. Test by sending yourself an invite first.

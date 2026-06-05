@@ -12,7 +12,7 @@ This document explains everything you need to know to run this app outside of Re
 | Backend | Express.js + tRPC |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Drizzle ORM) |
 | Auth | Replit Auth / OpenID Connect (Passport.js) |
-| File Storage | Google Cloud Storage via Replit Sidecar |
+| File Storage | Vercel Blob (direct browser-to-Blob uploads) |
 | Email | Resend |
 | Package Manager | pnpm (workspaces) |
 | Runtime | Node.js |
@@ -91,30 +91,18 @@ The user object shape expected by the app (see `shared/_core/` and `drizzle/sche
 
 ---
 
-### 2. File / Object Storage (`server/objectStorage.ts`)
+### 2. File / Object Storage — **Vercel Blob** (done)
 
-The app currently uses **Replit Object Storage**, which is a Google Cloud Storage bucket accessed through Replit's internal sidecar proxy at `http://127.0.0.1:1106`.
+File storage uses **[Vercel Blob](https://vercel.com/docs/vercel-blob)**. This was previously Replit Object Storage (a GCS bucket via Replit's sidecar) and has been fully swapped — no Replit-specific storage code remains.
 
-Env vars used on Replit (set automatically):
-- `PRIVATE_OBJECT_DIR` — bucket name/path prefix (e.g., `/obk-2xgfm9hb`)
-- `REPLIT_SIDECAR_ENDPOINT` — injected by Replit at `http://127.0.0.1:1106`
+**How it works:**
+- The browser uploads files **directly to Blob** using `@vercel/blob/client`'s `upload()` (see `client/src/lib/uploadFile.ts`). Large files (videos up to 50MB) therefore never pass through the serverless function, which Vercel caps at ~4.5MB per request body.
+- `server/uploadRouter.ts` exposes `POST /api/upload`, which is **authenticated** (`requireAuth`) and only mints a short-lived, scoped upload token (`handleUpload` → `onBeforeGenerateToken`). It enforces an allowed content-type list and a 50MB size cap server-side.
+- `server/objectStorage.ts` is now a thin Vercel Blob wrapper (`ObjectStorageService`) used for **server-side** storage only — e.g. the one-off photo migration script and best-effort blob deletion.
 
-**To self-host**, replace `server/objectStorage.ts` with your own storage adapter. The file exports a class `ObjectStorageService` with these methods:
+**Setup:** In the Vercel dashboard, open the **Storage** tab, create a **Blob** store, and connect it to the project. This injects `BLOB_READ_WRITE_TOKEN` automatically — that is the only required configuration. For local dev, run `vercel env pull .env` (or paste the token into `.env`); uploads fail without it.
 
-```ts
-uploadFile(filePath: string, file: Express.Multer.File): Promise<string>
-getObjectEntityFile(filePath: string): Promise<Buffer>
-downloadObject(filePath: string): Promise<Buffer>
-signObjectURL(filePath: string): Promise<string>
-```
-
-Good replacement options:
-- **AWS S3** — use `@aws-sdk/client-s3` (already in package.json as a dependency)
-- **Cloudflare R2** — S3-compatible, very cost-effective
-- **Supabase Storage** — if using Supabase for the DB as well
-- **Local disk** — for development only
-
-File uploads are handled in `server/uploadRouter.ts` which uses `multer` in memory mode and passes files to `objectStorage.ts`.
+> **Note:** `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner` are still listed in `package.json` from an earlier, abandoned S3 plan. They are unused and can be removed.
 
 ---
 
@@ -158,7 +146,7 @@ See `.env.example` for the full annotated list. Required for production:
 | `REPLIT_DOMAINS` | Replit only | Auto-injected by Replit |
 | `REPL_ID` | Replit only | Auto-injected by Replit |
 | `ISSUER_URL` | Replit only | `https://replit.com/oidc` |
-| `PRIVATE_OBJECT_DIR` | Replit only | Object storage bucket path |
+| `BLOB_READ_WRITE_TOKEN` | Yes (prod) | Auto-injected when a Vercel Blob store is connected to the project; powers photo/video uploads |
 
 ---
 
@@ -185,7 +173,7 @@ When you're ready to move production data off Replit:
    pg_dump "$DATABASE_URL" > backup.sql
    psql "$NEW_DATABASE_URL" < backup.sql
    ```
-2. **Uploaded files**: Download all objects from your Replit Object Storage bucket and re-upload to your new storage provider. The Replit console/UI can be used to export files, or use the `@google-cloud/storage` SDK with the sidecar endpoint to list and download them.
+2. **Uploaded files**: New uploads already live in Vercel Blob and are referenced by their full CDN URL in the database. Any legacy `/objects/...` references from the Replit era point to the old (now-gone) GCS bucket and will 404 — re-upload those few assets through the app if needed.
 
 ---
 
@@ -198,8 +186,9 @@ my-brothers-keeper/
     _core/         # App bootstrap (index.ts), auth, context
     drizzle/       # Database schema + migrations folder
     *.Router.ts    # tRPC/Express routers (one per feature)
-    replitAuth.ts  # << REPLACE when self-hosting
-    objectStorage.ts # << REPLACE when self-hosting
+    auth.ts        # Auth.js (email magic links via Resend)
+    objectStorage.ts # Vercel Blob wrapper (server-side storage)
+    uploadRouter.ts  # Authenticated Blob upload-token route
     emailService.ts  # Resend email service
     db.ts          # Drizzle DB client
   shared/          # Types and constants shared between client + server

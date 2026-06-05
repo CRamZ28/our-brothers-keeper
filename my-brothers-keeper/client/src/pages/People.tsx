@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
+import { uploadFile } from "@/lib/uploadFile";
 import { Check, Mail, MoreVertical, Phone, UserPlus, X, Users, Pencil, Trash2, Plus, Camera, Upload, UserX, Ban, ShieldAlert } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -270,20 +271,8 @@ export default function People() {
 
     try {
       setUploading(true);
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      setProfileImageUrl(data.url);
+      const url = await uploadFile(file);
+      setProfileImageUrl(url);
       toast.success("Image uploaded successfully!");
     } catch (error) {
       console.error("Upload error:", error);

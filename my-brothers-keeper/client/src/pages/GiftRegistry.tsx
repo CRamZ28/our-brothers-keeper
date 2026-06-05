@@ -22,6 +22,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { QuestionDialog } from "@/components/QuestionDialog";
 import { trpc } from "@/lib/trpc";
+import { uploadFile } from "@/lib/uploadFile";
 import { AlertCircle, CheckCircle2, ExternalLink, Gift, Plus, ShoppingBag, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -109,20 +110,7 @@ export default function GiftRegistry() {
     setUploadingImage(true);
 
     try {
-      const formData = new FormData();
-      formData.append('file', imageFile);
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to upload ${imageFile.name}`);
-      }
-
-      const data = await response.json();
-      return data.url;
+      return await uploadFile(imageFile);
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');

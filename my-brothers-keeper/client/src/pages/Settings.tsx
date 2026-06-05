@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
+import { uploadFile } from "@/lib/uploadFile";
 import { Bell, Home, User, LogOut, Mail, Users, Image, Quote, Upload, HelpCircle, Play, CheckCircle2, XCircle, Copy, Check } from "lucide-react";
 import { useEffect, useState, useRef } from "react";
 import { toast } from "sonner";
@@ -274,22 +275,10 @@ export default function Settings() {
 
     try {
       setUploading(true);
-      const formData = new FormData();
-      formData.append("file", file);
+      const url = await uploadFile(file);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      
       // Update profile with new image URL
-      updateProfileMutation.mutate({ profileImageUrl: data.url });
+      updateProfileMutation.mutate({ profileImageUrl: url });
     } catch (error) {
       console.error("Upload error:", error);
       toast.error("Failed to upload image");
@@ -313,28 +302,13 @@ export default function Settings() {
 
     try {
       setUploadingDashboardPhoto(true);
-      const formData = new FormData();
-      formData.append("file", file);
+      const url = await uploadFile(file);
+      setHouseholdPhotoUrl(url);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-        console.error("Upload failed:", errorData);
-        throw new Error(errorData.error || "Upload failed");
-      }
-
-      const data = await response.json();
-      console.log("Upload successful, URL:", data.url);
-      setHouseholdPhotoUrl(data.url);
-      
       // Automatically save the photo to the database
       updateDashboardDisplayMutation.mutate({
         displayType: "photo",
-        photoUrl: data.url,
+        photoUrl: url,
       });
       
       toast.success("Dashboard photo uploaded successfully!");
@@ -362,23 +336,11 @@ export default function Settings() {
 
     try {
       setUploadingDashboardPhoto(true);
-      const formData = new FormData();
-      formData.append("file", file);
+      const url = await uploadFile(file);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Upload failed");
-      }
-
-      const data = await response.json();
-      
       // Update the specific index in the photos array
       const newPhotos = [...dashboardPhotos];
-      newPhotos[index] = data.url;
+      newPhotos[index] = url;
       setDashboardPhotos(newPhotos);
       
       toast.success(`Photo ${index + 1} uploaded successfully!`);

@@ -720,6 +720,19 @@ var authHandler = (req, res, next) => {
     res.status(500).json({ error: "Authentication not configured" });
   }
 };
+async function requireAuth(req, res, next) {
+  try {
+    const session = await getSession(req, getAuthConfig());
+    if (!session?.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+    res.locals.session = session;
+    next();
+  } catch (error) {
+    console.error("[auth] requireAuth error:", error);
+    res.status(500).json({ error: "Auth check failed" });
+  }
+}
 async function getSessionUserId(req) {
   try {
     const session = await getSession(req, getAuthConfig());
@@ -6548,264 +6561,46 @@ async function createContext(opts) {
 
 // server/uploadRouter.ts
 import { Router } from "express";
-import multer from "multer";
-
-// server/objectStorage.ts
-import { Storage } from "@google-cloud/storage";
-import { randomUUID } from "crypto";
-var REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
-var objectStorageClient = new Storage({
-  credentials: {
-    audience: "replit",
-    subject_token_type: "access_token",
-    token_url: `${REPLIT_SIDECAR_ENDPOINT}/token`,
-    type: "external_account",
-    credential_source: {
-      url: `${REPLIT_SIDECAR_ENDPOINT}/credential`,
-      format: {
-        type: "json",
-        subject_token_field_name: "access_token"
-      }
-    },
-    universe_domain: "googleapis.com"
-  },
-  projectId: ""
-});
-var ObjectNotFoundError = class _ObjectNotFoundError extends Error {
-  constructor() {
-    super("Object not found");
-    this.name = "ObjectNotFoundError";
-    Object.setPrototypeOf(this, _ObjectNotFoundError.prototype);
-  }
-};
-var ObjectStorageService = class {
-  constructor() {
-  }
-  // Gets the private object directory.
-  getPrivateObjectDir() {
-    const dir = process.env.PRIVATE_OBJECT_DIR || "";
-    if (!dir) {
-      throw new Error(
-        "PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var."
-      );
-    }
-    return dir;
-  }
-  // Gets the upload URL for an object entity.
-  async getObjectEntityUploadURL() {
-    const privateObjectDir = this.getPrivateObjectDir();
-    const objectId = randomUUID();
-    const fullPath = `${privateObjectDir}/uploads/${objectId}`;
-    const { bucketName, objectName } = parseObjectPath(fullPath);
-    return signObjectURL({
-      bucketName,
-      objectName,
-      method: "PUT",
-      ttlSec: 900
-    });
-  }
-  // Upload a file directly to storage
-  async uploadFile(buffer, filename, contentType) {
-    const privateObjectDir = this.getPrivateObjectDir();
-    const objectId = randomUUID();
-    const extension = filename.split(".").pop();
-    const fullPath = `${privateObjectDir}/uploads/${objectId}${extension ? "." + extension : ""}`;
-    const { bucketName, objectName } = parseObjectPath(fullPath);
-    console.log("[ObjectStorage] Upload attempt:", {
-      privateObjectDir,
-      fullPath,
-      bucketName,
-      objectName,
-      filename,
-      contentType,
-      bufferSize: buffer.length
-    });
-    const bucket = objectStorageClient.bucket(bucketName);
-    const file = bucket.file(objectName);
-    try {
-      await file.save(buffer, {
-        contentType,
-        metadata: {
-          contentType
-        }
-      });
-      console.log("[ObjectStorage] Upload successful:", { bucketName, objectName });
-    } catch (error) {
-      console.error("[ObjectStorage] Upload failed:", {
-        bucketName,
-        objectName,
-        error: error instanceof Error ? error.message : String(error),
-        errorCode: error?.code,
-        errorDetails: error?.errors
-      });
-      throw error;
-    }
-    return `/objects/uploads/${objectId}${extension ? "." + extension : ""}`;
-  }
-  // Gets the object entity file from the object path.
-  async getObjectEntityFile(objectPath) {
-    if (!objectPath.startsWith("/objects/")) {
-      throw new ObjectNotFoundError();
-    }
-    const parts = objectPath.slice(1).split("/");
-    if (parts.length < 2) {
-      throw new ObjectNotFoundError();
-    }
-    const entityId = parts.slice(1).join("/");
-    let entityDir = this.getPrivateObjectDir();
-    if (!entityDir.endsWith("/")) {
-      entityDir = `${entityDir}/`;
-    }
-    const objectEntityPath = `${entityDir}${entityId}`;
-    const { bucketName, objectName } = parseObjectPath(objectEntityPath);
-    const bucket = objectStorageClient.bucket(bucketName);
-    const objectFile = bucket.file(objectName);
-    const [exists] = await objectFile.exists();
-    if (!exists) {
-      throw new ObjectNotFoundError();
-    }
-    return objectFile;
-  }
-  // Downloads an object to the response.
-  async downloadObject(file, res, cacheTtlSec = 3600) {
-    try {
-      const [metadata] = await file.getMetadata();
-      res.set({
-        "Content-Type": metadata.contentType || "application/octet-stream",
-        "Content-Length": metadata.size,
-        "Cache-Control": `public, max-age=${cacheTtlSec}`
-      });
-      const stream = file.createReadStream();
-      stream.on("error", (err) => {
-        console.error("Stream error:", err);
-        if (!res.headersSent) {
-          res.status(500).json({ error: "Error streaming file" });
-        }
-      });
-      stream.pipe(res);
-    } catch (error) {
-      console.error("Error downloading file:", error);
-      if (!res.headersSent) {
-        res.status(500).json({ error: "Error downloading file" });
-      }
-    }
-  }
-  normalizeObjectEntityPath(rawPath) {
-    if (!rawPath.startsWith("https://storage.googleapis.com/")) {
-      return rawPath;
-    }
-    const url = new URL(rawPath);
-    const rawObjectPath = url.pathname;
-    let objectEntityDir = this.getPrivateObjectDir();
-    if (!objectEntityDir.endsWith("/")) {
-      objectEntityDir = `${objectEntityDir}/`;
-    }
-    if (!rawObjectPath.startsWith(objectEntityDir)) {
-      return rawObjectPath;
-    }
-    const entityId = rawObjectPath.slice(objectEntityDir.length);
-    return `/objects/${entityId}`;
-  }
-};
-function parseObjectPath(path2) {
-  if (!path2.startsWith("/")) {
-    path2 = `/${path2}`;
-  }
-  const pathParts = path2.split("/");
-  if (pathParts.length < 3) {
-    throw new Error("Invalid path: must contain at least a bucket name");
-  }
-  const bucketName = pathParts[1];
-  const objectName = pathParts.slice(2).join("/");
-  return {
-    bucketName,
-    objectName
-  };
-}
-async function signObjectURL({
-  bucketName,
-  objectName,
-  method,
-  ttlSec
-}) {
-  const request = {
-    bucket_name: bucketName,
-    object_name: objectName,
-    method,
-    expires_at: new Date(Date.now() + ttlSec * 1e3).toISOString()
-  };
-  const response = await fetch(
-    `${REPLIT_SIDECAR_ENDPOINT}/object-storage/signed-object-url`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(request)
-    }
-  );
-  if (!response.ok) {
-    throw new Error(
-      `Failed to sign object URL, errorcode: ${response.status}, make sure you're running on Replit`
-    );
-  }
-  const { signed_url: signedURL } = await response.json();
-  return signedURL;
-}
-
-// server/uploadRouter.ts
-import fs from "fs/promises";
-import path from "path";
+import { handleUpload } from "@vercel/blob/client";
 var router2 = Router();
-var upload = multer({
-  storage: multer.memoryStorage(),
-  limits: {
-    fileSize: 50 * 1024 * 1024
-    // 50MB limit for videos
-  },
-  fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith("image/") || file.mimetype.startsWith("video/")) {
-      cb(null, true);
-    } else {
-      cb(new Error("Only image and video files are allowed"));
-    }
-  }
-});
-var uploadsDir = path.join(process.cwd(), "uploads");
-fs.mkdir(uploadsDir, { recursive: true }).catch(console.error);
-router2.post("/upload", upload.single("file"), async (req, res) => {
+var ALLOWED_CONTENT_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/heic",
+  "image/heif",
+  "video/mp4",
+  "video/quicktime",
+  "video/webm"
+];
+var MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+router2.post("/upload", requireAuth, async (req, res) => {
+  const body = req.body;
   try {
-    if (!req.file) {
-      return res.status(400).json({ error: "No file provided" });
-    }
-    if (!process.env.PRIVATE_OBJECT_DIR) {
-      console.error("Object storage not configured - PRIVATE_OBJECT_DIR missing");
-      return res.status(500).json({
-        error: "File storage not configured. Please set up object storage."
-      });
-    }
-    console.log("Starting upload:", {
-      filename: req.file.originalname,
-      size: req.file.size,
-      mimetype: req.file.mimetype,
-      objectDir: process.env.PRIVATE_OBJECT_DIR
+    const jsonResponse = await handleUpload({
+      body,
+      request: req,
+      onBeforeGenerateToken: async () => {
+        const userId = res.locals.session?.user?.id ?? null;
+        return {
+          allowedContentTypes: ALLOWED_CONTENT_TYPES,
+          maximumSizeInBytes: MAX_UPLOAD_BYTES,
+          addRandomSuffix: true,
+          tokenPayload: JSON.stringify({ userId })
+        };
+      },
+      onUploadCompleted: async ({ blob }) => {
+        console.log("[upload] blob stored:", blob.pathname);
+      }
     });
-    const objectStorageService = new ObjectStorageService();
-    const url = await objectStorageService.uploadFile(
-      req.file.buffer,
-      req.file.originalname,
-      req.file.mimetype
-    );
-    console.log("Upload successful:", url);
-    res.json({ url, filename: req.file.originalname });
+    return res.json(jsonResponse);
   } catch (error) {
-    console.error("Upload error details:", {
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : void 0,
-      filename: req.file?.originalname
-    });
-    const errorMessage = error instanceof Error ? error.message : "Failed to upload file";
-    res.status(500).json({ error: errorMessage });
+    console.error(
+      "[upload] handleUpload error:",
+      error instanceof Error ? error.message : String(error)
+    );
+    return res.status(400).json({ error: "Upload failed" });
   }
 });
 var uploadRouter_default = router2;
@@ -6991,18 +6786,8 @@ async function createApp() {
   app.use("/api/auth/*", authHandler);
   app.use("/api", uploadRouter_default);
   app.use("/uploads", express.static("uploads"));
-  app.get("/objects/:objectPath(*)", async (req, res) => {
-    try {
-      const objectStorageService = new ObjectStorageService();
-      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
-      await objectStorageService.downloadObject(objectFile, res);
-    } catch (error) {
-      console.error("Error serving object:", error);
-      if (error instanceof ObjectNotFoundError) {
-        return res.status(404).json({ error: "File not found" });
-      }
-      return res.status(500).json({ error: "Error serving file" });
-    }
+  app.get("/objects/:objectPath(*)", (_req, res) => {
+    res.status(404).json({ error: "File not found" });
   });
   app.use(
     "/api/trpc",

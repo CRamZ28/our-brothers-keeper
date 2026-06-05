@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
+import { uploadFile } from "@/lib/uploadFile";
 import { Heart, MessageSquare, BookOpen, Sparkles, Plus, X, ZoomIn, Image, Pencil } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -355,20 +356,7 @@ export default function MemoryWall() {
 
     try {
       for (const file of imageFiles) {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to upload ${file.name}`);
-        }
-
-        const data = await response.json();
-        uploadedUrls.push(data.url);
+        uploadedUrls.push(await uploadFile(file));
       }
 
       return uploadedUrls;
