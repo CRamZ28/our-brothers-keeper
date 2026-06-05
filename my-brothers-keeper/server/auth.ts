@@ -39,8 +39,7 @@ function buildAuthConfig() {
   }
 
   return {
-        basePath: "/api/auth",
-    adapter: DrizzleAdapter(db, {
+        adapter: DrizzleAdapter(db, {
       usersTable: users,
       accountsTable: accounts,
       sessionsTable: sessions,
