@@ -60,6 +60,12 @@ function buildAuthConfig() {
         if (url.startsWith(baseUrl)) return url;
         return baseUrl + "/dashboard";
       },
+      async session({ session, user }) {
+        if (session.user && user?.id) {
+          session.user.id = user.id;
+        }
+        return session;
+      },
     },
   };
 }
