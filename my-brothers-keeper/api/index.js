@@ -673,6 +673,7 @@ function buildAuthConfig() {
     throw new Error("RESEND_API_KEY is required to send magic-link emails");
   }
   return {
+    basePath: "/api/auth",
     adapter: DrizzleAdapter(db, {
       usersTable: users,
       accountsTable: accounts,
@@ -687,7 +688,19 @@ function buildAuthConfig() {
         apiKey: process.env.RESEND_API_KEY,
         from: process.env.AUTH_EMAIL_FROM ?? "Our Brother's Keeper <notifications@obkapp.com>"
       })
-    ]
+    ],
+    callbacks: {
+      async redirect({ url, baseUrl }) {
+        if (url.startsWith(baseUrl)) return url;
+        return baseUrl + "/dashboard";
+      },
+      async session({ session, user }) {
+        if (session.user && user?.id) {
+          session.user.id = user.id;
+        }
+        return session;
+      }
+    }
   };
 }
 function getAuthConfig() {
