@@ -39,6 +39,7 @@ function buildAuthConfig() {
   }
 
   return {
+        basePath: "/api/auth",
     adapter: DrizzleAdapter(db, {
       usersTable: users,
       accountsTable: accounts,
@@ -54,6 +55,12 @@ function buildAuthConfig() {
         from: process.env.AUTH_EMAIL_FROM ?? "Our Brother's Keeper <notifications@obkapp.com>",
       }),
     ],
+        callbacks: {
+      async redirect({ url, baseUrl }) {
+        if (url.startsWith(baseUrl)) return url;
+        return baseUrl + "/dashboard";
+      },
+    },
   };
 }
 
