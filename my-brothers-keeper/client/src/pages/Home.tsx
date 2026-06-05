@@ -110,7 +110,7 @@ export default function Home() {
               </h1>
             </div>
             <Button 
-              onClick={() => (window.location.href = "/api/auth/signin")}
+                    onClick={() => (window.location.href = "/api/auth/signin?callbackUrl=%2Fdashboard")}
               className="bg-[#6d4a65] hover:bg-[#5d3a55] text-white font-semibold px-5 py-2 shadow-lg"
             >
               Sign In
