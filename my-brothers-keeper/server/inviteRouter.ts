@@ -591,6 +591,12 @@ export const inviteRouter = router({
         });
       }
 
+      // Ensure the invite belongs to the caller's household (cross-tenant guard).
+      const invite = await db.getInviteById(input.inviteId);
+      if (!invite || invite.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+      }
+
       await db.updateInviteStatus(input.inviteId, "revoked");
 
       await db.createAuditLog({

@@ -165,6 +165,11 @@ export const adminMessageRouter = router({
         recipientIds = [input.recipientUserId];
       } else if (input.recipientType === "group") {
         recipientGroupId = input.recipientGroupId;
+        // Ensure the admin group belongs to the caller's household (cross-tenant guard).
+        const group = await db.getAdminGroup(input.recipientGroupId);
+        if (!group || group.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+        }
         const members = await db.getAdminGroupMembers(input.recipientGroupId);
         recipientIds = members.map((m) => m.userId);
       } else {
@@ -183,6 +188,15 @@ export const adminMessageRouter = router({
           recipientIds.push(primary.id);
         }
       }
+
+      // Never message anyone outside this household: intersect the resolved
+      // recipients with the household roster (defends individual + group modes).
+      const householdMemberIds = new Set(
+        (await db.getUsersByHousehold(ctx.user.householdId)).map((u) => u.id)
+      );
+      recipientIds = Array.from(new Set(recipientIds)).filter((id) =>
+        householdMemberIds.has(id)
+      );
 
       // Create admin message
       const messageId = await db.createAdminMessage({
@@ -283,6 +297,20 @@ export const adminGroupRouter = router({
     .mutation(async ({ ctx, input }) => {
       if (!ctx.user.householdId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // All members must belong to the caller's household (cross-tenant guard).
+      const householdMemberIds = new Set(
+        (await db.getUsersByHousehold(ctx.user.householdId)).map((u) => u.id)
+      );
+      const foreignMembers = input.memberIds.filter(
+        (id) => !householdMemberIds.has(id)
+      );
+      if (foreignMembers.length > 0) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "All group members must belong to your household.",
+        });
       }
 
       // Create group

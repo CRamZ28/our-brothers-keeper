@@ -1317,6 +1317,12 @@ async function getGroupMembers(groupId) {
   const result = await db.select({ user: users }).from(groupMembers).innerJoin(users, eq(groupMembers.userId, users.id)).where(eq(groupMembers.groupId, groupId));
   return result.map((r) => r.user);
 }
+async function getGroupById(id) {
+  const db = await getDb();
+  if (!db) return void 0;
+  const rows = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
+  return rows.length > 0 ? rows[0] : void 0;
+}
 async function createInvite(invite) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -1498,6 +1504,12 @@ async function getAnnouncementsByHousehold(householdId) {
   const db = await getDb();
   if (!db) return [];
   return await db.select().from(announcements).where(eq(announcements.householdId, householdId));
+}
+async function getAnnouncementById(id) {
+  const db = await getDb();
+  if (!db) return void 0;
+  const rows = await db.select().from(announcements).where(eq(announcements.id, id)).limit(1);
+  return rows.length > 0 ? rows[0] : void 0;
 }
 async function updateAnnouncement(id, data) {
   const db = await getDb();
@@ -2564,6 +2576,10 @@ Make it warm but not overly formal. The person being invited will be a ${input.r
         message: "Only Primary or delegated Admin can revoke invites"
       });
     }
+    const invite = await getInviteById(input.inviteId);
+    if (!invite || invite.householdId !== ctx.user.householdId) {
+      throw new TRPCError3({ code: "NOT_FOUND", message: "Invite not found" });
+    }
     await updateInviteStatus(input.inviteId, "revoked");
     await createAuditLog({
       householdId: ctx.user.householdId,
@@ -2716,6 +2732,10 @@ var adminMessageRouter = router({
       recipientIds = [input.recipientUserId];
     } else if (input.recipientType === "group") {
       recipientGroupId = input.recipientGroupId;
+      const group = await getAdminGroup(input.recipientGroupId);
+      if (!group || group.householdId !== ctx.user.householdId) {
+        throw new TRPCError4({ code: "NOT_FOUND", message: "Group not found" });
+      }
       const members = await getAdminGroupMembers(input.recipientGroupId);
       recipientIds = members.map((m) => m.userId);
     } else {
@@ -2729,6 +2749,12 @@ var adminMessageRouter = router({
         recipientIds.push(primary.id);
       }
     }
+    const householdMemberIds = new Set(
+      (await getUsersByHousehold(ctx.user.householdId)).map((u) => u.id)
+    );
+    recipientIds = Array.from(new Set(recipientIds)).filter(
+      (id) => householdMemberIds.has(id)
+    );
     const messageId = await createAdminMessage({
       householdId: ctx.user.householdId,
       senderId: ctx.user.id,
@@ -2812,6 +2838,18 @@ var adminGroupRouter = router({
   ).mutation(async ({ ctx, input }) => {
     if (!ctx.user.householdId) {
       throw new TRPCError4({ code: "BAD_REQUEST", message: "No household found" });
+    }
+    const householdMemberIds = new Set(
+      (await getUsersByHousehold(ctx.user.householdId)).map((u) => u.id)
+    );
+    const foreignMembers = input.memberIds.filter(
+      (id) => !householdMemberIds.has(id)
+    );
+    if (foreignMembers.length > 0) {
+      throw new TRPCError4({
+        code: "BAD_REQUEST",
+        message: "All group members must belong to your household."
+      });
     }
     const groupId = await createAdminGroup({
       householdId: ctx.user.householdId,
@@ -4311,6 +4349,10 @@ var messagesRouter = router({
       });
     }
     const { id, ...updateData } = input;
+    const existing = await getAnnouncementById(id);
+    if (!existing || existing.householdId !== ctx.user.householdId) {
+      throw new TRPCError8({ code: "NOT_FOUND", message: "Announcement not found" });
+    }
     await updateAnnouncement(id, updateData);
     await createAuditLog({
       householdId: ctx.user.householdId,
@@ -4333,6 +4375,10 @@ var messagesRouter = router({
         code: "FORBIDDEN",
         message: "Only Primary or Admin can delete announcements"
       });
+    }
+    const existing = await getAnnouncementById(input.id);
+    if (!existing || existing.householdId !== ctx.user.householdId) {
+      throw new TRPCError8({ code: "NOT_FOUND", message: "Announcement not found" });
     }
     await deleteAnnouncement(input.id);
     await createAuditLog({
@@ -4506,6 +4552,10 @@ ${input.message}`,
         message: "Only Admin or Primary can mark questions as read"
       });
     }
+    const question = await getAnnouncementById(input.questionId);
+    if (!question || question.householdId !== ctx.user.householdId) {
+      throw new TRPCError8({ code: "NOT_FOUND", message: "Question not found" });
+    }
     await markQuestionAsRead(input.questionId, ctx.user.id);
     return { success: true };
   }),
@@ -4523,6 +4573,10 @@ ${input.message}`,
         message: "Only Admin or Primary can reply to questions"
       });
     }
+    const question = await getAnnouncementById(input.questionId);
+    if (!question || question.householdId !== ctx.user.householdId) {
+      throw new TRPCError8({ code: "NOT_FOUND", message: "Question not found" });
+    }
     const replyId = await createQuestionReply({
       questionId: input.questionId,
       householdId: ctx.user.householdId,
@@ -4530,8 +4584,6 @@ ${input.message}`,
       message: input.message
     });
     await markQuestionAsRead(input.questionId, ctx.user.id);
-    const questions = await getAnnouncementsByHousehold(ctx.user.householdId);
-    const question = questions.find((q) => q.id === input.questionId);
     if (question) {
       notifyVisibleUsers(
         ctx.user.householdId,
@@ -4550,6 +4602,16 @@ ${input.message}`,
   getQuestionReplies: protectedProcedure.input(z7.object({ questionId: z7.number() })).query(async ({ ctx, input }) => {
     if (!ctx.user.householdId) {
       throw new TRPCError8({ code: "BAD_REQUEST", message: "No household found" });
+    }
+    if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+      throw new TRPCError8({
+        code: "FORBIDDEN",
+        message: "Only Admin or Primary can view question replies"
+      });
+    }
+    const question = await getAnnouncementById(input.questionId);
+    if (!question || question.householdId !== ctx.user.householdId) {
+      throw new TRPCError8({ code: "NOT_FOUND", message: "Question not found" });
     }
     const replies = await getQuestionReplies(input.questionId);
     const repliesWithAuthor = await Promise.all(
@@ -4648,7 +4710,14 @@ var mealTrainRouter = router({
     return allSignups.filter((signup) => signup.userId === ctx.user.id);
   }),
   // Get meal train days
-  getDays: protectedProcedure.input(z8.object({ mealTrainId: z8.number() })).query(async ({ input }) => {
+  getDays: protectedProcedure.input(z8.object({ mealTrainId: z8.number() })).query(async ({ ctx, input }) => {
+    if (!ctx.user.householdId) {
+      return [];
+    }
+    const mealTrain = await getMealTrainByHousehold(ctx.user.householdId);
+    if (!mealTrain || mealTrain.id !== input.mealTrainId) {
+      throw new TRPCError9({ code: "NOT_FOUND", message: "Meal train not found" });
+    }
     return await getMealTrainDays(input.mealTrainId);
   }),
   // Create or update meal train configuration (admin/primary only)
@@ -4848,6 +4917,10 @@ var mealTrainRouter = router({
     if (!signup) {
       throw new TRPCError9({ code: "NOT_FOUND", message: "Signup not found" });
     }
+    const mealTrain = await getMealTrainByHousehold(ctx.user.householdId);
+    if (!mealTrain || signup.mealTrainId !== mealTrain.id) {
+      throw new TRPCError9({ code: "NOT_FOUND", message: "Signup not found" });
+    }
     const canUpdate = signup.userId === ctx.user.id || ctx.user.role === "primary" || ctx.user.role === "admin";
     if (!canUpdate) {
       throw new TRPCError9({
@@ -4877,6 +4950,10 @@ var mealTrainRouter = router({
     }
     const signup = await getMealSignup(input.id);
     if (!signup) {
+      throw new TRPCError9({ code: "NOT_FOUND", message: "Signup not found" });
+    }
+    const mealTrain = await getMealTrainByHousehold(ctx.user.householdId);
+    if (!mealTrain || signup.mealTrainId !== mealTrain.id) {
       throw new TRPCError9({ code: "NOT_FOUND", message: "Signup not found" });
     }
     const canCancel = signup.userId === ctx.user.id || ctx.user.role === "primary" || ctx.user.role === "admin";
@@ -6292,6 +6369,10 @@ var appRouter = router({
           message: "Only Primary or delegated Admin can update user status"
         });
       }
+      const targetUser = await getUserById(input.userId);
+      if (!targetUser || targetUser.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "User not found" });
+      }
       await updateUserStatus(input.userId, input.status);
       await createAuditLog({
         householdId: ctx.user.householdId,
@@ -6476,6 +6557,14 @@ var appRouter = router({
         throw new TRPCError16({ code: "BAD_REQUEST", message: "No household found" });
       }
       await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+      const group = await getGroupById(input.groupId);
+      if (!group || group.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "Group not found" });
+      }
+      const targetMember = await getUserById(input.userId);
+      if (!targetMember || targetMember.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "User not found" });
+      }
       await addUserToGroup(input.groupId, input.userId);
       await createAuditLog({
         householdId: ctx.user.householdId,
@@ -6498,6 +6587,10 @@ var appRouter = router({
         throw new TRPCError16({ code: "BAD_REQUEST", message: "No household found" });
       }
       await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+      const group = await getGroupById(input.groupId);
+      if (!group || group.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "Group not found" });
+      }
       await removeUserFromGroup(input.groupId, input.userId);
       await createAuditLog({
         householdId: ctx.user.householdId,
@@ -6521,6 +6614,10 @@ var appRouter = router({
         throw new TRPCError16({ code: "BAD_REQUEST", message: "No household found" });
       }
       await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+      const group = await getGroupById(input.groupId);
+      if (!group || group.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "Group not found" });
+      }
       await updateGroup(input.groupId, {
         name: input.name,
         description: input.description
@@ -6541,6 +6638,10 @@ var appRouter = router({
         throw new TRPCError16({ code: "BAD_REQUEST", message: "No household found" });
       }
       await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+      const group = await getGroupById(input.groupId);
+      if (!group || group.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "Group not found" });
+      }
       await deleteGroup(input.groupId);
       await createAuditLog({
         householdId: ctx.user.householdId,
@@ -6556,6 +6657,10 @@ var appRouter = router({
     getMembers: protectedProcedure.input(z15.object({ groupId: z15.number() })).query(async ({ ctx, input }) => {
       if (!ctx.user.householdId) {
         return [];
+      }
+      const group = await getGroupById(input.groupId);
+      if (!group || group.householdId !== ctx.user.householdId) {
+        throw new TRPCError16({ code: "NOT_FOUND", message: "Group not found" });
       }
       return await getGroupMembers(input.groupId);
     })

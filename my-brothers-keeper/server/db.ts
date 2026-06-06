@@ -686,6 +686,15 @@ export async function getGroupMembers(groupId: number) {
   return result.map(r => r.user);
 }
 
+// Fetch a single group by id (used for cross-tenant authorization checks).
+export async function getGroupById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const rows = await db.select().from(groups).where(eq(groups.id, id)).limit(1);
+  return rows.length > 0 ? rows[0] : undefined;
+}
+
 // ============================================================================
 // INVITE MANAGEMENT
 // ============================================================================
@@ -1009,6 +1018,20 @@ export async function getAnnouncementsByHousehold(householdId: number) {
     .select()
     .from(announcements)
     .where(eq(announcements.householdId, householdId));
+}
+
+// Fetch a single announcement (or question, which is an announcement row) by id.
+// Used for cross-tenant authorization checks before mutating/reading it.
+export async function getAnnouncementById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+
+  const rows = await db
+    .select()
+    .from(announcements)
+    .where(eq(announcements.id, id))
+    .limit(1);
+  return rows.length > 0 ? rows[0] : undefined;
 }
 
 export async function updateAnnouncement(

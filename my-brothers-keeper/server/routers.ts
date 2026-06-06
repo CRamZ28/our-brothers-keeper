@@ -620,6 +620,11 @@ export const appRouter = router({
           });
         }
 
+        const targetUser = await db.getUserById(input.userId);
+        if (!targetUser || targetUser.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+
         await db.updateUserStatus(input.userId, input.status);
 
         await db.createAuditLog({
@@ -863,6 +868,16 @@ export const appRouter = router({
 
         await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
 
+        const group = await db.getGroupById(input.groupId);
+        if (!group || group.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+        }
+
+        const targetMember = await db.getUserById(input.userId);
+        if (!targetMember || targetMember.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+        }
+
         await db.addUserToGroup(input.groupId, input.userId);
 
         await db.createAuditLog({
@@ -891,6 +906,11 @@ export const appRouter = router({
         }
 
         await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
+
+        const group = await db.getGroupById(input.groupId);
+        if (!group || group.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+        }
 
         await db.removeUserFromGroup(input.groupId, input.userId);
 
@@ -922,6 +942,11 @@ export const appRouter = router({
 
         await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
 
+        const group = await db.getGroupById(input.groupId);
+        if (!group || group.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+        }
+
         await db.updateGroup(input.groupId, {
           name: input.name,
           description: input.description,
@@ -949,6 +974,11 @@ export const appRouter = router({
 
         await checkHouseholdAccess(ctx.user.id, ctx.user.householdId, "admin");
 
+        const group = await db.getGroupById(input.groupId);
+        if (!group || group.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
+        }
+
         await db.deleteGroup(input.groupId);
 
         await db.createAuditLog({
@@ -969,6 +999,11 @@ export const appRouter = router({
       .query(async ({ ctx, input }) => {
         if (!ctx.user.householdId) {
           return [];
+        }
+
+        const group = await db.getGroupById(input.groupId);
+        if (!group || group.householdId !== ctx.user.householdId) {
+          throw new TRPCError({ code: "NOT_FOUND", message: "Group not found" });
         }
 
         return await db.getGroupMembers(input.groupId);

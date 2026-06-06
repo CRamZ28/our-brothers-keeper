@@ -147,6 +147,13 @@ export const messagesRouter = router({
       }
 
       const { id, ...updateData } = input;
+
+      // Ensure the announcement belongs to the caller's household (cross-tenant guard).
+      const existing = await db.getAnnouncementById(id);
+      if (!existing || existing.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Announcement not found" });
+      }
+
       await db.updateAnnouncement(id, updateData);
 
       await db.createAuditLog({
@@ -176,6 +183,12 @@ export const messagesRouter = router({
           code: "FORBIDDEN",
           message: "Only Primary or Admin can delete announcements",
         });
+      }
+
+      // Ensure the announcement belongs to the caller's household (cross-tenant guard).
+      const existing = await db.getAnnouncementById(input.id);
+      if (!existing || existing.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Announcement not found" });
       }
 
       await db.deleteAnnouncement(input.id);
@@ -394,6 +407,12 @@ export const messagesRouter = router({
         });
       }
 
+      // Ensure the question belongs to the caller's household (cross-tenant guard).
+      const question = await db.getAnnouncementById(input.questionId);
+      if (!question || question.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Question not found" });
+      }
+
       await db.markQuestionAsRead(input.questionId, ctx.user.id);
 
       return { success: true };
@@ -418,6 +437,12 @@ export const messagesRouter = router({
         });
       }
 
+      // Ensure the question belongs to the caller's household (cross-tenant guard).
+      const question = await db.getAnnouncementById(input.questionId);
+      if (!question || question.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Question not found" });
+      }
+
       const replyId = await db.createQuestionReply({
         questionId: input.questionId,
         householdId: ctx.user.householdId,
@@ -428,10 +453,7 @@ export const messagesRouter = router({
       // Mark as read when replying
       await db.markQuestionAsRead(input.questionId, ctx.user.id);
 
-      // Get the question to find the original asker
-      const questions = await db.getAnnouncementsByHousehold(ctx.user.householdId);
-      const question = questions.find(q => q.id === input.questionId);
-      
+      // Notify the original asker (the question was loaded + household-checked above).
       if (question) {
         // Send notification to the question asker
         notifyVisibleUsers(
@@ -455,6 +477,20 @@ export const messagesRouter = router({
     .query(async ({ ctx, input }) => {
       if (!ctx.user.householdId) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
+      }
+
+      // Questions are the private admin↔member channel: only admin/primary may
+      // read replies, and only for a question in their own household.
+      if (ctx.user.role !== "admin" && ctx.user.role !== "primary") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only Admin or Primary can view question replies",
+        });
+      }
+
+      const question = await db.getAnnouncementById(input.questionId);
+      if (!question || question.householdId !== ctx.user.householdId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Question not found" });
       }
 
       const replies = await db.getQuestionReplies(input.questionId);

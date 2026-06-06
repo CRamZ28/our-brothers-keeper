@@ -97,7 +97,15 @@ export const mealTrainRouter = router({
   // Get meal train days
   getDays: protectedProcedure
     .input(z.object({ mealTrainId: z.number() }))
-    .query(async ({ input }) => {
+    .query(async ({ ctx, input }) => {
+      if (!ctx.user.householdId) {
+        return [];
+      }
+      // Only expose the day calendar for the caller's own household meal train.
+      const mealTrain = await db.getMealTrainByHousehold(ctx.user.householdId);
+      if (!mealTrain || mealTrain.id !== input.mealTrainId) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Meal train not found" });
+      }
       return await db.getMealTrainDays(input.mealTrainId);
     }),
 
@@ -346,6 +354,12 @@ export const mealTrainRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Signup not found" });
       }
 
+      // Ensure the signup belongs to this household's meal train (cross-tenant guard).
+      const mealTrain = await db.getMealTrainByHousehold(ctx.user.householdId);
+      if (!mealTrain || signup.mealTrainId !== mealTrain.id) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Signup not found" });
+      }
+
       // Only the volunteer or admin/primary can update
       const canUpdate =
         signup.userId === ctx.user.id || ctx.user.role === "primary" || ctx.user.role === "admin";
@@ -384,6 +398,12 @@ export const mealTrainRouter = router({
 
       const signup = await db.getMealSignup(input.id);
       if (!signup) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Signup not found" });
+      }
+
+      // Ensure the signup belongs to this household's meal train (cross-tenant guard).
+      const mealTrain = await db.getMealTrainByHousehold(ctx.user.householdId);
+      if (!mealTrain || signup.mealTrainId !== mealTrain.id) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Signup not found" });
       }
 
