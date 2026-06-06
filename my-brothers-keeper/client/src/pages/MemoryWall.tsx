@@ -356,7 +356,7 @@ export default function MemoryWall() {
 
     try {
       for (const file of imageFiles) {
-        uploadedUrls.push(await uploadFile(file));
+        uploadedUrls.push(await uploadFile(file, user?.householdId));
       }
 
       return uploadedUrls;

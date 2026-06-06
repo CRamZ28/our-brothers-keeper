@@ -4,8 +4,12 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { authHandler } from "../auth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import { Readable } from "stream";
+import { get } from "@vercel/blob";
 import uploadRouter from "../uploadRouter";
 import { processReminders } from "../reminderProcessor";
+import { getSessionUserId } from "../auth";
+import { getUser } from "../db";
 
 if (process.env.SENTRY_DSN) {
   Sentry.init({
@@ -49,12 +53,45 @@ export async function createApp(): Promise<Express> {
   app.use("/api", uploadRouter);
   app.use("/uploads", express.static("uploads"));
 
-  // Legacy object paths (/objects/...) referenced the old Replit/GCS bucket,
-  // which no longer exists. New uploads live on Vercel Blob and are referenced by
-  // their full CDN URL, so they never hit this route. Kept only so any stale
-  // reference in old data degrades to a clean 404 instead of a 500.
-  app.get("/objects/:objectPath(*)", (_req, res) => {
-    res.status(404).json({ error: "File not found" });
+  // Authenticated media proxy. Uploaded files are stored as PRIVATE Vercel Blob
+  // objects under `uploads/<householdId>/...`; they are never world-readable.
+  // A file is streamed only to a signed-in member of the owning household.
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const userId = await getSessionUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const user = await getUser(userId);
+      if (!user?.householdId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+
+      // Strip the leading "/objects/" to recover the blob pathname, and confirm
+      // it lives in THIS user's household namespace.
+      const pathname = req.path.replace(/^\/objects\//, "");
+      if (!pathname.startsWith(`uploads/${user.householdId}/`)) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      const result = await get(pathname, { access: "private" });
+      if (!result || result.statusCode !== 200) {
+        return res.status(404).json({ error: "File not found" });
+      }
+
+      res.setHeader("Content-Type", result.blob.contentType);
+      // Private per-user cache: the browser may reuse it, shared caches may not.
+      res.setHeader("Cache-Control", "private, max-age=3600");
+      Readable.fromWeb(result.stream as any).pipe(res);
+    } catch (error) {
+      console.error(
+        "[objects] serve error:",
+        error instanceof Error ? error.message : String(error)
+      );
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Error serving file" });
+      }
+    }
   });
 
   app.use(

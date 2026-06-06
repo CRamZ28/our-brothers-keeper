@@ -275,7 +275,7 @@ export default function Settings() {
 
     try {
       setUploading(true);
-      const url = await uploadFile(file);
+      const url = await uploadFile(file, user?.householdId);
 
       // Update profile with new image URL
       updateProfileMutation.mutate({ profileImageUrl: url });
@@ -302,7 +302,7 @@ export default function Settings() {
 
     try {
       setUploadingDashboardPhoto(true);
-      const url = await uploadFile(file);
+      const url = await uploadFile(file, user?.householdId);
       setHouseholdPhotoUrl(url);
 
       // Automatically save the photo to the database
@@ -336,7 +336,7 @@ export default function Settings() {
 
     try {
       setUploadingDashboardPhoto(true);
-      const url = await uploadFile(file);
+      const url = await uploadFile(file, user?.householdId);
 
       // Update the specific index in the photos array
       const newPhotos = [...dashboardPhotos];

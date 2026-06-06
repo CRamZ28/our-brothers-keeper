@@ -27,22 +27,28 @@ export class ObjectNotFoundError extends Error {
  */
 export class ObjectStorageService {
   /**
-   * Upload a buffer to Vercel Blob and return its public CDN URL.
-   * The URL contains an unguessable random component, so it is effectively
-   * private-by-obscurity (matching the prior behavior of the GCS bucket).
+   * Upload a buffer to Vercel Blob as a PRIVATE object, namespaced under the
+   * given household, and return an app-relative reference (`/objects/...`) that
+   * is served by the authenticated `/objects/*` proxy. The raw blob is private
+   * and not directly fetchable without going through that proxy.
    */
-  async uploadFile(buffer: Buffer, filename: string, contentType: string): Promise<string> {
+  async uploadFile(
+    buffer: Buffer,
+    filename: string,
+    contentType: string,
+    householdId: number
+  ): Promise<string> {
     const extension = filename.includes(".") ? filename.split(".").pop() : undefined;
     const objectId = randomUUID();
-    const pathname = `uploads/${objectId}${extension ? "." + extension : ""}`;
+    const pathname = `uploads/${householdId}/${objectId}${extension ? "." + extension : ""}`;
 
     const blob: PutBlobResult = await put(pathname, buffer, {
-      access: "public",
+      access: "private",
       contentType,
       addRandomSuffix: true,
     });
 
-    return blob.url;
+    return `/objects/${blob.pathname}`;
   }
 
   /**

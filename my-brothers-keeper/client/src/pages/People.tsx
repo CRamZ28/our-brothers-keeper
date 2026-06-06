@@ -271,7 +271,7 @@ export default function People() {
 
     try {
       setUploading(true);
-      const url = await uploadFile(file);
+      const url = await uploadFile(file, user?.householdId);
       setProfileImageUrl(url);
       toast.success("Image uploaded successfully!");
     } catch (error) {

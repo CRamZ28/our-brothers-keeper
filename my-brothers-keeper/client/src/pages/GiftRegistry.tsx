@@ -110,7 +110,7 @@ export default function GiftRegistry() {
     setUploadingImage(true);
 
     try {
-      return await uploadFile(imageFile);
+      return await uploadFile(imageFile, user?.householdId);
     } catch (error) {
       console.error('Upload error:', error);
       toast.error('Failed to upload image');

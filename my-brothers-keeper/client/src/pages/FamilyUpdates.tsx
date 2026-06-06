@@ -158,7 +158,7 @@ export default function FamilyUpdates() {
 
     try {
       for (const file of mediaFiles) {
-        uploadedUrls.push(await uploadFile(file));
+        uploadedUrls.push(await uploadFile(file, user?.householdId));
       }
 
       return uploadedUrls;

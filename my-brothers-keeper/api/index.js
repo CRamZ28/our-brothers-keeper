@@ -6722,6 +6722,10 @@ async function createContext(opts) {
   };
 }
 
+// server/_core/app.ts
+import { Readable } from "stream";
+import { get } from "@vercel/blob";
+
 // server/uploadRouter.ts
 import { Router } from "express";
 import { handleUpload } from "@vercel/blob/client";
@@ -6744,13 +6748,21 @@ router2.post("/upload", requireAuth, async (req, res) => {
     const jsonResponse = await handleUpload({
       body,
       request: req,
-      onBeforeGenerateToken: async () => {
+      onBeforeGenerateToken: async (pathname) => {
         const userId = res.locals.session?.user?.id ?? null;
+        const user = userId ? await getUser(userId) : null;
+        if (!user?.householdId) {
+          throw new Error("You must belong to a household to upload files.");
+        }
+        if (!pathname.startsWith(`uploads/${user.householdId}/`)) {
+          throw new Error("Invalid upload path.");
+        }
         return {
+          access: "private",
           allowedContentTypes: ALLOWED_CONTENT_TYPES,
           maximumSizeInBytes: MAX_UPLOAD_BYTES,
           addRandomSuffix: true,
-          tokenPayload: JSON.stringify({ userId })
+          tokenPayload: JSON.stringify({ userId, householdId: user.householdId })
         };
       },
       onUploadCompleted: async ({ blob }) => {
@@ -6949,8 +6961,36 @@ async function createApp() {
   app.use("/api/auth/*", authHandler);
   app.use("/api", uploadRouter_default);
   app.use("/uploads", express.static("uploads"));
-  app.get("/objects/:objectPath(*)", (_req, res) => {
-    res.status(404).json({ error: "File not found" });
+  app.get("/objects/:objectPath(*)", async (req, res) => {
+    try {
+      const userId = await getSessionUserId(req);
+      if (!userId) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+      const user = await getUser(userId);
+      if (!user?.householdId) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+      const pathname = req.path.replace(/^\/objects\//, "");
+      if (!pathname.startsWith(`uploads/${user.householdId}/`)) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      const result = await get(pathname, { access: "private" });
+      if (!result || result.statusCode !== 200) {
+        return res.status(404).json({ error: "File not found" });
+      }
+      res.setHeader("Content-Type", result.blob.contentType);
+      res.setHeader("Cache-Control", "private, max-age=3600");
+      Readable.fromWeb(result.stream).pipe(res);
+    } catch (error) {
+      console.error(
+        "[objects] serve error:",
+        error instanceof Error ? error.message : String(error)
+      );
+      if (!res.headersSent) {
+        res.status(500).json({ error: "Error serving file" });
+      }
+    }
   });
   app.use(
     "/api/trpc",

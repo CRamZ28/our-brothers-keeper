@@ -73,7 +73,8 @@ export async function migratePhotosToObjectStorage() {
         const newUrl = await objectStorageService.uploadFile(
           fileBuffer,
           filename,
-          contentType
+          contentType,
+          household.id
         );
 
         console.log(`[Photo Migration] Uploaded household ${household.id} photo to object storage: ${newUrl}`);
