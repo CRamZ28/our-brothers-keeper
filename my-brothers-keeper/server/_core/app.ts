@@ -112,6 +112,17 @@ export async function createApp(): Promise<Express> {
     createExpressMiddleware({
       router: appRouter,
       createContext,
+      onError({ error, path, type }) {
+        // Surface the real server-side error (tRPC otherwise swallows it into the
+        // HTTP 500 body, which the errorFormatter masks). Helps diagnose 500s.
+        console.error(
+          `[trpc] ${type} ${path ?? "<no-path>"} -> ${error.code}: ${error.message}`
+        );
+        const cause = (error.cause ?? undefined) as Error | undefined;
+        if (cause) {
+          console.error(`[trpc] cause:`, cause.stack ?? cause.message);
+        }
+      },
     })
   );
 

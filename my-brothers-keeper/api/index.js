@@ -7073,7 +7073,16 @@ async function createApp() {
     "/api/trpc",
     createExpressMiddleware({
       router: appRouter,
-      createContext
+      createContext,
+      onError({ error, path, type }) {
+        console.error(
+          `[trpc] ${type} ${path ?? "<no-path>"} -> ${error.code}: ${error.message}`
+        );
+        const cause = error.cause ?? void 0;
+        if (cause) {
+          console.error(`[trpc] cause:`, cause.stack ?? cause.message);
+        }
+      }
     })
   );
   return app;
