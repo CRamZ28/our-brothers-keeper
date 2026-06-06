@@ -725,19 +725,6 @@ var authHandler = (req, res, next) => {
     res.status(500).json({ error: "Authentication not configured" });
   }
 };
-async function requireAuth(req, res, next) {
-  try {
-    const session = await getSession(req, getAuthConfig());
-    if (!session?.user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
-    res.locals.session = session;
-    next();
-  } catch (error) {
-    console.error("[auth] requireAuth error:", error);
-    res.status(500).json({ error: "Auth check failed" });
-  }
-}
 async function getSessionUserId(req) {
   try {
     const session = await getSession(req, getAuthConfig());
@@ -6822,17 +6809,17 @@ var ALLOWED_CONTENT_TYPES = [
   "video/webm"
 ];
 var MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
-router2.post("/upload", requireAuth, async (req, res) => {
+router2.post("/upload", async (req, res) => {
   const body = req.body;
   try {
     const jsonResponse = await handleUpload({
       body,
       request: req,
       onBeforeGenerateToken: async (pathname) => {
-        const userId = res.locals.session?.user?.id ?? null;
+        const userId = await getSessionUserId(req);
         const user = userId ? await getUser(userId) : null;
         if (!user?.householdId) {
-          throw new Error("You must belong to a household to upload files.");
+          throw new Error("You must be signed in to a household to upload files.");
         }
         if (user.status !== "active") {
           throw new Error("Your membership must be approved before you can upload files.");
