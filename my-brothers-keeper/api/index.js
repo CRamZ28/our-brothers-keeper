@@ -4,6 +4,7 @@ import "dotenv/config";
 // server/_core/app.ts
 import * as Sentry from "@sentry/node";
 import express from "express";
+import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 
 // server/auth.ts
@@ -691,8 +692,12 @@ function buildAuthConfig() {
     ],
     callbacks: {
       async redirect({ url, baseUrl }) {
-        if (url.startsWith(baseUrl)) return url;
-        return baseUrl + "/dashboard";
+        try {
+          if (url.startsWith("/")) return `${baseUrl}${url}`;
+          if (new URL(url).origin === new URL(baseUrl).origin) return url;
+        } catch {
+        }
+        return `${baseUrl}/dashboard`;
       },
       async session({ session, user }) {
         if (session.user && user?.id) {
@@ -873,7 +878,15 @@ async function notifyOwner(payload) {
 import { initTRPC, TRPCError as TRPCError2 } from "@trpc/server";
 import superjson from "superjson";
 var t = initTRPC.context().create({
-  transformer: superjson
+  transformer: superjson,
+  // Never leak internal error details (DB / third-party provider messages) to
+  // clients. Validation and explicit TRPCError messages still pass through.
+  errorFormatter({ shape, error }) {
+    if (error.code === "INTERNAL_SERVER_ERROR") {
+      return { ...shape, message: "Internal server error" };
+    }
+    return shape;
+  }
 });
 var router = t.router;
 var publicProcedure = t.procedure;
@@ -5289,7 +5302,7 @@ var giftRegistryRouter = router({
     z11.object({
       name: z11.string().min(1),
       description: z11.string().optional(),
-      url: z11.string().optional(),
+      url: z11.string().refine((u) => /^https?:\/\//i.test(u), "Link must start with http:// or https://").optional(),
       imageUrl: z11.string().optional(),
       price: z11.string().optional(),
       priority: z11.enum(["low", "normal", "urgent"]).default("normal"),
@@ -5339,7 +5352,7 @@ var giftRegistryRouter = router({
       itemId: z11.number(),
       name: z11.string().min(1).optional(),
       description: z11.string().optional(),
-      url: z11.string().optional(),
+      url: z11.string().refine((u) => /^https?:\/\//i.test(u), "Link must start with http:// or https://").optional(),
       imageUrl: z11.string().optional(),
       price: z11.string().optional(),
       priority: z11.enum(["low", "normal", "urgent"]).optional(),
@@ -5850,6 +5863,16 @@ import { Resend as Resend5 } from "resend";
 import { TRPCError as TRPCError15 } from "@trpc/server";
 var SUPPORT_EMAIL = "caleb@txpressurewash.com";
 var FROM_EMAIL4 = "Our Brother's Keeper <notifications@obkapp.com>";
+function escapeHtml3(text2) {
+  const map = {
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  };
+  return text2.replace(/[&<>"']/g, (c) => map[c]);
+}
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
     throw new TRPCError15({
@@ -5889,20 +5912,20 @@ var supportRouter = router({
           <div class="content">
             <div class="info-box">
               <p><span class="label">Request Type:</span> ${requestTypeLabels[input.requestType]}</p>
-              <p><span class="label">Subject:</span> ${input.subject}</p>
+              <p><span class="label">Subject:</span> ${escapeHtml3(input.subject)}</p>
             </div>
             
             <div class="info-box">
               <p><span class="label">From User:</span></p>
-              <p>Name: ${user.name || "Unknown"}</p>
-              <p>Email: ${user.email}</p>
+              <p>Name: ${escapeHtml3(user.name || "Unknown")}</p>
+              <p>Email: ${escapeHtml3(user.email || "Unknown")}</p>
               <p>User ID: ${user.id}</p>
               ${user.householdId ? `<p>Household ID: ${user.householdId}</p>` : ""}
             </div>
 
             <div class="info-box">
               <p><span class="label">Message:</span></p>
-              <p style="white-space: pre-wrap;">${input.message}</p>
+              <p style="white-space: pre-wrap;">${escapeHtml3(input.message)}</p>
             </div>
           </div>
         </div>
@@ -6754,6 +6777,9 @@ router2.post("/upload", requireAuth, async (req, res) => {
         if (!user?.householdId) {
           throw new Error("You must belong to a household to upload files.");
         }
+        if (user.status !== "active") {
+          throw new Error("Your membership must be approved before you can upload files.");
+        }
         if (!pathname.startsWith(`uploads/${user.householdId}/`)) {
           throw new Error("Invalid upload path.");
         }
@@ -6940,6 +6966,13 @@ if (process.env.SENTRY_DSN) {
 async function createApp() {
   const app = express();
   app.set("trust proxy", true);
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+      frameguard: { action: "deny" }
+    })
+  );
   if (process.env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);
   }

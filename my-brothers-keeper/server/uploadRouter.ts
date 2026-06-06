@@ -50,6 +50,9 @@ router.post("/upload", requireAuth, async (req, res) => {
         if (!user?.householdId) {
           throw new Error("You must belong to a household to upload files.");
         }
+        if (user.status !== "active") {
+          throw new Error("Your membership must be approved before you can upload files.");
+        }
 
         // The client must upload into its own household's namespace; reject
         // anything else so a tampered client cannot write into another household.

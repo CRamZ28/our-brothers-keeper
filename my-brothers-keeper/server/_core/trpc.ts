@@ -5,6 +5,14 @@ import type { TrpcContext } from "./context";
 
 const t = initTRPC.context<TrpcContext>().create({
   transformer: superjson,
+  // Never leak internal error details (DB / third-party provider messages) to
+  // clients. Validation and explicit TRPCError messages still pass through.
+  errorFormatter({ shape, error }) {
+    if (error.code === "INTERNAL_SERVER_ERROR") {
+      return { ...shape, message: "Internal server error" };
+    }
+    return shape;
+  },
 });
 
 export const router = t.router;

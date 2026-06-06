@@ -11,7 +11,9 @@ import { VitePWA } from "vite-plugin-pwa";
 const plugins = [
   react(),
   tailwindcss(),
-  jsxLocPlugin(),
+  // Dev-only: jsxLocPlugin injects source-file paths as `data-loc` DOM
+  // attributes, which would disclose internal structure if shipped to prod.
+  ...(process.env.NODE_ENV !== "production" ? [jsxLocPlugin()] : []),
   vitePluginManusRuntime(),
   // PWA plugin disabled during development to prevent caching issues
   // Re-enable for production builds if needed

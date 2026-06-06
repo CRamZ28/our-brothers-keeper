@@ -10,7 +10,10 @@ export const giftRegistryRouter = router({
       z.object({
         name: z.string().min(1),
         description: z.string().optional(),
-        url: z.string().optional(),
+        url: z
+          .string()
+          .refine((u) => /^https?:\/\//i.test(u), "Link must start with http:// or https://")
+          .optional(),
         imageUrl: z.string().optional(),
         price: z.string().optional(),
         priority: z.enum(["low", "normal", "urgent"]).default("normal"),
@@ -70,7 +73,10 @@ export const giftRegistryRouter = router({
         itemId: z.number(),
         name: z.string().min(1).optional(),
         description: z.string().optional(),
-        url: z.string().optional(),
+        url: z
+          .string()
+          .refine((u) => /^https?:\/\//i.test(u), "Link must start with http:// or https://")
+          .optional(),
         imageUrl: z.string().optional(),
         price: z.string().optional(),
         priority: z.enum(["low", "normal", "urgent"]).optional(),

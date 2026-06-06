@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/node";
 import express, { type Express } from "express";
+import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { authHandler } from "../auth";
 import { appRouter } from "../routers";
@@ -25,6 +26,17 @@ export async function createApp(): Promise<Express> {
 
   // Required by @auth/express when running behind a proxy (Vercel does)
   app.set("trust proxy", true);
+
+  // Security headers. CSP and COEP are left off to avoid breaking the SPA and
+  // media loading, but this still adds HSTS, X-Content-Type-Options: nosniff,
+  // a strict Referrer-Policy, and X-Frame-Options: DENY (clickjacking defense).
+  app.use(
+    helmet({
+      contentSecurityPolicy: false,
+      crossOriginEmbedderPolicy: false,
+      frameguard: { action: "deny" },
+    })
+  );
 
   if (process.env.SENTRY_DSN) {
     Sentry.setupExpressErrorHandler(app);

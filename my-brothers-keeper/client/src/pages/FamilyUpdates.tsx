@@ -353,7 +353,7 @@ export default function FamilyUpdates() {
                         src={url}
                         alt={`Media ${index + 1}`}
                         className="w-full h-64 object-cover cursor-pointer hover:opacity-90 transition-opacity"
-                        onClick={() => window.open(url, "_blank")}
+                        onClick={() => window.open(url, "_blank", "noopener,noreferrer")}
                       />
                     )}
                   </div>

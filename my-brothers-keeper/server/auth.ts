@@ -56,9 +56,17 @@ function buildAuthConfig() {
       }),
     ],
         callbacks: {
-      async redirect({ url, baseUrl }) {
-        if (url.startsWith(baseUrl)) return url;
-        return baseUrl + "/dashboard";
+      async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
+        try {
+          // Same-origin relative paths are safe.
+          if (url.startsWith("/")) return `${baseUrl}${url}`;
+          // Absolute URLs are allowed only when their ORIGIN matches ours. A
+          // prefix check (startsWith) is bypassable, e.g. https://obkapp.com.evil.com.
+          if (new URL(url).origin === new URL(baseUrl).origin) return url;
+        } catch {
+          // malformed URL → fall through to the safe default
+        }
+        return `${baseUrl}/dashboard`;
       },
       async session({ session, user }) {
         if (session.user && user?.id) {

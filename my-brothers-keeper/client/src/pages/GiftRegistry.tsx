@@ -445,7 +445,7 @@ export default function GiftRegistry() {
                                 variant="outline"
                                 size="sm"
                                 className="flex-1"
-                                onClick={() => window.open(item.url!, "_blank")}
+                                onClick={() => window.open(item.url!, "_blank", "noopener,noreferrer")}
                               >
                                 <ExternalLink className="w-4 h-4 mr-1" />
                                 View

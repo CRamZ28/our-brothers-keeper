@@ -6,6 +6,14 @@ import { TRPCError } from '@trpc/server';
 const SUPPORT_EMAIL = 'caleb@txpressurewash.com';
 const FROM_EMAIL = 'Our Brother\'s Keeper <notifications@obkapp.com>';
 
+// Escape user-supplied text before interpolating it into the support email HTML.
+function escapeHtml(text: string): string {
+  const map: Record<string, string> = {
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;',
+  };
+  return text.replace(/[&<>"']/g, (c) => map[c]);
+}
+
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
     throw new TRPCError({
@@ -50,20 +58,20 @@ export const supportRouter = router({
           <div class="content">
             <div class="info-box">
               <p><span class="label">Request Type:</span> ${requestTypeLabels[input.requestType]}</p>
-              <p><span class="label">Subject:</span> ${input.subject}</p>
+              <p><span class="label">Subject:</span> ${escapeHtml(input.subject)}</p>
             </div>
             
             <div class="info-box">
               <p><span class="label">From User:</span></p>
-              <p>Name: ${user.name || 'Unknown'}</p>
-              <p>Email: ${user.email}</p>
+              <p>Name: ${escapeHtml(user.name || 'Unknown')}</p>
+              <p>Email: ${escapeHtml(user.email || 'Unknown')}</p>
               <p>User ID: ${user.id}</p>
               ${user.householdId ? `<p>Household ID: ${user.householdId}</p>` : ''}
             </div>
 
             <div class="info-box">
               <p><span class="label">Message:</span></p>
-              <p style="white-space: pre-wrap;">${input.message}</p>
+              <p style="white-space: pre-wrap;">${escapeHtml(input.message)}</p>
             </div>
           </div>
         </div>
