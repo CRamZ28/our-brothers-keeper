@@ -899,6 +899,15 @@ var protectedProcedure = t.procedure.use(requireUser);
 var adminProcedure = protectedProcedure.use(
   t.middleware(async (opts) => {
     const { ctx, next } = opts;
+    if (!ctx.user) {
+      throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+    if (ctx.user.status !== "active") {
+      throw new TRPCError2({
+        code: "FORBIDDEN",
+        message: "Your membership must be approved before you can use admin features."
+      });
+    }
     if (ctx.user.role !== "admin") {
       throw new TRPCError2({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }
@@ -2270,6 +2279,12 @@ var inviteRouter = router({
     if (!ctx.user.householdId) {
       throw new TRPCError3({ code: "BAD_REQUEST", message: "No household found" });
     }
+    if (ctx.user.status !== "active") {
+      throw new TRPCError3({
+        code: "FORBIDDEN",
+        message: "Your membership must be approved before you can invite others."
+      });
+    }
     const household = await getHousehold(ctx.user.householdId);
     if (!household) {
       throw new TRPCError3({ code: "NOT_FOUND", message: "Household not found" });
@@ -2689,6 +2704,12 @@ async function sendBroadcastEmail(recipientEmail, recipientName, subject, body, 
   }
 }
 var adminProcedure2 = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.status !== "active") {
+    throw new TRPCError4({
+      code: "FORBIDDEN",
+      message: "Your membership must be approved before you can use admin features."
+    });
+  }
   if (ctx.user.role !== "admin") {
     throw new TRPCError4({
       code: "FORBIDDEN",

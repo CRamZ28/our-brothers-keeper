@@ -39,6 +39,18 @@ export const adminProcedure = protectedProcedure.use(
   t.middleware(async opts => {
     const { ctx, next } = opts;
 
+    if (!ctx.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
+    }
+
+    // Unapproved (pending) members must not perform admin actions.
+    if (ctx.user.status !== "active") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Your membership must be approved before you can use admin features.",
+      });
+    }
+
     if (ctx.user.role !== 'admin') {
       throw new TRPCError({ code: "FORBIDDEN", message: NOT_ADMIN_ERR_MSG });
     }

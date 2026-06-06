@@ -116,6 +116,14 @@ async function sendBroadcastEmail(
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  // Unapproved (pending) members must not perform admin actions, even if their
+  // invited role was admin — approval is required first.
+  if (ctx.user.status !== "active") {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Your membership must be approved before you can use admin features.",
+    });
+  }
   if (ctx.user.role !== "admin") {
     throw new TRPCError({
       code: "FORBIDDEN",

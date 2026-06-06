@@ -181,6 +181,14 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "BAD_REQUEST", message: "No household found" });
       }
 
+      // Pending/unapproved members may not grow the support network.
+      if (ctx.user.status !== "active") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Your membership must be approved before you can invite others.",
+        });
+      }
+
       // Verify user has permission to invite
       const household = await db.getHousehold(ctx.user.householdId);
       if (!household) {
