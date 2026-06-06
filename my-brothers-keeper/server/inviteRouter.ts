@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "./_core/trpc";
+import { canInviteWithRole } from "./roleHelpers";
 import { invokeLLM } from "./_core/llm";
 import * as db from "./db";
 import crypto from "crypto";
@@ -139,7 +140,9 @@ export async function sendInviteNotification(
         };
       }
 
-      console.log(`[Invite] Email sent successfully to ${email}: ${inviteLink}`, result.data);
+      // Do NOT log the invite link or recipient email: for primary invites the
+      // link embeds a full-takeover token, and runtime logs persist on Vercel.
+      console.log(`[Invite] Email sent (messageId: ${result.data?.id ?? "n/a"})`);
       return { success: true, inviteLink };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -152,9 +155,10 @@ export async function sendInviteNotification(
     }
   }
 
-  // SMS sending would go here if phone is provided
+  // SMS sending would go here if phone is provided.
+  // Never log the invite link (it may embed a takeover token) or the phone number.
   if (phone) {
-    console.log(`[Invite] SMS not yet implemented for ${phone}: ${inviteLink}`);
+    console.log(`[Invite] SMS channel not yet implemented`);
   }
 
   return { success: true, inviteLink };
@@ -183,16 +187,14 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Household not found" });
       }
 
-      // All supporters can now invite to expand the support network
-      const canInvite =
-        ctx.user.role === "primary" ||
-        ctx.user.role === "admin" ||
-        ctx.user.role === "supporter";
-
-      if (!canInvite) {
+      // Members may invite others to expand the support network, but NEVER at a
+      // role above their own. A supporter (the role every self-joiner receives)
+      // must not be able to mint a `primary`/`admin` invite — that privilege
+      // escalation was the root of the full-household-takeover vulnerability.
+      if (!canInviteWithRole(ctx.user.role, input.role)) {
         throw new TRPCError({
           code: "FORBIDDEN",
-          message: "You don't have permission to send invites",
+          message: "You can only invite people at or below your own role.",
         });
       }
 
@@ -289,9 +291,11 @@ export const inviteRouter = router({
         });
       }
 
+      // NOTE: the raw token is deliberately NOT returned. Possession of the
+      // token is sufficient to accept the invite, so it must only ever reach the
+      // invited person via the emailed/SMS link — never the API response body.
       return {
         inviteId,
-        token,
         inviteLink: emailResult.inviteLink,
         enhancedMessage,
       };
@@ -338,6 +342,21 @@ export const inviteRouter = router({
       const invite = await db.getInviteByToken(input.token);
       if (!invite) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Invite not found" });
+      }
+
+      // Bind acceptance to the invited identity: the signed-in user's email must
+      // match the address the invite was issued to. Without this, a leaked or
+      // self-minted token could be redeemed by any account (the takeover path).
+      // The client already surfaces this case (AcceptInvite "sign in with the
+      // correct account"); this enforces it server-side.
+      const invitedEmail = invite.invitedEmail?.trim().toLowerCase();
+      const userEmail = ctx.user.email?.trim().toLowerCase();
+      if (!invitedEmail || !userEmail || invitedEmail !== userEmail) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message:
+            "This invitation was sent to a different email address. Please sign in with that address to accept it.",
+        });
       }
 
       if (invite.status !== "sent") {

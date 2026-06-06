@@ -1942,6 +1942,21 @@ async function deleteGiftRegistryItem(itemId) {
 import { TRPCError as TRPCError3 } from "@trpc/server";
 import { z as z2 } from "zod";
 
+// server/roleHelpers.ts
+var ROLE_RANK = {
+  supporter: 1,
+  admin: 2,
+  primary: 3
+};
+function canInviteWithRole(callerRole, targetRole) {
+  const caller = ROLE_RANK[callerRole ?? ""];
+  const target = ROLE_RANK[targetRole ?? ""];
+  if (!caller || !target) {
+    return false;
+  }
+  return target <= caller;
+}
+
 // server/_core/llm.ts
 var ensureArray = (value) => Array.isArray(value) ? value : [value];
 var normalizeContentPart = (part) => {
@@ -2211,7 +2226,7 @@ async function sendInviteNotification(email, phone, householdSlug, householdName
           inviteLink
         };
       }
-      console.log(`[Invite] Email sent successfully to ${email}: ${inviteLink}`, result.data);
+      console.log(`[Invite] Email sent (messageId: ${result.data?.id ?? "n/a"})`);
       return { success: true, inviteLink };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Unknown error";
@@ -2224,7 +2239,7 @@ async function sendInviteNotification(email, phone, householdSlug, householdName
     }
   }
   if (phone) {
-    console.log(`[Invite] SMS not yet implemented for ${phone}: ${inviteLink}`);
+    console.log(`[Invite] SMS channel not yet implemented`);
   }
   return { success: true, inviteLink };
 }
@@ -2247,11 +2262,10 @@ var inviteRouter = router({
     if (!household) {
       throw new TRPCError3({ code: "NOT_FOUND", message: "Household not found" });
     }
-    const canInvite = ctx.user.role === "primary" || ctx.user.role === "admin" || ctx.user.role === "supporter";
-    if (!canInvite) {
+    if (!canInviteWithRole(ctx.user.role, input.role)) {
       throw new TRPCError3({
         code: "FORBIDDEN",
-        message: "You don't have permission to send invites"
+        message: "You can only invite people at or below your own role."
       });
     }
     if (!input.email && !input.phone) {
@@ -2336,7 +2350,6 @@ Make it warm but not overly formal. The person being invited will be a ${input.r
     }
     return {
       inviteId,
-      token,
       inviteLink: emailResult.inviteLink,
       enhancedMessage
     };
@@ -2374,6 +2387,14 @@ Make it warm but not overly formal. The person being invited will be a ${input.r
     const invite = await getInviteByToken(input.token);
     if (!invite) {
       throw new TRPCError3({ code: "NOT_FOUND", message: "Invite not found" });
+    }
+    const invitedEmail = invite.invitedEmail?.trim().toLowerCase();
+    const userEmail = ctx.user.email?.trim().toLowerCase();
+    if (!invitedEmail || !userEmail || invitedEmail !== userEmail) {
+      throw new TRPCError3({
+        code: "FORBIDDEN",
+        message: "This invitation was sent to a different email address. Please sign in with that address to accept it."
+      });
     }
     if (invite.status !== "sent") {
       throw new TRPCError3({ code: "BAD_REQUEST", message: "Invite already used or expired" });

@@ -7,3 +7,8 @@ build/
 .DS_Store
 *.log
 .vercel
+
+# Local-only analysis notes — keep out of the public repo
+SECURITY_AUDIT.md
+security-audit-findings.json
+SECURITY_AUDIT*.md
