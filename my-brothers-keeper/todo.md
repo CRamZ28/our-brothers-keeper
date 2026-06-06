@@ -5,7 +5,7 @@
 - [x] Dashboard with activity feed
 - [x] Needs Board functionality
 - [x] Calendar for events
-- [x] Messages system
+- [x] Family Updates (formerly Messages) system
 - [x] People management
 - [x] Admin tools
 - [x] Settings page with logout functionality

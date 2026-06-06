@@ -18,7 +18,7 @@ Please read [FOUNDER_NOTE.md](FOUNDER_NOTE.md), [VISION.md](VISION.md), and [PHI
 - **Accessibility** — WCAG compliance throughout
 - **Notification reliability** — email reminders are core to the long-term support mission
 - **Mobile experience** — PWA improvements and eventual React Native expansion
-- **DevOps / deployment** — infrastructure for hosting outside Replit
+- **DevOps / deployment** — improving the Vercel serverless deployment, cron reminders, and CI
 - **Documentation** — inline code docs, API docs, onboarding guides
 
 ## What We Won't Merge
@@ -87,6 +87,7 @@ const visibleResources = await filterByVisibility(
   [resource],
   ctx.user.id,
   ctx.user.role,
+  ctx.user.accessTier,
   ctx.user.householdId
 );
 
@@ -155,6 +156,7 @@ const visibleNeeds = await filterByVisibility(
   [need],
   ctx.user.id,
   ctx.user.role,
+  ctx.user.accessTier,
   ctx.user.householdId
 );
 
@@ -177,13 +179,14 @@ We provide optimized helper functions in `server/visibilityHelpers.ts`:
 
 #### For Single Items
 ```typescript
-import { checkContentVisibility } from "../visibilityHelpers";
+import { checkContentVisibility } from "./visibilityHelpers";
 
 const canView = await checkContentVisibility(
   ctx.user.id,
   ctx.user.role,
+  ctx.user.accessTier,
   ctx.user.householdId,
-  event // must have: visibilityScope, visibilityGroupId, customUserIds
+  event // must have: visibilityScope, visibilityGroupIds, customUserIds
 );
 
 if (!canView) {
@@ -193,13 +196,14 @@ if (!canView) {
 
 #### For Lists (Performance Optimized)
 ```typescript
-import { filterByVisibility } from "../visibilityHelpers";
+import { filterByVisibility } from "./visibilityHelpers";
 
 // Automatically caches user groups to avoid N+1 queries
 const visibleNeeds = await filterByVisibility(
   allNeeds,
   ctx.user.id,
   ctx.user.role,
+  ctx.user.accessTier,
   ctx.user.householdId
 );
 
@@ -207,6 +211,8 @@ return visibleNeeds; // Only returns items user can see
 ```
 
 ### Visibility Scopes
+
+Visibility is two-dimensional: a per-content **scope** *and* a per-user **access tier**.
 
 Every content type must support these visibility scopes:
 
@@ -216,7 +222,13 @@ Every content type must support these visibility scopes:
 - `group` - Only visible to members of specific group (+ primary/admin)
 - `custom` - Only visible to specific users (+ primary/admin)
 
-**Note:** Primary and Admin roles can ALWAYS see all content, regardless of visibility scope.
+In addition, each supporter has an **access tier** that gates visibility before scope is even evaluated:
+
+- `family` - Trusted inner circle; sees content per the scope rules above
+- `friend` - Sees content per the scope rules above
+- `community` - Blocked by default; only sees `custom`-scoped content where they're explicitly listed in `customUserIds`
+
+**Note:** Primary and Admin roles can ALWAYS see all content, regardless of visibility scope or access tier.
 
 ### Database Schema for Visibility
 
@@ -228,9 +240,9 @@ export const yourTable = pgTable("your_table", {
   householdId: integer("household_id").notNull().references(() => households.id),
   
   // Required visibility fields
-  visibilityScope: varchar("visibility_scope").notNull().default("all_supporters"),
-  visibilityGroupId: integer("visibility_group_id").references(() => groups.id),
-  customUserIds: text("custom_user_ids").array(),
+  visibilityScope: visibilityScopeEnum("visibility_scope").notNull().default("all_supporters"),
+  visibilityGroupIds: integer("visibility_group_ids").array(),
+  customUserIds: jsonb("custom_user_ids").$type<string[]>(),
   
   // Other fields...
 });
@@ -246,13 +258,14 @@ Add tests to `server/__tests__/visibility-security.test.ts` for any new visibili
 it("should HIDE group-restricted content from unauthorized supporters", async () => {
   const content = {
     visibilityScope: "group",
-    visibilityGroupId: 5,
+    visibilityGroupIds: [5],
     customUserIds: null,
   };
 
   const canView = await checkContentVisibility(
     "unauthorized-supporter",
     "supporter",
+    "friend",
     1,
     content
   );
@@ -331,7 +344,7 @@ if (!event || event.householdId !== ctx.user.householdId) {
 }
 
 // Add visibility check
-const visibleEvents = await filterByVisibility([event], ctx.user.id, ctx.user.role, ctx.user.householdId);
+const visibleEvents = await filterByVisibility([event], ctx.user.id, ctx.user.role, ctx.user.accessTier, ctx.user.householdId);
 if (visibleEvents.length === 0) {
   throw new TRPCError({ code: "NOT_FOUND" });
 }
@@ -348,7 +361,7 @@ if (ctx.user.role !== "admin") {
 ```typescript
 // Inefficient: Calls getUserGroups() for EVERY item
 for (const need of needs) {
-  const canView = await checkContentVisibility(ctx.user.id, ctx.user.role, ctx.user.householdId, need);
+  const canView = await checkContentVisibility(ctx.user.id, ctx.user.role, ctx.user.accessTier, ctx.user.householdId, need);
   // ... N database calls!
 }
 ```
@@ -356,7 +369,7 @@ for (const need of needs) {
 **Fix:**
 ```typescript
 // Efficient: Calls getUserGroups() ONCE, caches results
-const visibleNeeds = await filterByVisibility(needs, ctx.user.id, ctx.user.role, ctx.user.householdId);
+const visibleNeeds = await filterByVisibility(needs, ctx.user.id, ctx.user.role, ctx.user.accessTier, ctx.user.householdId);
 // Only 1 database call!
 ```
 

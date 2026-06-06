@@ -75,6 +75,7 @@ pnpm exec playwright test --debug
 my-brothers-keeper/
 ├── tests/
 │   ├── e2e/
+│   │   ├── auth.setup.ts                   # Auth setup (expects /api/test/login — not yet implemented)
 │   │   ├── 01-authentication.spec.ts      # Login/auth flows
 │   │   ├── 02-needs-board.spec.ts         # Needs CRUD operations
 │   │   ├── 03-events-calendar.spec.ts     # Events CRUD operations
@@ -93,23 +94,21 @@ my-brothers-keeper/
 
 ### Authentication
 
-✅ **Authentication is now fully configured!**
+⚠️ **Automated test login is not yet wired up.**
 
-The test suite uses **automated authentication** via a test-only endpoint that creates authenticated sessions without requiring OAuth flow.
+The E2E suite is designed to authenticate via a test-only endpoint that would create authenticated sessions without requiring the email magic-link flow. That endpoint does **not exist yet** — `tests/e2e/auth.setup.ts` expects a `/api/test/login` endpoint that must still be added before the E2E suite can authenticate.
 
-**How it works:**
+**How it's intended to work (once the endpoint exists):**
 
-1. **Test Auth Endpoint** (`/api/test/login`): Development-only endpoint that creates valid sessions
-2. **Auth Setup** (`tests/auth.setup.ts`): Runs before all tests, creates an admin user session
+1. **Test Auth Endpoint** (`/api/test/login`): Development-only endpoint that creates valid sessions — **not yet implemented**
+2. **Auth Setup** (`tests/e2e/auth.setup.ts`): Runs before all tests, creates an admin user session
 3. **Storage State** (`playwright/.auth/user.json`): Saved authentication state reused across all tests
 4. **Test User**: Created with admin privileges for full feature access
 
-**The setup runs automatically** when you run tests. You don't need to do anything!
-
-**Security:**
-- Test auth endpoints are **only enabled in development**
-- Automatically disabled in production (see `server/testAuth.ts`)
-- Creates real sessions in the database, just like regular auth
+**The real auth stack:**
+- Production/dev auth is **Auth.js** (`@auth/express`) using email magic links sent via **Resend** (`server/auth.ts`, mounted at `/api/auth/*`)
+- Sessions are Auth.js database sessions via the Drizzle adapter (`sessions` table)
+- The planned test-login endpoint must create a real session in the database, just like regular auth, but bypass the magic-link email step
 
 ### Test Data
 
@@ -174,7 +173,7 @@ This opens an interactive report showing:
 ### Authentication failures
 
 - **Solution**: Set up auth as described above
-- Verify Replit Auth is configured correctly
+- Verify the Auth.js stack is configured (`AUTH_SECRET`, `RESEND_API_KEY`, `DATABASE_URL` set; see `server/auth.ts`), and note the E2E suite cannot authenticate until the `/api/test/login` endpoint is implemented
 
 ### Element not found errors
 
@@ -224,7 +223,7 @@ To run tests in CI/CD pipelines:
   run: pnpm test:e2e
   
 - name: Upload test results
-  uses: actions/upload-artifact@v3
+  uses: actions/upload-artifact@v4
   if: always()
   with:
     name: playwright-report

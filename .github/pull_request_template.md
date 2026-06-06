@@ -15,8 +15,8 @@
      Examples:
      - [ ] Ran `pnpm dev` locally and signed in successfully
      - [ ] Created a need at "Friend" tier and confirmed Community-tier user can't see it
-     - [ ] Added unit test in `tests/visibility.spec.ts`
-     - [ ] Manually triggered /api/cron/reminders with the CRON_SECRET header  -->
+     - [ ] Added a vitest unit test in `server/__tests__/visibility-security.test.ts` (or a Playwright e2e spec in `tests/e2e/`)
+     - [ ] Manually triggered /api/cron/reminders with an `Authorization: Bearer $CRON_SECRET` header  -->
 
 ## Screenshots / Recordings
 
@@ -27,5 +27,5 @@
 
 - [ ] I read [PHILOSOPHY.md](my-brothers-keeper/PHILOSOPHY.md) and this change aligns with it
 - [ ] I followed the Five-Step Security Pattern in `server/visibilityHelpers.ts` for any new endpoints that touch private data
-- [ ] No new dependencies on Replit-specific services (we're trying to remove these, not add more)
+- [ ] No new external services added without discussion (current stack: Vercel hosting/Blob/Cron, Neon Postgres, Auth.js + Resend)
 - [ ] No console.log / debug statements left behind

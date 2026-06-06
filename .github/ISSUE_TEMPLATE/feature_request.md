@@ -22,7 +22,7 @@ labels: enhancement
 ## Alignment with project philosophy
 
 <!-- OBK is intentionally not social media. Before submitting, please skim
-     PHILOSOPHY.md and confirm this feature respects:
+     my-brothers-keeper/PHILOSOPHY.md and confirm this feature respects:
      - No engagement mechanics (no feeds, no streaks, no notifications-for-the-sake-of)
      - The three-tier visibility system (Family / Friend / Community)
      - Privacy by default — additive features should never widen access by default

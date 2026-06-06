@@ -1,6 +1,6 @@
 # Our Brother's Keeper — Deployment Guide
 
-This document explains everything you need to know to run this app outside of Replit. The codebase is currently written to run on Replit but the core app is fully portable — two pieces of infrastructure are Replit-specific and need to be swapped when self-hosting.
+This document explains how the app is deployed and how to run it locally. The app is live on **[Vercel](https://vercel.com)** at [obkapp.com](https://obkapp.com), with the project root set to `my-brothers-keeper` and auto-deploys from the `main` branch. The Express + tRPC backend runs as a single serverless function (`api/index.js`, bundled from `server/_vercel/handler.ts`), backed by Neon Postgres (Drizzle ORM), Auth.js email magic links via Resend, and Vercel Blob for media.
 
 ---
 
@@ -11,7 +11,7 @@ This document explains everything you need to know to run this app outside of Re
 | Frontend | React + Vite + TypeScript + Tailwind CSS |
 | Backend | Express.js + tRPC |
 | Database | PostgreSQL via [Neon](https://neon.tech) (Drizzle ORM) |
-| Auth | Replit Auth / OpenID Connect (Passport.js) |
+| Auth | Auth.js (`@auth/express`) — email magic links via Resend |
 | File Storage | Vercel Blob (direct browser-to-Blob uploads) |
 | Email | Resend |
 | Package Manager | pnpm (workspaces) |
@@ -60,34 +60,18 @@ pnpm start   # Runs dist/index.js
 
 ---
 
-## Replit-Specific Code — What to Replace When Self-Hosting
+## Authentication & File Storage
 
-### 1. Authentication (`server/replitAuth.ts`)
+### 1. Authentication (`server/auth.ts`)
 
-The app currently uses **Replit Auth** (OpenID Connect) via Passport.js. On Replit, the following env vars are injected automatically:
+The app uses **Auth.js** (`@auth/express`) for passwordless **email magic-link** sign-in via Resend. The handler is mounted at `/api/auth/*` (see `server/_core/app.ts`), so Auth.js owns `/api/auth/signin`, `/api/auth/callback/*`, `/api/auth/signout`, `/api/auth/session`, etc. Sessions are database sessions persisted through the Drizzle adapter (`sessions` table).
 
-- `REPLIT_DOMAINS` — the allowed domain(s) for OIDC redirect
-- `REPL_ID` — used as the OIDC client ID
-- `ISSUER_URL` — defaults to `https://replit.com/oidc`
+Two helpers from `server/auth.ts` guard the rest of the app:
 
-**To self-host**, you have two options:
+- `requireAuth` — Express middleware that returns `401` unless the request carries a valid Auth.js session.
+- `getSessionUserId` — used by the tRPC context to resolve the current user id (or `null`) per request.
 
-**Option A — Replace with a standard OIDC provider** (recommended):
-Swap `server/replitAuth.ts` with any Passport.js-compatible OIDC strategy (Google, Auth0, Clerk, etc.). The `setupAuth()` function is called once in `server/_core/index.ts`, and `isAuthenticated` is the middleware used on protected routes.
-
-**Option B — Replace with username/password auth**:
-Implement a local Passport strategy and issue JWTs or session cookies. Update `server/replitAuth.ts` accordingly.
-
-The user object shape expected by the app (see `shared/_core/` and `drizzle/schema.ts`):
-```ts
-{
-  id: string,         // unique user ID (from OIDC sub claim)
-  email: string,
-  firstName: string,
-  lastName: string,
-  profileImageUrl: string | null
-}
-```
+Required env vars: `AUTH_SECRET` (generate with `openssl rand -hex 32`), `RESEND_API_KEY`, and `DATABASE_URL`. Optionally set `AUTH_EMAIL_FROM` to override the magic-link sender address.
 
 ---
 
@@ -117,10 +101,10 @@ pnpm db:push
 
 Set `DATABASE_URL` in your `.env` to a full PostgreSQL connection string:
 ```
-DATABASQL_URL=postgresql://user:password@host:5432/dbname
+DATABASE_URL=postgresql://user:password@host:5432/dbname
 ```
 
-Sessions are stored in PostgreSQL via `connect-pg-simple` — no Redis needed.
+Sessions are Auth.js database sessions, persisted in PostgreSQL through the Drizzle adapter (`sessions` table) — no Redis needed.
 
 ---
 
@@ -141,39 +125,37 @@ See `.env.example` for the full annotated list. Required for production:
 | `NODE_ENV` | Yes | Set to `production` |
 | `PORT` | Yes | Default: `5000` |
 | `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `SESSION_SECRET` | Yes | Random string, keep secret |
-| `RESEND_API_KEY` | Yes | From resend.com |
-| `REPLIT_DOMAINS` | Replit only | Auto-injected by Replit |
-| `REPL_ID` | Replit only | Auto-injected by Replit |
-| `ISSUER_URL` | Replit only | `https://replit.com/oidc` |
+| `AUTH_SECRET` | Yes | Random string for Auth.js (`openssl rand -hex 32`), keep secret |
+| `RESEND_API_KEY` | Yes | From resend.com — sends magic-link + notification email |
+| `CRON_SECRET` | Yes (prod) | Authenticates the Vercel Cron call to `/api/cron/reminders` via `Authorization: Bearer <CRON_SECRET>` |
 | `BLOB_READ_WRITE_TOKEN` | Yes (prod) | Auto-injected when a Vercel Blob store is connected to the project; powers photo/video uploads |
+| `AUTH_EMAIL_FROM` | Optional | Overrides the magic-link sender address |
 
 ---
 
-## Hosting Recommendations (when ready)
+## Deployment (Vercel)
 
-| Platform | Notes |
-|---|---|
-| **Railway** | Easiest — supports Node + Postgres in one project, automatic deploys from GitHub |
-| **Render** | Similar to Railway, free tier available |
-| **Fly.io** | More control, good for persistent workloads |
-| **DigitalOcean App Platform** | Simple, managed Postgres add-on available |
-| **VPS (DigitalOcean/Linode)** | Full control, requires manual setup (Nginx, PM2, etc.) |
+The app is deployed on **Vercel** and live at [obkapp.com](https://obkapp.com).
 
-> Regardless of platform, you will need to replace `replitAuth.ts` and `objectStorage.ts` before the app will run outside Replit.
+- **Project root:** `my-brothers-keeper`.
+- **Auto-deploy:** every push to `main` triggers a production deploy.
+- **Build** (`vercel.json`): Vite builds the frontend to `dist/public`, and esbuild bundles `server/_vercel/handler.ts` into `api/index.js` — the whole Express + tRPC backend runs as one serverless function. Requests to `/api/*` and `/objects/*` rewrite to it; everything else serves the SPA `index.html`.
+- **Environment:** set the variables from the table above in the Vercel project settings. Connecting a Vercel Blob store auto-injects `BLOB_READ_WRITE_TOKEN`.
+- **Reminders:** a Vercel Cron entry in `vercel.json` hits `/api/cron/reminders` on schedule `0 0 * * *` (once daily, the max cadence on the Hobby plan). The route is protected by `CRON_SECRET` (`Authorization: Bearer <CRON_SECRET>`).
+
+> Self-hosting on a generic Node host (Railway, Render, Fly.io, a VPS, etc.) is possible since the core app is portable — you'd run `pnpm build` / `pnpm start` instead of the serverless bundle and provide your own scheduler for the reminders job — but Vercel is the supported deployment.
 
 ---
 
-## Data Migration
+## Backups
 
-When you're ready to move production data off Replit:
-
-1. **Database**: Export from Replit's PostgreSQL using `pg_dump`:
+1. **Database**: Dump the Neon Postgres database with `pg_dump`:
    ```bash
    pg_dump "$DATABASE_URL" > backup.sql
+   # restore into another database:
    psql "$NEW_DATABASE_URL" < backup.sql
    ```
-2. **Uploaded files**: New uploads already live in Vercel Blob and are referenced by their full CDN URL in the database. Any legacy `/objects/...` references from the Replit era point to the old (now-gone) GCS bucket and will 404 — re-upload those few assets through the app if needed.
+2. **Uploaded files**: Media lives in **Vercel Blob** and is referenced by its full CDN URL in the database. Blob objects persist independently of deploys; if you migrate stores, re-point or re-upload assets as needed.
 
 ---
 
@@ -183,8 +165,8 @@ When you're ready to move production data off Replit:
 my-brothers-keeper/
   client/          # React frontend (Vite)
   server/          # Express + tRPC backend
-    _core/         # App bootstrap (index.ts), auth, context
-    drizzle/       # Database schema + migrations folder
+    _core/         # App bootstrap (app.ts), auth wiring, tRPC context
+    _vercel/       # Serverless entry (handler.ts → bundled to api/index.js)
     *.Router.ts    # tRPC/Express routers (one per feature)
     auth.ts        # Auth.js (email magic links via Resend)
     objectStorage.ts # Vercel Blob wrapper (server-side storage)

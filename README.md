@@ -162,7 +162,7 @@ pnpm dev                  # Starts at http://localhost:5000
 
 ## Deploying to Vercel
 
-This repo is configured to deploy on Vercel. The frontend builds to a static bundle served from Vercel's CDN, the Express + tRPC API runs as a serverless function under `/api/*`, and the 15-minute reminder job runs as a Vercel Cron.
+This repo is configured to deploy on Vercel. The frontend builds to a static bundle served from Vercel's CDN, the Express + tRPC API runs as a serverless function under `/api/*`, and the reminder job runs as a Vercel Cron (currently once daily on the Hobby plan — see Known limitations below).
 
 ### One-time setup
 
@@ -180,7 +180,7 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 | `AUTH_SECRET` | Generate a random string | `openssl rand -hex 32` — used by Auth.js to encrypt session cookies |
 | `CRON_SECRET` | Generate a random string | `openssl rand -hex 32` — authenticates Vercel Cron when hitting `/api/cron/reminders` |
 | `RESEND_API_KEY` | resend.com dashboard | Sends magic-link sign-in emails and notification emails |
-| `BLOB_READ_WRITE_TOKEN` | Auto-injected | Created when you connect a Vercel Blob store (step 4 below). Powers photo/video uploads — no manual entry needed |
+| `BLOB_READ_WRITE_TOKEN` | Auto-injected | Created when you connect a Vercel Blob store (step 4 above). Powers photo/video uploads — no manual entry needed |
 | `AUTH_EMAIL_FROM` | _optional_ | From-address for magic-link emails. Defaults to `Our Brother's Keeper <notifications@obkapp.com>` — must be a verified Resend sender |
 | `NODE_ENV` | `production` | |
 

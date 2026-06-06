@@ -10,8 +10,7 @@
   - Event reminders
   - Updates from family
   - Configurable per user in notification preferences
-- **Email Notifications**
-  - Digest options (immediate, daily, weekly)
+- **Email Notifications** — *implemented (per-user preferences + immediate/daily/weekly digest via `server/emailService.ts` + `notificationRouter.ts`). Remaining work below:*
   - Welcome emails for new supporters
   - Thank you emails after meal deliveries
   - Monthly summary reports
@@ -37,7 +36,7 @@
   - Upload and organize photos by event/date
   - Tagging and search capabilities
   - Privacy controls per album
-- **Memorial Page/Tribute Wall**
+- **Memorial Page/Tribute Wall** — *implemented (memory wall + memorial settings/slideshow). Remaining work = enhancements:*
   - Share memories and stories
   - Condolences and messages of support
   - Timeline of special moments
@@ -67,10 +66,9 @@
 
 ### 5. Task Automation & Reminders
 **Purpose:** Reduce administrative burden
-- **Automated Reminders**
-  - Email/SMS reminder 24hrs before meal delivery
-  - Event RSVP reminders
-  - Incomplete need claims follow-ups
+- **Automated Reminders** — *implemented (Vercel Cron + `server/reminderProcessor.ts` send email reminders for meal deliveries, events, and need follow-ups). Remaining work:*
+  - SMS reminder channel (currently email only)
+  - Configurable lead times (currently a fixed window, not user-adjustable)
 - **Recurring Needs**
   - Set up weekly/monthly recurring tasks
   - Auto-generate needs based on schedule
@@ -82,10 +80,8 @@
 
 ### 6. Mobile App
 **Purpose:** Increase accessibility and engagement
-- **Progressive Web App (PWA)**
-  - Install on mobile home screen
-  - Offline functionality
-  - Push notifications
+- **Progressive Web App (PWA)** — *implemented (install + offline caching via `vite.config.ts` VitePWA/Workbox). Remaining work:*
+  - Web Push notifications (push preferences exist in the schema, but delivery is not yet wired up — no `web-push`/VAPID)
 - **Native Apps** (Future consideration)
   - iOS and Android apps
   - Better performance and native features
@@ -149,9 +145,7 @@
 - **Fund Allocation**
   - Track how funds are used
   - Transparency reports for supporters
-- **Gift Registry Integration**
-  - Link to Amazon/Target wish lists
-  - Mark items as purchased
+- **Gift Registry Integration** — *implemented (`server/giftRegistryRouter.ts` + `GiftRegistry.tsx`): external wishlist URLs and mark-as-purchased both ship today. No remaining work in this bullet.*
 
 ### 12. Data Management
 **Purpose:** Empower users with their data
@@ -183,9 +177,8 @@
 
 ### 14. Dark Mode
 **Purpose:** Reduce eye strain and improve aesthetics
-- **Theme Toggle**
-  - Light/dark/auto (system preference)
-  - Preserve user preference
+- **Theme Toggle** — *implemented (light/dark toggle with persistence via `ThemeContext.tsx`). Remaining work:*
+  - "Auto" mode that follows the OS/system preference (currently only explicit light/dark)
 - **Custom Theme Builder**
   - Allow customization of colors
   - Household branding options
@@ -206,10 +199,10 @@
 ## Technical Improvements
 
 ### 16. Testing & Quality Assurance
-- **Automated Testing**
-  - Unit tests for critical functions
-  - Integration tests for API routes
-  - End-to-end tests for user flows
+- **Automated Testing** — *implemented (Vitest suites in `server/__tests__/`, Playwright E2E in `tests/e2e/`). Remaining work = expand coverage:*
+  - More unit tests across critical functions
+  - Broader integration coverage of API routes
+  - Additional end-to-end flows beyond the current suite
 - **Continuous Integration**
   - Automated test runs on pull requests
   - Code quality checks (linting, formatting)
@@ -233,9 +226,9 @@
 - **Security Audit**
   - Third-party penetration testing
   - Vulnerability scanning
-- **Rate Limiting**
-  - Prevent abuse and DDoS attacks
-  - API throttling per user
+- **Rate Limiting** — *implemented for the sign-in channel (Upstash Redis, `server/rateLimit.ts`). Remaining work = extend beyond auth:*
+  - Per-user/per-route throttling on the broader API surface
+  - Broader abuse/DDoS mitigation
 - **Two-Factor Authentication**
   - Optional 2FA for admins
   - SMS or authenticator app support
@@ -245,10 +238,9 @@
   - Compliance reporting
 
 ### 19. Monitoring & Logging
-- **Error Tracking**
-  - Sentry or similar service
-  - Real-time error alerts
-  - Stack trace analysis
+- **Error Tracking** — *implemented (Sentry initialized in `server/_core/app.ts` with HTTP/Express integrations + tracing). Remaining work:*
+  - Alert routing (notify the right people on real-time errors)
+  - Tune trace sampling and span coverage for performance tracing
 - **Performance Monitoring**
   - APM (Application Performance Monitoring)
   - Database query timing
@@ -332,7 +324,8 @@
 ### Immediate (Next Sprint)
 1. Meal train day scheduler enhancements (testing & refinement)
 2. Group CRUD testing and refinement
-3. Email notification foundation (simple email on key events)
+
+*(Email notifications already shipped — per-user prefs + immediate/daily/weekly digest. Remaining notification work is the SMS channel, tracked under Short-term below.)*
 
 ### Short-term (1-3 months)
 1. SMS notifications via Twilio
@@ -362,7 +355,7 @@
 - Add comprehensive test coverage across codebase
 - Optimize database queries (add indexes, analyze slow queries)
 - Implement proper error boundaries in React components
-- Add API rate limiting
+- Extend rate limiting beyond the sign-in channel (Upstash auth limiter already in `server/rateLimit.ts`) to the broader API surface
 - Set up proper logging and monitoring infrastructure
 
 **Quick Wins (Low Effort, High Impact):**

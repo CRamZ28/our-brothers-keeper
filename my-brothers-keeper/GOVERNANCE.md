@@ -51,7 +51,7 @@ If this project is ever acquired, forked for commercial use, or integrated into 
 
 ## Maintainers
 
-**Current maintainer:** Caleb Ramsey (@cramsey28)
+**Current maintainer:** Caleb Ramsey (@CRamZ28)
 
 As the contributor base grows, additional maintainers may be added. Maintainers are expected to:
 
