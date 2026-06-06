@@ -3,6 +3,7 @@ import express, { type Express } from "express";
 import helmet from "helmet";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { authHandler } from "../auth";
+import { authRateLimit } from "../rateLimit";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { Readable } from "stream";
@@ -60,7 +61,7 @@ export async function createApp(): Promise<Express> {
   });
 
   // Auth.js handles /api/auth/signin, /api/auth/callback/*, /api/auth/signout, /api/auth/session, etc.
-  app.use("/api/auth/*", authHandler);
+  app.use("/api/auth/*", authRateLimit, authHandler);
 
   app.use("/api", uploadRouter);
   app.use("/uploads", express.static("uploads"));

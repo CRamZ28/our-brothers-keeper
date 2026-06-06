@@ -747,6 +747,63 @@ async function getSessionUserId(req) {
   }
 }
 
+// server/rateLimit.ts
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+var limiter;
+function getLimiter() {
+  if (limiter !== void 0) {
+    return limiter;
+  }
+  if (!process.env.UPSTASH_REDIS_REST_URL || !process.env.UPSTASH_REDIS_REST_TOKEN) {
+    limiter = null;
+    return null;
+  }
+  try {
+    limiter = new Ratelimit({
+      redis: Redis.fromEnv(),
+      // 5 sign-in attempts per identifier per 10 minutes.
+      limiter: Ratelimit.slidingWindow(5, "10 m"),
+      prefix: "rl:auth",
+      analytics: false
+    });
+  } catch (error) {
+    console.error(
+      "[rateLimit] init failed (disabling):",
+      error instanceof Error ? error.message : String(error)
+    );
+    limiter = null;
+  }
+  return limiter;
+}
+async function authRateLimit(req, res, next) {
+  if (req.method !== "POST") {
+    return next();
+  }
+  const rl = getLimiter();
+  if (!rl) {
+    return next();
+  }
+  try {
+    const fwd = req.headers["x-forwarded-for"];
+    const ip = (Array.isArray(fwd) ? fwd[0] : fwd || req.ip || "unknown").split(",")[0].trim();
+    const email = String(req.body?.email ?? "").toLowerCase().trim();
+    const identifier = email ? `email:${email}` : `ip:${ip}`;
+    const { success } = await rl.limit(identifier);
+    if (!success) {
+      return res.status(429).json({
+        error: "Too many sign-in attempts. Please wait a few minutes and try again."
+      });
+    }
+  } catch (error) {
+    console.error(
+      "[rateLimit] check failed (allowing):",
+      error instanceof Error ? error.message : String(error)
+    );
+  }
+  return next();
+}
+
 // shared/const.ts
 var COOKIE_NAME = "app_session_id";
 var ONE_YEAR_MS = 1e3 * 60 * 60 * 24 * 365;
@@ -6991,7 +7048,7 @@ async function createApp() {
       res.status(500).json({ error: "Failed" });
     }
   });
-  app.use("/api/auth/*", authHandler);
+  app.use("/api/auth/*", authRateLimit, authHandler);
   app.use("/api", uploadRouter_default);
   app.use("/uploads", express.static("uploads"));
   app.get("/objects/:objectPath(*)", async (req, res) => {
