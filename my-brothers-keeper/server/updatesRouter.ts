@@ -71,6 +71,15 @@ export const updatesRouter = router({
       return [];
     }
 
+    // Family updates are intimate content. Per the access-tier model, the
+    // community tier (which anyone can self-join) sees public content only, so
+    // hide updates from community-tier members. Friend/family tiers and
+    // admins/primary see them.
+    const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+    if (!isPrivileged && ctx.user.accessTier === "community") {
+      return [];
+    }
+
     return await db.getUpdatesByHousehold(ctx.user.householdId);
   }),
 

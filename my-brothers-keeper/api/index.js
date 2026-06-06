@@ -3367,6 +3367,10 @@ var updatesRouter = router({
     if (!ctx.user.householdId) {
       return [];
     }
+    const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+    if (!isPrivileged && ctx.user.accessTier === "community") {
+      return [];
+    }
     return await getUpdatesByHousehold(ctx.user.householdId);
   }),
   // Delete update
@@ -5144,6 +5148,10 @@ var memoryWallRouter = router({
     if (!ctx.user.householdId) {
       return [];
     }
+    const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+    if (!isPrivileged && ctx.user.accessTier === "community") {
+      return [];
+    }
     return await getMemoryWallEntries(ctx.user.householdId, input?.type);
   }),
   // Delete memory wall entry
@@ -6201,6 +6209,9 @@ var appRouter = router({
       if (!ctx.user.householdId) {
         return [];
       }
+      if (ctx.user.role !== "primary" && ctx.user.role !== "admin") {
+        return [];
+      }
       return await getRecentActivity(ctx.user.householdId, 20);
     }),
     // Allow users to join a household with a requested tier
@@ -6346,7 +6357,12 @@ var appRouter = router({
       if (!ctx.user.householdId) {
         return [];
       }
-      return await getUsersByHousehold(ctx.user.householdId);
+      const members = await getUsersByHousehold(ctx.user.householdId);
+      const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+      if (isPrivileged) {
+        return members;
+      }
+      return members.map((m) => ({ ...m, email: null, phone: null }));
     }),
     // Update user profile (name, phone, profile picture)
     updateProfile: protectedProcedure.input(

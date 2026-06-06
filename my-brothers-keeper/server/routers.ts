@@ -369,6 +369,11 @@ export const appRouter = router({
       if (!ctx.user.householdId) {
         return [];
       }
+      // The activity feed exposes actor names and actions across the household;
+      // limit it to admins/primary.
+      if (ctx.user.role !== "primary" && ctx.user.role !== "admin") {
+        return [];
+      }
       return await db.getRecentActivity(ctx.user.householdId, 20);
     }),
 
@@ -561,7 +566,16 @@ export const appRouter = router({
       if (!ctx.user.householdId) {
         return [];
       }
-      return await db.getUsersByHousehold(ctx.user.householdId);
+      const members = await db.getUsersByHousehold(ctx.user.householdId);
+
+      // Only admins/primary receive members' contact PII (email/phone). Everyone
+      // else gets the roster with those fields stripped, so a member cannot
+      // harvest the household's full contact list.
+      const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+      if (isPrivileged) {
+        return members;
+      }
+      return members.map((m) => ({ ...m, email: null, phone: null }));
     }),
 
     // Update user profile (name, phone, profile picture)

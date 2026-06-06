@@ -61,6 +61,14 @@ export const memoryWallRouter = router({
         return [];
       }
 
+      // The memory wall holds intimate content (children's photos, prayers).
+      // Per the access-tier model, hide it from community-tier members (who can
+      // self-join); friend/family tiers and admins/primary see it.
+      const isPrivileged = ctx.user.role === "primary" || ctx.user.role === "admin";
+      if (!isPrivileged && ctx.user.accessTier === "community") {
+        return [];
+      }
+
       return await db.getMemoryWallEntries(ctx.user.householdId, input?.type);
     }),
 
