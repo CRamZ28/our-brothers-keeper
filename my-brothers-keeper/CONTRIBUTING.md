@@ -230,6 +230,8 @@ In addition, each supporter has an **access tier** that gates visibility before 
 
 **Note:** Primary and Admin roles can ALWAYS see all content, regardless of visibility scope or access tier.
 
+**Member status gate:** Separate from scope and access tier, each member has a `status` (`active` / `pending` / `blocked`). `protectedProcedure` lets pending (not-yet-approved) members READ (reads stay tier-gated) but blocks them from **mutations** until a household admin approves them — except the onboarding steps (`household.create` / `household.joinWithTier`, `invite.accept`, `user.updateProfile`). Keep new mutating endpoints on `protectedProcedure` so this gate applies automatically; use `adminProcedure` for admin-only actions (it also requires `active`).
+
 ### Database Schema for Visibility
 
 When adding a new content type, include these fields:

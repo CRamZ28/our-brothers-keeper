@@ -182,6 +182,7 @@ This repo is configured to deploy on Vercel. The frontend builds to a static bun
 | `RESEND_API_KEY` | resend.com dashboard | Sends magic-link sign-in emails and notification emails |
 | `BLOB_READ_WRITE_TOKEN` | Auto-injected | Created when you connect a Vercel Blob store (step 4 above). Powers photo/video uploads — no manual entry needed |
 | `AUTH_EMAIL_FROM` | _optional_ | From-address for magic-link emails. Defaults to `Our Brother's Keeper <notifications@obkapp.com>` — must be a verified Resend sender |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | _optional_ | Connect an Upstash Redis store (Storage → Marketplace) to enable sign-in rate limiting; it's dormant (fail-open) until set |
 | `NODE_ENV` | `production` | |
 
 ### Known limitations on Vercel

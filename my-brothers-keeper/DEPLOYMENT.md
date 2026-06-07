@@ -86,7 +86,11 @@ File storage uses **[Vercel Blob](https://vercel.com/docs/vercel-blob)**. This w
 
 **Setup:** In the Vercel dashboard, open the **Storage** tab, create a **Blob** store, and connect it to the project. This injects `BLOB_READ_WRITE_TOKEN` automatically — that is the only required configuration. For local dev, run `vercel env pull .env` (or paste the token into `.env`); uploads fail without it.
 
-> **Note:** `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner` are still listed in `package.json` from an earlier, abandoned S3 plan. They are unused and can be removed.
+---
+
+## Rate limiting (optional)
+
+Magic-link sign-in is throttled per email/IP (`server/rateLimit.ts`, via `@upstash/ratelimit`) to prevent inbox-bombing. It is **fail-open**: sign-in works normally even when it is not configured, and the limiter activates automatically once an Upstash Redis store is connected. To enable it, add an **Upstash for Redis** store from Vercel → **Storage** → **Marketplace**; that injects `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`.
 
 ---
 
@@ -130,6 +134,8 @@ See `.env.example` for the full annotated list. Required for production:
 | `CRON_SECRET` | Yes (prod) | Authenticates the Vercel Cron call to `/api/cron/reminders` via `Authorization: Bearer <CRON_SECRET>` |
 | `BLOB_READ_WRITE_TOKEN` | Yes (prod) | Auto-injected when a Vercel Blob store is connected to the project; powers photo/video uploads |
 | `AUTH_EMAIL_FROM` | Optional | Overrides the magic-link sender address |
+| `UPSTASH_REDIS_REST_URL` | Optional | Enables sign-in rate limiting. Auto-injected when an Upstash Redis store is connected (Vercel → Storage → Marketplace). Dormant/fail-open until set |
+| `UPSTASH_REDIS_REST_TOKEN` | Optional | Paired token for the Upstash Redis rate limiter |
 
 ---
 
