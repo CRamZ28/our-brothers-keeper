@@ -239,17 +239,14 @@ export const appRouter = router({
               });
             }
 
-            console.log(
-              `[Household] Primary invite email sent to ${input.primaryName} (${input.primaryEmail})`
-            );
+            console.log(`[Household] Primary invite email sent`);
           }
         }
 
         // Handle additional admin invites
         if (input.additionalAdmins && input.additionalAdmins.length > 0) {
           console.log(
-            `[Household] Need to invite ${input.additionalAdmins.length} additional admins:`,
-            input.additionalAdmins.map((a) => a.email).join(", ")
+            `[Household] Queued ${input.additionalAdmins.length} additional admin invite(s)`
           );
           // TODO: Create invites for additional admins
           // This will be handled by the invite system

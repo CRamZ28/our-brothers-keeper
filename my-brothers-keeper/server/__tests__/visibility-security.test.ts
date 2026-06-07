@@ -4,13 +4,19 @@ import { checkContentVisibility, filterByVisibility } from "../visibilityHelpers
 
 /**
  * Security tests for visibility filtering implementation
- * 
+ *
  * These tests ensure that:
  * 1. Supporters can ONLY see content they're authorized to view
  * 2. Group-restricted content is COMPLETELY HIDDEN from unauthorized supporters
  * 3. Cross-household content is NEVER visible
  * 4. Custom visibility works correctly
- * 
+ *
+ * Helper signatures (server/visibilityHelpers.ts):
+ *   checkContentVisibility(userId, userRole, userAccessTier, householdId, content)
+ *   filterByVisibility(items, userId, userRole, userAccessTier, householdId)
+ * Supporter-tier tests use accessTier "friend" so they exercise the per-content
+ * scope logic (community tier is blocked before scope is even evaluated).
+ *
  * CRITICAL: These tests prevent security regressions that could leak private information
  */
 
@@ -19,19 +25,21 @@ describe("Visibility Security Tests", () => {
     it("should allow primary/admin to see all content regardless of visibility", async () => {
       const content = {
         visibilityScope: "private",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const primaryCanView = await checkContentVisibility(
         "user-123",
         "primary",
+        "family",
         1,
         content
       );
       const adminCanView = await checkContentVisibility(
         "user-456",
         "admin",
+        "family",
         1,
         content
       );
@@ -43,13 +51,14 @@ describe("Visibility Security Tests", () => {
     it("should allow supporters to see all_supporters content", async () => {
       const content = {
         visibilityScope: "all_supporters",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-123",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -60,13 +69,14 @@ describe("Visibility Security Tests", () => {
     it("should HIDE private content from supporters (return false, not throw)", async () => {
       const content = {
         visibilityScope: "private",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-123",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -77,13 +87,14 @@ describe("Visibility Security Tests", () => {
     it("should HIDE role-restricted content from supporters", async () => {
       const content = {
         visibilityScope: "role",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-123",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -91,22 +102,57 @@ describe("Visibility Security Tests", () => {
       expect(canView).toBe(false);
     });
 
+    it("should HIDE all content (except included custom) from community tier", async () => {
+      // Community tier is the outer ring — blocked from everything unless
+      // explicitly named in a custom list.
+      const allSupporters = {
+        visibilityScope: "all_supporters",
+        visibilityGroupIds: null,
+        customUserIds: null,
+      };
+      const includedCustom = {
+        visibilityScope: "custom",
+        visibilityGroupIds: null,
+        customUserIds: ["community-1"],
+      };
+
+      const blocked = await checkContentVisibility(
+        "community-1",
+        "supporter",
+        "community",
+        1,
+        allSupporters
+      );
+      const includedOk = await checkContentVisibility(
+        "community-1",
+        "supporter",
+        "community",
+        1,
+        includedCustom
+      );
+
+      expect(blocked).toBe(false);
+      expect(includedOk).toBe(true);
+    });
+
     it("should allow custom visibility for included users", async () => {
       const content = {
         visibilityScope: "custom",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: ["user-123", "user-456"],
       };
 
       const includedUserCanView = await checkContentVisibility(
         "user-123",
         "supporter",
+        "friend",
         1,
         content
       );
       const excludedUserCanView = await checkContentVisibility(
         "user-789",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -118,7 +164,7 @@ describe("Visibility Security Tests", () => {
 
   describe("filterByVisibility - Performance & Correctness", () => {
     it("should handle empty lists efficiently", async () => {
-      const result = await filterByVisibility([], "user-123", "supporter", 1);
+      const result = await filterByVisibility([], "user-123", "supporter", "friend", 1);
       expect(result).toEqual([]);
     });
 
@@ -128,21 +174,21 @@ describe("Visibility Security Tests", () => {
           id: 1,
           title: "Public need",
           visibilityScope: "all_supporters",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
         {
           id: 2,
           title: "Private need",
           visibilityScope: "private",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
         {
           id: 3,
           title: "Role-restricted need",
           visibilityScope: "role",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
       ];
@@ -151,6 +197,7 @@ describe("Visibility Security Tests", () => {
         items,
         "supporter-123",
         "supporter",
+        "friend",
         1
       );
 
@@ -164,24 +211,24 @@ describe("Visibility Security Tests", () => {
         {
           id: 1,
           visibilityScope: "all_supporters",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
         {
           id: 2,
           visibilityScope: "private",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
         {
           id: 3,
           visibilityScope: "role",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
       ];
 
-      const visible = await filterByVisibility(items, "admin-123", "admin", 1);
+      const visible = await filterByVisibility(items, "admin-123", "admin", "family", 1);
 
       expect(visible).toHaveLength(3);
     });
@@ -191,13 +238,13 @@ describe("Visibility Security Tests", () => {
         {
           id: 1,
           visibilityScope: "custom",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: ["user-123", "user-456"],
         },
         {
           id: 2,
           visibilityScope: "custom",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: ["user-789"],
         },
       ];
@@ -206,6 +253,7 @@ describe("Visibility Security Tests", () => {
         items,
         "user-123",
         "supporter",
+        "friend",
         1
       );
 
@@ -233,13 +281,14 @@ describe("Visibility Security Tests", () => {
 
       const content = {
         visibilityScope: "group",
-        visibilityGroupId: 5,
+        visibilityGroupIds: [5],
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-in-group",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -257,13 +306,14 @@ describe("Visibility Security Tests", () => {
 
       const content = {
         visibilityScope: "group",
-        visibilityGroupId: 5,
+        visibilityGroupIds: [5],
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-not-in-group",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -283,21 +333,21 @@ describe("Visibility Security Tests", () => {
           id: 1,
           title: "Public need",
           visibilityScope: "all_supporters",
-          visibilityGroupId: null,
+          visibilityGroupIds: null,
           customUserIds: null,
         },
         {
           id: 2,
           title: "Inner Circle only",
           visibilityScope: "group",
-          visibilityGroupId: 5, // User IS in this group
+          visibilityGroupIds: [5], // User IS in this group
           customUserIds: null,
         },
         {
           id: 3,
           title: "Family only",
           visibilityScope: "group",
-          visibilityGroupId: 10, // User NOT in this group
+          visibilityGroupIds: [10], // User NOT in this group
           customUserIds: null,
         },
       ];
@@ -306,6 +356,7 @@ describe("Visibility Security Tests", () => {
         items,
         "supporter-123",
         "supporter",
+        "friend",
         1
       );
 
@@ -326,7 +377,7 @@ describe("Visibility Security Tests", () => {
       const items = Array.from({ length: 100 }, (_, i) => ({
         id: i + 1,
         visibilityScope: "group",
-        visibilityGroupId: i % 2 === 0 ? 5 : 10, // Half in group 5, half in group 10
+        visibilityGroupIds: i % 2 === 0 ? [5] : [10], // Half in group 5, half in group 10
         customUserIds: null,
       }));
 
@@ -334,12 +385,13 @@ describe("Visibility Security Tests", () => {
         items,
         "supporter-123",
         "supporter",
+        "friend",
         1
       );
 
       // Should see 50 items (those in group 5)
       expect(visible).toHaveLength(50);
-      
+
       // CRITICAL PERFORMANCE TEST: Only 1 DB call, not 100!
       expect(db.getUserGroups).toHaveBeenCalledOnce();
     });
@@ -350,13 +402,14 @@ describe("Visibility Security Tests", () => {
 
       const content = {
         visibilityScope: "group",
-        visibilityGroupId: 5,
+        visibilityGroupIds: [5],
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-no-groups",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -369,13 +422,14 @@ describe("Visibility Security Tests", () => {
     it("should default to deny for unknown visibility scopes", async () => {
       const content = {
         visibilityScope: "unknown_scope",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const canView = await checkContentVisibility(
         "supporter-123",
         "supporter",
+        "friend",
         1,
         content
       );
@@ -386,25 +440,27 @@ describe("Visibility Security Tests", () => {
     it("should handle null/undefined visibility fields safely", async () => {
       const content1 = {
         visibilityScope: "group",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const content2 = {
         visibilityScope: "custom",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       const canView1 = await checkContentVisibility(
         "supporter-123",
         "supporter",
+        "friend",
         1,
         content1
       );
       const canView2 = await checkContentVisibility(
         "supporter-123",
         "supporter",
+        "friend",
         1,
         content2
       );
@@ -416,17 +472,18 @@ describe("Visibility Security Tests", () => {
     it("should not leak visibility through exceptions", async () => {
       const dangerousContent = {
         visibilityScope: "private",
-        visibilityGroupId: null,
+        visibilityGroupIds: null,
         customUserIds: null,
       };
 
       expect(async () => {
-        await checkContentVisibility("attacker", "supporter", 1, dangerousContent);
+        await checkContentVisibility("attacker", "supporter", "friend", 1, dangerousContent);
       }).not.toThrow();
 
       const canView = await checkContentVisibility(
         "attacker",
         "supporter",
+        "friend",
         1,
         dangerousContent
       );

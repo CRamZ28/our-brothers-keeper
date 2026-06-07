@@ -232,8 +232,10 @@ export const inviteRouter = router({
                 content: `You are helping craft a compassionate, warm invitation message for a support network app called "My Brother's Keeper". The app helps families coordinate support after losing a loved one. Your task is to enhance the personal message while keeping it authentic and heartfelt. Keep it concise (2-3 sentences max).`,
               },
               {
+                // Data minimization: do NOT send the family/household name or the
+                // recipient relationship to the external LLM — only the message text.
                 role: "user",
-                content: `Enhance this invite message for a ${input.relationship}:\n\n"${input.personalMessage}"\n\nMake it warm but not overly formal. The person being invited will be a ${input.role} in the support network for ${household.name}.`,
+                content: `Enhance this invitation message:\n\n"${input.personalMessage}"\n\nMake it warm but not overly formal, and keep it concise (2-3 sentences). Do not invent names or specific details.`,
               },
             ],
           });
@@ -382,6 +384,13 @@ export const inviteRouter = router({
         throw new TRPCError({ code: "NOT_FOUND", message: "Household not found" });
       }
 
+      // Atomically claim the invite (single-use): only the first accept that flips
+      // it from "sent" to "accepted" proceeds; a concurrent/duplicate accept fails.
+      const claimed = await db.claimInvite(invite.id);
+      if (!claimed) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Invite already used or expired" });
+      }
+
       // Special handling for primary role invites
       if (invite.invitedRole === "primary") {
         // Primary users are automatically active (no approval needed)
@@ -399,8 +408,7 @@ export const inviteRouter = router({
           primaryUserId: ctx.user.id,
         });
 
-        // Mark invite as accepted
-        await db.updateInviteStatus(invite.id, "accepted");
+        // (invite already marked accepted atomically via claimInvite above)
 
         // Create audit log
         await db.createAuditLog({

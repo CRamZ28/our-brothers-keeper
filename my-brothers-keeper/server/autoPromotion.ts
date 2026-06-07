@@ -43,8 +43,17 @@ export async function processAutoPromotions() {
       for (const user of eligibleUsers) {
         if (!user.requestedTier) continue;
 
+        // Never auto-grant the "family" tier (full access, incl. private content)
+        // from a self-requested upgrade — that requires explicit human approval.
+        if (user.requestedTier === "family") {
+          console.log(
+            `[AutoPromotion] Skipping user ${user.id} — "family" tier requires manual approval`
+          );
+          continue;
+        }
+
         console.log(
-          `[AutoPromotion] Promoting user ${user.id} (${user.name || user.email}) from ${user.accessTier} to ${user.requestedTier}`
+          `[AutoPromotion] Promoting user ${user.id} from ${user.accessTier} to ${user.requestedTier}`
         );
 
         await db.updateUserAccessTier(user.id, user.requestedTier);

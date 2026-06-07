@@ -1406,6 +1406,12 @@ async function updateInviteStatus(id, status) {
   if (!db) return;
   await db.update(invites).set({ status }).where(eq(invites.id, id));
 }
+async function claimInvite(id) {
+  const db = await getDb();
+  if (!db) return false;
+  const rows = await db.update(invites).set({ status: "accepted" }).where(and(eq(invites.id, id), eq(invites.status, "sent"))).returning({ id: invites.id });
+  return rows.length > 0;
+}
 async function getPendingInvitesByHousehold(householdId) {
   const db = await getDb();
   if (!db) return [];
@@ -2374,12 +2380,14 @@ var inviteRouter = router({
               content: `You are helping craft a compassionate, warm invitation message for a support network app called "My Brother's Keeper". The app helps families coordinate support after losing a loved one. Your task is to enhance the personal message while keeping it authentic and heartfelt. Keep it concise (2-3 sentences max).`
             },
             {
+              // Data minimization: do NOT send the family/household name or the
+              // recipient relationship to the external LLM — only the message text.
               role: "user",
-              content: `Enhance this invite message for a ${input.relationship}:
+              content: `Enhance this invitation message:
 
 "${input.personalMessage}"
 
-Make it warm but not overly formal. The person being invited will be a ${input.role} in the support network for ${household.name}.`
+Make it warm but not overly formal, and keep it concise (2-3 sentences). Do not invent names or specific details.`
             }
           ]
         });
@@ -2491,6 +2499,10 @@ Make it warm but not overly formal. The person being invited will be a ${input.r
     if (!household) {
       throw new TRPCError3({ code: "NOT_FOUND", message: "Household not found" });
     }
+    const claimed = await claimInvite(invite.id);
+    if (!claimed) {
+      throw new TRPCError3({ code: "BAD_REQUEST", message: "Invite already used or expired" });
+    }
     if (invite.invitedRole === "primary") {
       await upsertUser({
         id: ctx.user.id,
@@ -2502,7 +2514,6 @@ Make it warm but not overly formal. The person being invited will be a ${input.r
       await updateHousehold(invite.householdId, {
         primaryUserId: ctx.user.id
       });
-      await updateInviteStatus(invite.id, "accepted");
       await createAuditLog({
         householdId: invite.householdId,
         actorUserId: ctx.user.id,
@@ -2750,10 +2761,10 @@ async function sendBroadcastEmail(recipientEmail, recipientName, subject, body, 
       // Use raw strings for email header
       html: emailHtml
     });
-    console.log(`[Broadcast] Email sent to ${recipientEmail}:`, result);
+    console.log("[Broadcast] Email sent");
     return { success: true };
   } catch (error) {
-    console.error(`[Broadcast] Failed to send email to ${recipientEmail}:`, error);
+    console.error("[Broadcast] Email send failed:", error instanceof Error ? error.message : String(error));
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error"
@@ -2882,7 +2893,7 @@ var adminMessageRouter = router({
           emailsSent++;
         } else {
           emailsFailed++;
-          console.warn(`[Broadcast] Failed to send email to ${recipient.email}:`, result.error);
+          console.warn("[Broadcast] Email send failed for one recipient:", result.error);
         }
       } else {
         console.warn(`[Broadcast] Skipping user ${recipientId} - no email address`);
@@ -6171,15 +6182,12 @@ var appRouter = router({
               message: `Household created but failed to send primary invite email: ${emailResult.error}. Please try resending the invite from the People page.`
             });
           }
-          console.log(
-            `[Household] Primary invite email sent to ${input.primaryName} (${input.primaryEmail})`
-          );
+          console.log(`[Household] Primary invite email sent`);
         }
       }
       if (input.additionalAdmins && input.additionalAdmins.length > 0) {
         console.log(
-          `[Household] Need to invite ${input.additionalAdmins.length} additional admins:`,
-          input.additionalAdmins.map((a) => a.email).join(", ")
+          `[Household] Queued ${input.additionalAdmins.length} additional admin invite(s)`
         );
       }
       const innerCircleId = await createGroup({

@@ -732,6 +732,21 @@ export async function updateInviteStatus(
   await db.update(invites).set({ status }).where(eq(invites.id, id));
 }
 
+// Atomically claim an invite for acceptance: flips status sent -> accepted and
+// returns true ONLY if this call made the change. Guarantees single-use even
+// under concurrent/duplicate accept requests (compare-and-swap).
+export async function claimInvite(id: number): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+
+  const rows = await db
+    .update(invites)
+    .set({ status: "accepted" })
+    .where(and(eq(invites.id, id), eq(invites.status, "sent")))
+    .returning({ id: invites.id });
+  return rows.length > 0;
+}
+
 export async function getPendingInvitesByHousehold(householdId: number) {
   const db = await getDb();
   if (!db) return [];

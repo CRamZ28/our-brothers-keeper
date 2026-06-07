@@ -103,10 +103,10 @@ async function sendBroadcastEmail(
       html: emailHtml,
     });
 
-    console.log(`[Broadcast] Email sent to ${recipientEmail}:`, result);
+    console.log("[Broadcast] Email sent");
     return { success: true };
   } catch (error) {
-    console.error(`[Broadcast] Failed to send email to ${recipientEmail}:`, error);
+    console.error("[Broadcast] Email send failed:", error instanceof Error ? error.message : String(error));
     return { 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error' 
@@ -265,7 +265,7 @@ export const adminMessageRouter = router({
             emailsSent++;
           } else {
             emailsFailed++;
-            console.warn(`[Broadcast] Failed to send email to ${recipient.email}:`, result.error);
+            console.warn("[Broadcast] Email send failed for one recipient:", result.error);
           }
         } else {
           console.warn(`[Broadcast] Skipping user ${recipientId} - no email address`);
