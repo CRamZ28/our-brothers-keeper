@@ -934,8 +934,14 @@ var t = initTRPC.context().create({
 });
 var router = t.router;
 var publicProcedure = t.procedure;
+var ONBOARDING_MUTATIONS = /* @__PURE__ */ new Set([
+  "household.create",
+  "household.joinWithTier",
+  "invite.accept",
+  "user.updateProfile"
+]);
 var requireUser = t.middleware(async (opts) => {
-  const { ctx, next } = opts;
+  const { ctx, next, path, type } = opts;
   if (!ctx.user) {
     throw new TRPCError2({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
   }
@@ -943,6 +949,12 @@ var requireUser = t.middleware(async (opts) => {
     throw new TRPCError2({
       code: "FORBIDDEN",
       message: "Your access has been blocked. Please contact the household administrator."
+    });
+  }
+  if (ctx.user.status !== "active" && type === "mutation" && !ONBOARDING_MUTATIONS.has(path)) {
+    throw new TRPCError2({
+      code: "FORBIDDEN",
+      message: "Your membership is pending approval by a household admin."
     });
   }
   return next({

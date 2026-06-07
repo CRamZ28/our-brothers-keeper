@@ -18,8 +18,18 @@ const t = initTRPC.context<TrpcContext>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
+// Onboarding/self mutations a not-yet-active member is still allowed to perform
+// (so a brand-new user — who starts as "pending" — can still join/create a
+// household and set up their profile).
+const ONBOARDING_MUTATIONS = new Set([
+  "household.create",
+  "household.joinWithTier",
+  "invite.accept",
+  "user.updateProfile",
+]);
+
 const requireUser = t.middleware(async opts => {
-  const { ctx, next } = opts;
+  const { ctx, next, path, type } = opts;
 
   if (!ctx.user) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: UNAUTHED_ERR_MSG });
@@ -27,9 +37,24 @@ const requireUser = t.middleware(async opts => {
 
   // Block access for blocked users
   if (ctx.user.status === "blocked") {
-    throw new TRPCError({ 
-      code: "FORBIDDEN", 
-      message: "Your access has been blocked. Please contact the household administrator." 
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Your access has been blocked. Please contact the household administrator."
+    });
+  }
+
+  // Pending (not-yet-approved) members may READ (reads are already tier-gated)
+  // but cannot perform actions until a household admin approves them — except the
+  // onboarding steps above. This makes the approval workflow actually enforce
+  // something instead of being cosmetic.
+  if (
+    ctx.user.status !== "active" &&
+    type === "mutation" &&
+    !ONBOARDING_MUTATIONS.has(path)
+  ) {
+    throw new TRPCError({
+      code: "FORBIDDEN",
+      message: "Your membership is pending approval by a household admin.",
     });
   }
 
